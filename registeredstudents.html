@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Supabase configuration -->
+    <meta name="supabase-url" content="https://fyriapqeztevzkcaaiqw.supabase.co">
+    <meta name="supabase-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY">
+    <title>Admin Dashboard - Course Registration Analytics</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary: #ff6a00;
+            --primary-dark: #e65c00;
+            --primary-light: #ff8a3d;
+            --secondary: #ffffff;
+            --secondary-dark: #fff7f0;
+            --accent: #ff8a00;
+            --dark: #1f2937;
+            --darker: #f97316;
+            --light: #ffffff;
+            --gray: #6b7280;
+            --gray-light: #f1f5f9;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #fff7f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-left-color: var(--primary-light);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(255,106,0,0.18) 0%, rgba(255,106,0,0.06) 100%);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-filter input {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius-sm);
+            background: white;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+        .stat-icon.success { background: linear-gradient(135deg, var(--success), #34d399); }
+        .stat-icon.warning { background: linear-gradient(135deg, var(--warning), #fbbf24); }
+        .stat-icon.info { background: linear-gradient(135deg, var(--info), #60a5fa); }
+        .stat-icon.danger { background: linear-gradient(135deg, var(--danger), #dc2626); }
+        .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Tables */
+        .table-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: var(--gray-light);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .data-table tr:hover {
+            background: var(--secondary-dark);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+        /* Segmentation Cards */
+        .segmentation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .segmentation-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .segmentation-list {
+            list-style: none;
+        }
+
+        .segmentation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .segmentation-item:last-child {
+            border-bottom: none;
+        }
+
+        .segmentation-progress {
+            flex: 1;
+            height: 8px;
+            background: var(--gray-light);
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .segmentation-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Filters */
+        .filters-bar {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius-sm);
+            background: white;
+            min-width: 150px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            padding: 32px;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            text-align: left;
+            position: relative;
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .segmentation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            background: white;
+            padding: 8px;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Export Section */
+        .export-section {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+            <h2>ADMIN ANALYTICS</h2>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-item active" id="navDashboard">
+                <i class="fa-solid fa-tachometer-alt" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" id="navRegistrations">
+                <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                <span>Registrations</span>
+            </div>
+            <div class="nav-item" id="navStudents">
+                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                <span>Students</span>
+            </div>
+            <div class="nav-item" id="navCourses">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                <span>Courses</span>
+            </div>
+            <div class="nav-item" id="navSchools">
+                <i class="fa-solid fa-school" aria-hidden="true"></i>
+                <span>Schools & Programs</span>
+            </div>
+            <div class="nav-item" id="navRevenue">
+                <i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i>
+                <span>Revenue Analytics</span>
+            </div>
+            <div class="nav-item" id="navReports">
+                <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+                <span>Reports</span>
+            </div>
+            <div class="nav-item" id="navSettings">
+                <i class="fa-solid fa-cog" aria-hidden="true"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+
+            <!-- Detailed Modals for Sidebar Links -->
+            <!-- Dashboard Modal -->
+            <div class="modal-overlay" id="dashboardModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>Dashboard Summary</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('dashboardModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="dashboardModalContent">
+                        <!-- populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registrations Modal -->
+            <div class="modal-overlay" id="registrationsModal">
+                <div class="modal" style="max-width: 1100px;">
+                    <div class="modal-header">
+                        <h2>All Registrations</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('registrationsModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="registrationsModalContent">
+                        <!-- populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Modal -->
+            <div class="modal-overlay" id="studentsModal">
+                <div class="modal" style="max-width: 1100px;">
+                    <div class="modal-header">
+                        <h2>Registered Students</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('studentsModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="studentsModalContent">
+                        <!-- Search and table populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Modal -->
+            <div class="modal-overlay" id="coursesModal">
+                <div class="modal" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h2>Courses & Popularity</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('coursesModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="coursesModalContent"></div>
+                </div>
+            </div>
+
+            <!-- Schools & Programs Modal -->
+            <div class="modal-overlay" id="schoolsModal">
+                <div class="modal" style="max-width: 1000px;">
+                    <div class="modal-header">
+                        <h2>Schools & Programs</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('schoolsModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="schoolsModalContent"></div>
+                </div>
+            </div>
+
+            <!-- Revenue Modal -->
+            <div class="modal-overlay" id="revenueModal">
+                <div class="modal" style="max-width: 1000px;">
+                    <div class="modal-header">
+                        <h2>Revenue Analytics</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('revenueModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="revenueModalContent">
+                        <!-- Chart placeholder -->
+                        <div style="height:300px;"><canvas id="revenueChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Modal -->
+            <div class="modal-overlay" id="reportsModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>Reports & Exports</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('reportsModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="reportsModalContent"></div>
+                </div>
+            </div>
+
+            <!-- Settings Modal -->
+            <div class="modal-overlay" id="settingsModal">
+                <div class="modal" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h2>Settings</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="closeModal('settingsModal')">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div id="settingsModalContent"></div>
+                </div>
+            </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="user-info">
+                    <h4>Admin User</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <button class="menu-toggle" id="menuToggle">
+            <i data-lucide="menu"></i>
+        </button>
+        
+        <div class="header">
+            <h1><i class="fa-solid fa-chart-bar" aria-hidden="true"></i> Course Registration Analytics Dashboard</h1>
+            <div class="header-actions">
+                <div class="date-filter">
+                    <input type="date" id="startDate" />
+                    <span>to</span>
+                    <input type="date" id="endDate" />
+                    <button class="btn btn-primary" id="applyFilter">
+                        <i data-lucide="filter"></i> Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label for="schoolFilter">School</label>
+                <select id="schoolFilter" class="filter-select">
+                    <option value="">All Schools</option>
+                    <option value="Media School">Media School</option>
+                    <option value="Cosmetology School">Cosmetology School</option>
+                    <option value="School of Fashion">School of Fashion</option>
+                    <option value="Catering School">Catering School</option>
+                    <option value="School of Technology">School of Technology</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="programFilter">Program</label>
+                <select id="programFilter" class="filter-select">
+                    <option value="">All Programs</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="levelFilter">Level</label>
+                <select id="levelFilter" class="filter-select">
+                    <option value="">All Levels</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="300">300</option>
+                    <option value="400">400</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <button class="btn btn-secondary" id="resetFilters">
+                <i data-lucide="rotate-ccw"></i> Reset
+            </button>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalRegistrations">0</h3>
+                    <p>Total Registrations</p>
+                    <div class="stat-change positive">
+                        <i data-lucide="trending-up"></i>
+                        <span id="registrationChange">+0%</span> from last month
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="activeStudents">0</h3>
+                    <p>Active Students</p>
+                    <div class="stat-change positive">
+                        <i data-lucide="users"></i>
+                        <span id="studentChange">+0</span> new this month
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalCourses">0</h3>
+                    <p>Courses Offered</p>
+                    <div class="stat-change">
+                        <i data-lucide="book"></i>
+                        <span>Across all programs</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="fa-solid fa-percentage"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="completionRate">0%</h3>
+                    <p>Registration Completion</p>
+                    <div class="stat-change positive">
+                        <i data-lucide="target"></i>
+                        <span>Target: 95%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Registrations Trend (Last 30 Days)</h3>
+                    <button class="btn btn-sm btn-secondary">
+                        <i data-lucide="download"></i> Export
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="registrationsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>School-wise Distribution</h3>
+                    <button class="btn btn-sm btn-secondary">
+                        <i data-lucide="download"></i> Export
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="schoolDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segmentation Cards -->
+        <div class="segmentation-grid">
+            <div class="segmentation-card">
+                <h3>Top 5 Popular Courses</h3>
+                <ul class="segmentation-list" id="topCoursesList">
+                    <li class="segmentation-item">
+                        <span>Loading...</span>
+                        <div class="segmentation-progress">
+                            <div class="segmentation-bar" style="width: 0%"></div>
+                        </div>
+                        <span>0</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="segmentation-card">
+                <h3>Registration by Level</h3>
+                <ul class="segmentation-list" id="levelDistributionList">
+                    <li class="segmentation-item">
+                        <span>Level 100</span>
+                        <div class="segmentation-progress">
+                            <div class="segmentation-bar" style="width: 0%"></div>
+                        </div>
+                        <span>0%</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="segmentation-card">
+                <h3>Program Popularity</h3>
+                <ul class="segmentation-list" id="programDistributionList">
+                    <li class="segmentation-item">
+                        <span>Loading...</span>
+                        <div class="segmentation-progress">
+                            <div class="segmentation-bar" style="width: 0%"></div>
+                        </div>
+                        <span>0%</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recent Registrations Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Recent Registrations</h3>
+                <button class="btn btn-primary" id="viewAllRegistrations">
+                    <i data-lucide="eye"></i> View All
+                </button>
+            </div>
+            <div class="loading" id="registrationsLoading">
+                <div class="spinner"></div>
+            </div>
+            <table class="data-table" id="recentRegistrationsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>School</th>
+                        <th>Program</th>
+                        <th>Level</th>
+                        <th>Courses</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="registrationsTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detailed Analytics Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Course Registration Details</h3>
+                <div class="export-options">
+                    <button class="btn btn-sm btn-secondary" id="exportCSV">
+                        <i data-lucide="file-text"></i> CSV
+                    </button>
+                    <button class="btn btn-sm btn-secondary" id="exportPDF">
+                        <i data-lucide="file-pdf"></i> PDF
+                    </button>
+                    <button class="btn btn-sm btn-primary" id="refreshData">
+                        <i data-lucide="refresh-cw"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="loading" id="detailedLoading">
+                <div class="spinner"></div>
+            </div>
+            <table class="data-table" id="detailedAnalyticsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>School</th>
+                        <th>Total Registrations</th>
+                        <th>Capacity</th>
+                        <th>Utilization</th>
+                        <th>Avg. Level</th>
+                        <th>Gender Distribution</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="detailedTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal-overlay" id="studentDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Student Registration Details</h2>
+                <button class="btn btn-sm btn-secondary" onclick="closeModal('studentDetailsModal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div id="studentDetailsContent">
+                <!-- Content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Details Modal -->
+    <div class="modal-overlay" id="registrationDetailsModal">
+        <div class="modal" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2>Complete Registration Details</h2>
+                <button class="btn btn-sm btn-secondary" onclick="closeModal('registrationDetailsModal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div id="registrationDetailsContent">
+                <!-- Content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Initialize Supabase client
+        const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || 'https://fyriapqeztevzkcaaiqw.supabase.co';
+        const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-key"]')?.content || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+
+        let supabaseClient = null;
+        try {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.error('Failed to initialize Supabase:', e);
+        }
+
+        // Chart instances
+        let registrationsChart = null;
+        let schoolDistributionChart = null;
+
+        // Data storage
+        let analyticsData = {
+            registrations: [],
+            students: [],
+            courses: [],
+            schools: [],
+            programs: []
+        };
+
+        // Initialize date filters (default to last 30 days)
+        function initializeDateFilters() {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+
+            document.getElementById('startDate').valueAsDate = startDate;
+            document.getElementById('endDate').valueAsDate = endDate;
+        }
+
+        // Fetch all data
+        async function fetchAllData() {
+            showLoading();
+
+            try {
+                // Fetch canonical registrations table
+                const { data: registrations, error: regError } = await supabaseClient
+                    .from('registrations')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // Fetch level100_registrations (level-100 specific)
+                const { data: level100Regs, error: lvl100Error } = await supabaseClient
+                    .from('level100_registrations')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // Merge registrations from both tables (level100 entries first)
+                const mergedRegs = [];
+                if (Array.isArray(level100Regs)) mergedRegs.push(...level100Regs);
+                if (Array.isArray(registrations)) mergedRegs.push(...registrations);
+                analyticsData.registrations = mergedRegs;
+
+                // Fetch students table
+                const { data: students, error: stuError } = await supabaseClient
+                    .from('students')
+                    .select('*');
+
+                // Fetch newstudents (fresh admissions pipeline)
+                const { data: newstudents, error: newStuError } = await supabaseClient
+                    .from('newstudents')
+                    .select('*');
+
+                // Merge students lists (newstudents may contain recent applicants)
+                const mergedStudents = [];
+                if (Array.isArray(students)) mergedStudents.push(...students);
+                if (Array.isArray(newstudents)) mergedStudents.push(...newstudents);
+                analyticsData.students = mergedStudents;
+
+                // Calculate derived data
+                calculateAnalytics();
+                updateDashboard();
+                hideLoading();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                hideLoading();
+                // For demo purposes, create mock data
+                createMockData();
+            }
+        }
+
+        // Calculate analytics from raw data
+        function calculateAnalytics() {
+            const { registrations, students } = analyticsData;
+            
+            // Calculate school distribution
+            const schoolCount = {};
+            const programCount = {};
+            const levelCount = {};
+            const courseCount = {};
+            
+            registrations.forEach(reg => {
+                // School distribution
+                const school = reg.school || 'Unknown';
+                schoolCount[school] = (schoolCount[school] || 0) + 1;
+                
+                // Program distribution
+                const program = reg.program || 'Unknown';
+                programCount[program] = (programCount[program] || 0) + 1;
+                
+                // Level distribution
+                const level = reg.level || 'Unknown';
+                levelCount[level] = (levelCount[level] || 0) + 1;
+                
+                // Course count (flatten arrays)
+                const courses = Array.isArray(reg.courses) ? reg.courses : [];
+                const coreCourses = Array.isArray(reg.core_courses) ? reg.core_courses : [];
+                const allCourses = [...courses, ...coreCourses];
+                
+                allCourses.forEach(course => {
+                    courseCount[course] = (courseCount[course] || 0) + 1;
+                });
+            });
+            
+            analyticsData.schools = Object.entries(schoolCount).map(([name, count]) => ({ name, count }));
+            analyticsData.programs = Object.entries(programCount).map(([name, count]) => ({ name, count }));
+            analyticsData.levels = Object.entries(levelCount).map(([name, count]) => ({ name, count }));
+            analyticsData.coursePopularity = Object.entries(courseCount)
+                .map(([name, count]) => ({ name, count }))
+                .sort((a, b) => b.count - a.count);
+        }
+
+        // Update dashboard with calculated data
+        function updateDashboard() {
+            updateStats();
+            updateCharts();
+            updateSegmentation();
+            updateTables();
+        }
+
+        // Update statistics cards
+        function updateStats() {
+            const { registrations, students } = analyticsData;
+            
+            // Total registrations
+            document.getElementById('totalRegistrations').textContent = registrations.length;
+            
+            // Active students (unique)
+            const uniqueStudents = new Set(registrations.map(r => r.student_id)).size;
+            document.getElementById('activeStudents').textContent = uniqueStudents;
+            
+            // Total courses (approximation)
+            const allCourses = new Set();
+            registrations.forEach(reg => {
+                const courses = Array.isArray(reg.courses) ? reg.courses : [];
+                const coreCourses = Array.isArray(reg.core_courses) ? reg.core_courses : [];
+                courses.forEach(c => allCourses.add(c));
+                coreCourses.forEach(c => allCourses.add(c));
+            });
+            document.getElementById('totalCourses').textContent = allCourses.size;
+            
+            // Completion rate (assuming registrations with status 'completed')
+            const completed = registrations.filter(r => r.status === 'completed').length;
+            const rate = registrations.length > 0 ? Math.round((completed / registrations.length) * 100) : 0;
+            document.getElementById('completionRate').textContent = `${rate}%`;
+            
+            // Calculate changes (mock for now)
+            document.getElementById('registrationChange').textContent = '+12%';
+            document.getElementById('studentChange').textContent = `+${Math.floor(uniqueStudents * 0.15)}`;
+        }
+
+        // Update charts
+        function updateCharts() {
+            updateRegistrationsChart();
+            updateSchoolDistributionChart();
+        }
+
+        // Update registrations trend chart
+        function updateRegistrationsChart() {
+            const ctx = document.getElementById('registrationsChart').getContext('2d');
+            
+            // Generate last 30 days data
+            const dates = [];
+            const counts = [];
+            const today = new Date();
+            
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                dates.push(dateStr.substring(5)); // MM-DD format
+                
+                // Count registrations for this date
+                const count = analyticsData.registrations.filter(reg => {
+                    const regDate = new Date(reg.created_at).toISOString().split('T')[0];
+                    return regDate === dateStr;
+                }).length;
+                counts.push(count);
+            }
+            
+            if (registrationsChart) {
+                registrationsChart.destroy();
+            }
+            
+            registrationsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Daily Registrations',
+                        data: counts,
+                        borderColor: '#ff6a00',
+                        backgroundColor: 'rgba(255, 106, 0, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update school distribution chart
+        function updateSchoolDistributionChart() {
+            const ctx = document.getElementById('schoolDistributionChart').getContext('2d');
+            
+            const schools = analyticsData.schools;
+            const labels = schools.map(s => s.name);
+            const data = schools.map(s => s.count);
+            const backgroundColors = [
+                '#ff6a00', '#ff8a00', '#3b82f6', '#10b981', '#f59e0b',
+                '#8b5cf6', '#ef4444', '#06b6d4'
+            ];
+            
+            if (schoolDistributionChart) {
+                schoolDistributionChart.destroy();
+            }
+            
+            schoolDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // Update segmentation lists
+        function updateSegmentation() {
+            // Top courses
+            const topCourses = analyticsData.coursePopularity.slice(0, 5);
+            const maxCourseCount = Math.max(...topCourses.map(c => c.count), 1);
+            
+            const topCoursesList = document.getElementById('topCoursesList');
+            topCoursesList.innerHTML = '';
+            
+            topCourses.forEach(course => {
+                const percentage = Math.round((course.count / maxCourseCount) * 100);
+                const li = document.createElement('li');
+                li.className = 'segmentation-item';
+                li.innerHTML = `
+                    <span>${course.name}</span>
+                    <div class="segmentation-progress">
+                        <div class="segmentation-bar" style="width: ${percentage}%"></div>
+                    </div>
+                    <span>${course.count}</span>
+                `;
+                topCoursesList.appendChild(li);
+            });
+            
+            // Level distribution
+            const levels = analyticsData.levels;
+            const totalLevels = levels.reduce((sum, l) => sum + l.count, 0);
+            
+            const levelList = document.getElementById('levelDistributionList');
+            levelList.innerHTML = '';
+            
+            ['100', '200', '300', '400', 'Unknown'].forEach(levelName => {
+                const levelData = levels.find(l => l.name === levelName) || { name: levelName, count: 0 };
+                const percentage = totalLevels > 0 ? Math.round((levelData.count / totalLevels) * 100) : 0;
+                
+                const li = document.createElement('li');
+                li.className = 'segmentation-item';
+                li.innerHTML = `
+                    <span>Level ${levelData.name}</span>
+                    <div class="segmentation-progress">
+                        <div class="segmentation-bar" style="width: ${percentage}%"></div>
+                    </div>
+                    <span>${percentage}%</span>
+                `;
+                levelList.appendChild(li);
+            });
+            
+            // Program distribution
+            const programs = analyticsData.programs.slice(0, 5);
+            const maxProgramCount = Math.max(...programs.map(p => p.count), 1);
+            
+            const programList = document.getElementById('programDistributionList');
+            programList.innerHTML = '';
+            
+            programs.forEach(program => {
+                const percentage = Math.round((program.count / maxProgramCount) * 100);
+                const li = document.createElement('li');
+                li.className = 'segmentation-item';
+                li.innerHTML = `
+                    <span>${program.name}</span>
+                    <div class="segmentation-progress">
+                        <div class="segmentation-bar" style="width: ${percentage}%"></div>
+                    </div>
+                    <span>${program.count}</span>
+                `;
+                programList.appendChild(li);
+            });
+        }
+
+        // Update tables
+        function updateTables() {
+            updateRecentRegistrationsTable();
+            updateDetailedAnalyticsTable();
+        }
+
+        // Update recent registrations table
+        function updateRecentRegistrationsTable() {
+            const tableBody = document.getElementById('registrationsTableBody');
+            const recentRegs = analyticsData.registrations.slice(0, 10);
+            
+            tableBody.innerHTML = '';
+            
+            recentRegs.forEach(reg => {
+                const student = analyticsData.students.find(s => s.id === reg.student_id) || {};
+                const courses = Array.isArray(reg.courses) ? reg.courses : [];
+                const coreCourses = Array.isArray(reg.core_courses) ? reg.core_courses : [];
+                const totalCourses = courses.length + coreCourses.length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${reg.student_id ? reg.student_id.substring(0, 8) + '...' : 'N/A'}</td>
+                    <td>${student.full_name || student.name || 'Unknown'}</td>
+                    <td>${reg.school || 'Unknown'}</td>
+                    <td>${reg.program || 'N/A'}</td>
+                    <td>${reg.level || 'N/A'}</td>
+                    <td>${totalCourses} courses</td>
+                    <td><span class="status-badge ${getStatusClass(reg.status)}">${reg.status || 'pending'}</span></td>
+                    <td>${new Date(reg.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="viewRegistrationDetails('${reg.id}')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Hide loading, show table
+            document.getElementById('registrationsLoading').style.display = 'none';
+            document.getElementById('recentRegistrationsTable').style.display = 'table';
+        }
+
+        // Update detailed analytics table
+        function updateDetailedAnalyticsTable() {
+            const tableBody = document.getElementById('detailedTableBody');
+            
+            // Group courses by name and school
+            const courseMap = {};
+            
+            analyticsData.registrations.forEach(reg => {
+                const courses = Array.isArray(reg.courses) ? reg.courses : [];
+                const coreCourses = Array.isArray(reg.core_courses) ? reg.core_courses : [];
+                const allCourses = [...courses, ...coreCourses];
+                
+                allCourses.forEach(courseName => {
+                    const key = `${courseName}_${reg.school}`;
+                    if (!courseMap[key]) {
+                        courseMap[key] = {
+                            name: courseName,
+                            school: reg.school || 'Unknown',
+                            registrations: 0,
+                            levels: [],
+                            programs: []
+                        };
+                    }
+                    courseMap[key].registrations++;
+                    if (reg.level) courseMap[key].levels.push(reg.level);
+                    if (reg.program) courseMap[key].programs.push(reg.program);
+                });
+            });
+            
+            const courseArray = Object.values(courseMap).slice(0, 15);
+            
+            tableBody.innerHTML = '';
+            
+            courseArray.forEach(course => {
+                const avgLevel = course.levels.length > 0 
+                    ? Math.round(course.levels.reduce((a, b) => parseInt(a) + parseInt(b), 0) / course.levels.length)
+                    : 'N/A';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${generateCourseCode(course.name)}</td>
+                    <td>${course.name}</td>
+                    <td>${course.school}</td>
+                    <td>${course.registrations}</td>
+                    <td>${Math.ceil(course.registrations * 1.2)}</td>
+                    <td>${Math.round((course.registrations / Math.ceil(course.registrations * 1.2)) * 100)}%</td>
+                    <td>${avgLevel}</td>
+                    <td>60% F, 40% M</td>
+                    <td><span class="status-badge status-completed">Active</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Hide loading, show table
+            document.getElementById('detailedLoading').style.display = 'none';
+            document.getElementById('detailedAnalyticsTable').style.display = 'table';
+        }
+
+        // Helper functions
+        function getStatusClass(status) {
+            switch(status?.toLowerCase()) {
+                case 'completed': return 'status-completed';
+                case 'pending': return 'status-pending';
+                case 'cancelled': return 'status-cancelled';
+                default: return 'status-pending';
+            }
+        }
+
+        function generateCourseCode(courseName) {
+            const words = courseName.split(' ');
+            if (words.length >= 2) {
+                return (words[0].substring(0, 3) + words[1].substring(0, 3)).toUpperCase();
+            }
+            return courseName.substring(0, 6).toUpperCase();
+        }
+
+        function showLoading() {
+            document.getElementById('registrationsLoading').style.display = 'flex';
+            document.getElementById('detailedLoading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            // Already handled in updateTables
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function viewRegistrationDetails(registrationId) {
+            const registration = analyticsData.registrations.find(r => r.id === registrationId);
+            const student = analyticsData.students.find(s => s.id === registration.student_id) || {};
+            
+            if (!registration) return;
+            
+            const content = document.getElementById('registrationDetailsContent');
+            const courses = Array.isArray(registration.courses) ? registration.courses : [];
+            const coreCourses = Array.isArray(registration.core_courses) ? registration.core_courses : [];
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px;">Student Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div><strong>Name:</strong> ${student.full_name || student.name || 'N/A'}</div>
+                        <div><strong>Student ID:</strong> ${registration.student_id || 'N/A'}</div>
+                        <div><strong>Email:</strong> ${student.email || 'N/A'}</div>
+                        <div><strong>Phone:</strong> ${student.phone || 'N/A'}</div>
+                        <div><strong>Level:</strong> ${registration.level || 'N/A'}</div>
+                        <div><strong>School:</strong> ${registration.school || 'N/A'}</div>
+                        <div><strong>Program:</strong> ${registration.program || 'N/A'}</div>
+                        <div><strong>Status:</strong> <span class="status-badge ${getStatusClass(registration.status)}">${registration.status || 'pending'}</span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px;">Course Selection</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <h4 style="margin-bottom: 10px; color: var(--primary);">Elective Courses (${courses.length})</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                ${courses.map(course => `<li style="padding: 5px 0; border-bottom: 1px solid #eee;">✓ ${course}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 10px; color: var(--success);">Core Courses (${coreCourses.length})</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                ${coreCourses.map(course => `<li style="padding: 5px 0; border-bottom: 1px solid #eee;">✓ ${course}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px;">Registration Details</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div><strong>Total Courses:</strong> ${courses.length + coreCourses.length}</div>
+                        <div><strong>Registration Date:</strong> ${new Date(registration.created_at).toLocaleString()}</div>
+                        <div><strong>Last Updated:</strong> ${new Date(registration.updated_at || registration.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <h3 style="margin-bottom: 10px;">Actions</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="updateRegistrationStatus('${registration.id}', 'completed')">
+                            <i data-lucide="check-circle"></i> Mark as Completed
+                        </button>
+                        <button class="btn btn-secondary" onclick="printRegistration('${registration.id}')">
+                            <i data-lucide="printer"></i> Print
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteRegistration('${registration.id}')">
+                            <i data-lucide="trash-2"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('registrationDetailsModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // Mock data for demo purposes
+        function createMockData() {
+            const mockSchools = [
+                'Media School', 'Cosmetology School', 'School of Fashion', 
+                'Catering School', 'School of Technology'
+            ];
+            
+            const mockPrograms = [
+                'Journalism And Media Art', 'Journalism And Media Studies',
+                'TV & Film Production', 'Multimedia Production',
+                'Fashion Design', 'Culinary Arts', 'Computer Science'
+            ];
+            
+            const mockCourses = [
+                'TV PRESENTING / TV JOURNALISM',
+                'RADIO PRESENTING / RADIO JOURNALISM',
+                'DIGITAL VIDEO EDITING',
+                'GRAPHIC DESIGNING',
+                'MAKE-UP ARTISTRY',
+                'NAIL TECHNOLOGY',
+                'PATTERN DRAFTING',
+                'FASHION DESIGN',
+                'FOOD & BEVERAGE PRODUCTION',
+                'PASTRY, CAKE, AND SUGAR CRAFT',
+                'COMPUTER HARDWARE',
+                'COMPUTER SOFTWARE'
+            ];
+            
+            const mockCoreCourses = [
+                'COMMUNICATION SKILLS',
+                'AFRICAN STUDIES',
+                'ICT',
+                'ENTREPRENEURSHIP',
+                'PRODUCTION MANAGEMENT'
+            ];
+            
+            // Generate mock registrations
+            analyticsData.registrations = Array.from({ length: 150 }, (_, i) => ({
+                id: `reg_${i}`,
+                student_id: `stu_${Math.floor(Math.random() * 100)}`,
+                school: mockSchools[Math.floor(Math.random() * mockSchools.length)],
+                program: mockPrograms[Math.floor(Math.random() * mockPrograms.length)],
+                level: ['100', '200', '300', '400'][Math.floor(Math.random() * 4)],
+                courses: Array.from({ length: Math.floor(Math.random() * 3) + 2 }, 
+                    () => mockCourses[Math.floor(Math.random() * mockCourses.length)]),
+                core_courses: mockCoreCourses.slice(0, Math.floor(Math.random() * 3) + 2),
+                status: ['completed', 'pending', 'cancelled'][Math.floor(Math.random() * 3)],
+                created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+            }));
+            
+            // Generate mock students
+            analyticsData.students = Array.from({ length: 100 }, (_, i) => ({
+                id: `stu_${i}`,
+                full_name: `Student ${i + 1}`,
+                email: `student${i + 1}@example.com`,
+                phone: `+23350${Math.floor(1000000 + Math.random() * 9000000)}`
+            }));
+            
+            calculateAnalytics();
+            updateDashboard();
+            hideLoading();
+        }
+
+        // Event Listeners
+        document.getElementById('applyFilter').addEventListener('click', fetchAllData);
+        document.getElementById('resetFilters').addEventListener('click', () => {
+            document.getElementById('schoolFilter').value = '';
+            document.getElementById('programFilter').value = '';
+            document.getElementById('levelFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            initializeDateFilters();
+            fetchAllData();
+        });
+
+        document.getElementById('refreshData').addEventListener('click', fetchAllData);
+        document.getElementById('viewAllRegistrations').addEventListener('click', () => {
+            alert('This would show all registrations in a separate view');
+        });
+
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+
+        // Navigation -> open detailed modals for each sidebar link
+        const navModalMap = {
+            navDashboard: 'dashboardModal',
+            navRegistrations: 'registrationsModal',
+            navStudents: 'studentsModal',
+            navCourses: 'coursesModal',
+            navSchools: 'schoolsModal',
+            navRevenue: 'revenueModal',
+            navReports: 'reportsModal',
+            navSettings: 'settingsModal'
+        };
+
+        function openModal(modalId) {
+            const el = document.getElementById(modalId);
+            if (!el) return;
+            el.style.display = 'flex';
+        }
+
+        // Build and populate modals when opened
+        function computeRegisteredStudents() {
+            // Build a list of unique students who have registrations
+            const map = {};
+            analyticsData.registrations.forEach(reg => {
+                const sid = reg.student_id || ('unknown_' + (reg.id || Math.random()));
+                if (!map[sid]) {
+                    const student = analyticsData.students.find(s => s.id === sid) || { id: sid, full_name: 'Unknown', email: 'N/A', phone: 'N/A' };
+                    map[sid] = {
+                        id: sid,
+                        full_name: student.full_name || student.name || 'Unknown',
+                        email: student.email || 'N/A',
+                        phone: student.phone || 'N/A',
+                        registrations: 0,
+                        programs: new Set(),
+                        levels: new Set()
+                    };
+                }
+                map[sid].registrations++;
+                if (reg.program) map[sid].programs.add(reg.program);
+                if (reg.level) map[sid].levels.add(reg.level);
+            });
+
+            analyticsData.registeredStudents = Object.values(map).map(s => ({
+                ...s,
+                programs: Array.from(s.programs),
+                levels: Array.from(s.levels)
+            }));
+        }
+
+        function buildStudentsModal() {
+            computeRegisteredStudents();
+            const content = document.getElementById('studentsModalContent');
+            const students = analyticsData.registeredStudents || [];
+            content.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <div style="flex:1;">
+                        <input id="studentSearch" placeholder="Search students by name, email or id" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;" />
+                    </div>
+                    <div style="margin-left:12px;">
+                        <button class="btn btn-primary" id="exportStudentsCSV">Export CSV</button>
+                    </div>
+                </div>
+                <div style="max-height:520px;overflow:auto;">
+                    <table class="data-table" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Registrations</th>
+                                <th>Programs</th>
+                                <th>Levels</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsModalTableBody">
+                        ${students.map(s => `
+                            <tr>
+                                <td>
+                                    ${s.id}
+                                </td>
+                                <td>${s.full_name}</td>
+                                <td>${s.email}</td>
+                                <td>${s.phone}</td>
+                                <td>${s.registrations}</td>
+                                <td>${s.programs.join(', ') || 'N/A'}</td>
+                                <td>${s.levels.join(', ') || 'N/A'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-secondary" onclick="viewStudentDetails('${s.id}')">View</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('studentSearch').addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#studentsModalTableBody tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(q) ? '' : 'none';
+                });
+            });
+
+            document.getElementById('exportStudentsCSV').addEventListener('click', () => {
+                alert('Export CSV - not implemented in demo');
+            });
+            lucide.createIcons();
+        }
+
+        function viewStudentDetails(studentId) {
+            const student = analyticsData.students.find(s => s.id === studentId) || analyticsData.registeredStudents.find(s => s.id === studentId) || { id: studentId };
+            const regs = analyticsData.registrations.filter(r => r.student_id === studentId) || [];
+            const content = document.getElementById('studentDetailsContent');
+            content.innerHTML = `
+                <div style="margin-bottom:12px;"><strong>Name:</strong> ${student.full_name || student.name || 'N/A'}</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;">
+                    <div><strong>Student ID:</strong> ${student.id}</div>
+                    <div><strong>Email:</strong> ${student.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${student.phone || 'N/A'}</div>
+                    <div><strong>Total Registrations:</strong> ${regs.length}</div>
+                </div>
+                <div style="margin-bottom:12px;"><h4>Registrations</h4>
+                    <ul style="list-style:none;padding:0;">
+                        ${regs.map(r => `<li style="padding:6px 0;border-bottom:1px solid #eee;"><strong>${r.program || 'N/A'}</strong> — ${r.school || 'N/A'} — ${r.level || 'N/A'} — <small>${new Date(r.created_at).toLocaleString()}</small> <button class='btn btn-sm btn-secondary' style='margin-left:8px' onclick="viewRegistrationDetails('${r.id}')">View Registration</button></li>`).join('')}
+                    </ul>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:10px;">
+                    <button class="btn btn-primary" onclick="closeModal('studentDetailsModal')">Close</button>
+                </div>
+            `;
+            document.getElementById('studentDetailsModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function buildRegistrationsModal() {
+            const content = document.getElementById('registrationsModalContent');
+            const regs = analyticsData.registrations.slice().sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            content.innerHTML = `
+                <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+                    <div><strong>Total Registrations:</strong> ${regs.length}</div>
+                    <div><button class="btn btn-sm btn-secondary" id="exportRegsCSV">Export CSV</button></div>
+                </div>
+                <div style="max-height:520px;overflow:auto;">
+                    <table class="data-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student</th>
+                                <th>School</th>
+                                <th>Program</th>
+                                <th>Level</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${regs.map(r => {
+                                const s = analyticsData.students.find(st => st.id === r.student_id) || {};
+                                return `
+                                    <tr>
+                                        <td>${r.id}</td>
+                                        <td>${s.full_name || 'Unknown'}</td>
+                                        <td>${r.school || 'N/A'}</td>
+                                        <td>${r.program || 'N/A'}</td>
+                                        <td>${r.level || 'N/A'}</td>
+                                        <td><span class="status-badge ${getStatusClass(r.status)}">${r.status || 'pending'}</span></td>
+                                        <td>${new Date(r.created_at).toLocaleString()}</td>
+                                        <td><button class="btn btn-sm btn-secondary" onclick="viewRegistrationDetails('${r.id}')">Open</button></td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('exportRegsCSV').addEventListener('click', () => alert('Export not implemented'));
+            lucide.createIcons();
+        }
+
+        function buildCoursesModal() {
+            const content = document.getElementById('coursesModalContent');
+            const courses = analyticsData.coursePopularity || [];
+            content.innerHTML = `
+                <div style="margin-bottom:12px;">
+                    <p>Top courses by registrations. Use this view to review course demand and capacity planning.</p>
+                </div>
+                <div style="max-height:520px;overflow:auto;">
+                    <table class="data-table" style="width:100%">
+                        <thead>
+                            <tr><th>Course</th><th>Registrations</th></tr>
+                        </thead>
+                        <tbody>
+                            ${courses.map(c => `<tr><td>${c.name}</td><td>${c.count}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function buildSchoolsModal() {
+            const content = document.getElementById('schoolsModalContent');
+            const schools = analyticsData.schools || [];
+            content.innerHTML = `
+                <div style="margin-bottom:12px;"><p>Schools distribution and quick links to programs.</p></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;">
+                    ${schools.map(s => `<div class="segmentation-card"><h4>${s.name}</h4><p>Registrations: <strong>${s.count}</strong></p></div>`).join('')}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function buildRevenueModal() {
+            const content = document.getElementById('revenueModalContent');
+            // Build mock revenue from registrations: assume each registration paid a random fee
+            const labels = [];
+            const data = [];
+            const today = new Date();
+            for (let i = 9; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                labels.push(d.toISOString().split('T')[0]);
+                // sum of registrations on that day * random fee (for demo)
+                const cnt = analyticsData.registrations.filter(r => new Date(r.created_at).toISOString().split('T')[0] === d.toISOString().split('T')[0]).length;
+                data.push(cnt * (Math.floor(Math.random() * 300) + 200));
+            }
+            content.innerHTML = `<div style="height:300px;"><canvas id="revenueChart"></canvas></div>`;
+            // render chart
+            setTimeout(() => {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Revenue (GHS)', data, backgroundColor: '#ff8a00' }] }, options: { responsive:true, maintainAspectRatio:false } });
+            }, 80);
+            lucide.createIcons();
+        }
+
+        function buildReportsModal() {
+            const content = document.getElementById('reportsModalContent');
+            content.innerHTML = `
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div><strong>Export full datasets:</strong></div>
+                    <div style="display:flex;gap:8px;"><button class="btn btn-primary">Export Registrations (CSV)</button><button class="btn btn-secondary">Export Students (CSV)</button></div>
+                    <div style="margin-top:8px;">Generate scheduled reports, send to email, or download PDF summaries.</div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function buildSettingsModal() {
+            const content = document.getElementById('settingsModalContent');
+            content.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+                    <div>
+                        <label><strong>Supabase URL</strong></label>
+                        <div style="background:#f9fafb;padding:10px;border-radius:8px;">${SUPABASE_URL}</div>
+                    </div>
+                    <div>
+                        <label><strong>Supabase Key (anon)</strong></label>
+                        <div style="background:#f9fafb;padding:10px;border-radius:8px;word-break:break-all;">${SUPABASE_ANON_KEY}</div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-primary">Regenerate Key</button>
+                        <button class="btn btn-secondary" onclick="closeModal('settingsModal')">Close</button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Hook nav items to open modals
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const modalId = navModalMap[this.id];
+                if (modalId) {
+                    // build the modal content before showing
+                    switch (modalId) {
+                        case 'studentsModal': buildStudentsModal(); break;
+                        case 'registrationsModal': buildRegistrationsModal(); break;
+                        case 'coursesModal': buildCoursesModal(); break;
+                        case 'schoolsModal': buildSchoolsModal(); break;
+                        case 'revenueModal': buildRevenueModal(); break;
+                        case 'reportsModal': buildReportsModal(); break;
+                        case 'settingsModal': buildSettingsModal(); break;
+                        case 'dashboardModal':
+                            // small dashboard summary
+                            document.getElementById('dashboardModalContent').innerHTML = `
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                                    <div class="stat-card"><div class="stat-info"><h3>${analyticsData.registrations.length}</h3><p>Total Registrations</p></div></div>
+                                    <div class="stat-card"><div class="stat-info"><h3>${new Set(analyticsData.registrations.map(r=>r.student_id)).size}</h3><p>Unique Students</p></div></div>
+                                </div>
+                            `;
+                            lucide.createIcons();
+                            break;
+                    }
+                    openModal(modalId);
+                }
+            });
+        });
+
+        // Override viewAllRegistrations to open registrations modal
+        document.getElementById('viewAllRegistrations').addEventListener('click', () => {
+            buildRegistrationsModal();
+            openModal('registrationsModal');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDateFilters();
+            if (supabaseClient) {
+                fetchAllData();
+            } else {
+                createMockData();
+            }
+        });
+
+        // Export functions (stubs for now)
+        document.getElementById('exportCSV').addEventListener('click', () => {
+            alert('CSV export functionality would be implemented here');
+        });
+
+        document.getElementById('exportPDF').addEventListener('click', () => {
+            alert('PDF export functionality would be implemented here');
+        });
+    </script>
+</body>
+</html>

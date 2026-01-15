@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>students projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 60px;
+    }
+
+    .apply-now-btn {
+      background-color: #b00000;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+    .apply-now-btn a{
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .apply-now-btn:hover {
+      background-color: #a00000;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: url('https://www.transparenttextures.com/patterns/gplay.png') center/cover no-repeat;
+      padding: 60px 30px;
+    }
+
+    .hero-left {
+      flex: 1 1 480px;
+      max-width: 600px;
+    }
+
+    .hero-left h1 {
+      font-size: 48px;
+      color: #000;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .hero-left p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .hero-left p a {
+      color: #b00000;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-red {
+      background-color: #b00000;
+      color: white;
+      font-weight: bold;
+      padding: 14px 22px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-red a{
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-outline {
+      background-color: white;
+      color: #b00000;
+      font-weight: bold;
+      padding: 14px 22px;
+      border-radius: 10px;
+      border: 2px solid #b00000;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .hero-right {
+      flex: 1 1 300px;
+      text-align: center;
+    }
+
+    .hero-right img {
+      max-width: 80%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .hero-left h1 {
+        font-size: 36px;
+      }
+
+      .cta-buttons {
+        justify-content: center;
+      }
+    }
+
+
+
+header {
+      background: #b00000;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .logo img {
+      height: 80px;
+      width: 75px;
+    }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 22px;
+      background: #fff;
+      color: #b00000;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      font-size: 15px;
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .nav-links > div {
+      position: relative;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      padding: 8px;
+    }
+
+    .nav-links a::after {
+      content: '\25BE';
+      font-size: 0.5em;
+      margin-left: 4px;
+    }
+
+   
+
+
+    .dropdown a {
+      display: block;
+      padding: 10px;
+      white-space: nowrap;
+      color: white;
+    }
+
+    .dropdown a:hover {
+      background-color: #f6f1f1;
+      color: #e70a0a;
+      border-radius: 6px;
+    }
+
+    .nav-links > div:hover .dropdown {
+      display: block;
+    }
+
+    .apply-button {
+      background: #030303;
+      color: rgb(248, 248, 248);
+      padding: 8px 16px;
+      border: none;
+      font-weight: bold;
+      width: 100px;
+      height: 40px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* ============ MOBILE STYLES ============== */
+    @media (max-width: 768px) {
+      .nav-container {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background-color: #b00000;
+        width: 100%;
+        padding: 10px 0;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .nav-links > div {
+        width: 100%;
+      }
+
+      .nav-links a {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+      }
+
+      .nav-links a::after {
+        float: right;
+      }
+
+      .dropdown {
+        position: static;
+        box-shadow: none;
+        background: #800000;
+        padding-left: 20px;
+        display: none;
+      }
+
+      .nav-links .has-dropdown.active .dropdown {
+        display: block;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <a href="index.html">
+      <img src="images/GH Schools.png" alt="GH Logo">
+    </a>
+    <div class="logo-text">
+      <strong>GH TECHNICAL UNIVERSITY</strong>
+      <small>TRAIN• PRACTICE •ACHIEVE</small>
+    </div>
+  </div>
+
+  <!-- MENU BUTTON -->
+  <button class="menu-toggle" onclick="toggleMenu()"><a href="index.html" style="text-decoration: none;">Menu</a></button>
+
+  
+<nav class="nav-container">
+      <div class="nav-links" id="navLinks">
+        <div><a href="">MEDIA SCH</a><div class="dropdown">
+          
+
+        </div></div>
+        <div><a href="cosmetology projects.html">COSMETLOGY SCH</a><div class="dropdown">
+          
+         
+        </div></div>
+        <div><a href="fashion project.html">FASHION SCH</a><div class="dropdown">
+          
+        </div></div>
+        <div><a href="catering project.html">CATERING SCH</a><div class="dropdown">
+          
+        </div></div>
+     <div class="nav-item">
+      <a href="tech projects.html">TECH SCH</a>
+      
+        <a href="admission.HTML" class="apply-button">Apply Now!</a>
+      </div>
+    </nav>
+</header>
+
+
+
+ <section style="padding: 60px 20px; text-align: center; margin-top:60px;">
+    <h2 style="font-size: 2rem; margin-bottom: 10px;"> Catering school  Projects</h2>
+    <p style="max-width: 700px; margin: 0 auto 40px; font-size: 1rem; color: #444;">
+    Showcasing culinary creativity and innovation through student-led projects such as themed menu planning, food art displays, community catering events, baking exhibitions, and sustainable kitchen practices. These projects highlight practical skills, nutritional awareness, and the art of hospitality management.
+    </p>
+
+    <!-- Video Cards Grid -->
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto 40px;
+    ">
+      <!-- Card 1 -->
+      <div style="position: relative; overflow: hidden; border-radius: 8px;">
+        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
+          <source src="videos/eco.mp4" type="video/mp4">
+        </video>
+        <div style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 10px;
+          background: rgba(0,0,0,0.5);
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          text-align: center;
+        ">JMA PROJECTS</div>
+      </div>
+
+      <!-- Card 2 -->
+      <div style="position: relative; overflow: hidden; border-radius: 8px;">
+        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
+          <source src="videos/forest.mp4" type="video/mp4">
+        </video>
+        <div style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 10px;
+          background: rgba(0,0,0,0.5);
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          text-align: center;
+        ">JMS PROJECTS</div>
+      </div>
+
+      <!-- Card 3 -->
+      <div style="position: relative; overflow: hidden; border-radius: 8px;">
+        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
+          <source src="videos/parks.mp4" type="video/mp4">
+        </video>
+        <div style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 10px;
+          background: rgba(0,0,0,0.5);
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          text-align: center;
+        ">MMP PROJECTS</div>
+      </div>
+
+      <!-- Card 4 -->
+      <div style="position: relative; overflow: hidden; border-radius: 8px;">
+        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
+          <source src="videos/water.mp4" type="video/mp4">
+        </video>
+        <div style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 10px;
+          background: rgba(0,0,0,0.5);
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          text-align: center;
+        ">TFP PROJECTS</div>
+      </div>
+    </div>
+
+    <!-- Call to Action Button -->
+    <a href="#" style="
+      padding: 12px 25px;
+      background-color: #222;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    " onmouseover="this.style.backgroundColor='#000'" onmouseout="this.style.backgroundColor='#222'">
+      BECOME A STUDENT
+    </a>
+  </section>
+
+
+
+
+    
+
+
+
+
+
+
+</body>
+</html>

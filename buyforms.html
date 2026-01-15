@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buy Admission Form – GH SCHOOLS</title>
+  
+  <!-- Storage availability check -->
+  <script>
+    (function() {
+      try {
+        const test = 'test';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        sessionStorage.setItem(test, test);
+        sessionStorage.removeItem(test);
+      } catch (e) {
+        // Storage is not available - suppress third-party analytics errors
+        window.DD_RUM = window.DD_RUM || {};
+        window.DD_RUM.init = function() { 
+          console.log('Analytics disabled - no storage available');
+        };
+      }
+    })();
+  </script>
+  
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #f8bb05;
+      --primary-dark: #e0a904;
+      --secondary: #1a1a1a;
+      --accent: #00e61b;
+      --light: #ffffff;
+      --gray: #f5f5f5;
+      --dark-gray: #777;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--light);
+    }
+    
+    .container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      background: var(--light);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    .info-section {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: var(--secondary);
+    }
+    
+    .form-section {
+      flex: 1;
+      padding: 40px 30px;
+      background: var(--light);
+      color: var(--secondary);
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .logo {
+      width: 70px;
+      height: 70px;
+      background: var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+    
+    .logo i {
+      font-size: 32px;
+      color: var(--primary);
+    }
+    
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .info-section h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      line-height: 1.2;
+    }
+    
+    .info-section p {
+      margin-bottom: 20px;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .features {
+      margin-top: 30px;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .feature i {
+      margin-right: 12px;
+      color: var(--secondary);
+      font-size: 1.2rem;
+    }
+    
+    .form-container {
+      max-width: 100%;
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .form-header h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: var(--secondary);
+    }
+    
+    .form-header p {
+      color: var(--dark-gray);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--dark-gray);
+      font-size: 1.1rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 15px 15px 15px 45px;
+      border: 2px solid #e1e1e1;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: var(--gray);
+    }
+    
+    input:focus {
+      border-color: var(--primary);
+      background: var(--light);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(248, 187, 5, 0.2);
+    }
+    
+    .price-tag {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--gray);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 25px 0;
+    }
+    
+    .price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+    
+    .payment-methods {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    
+    .payment-method {
+      background: var(--light);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    button {
+      width: 100%;
+      background: var(--secondary);
+      color: var(--light);
+      padding: 16px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background: var(--accent);
+      color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 230, 27, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .info-section, .form-section {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="info-section">
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="logo-text">GH SCHOOLS</div>
+      </div>
+      
+      <h1>Begin Your Journey to Excellence</h1>
+      <p>Take the first step toward your future at GH SCHOOLS. Our admission process is designed to help promising students like you join our vibrant academic community.</p>
+      
+      <div class="features">
+        <div class="feature">
+          <i class="fas fa-shield-alt"></i>
+          <span>Secure payment processing</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-clock"></i>
+          <span>Instant form delivery</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Mobile-friendly process</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-headset"></i>
+          <span>24/7 support available</span>
+        </div>
+      </div>
+      
+      <div class="contact-block" style="margin-top:30px; color:var(--secondary);">
+        <p style="margin:6px 0;"><i class="fas fa-phone" style="margin-right:8px;"></i> Call: +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909</p>
+        <p style="margin:6px 0;"><i class="fab fa-whatsapp" style="margin-right:8px;"></i> WhatsApp: +233 20 462 2250</p>
+      </div>
+    </div>
+    
+    <div class="form-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h2>Admission Form Purchase</h2>
+          <p>Complete your details to proceed with payment</p>
+        </div>
+        
+        <form id="admissionForm">
+          <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="fullName" name="fullName" placeholder="Full Name (e.g. Alex Osei Twum)" required />
+          </div>
+          
+          <div class="form-group">
+            <i class="fas fa-phone input-icon"></i>
+            <input type="tel" id="phone" name="phone" placeholder="Phone Number (e.g. 0532497382)" required />
+          </div>
+
+          <div class="form-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="email" name="email" placeholder="Email (optional)" />
+          </div>
+          
+          <!-- We only collect full name and phone. If the applicant has no email,
+               a mock email will be generated from the name + phone on submit. -->
+          <div id="mockEmailNotice" style="margin-bottom:12px; color:#555; font-size:0.95rem;">
+            If you don't have an email address, we'll generate one for you automatically.
+          </div>
+          
+          <div class="price-tag">
+            <div class="price">₵150.00</div>
+            <div>
+              <div>Admission Form Fee</div>
+              <div class="payment-methods">
+                <div class="payment-method"><i class="fas fa-credit-card"></i> Card</div>
+                <div class="payment-method"><i class="fas fa-mobile-alt"></i> Mobile Money</div>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" id="submitBtn">
+            <i class="fas fa-lock"></i>
+            Pay Securely Now
+          </button>
+          
+          <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <p>Processing your payment...</p>
+          </div>
+          
+          <div class="security-note">
+            <i class="fas fa-shield-alt"></i>
+            <span>Your information is protected with bank-level security</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Supabase client inside DOMContentLoaded to avoid redeclaration
+    const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+    let supabase;
+    
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        console.log('[supabase] client initialized');
+      } else {
+        console.error('[supabase] library not available on window.supabase');
+      }
+    } catch (e) {
+      console.error('[supabase] initialization error', e);
+    }
+
+    console.log('Payment page loaded');
+    const FORM_FEE = .100; // GHS
+    
+    const form = document.getElementById("admissionForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const loadingIndicator = document.getElementById("loadingIndicator");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Wait for Paystack to be fully loaded
+      if (typeof PaystackPop === "undefined") {
+        alert("⚠️ Payment service failed to load. Please check your internet connection and try again.");
+        return;
+      }
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      // Generate a mock email based on name and phone when the user doesn't provide one
+      // Format: sanitizedname + last4phone + @noemail.gh
+      const sanitizedName = fullName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || 'applicant';
+      const digits = phone.replace(/\D/g, '');
+      const lastDigits = digits.slice(-4) || Math.floor(Math.random() * 9000 + 1000).toString();
+      const mockEmail = `${sanitizedName}${lastDigits}@noemail.gh`;
+
+      // Use provided email if the user entered one, otherwise fall back to the generated mock email
+      const providedEmail = (document.getElementById('email') && document.getElementById('email').value) ? document.getElementById('email').value.trim() : '';
+      const usedEmail = providedEmail || mockEmail;
+
+      // Debug logging
+      console.log('=== PAYSTACK DEBUG INFO ===');
+      console.log('PaystackPop available:', typeof PaystackPop !== 'undefined');
+      console.log('Generated Email (mock):', mockEmail, '  Using email:', usedEmail);
+      console.log('Full Name:', fullName);
+      console.log('Phone:', phone);
+
+      if (!fullName || !phone) {
+        alert("Please provide both your full name and phone number before proceeding.");
+        return;
+      }
+
+      // Validate phone format (basic Ghanaian pattern). Normalize whitespace first.
+      const phoneNormalized = phone.replace(/\s/g, '');
+      const phoneRegex = /^(0|\+233)[23579]\d{8}$/;
+      if (!phoneRegex.test(phoneNormalized)) {
+        alert("Please enter a valid Ghanaian phone number (e.g., 0532497382 or +233532497382)");
+        return;
+      }
+
+      // Show loading indicator
+      submitBtn.style.display = "none";
+      loadingIndicator.style.display = "block";
+
+      try {
+        // First, create a payment record in Supabase
+        // Also store first_name/last_name (safe split) so downstream systems that expect
+        // separate fields continue to work after the newstudents migration.
+        const nameParts = fullName.split(/\s+/).filter(Boolean);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        if (!supabase) {
+          console.error('[supabase] client instance is not available; aborting payment creation');
+          alert('Payment service currently unavailable. Please try again later.');
+          submitBtn.style.display = "flex";
+          loadingIndicator.style.display = "none";
+          return;
+        }
+
+        const { data: paymentRecord, error: insertError } = await supabase
+          .from('admission_payments')
+          .insert([
+            {
+              first_name: firstName,
+              last_name: lastName,
+              email: usedEmail,
+              phone: phone,
+              amount: FORM_FEE,
+              currency: 'GHS',
+              payment_status: 'pending'
+            }
+          ])
+          .select();
+
+        if (insertError) {
+          throw new Error('Failed to create payment record: ' + insertError.message);
+        }
+
+        const paymentId = paymentRecord[0].id;
+
+        // Generate a short unique reference code tied to this student/payment
+        // 6 characters: uppercase, lowercase, digits
+        async function generateRandomCode(length = 6) {
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          let out = '';
+          for (let i = 0; i < length; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+          return out;
+        }
+
+        async function generateAndSaveReferenceCode(paymentId) {
+          let attempts = 0;
+          while (attempts < 8) {
+            attempts++;
+            const code = await generateRandomCode(6);
+            try {
+              // check uniqueness
+              const { data: exists, error: selErr } = await supabase
+                .from('admission_payments')
+                .select('id')
+                .eq('reference_code', code)
+                .limit(1);
+
+              if (selErr) {
+                console.warn('Reference code uniqueness check failed, retrying', selErr);
+                continue;
+              }
+
+              if (exists && exists.length) {
+                // collision, retry
+                continue;
+              }
+
+              // Save code to this payment row
+              const { error: updErr } = await supabase
+                .from('admission_payments')
+                .update({ reference_code: code })
+                .eq('id', paymentId);
+
+              if (updErr) {
+                console.warn('Failed to save reference_code, retrying', updErr);
+                continue;
+              }
+
+              return code;
+            } catch (e) {
+              console.warn('generateAndSaveReferenceCode attempt error', e);
+            }
+          }
+          return null;
+        }
+
+        // Create and persist reference code; keep it in closure for redirect
+        const referenceCode = await generateAndSaveReferenceCode(paymentId);
+        console.log('Generated referenceCode for payment', paymentId, referenceCode);
+
+        // Define callback functions
+        function paymentCallback(response) {
+          console.log('Payment successful:', response);
+          
+          // Update payment record with successful payment details
+          supabase
+            .from('admission_payments')
+            .update({
+              payment_status: 'success',
+              payment_reference: response.reference,
+              paystack_transaction_id: response.transaction,
+              amount: FORM_FEE,
+              currency: 'GHS'
+            })
+            .eq('id', paymentId)
+            .then(({ error }) => {
+              if (error) {
+                console.error('Error updating payment record:', error);
+              }
+              // ✅ Redirect after successful payment — include only the generated reference code (no Paystack reference in URL)
+              if (referenceCode) {
+                window.location.href = `admissionforms.html?ref=${encodeURIComponent(referenceCode)}`;
+              } else {
+                window.location.href = 'admissionforms.html';
+              }
+            });
+        }
+
+        function paymentOnClose() {
+          console.log('Payment modal closed');
+          // Update payment record as cancelled
+          supabase
+            .from('admission_payments')
+            .update({
+              payment_status: 'cancelled'
+            })
+            .eq('id', paymentId)
+            .then(({ error }) => {
+              if (error) {
+                console.error('Error updating payment record:', error);
+              }
+            })
+            .finally(() => {
+              // Hide loading indicator and show button again
+              submitBtn.style.display = "flex";
+              loadingIndicator.style.display = "none";
+              alert("Payment was cancelled. You can try again anytime.");
+            });
+        }
+
+        // Verify callback functions are valid
+        console.log('Callback function valid:', typeof paymentCallback === 'function');
+        console.log('OnClose function valid:', typeof paymentOnClose === 'function');
+
+        // Setup Paystack
+        // Update visible price tag (if present)
+        try{ document.querySelector('.price').textContent = `₵${FORM_FEE.toFixed(2)}`; }catch(e){}
+
+        const handler = PaystackPop.setup({
+          key: 'pk_live_0563b84aae2c983dcbf04ec1fad441f04ef25d07',
+          email: usedEmail,
+          amount: FORM_FEE * 100, // amount in pesewas
+          currency: 'GHS',
+          channels: ['card', 'mobile_money'],
+          metadata: {
+            custom_fields: [
+              { display_name: "First Name", variable_name: "first_name", value: firstName },
+              { display_name: "Last Name", variable_name: "last_name", value: lastName },
+              { display_name: "Phone Number", variable_name: "phone", value: phone },
+              { display_name: "Payment ID", variable_name: "payment_id", value: paymentId }
+            ]
+          },
+          callback: paymentCallback,
+          onClose: paymentOnClose
+        });
+
+        console.log('Paystack setup successful:', typeof handler !== 'undefined');
+        handler.openIframe();
+        
+      } catch (error) {
+        console.error('Payment initialization error:', error);
+        alert('An error occurred while processing your payment. Please try again.');
+        
+        // Hide loading indicator and show button again
+        submitBtn.style.display = "flex";
+        loadingIndicator.style.display = "none";
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

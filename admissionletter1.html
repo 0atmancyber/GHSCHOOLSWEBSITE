@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Letter of Admission</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- html2canvas (PNG) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <!-- html2pdf (PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+
+  <style>
+    :root{
+      --green:#020203;
+      --deep-green:#020307;
+      --black:#f8f8fb;
+      --ink:#070707;
+      --paper:#fff;
+      --rule:#e8e8ec;
+      --accent:#0a7bff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:#f2f4f7; color:var(--ink);
+      font-family:'Poppins',sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .page{ 
+      width:210mm; 
+      min-height:297mm; 
+      background:var(--paper); 
+      margin:20px auto; 
+      box-shadow:0 12px 42px rgba(0,0,0,.09); 
+      position:relative; 
+      overflow:hidden; 
+    }
+
+    /* ====== MASTHEAD ====== */
+    .masthead{
+      position:absolute; left:0; right:0; top:0; height:112px;
+      background:var(--black); color:#0b0b0b; display:grid; grid-template-columns:120px 1fr; align-items:center;
+      gap:12px; padding:12px 18mm 8px; border-bottom:6px solid var(--green);
+    }
+    .logo{ width:86px; height:86px; border-radius:0%; display:flex; align-items:center; justify-content:center; }
+    .logo img{ width:100%; height:auto; display:block; margin-top:-53px; }
+    .brand{ display:flex; flex-direction:column; gap:10px; text-align:center; align-items:center }
+    .brand h1{ margin:0; font-size:34px; font-weight:800; letter-spacing:1.5px; line-height:1; color:#040404; }
+    .ribbons{ display:flex; flex-wrap:wrap; gap:10px 16px; justify-content:center }
+    .chip{ color:#070606; padding:3px 8px; border-radius:4px; font-weight:800; font-size:19px; line-height:1.25; background:#eef4ff; }
+
+    /* Contact strip */
+    .contact{
+      position:absolute; top:112px; left:0; right:0; height:34px; background:#eaeaf7; border-bottom:1px solid #d7eddc;
+      color:#0f0b4c; display:flex; align-items:center; justify-content:center; gap:18px; font-weight:700; font-size:12.5px;
+    }
+
+    /* Program bar */
+    .programs{
+      position:absolute; top:146px; left:0; right:0; height:28px;
+      background:var(--deep-green); color:#fff; display:flex; align-items:center; justify-content:center; gap:18px;
+      text-transform:uppercase; letter-spacing:.5px; font-size:11.5px;
+    }
+
+    /* Letter body */
+    .inner{ padding:200px 18mm 18mm; }
+    .meta{margin-top:10px; font-size:13.5px}
+    .meta div{margin:3px 0}
+    .meta b{color:#000}
+    .salute{margin:18px 0 10px; font-weight:600}
+    .re{ 
+      margin:12px 0 12px; 
+      text-align:center; 
+      font-size:14px; 
+      font-weight:800; 
+      text-transform:uppercase; 
+      color:#333; 
+      text-decoration: underline;
+    }
+    .body p{margin:10px 0; font-size:14.5px; line-height:1.85}
+    .body strong{font-weight:800}
+    .note{ background:#fffdf2; border:1px dashed #f0e2a2; padding:10px 12px; border-radius:8px; font-size:13.5px; }
+    .divider{height:1px; background:var(--rule); margin:18px 0}
+    .signoff b{display:block}
+    
+    /* Print instruction */
+    .print-instruction {
+      background: #f0f8ff;
+      border: 1px solid #cce5ff;
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin: 20px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #004085;
+      text-align: center;
+    }
+
+    /* Watermark */
+    .watermark{ position:absolute; inset:0; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; transform:rotate(-8deg); gap:20px; opacity:0.18; }
+    .watermark img{ width:90%; max-width:150px; height:auto; opacity:0.5; }
+    .watermark span{ font-size:clamp(30px, 7vw, 70px); font-weight:800; letter-spacing:2px; color:#000; }
+
+    .actions{ position:fixed; left:0; right:0; bottom:16px; display:flex; gap:10px; justify-content:center; margin:0; z-index:1000; pointer-events:none; }
+    .actions .btn{ pointer-events:auto; padding:12px 16px; border-radius:10px; border:0; cursor:pointer; font-weight:800; background:var(--accent); color:#fff; box-shadow:0 6px 18px rgba(10,123,255,.22); font-size:16px; transition:background .2s ease, transform .05s ease; }
+    .actions .btn:hover{ background:#076ae0 } .actions .btn:active{ transform:translateY(1px) }
+    
+    /* New button styles */
+    .btn-help { background: #28a745 !important; }
+    .btn-help:hover { background: #218838 !important; }
+    .btn-payment { background: #dc3545 !important; }
+    .btn-payment:hover { background: #c82333 !important; }
+
+    /* Payment Modal Styles */
+    #paymentModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #0a7bff, #076ae0);
+      color: white;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .payment-summary {
+      background: #f0f8ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-left: 4px solid #0a7bff;
+    }
+    
+    .fee-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .fee-item:last-child {
+      border-bottom: none;
+    }
+    
+    .fee-total {
+      font-weight: 700;
+      font-size: 18px;
+      color: #004085;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 2px solid #0a7bff;
+    }
+    
+    .modal-footer {
+      padding: 15px 25px;
+      background: #f8f9fa;
+      border-radius: 0 0 12px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid #dee2e6;
+    }
+    
+    .modal-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-not-now {
+      background: #f8f9fa;
+      color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    
+    .btn-not-now:hover {
+      background: #e9ecef;
+    }
+    
+    .btn-pay {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-pay:hover {
+      background: #218838;
+    }
+
+    /* Help Modal Styles */
+    #helpModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .help-modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .help-modal-header {
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .help-modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .close-help-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .help-modal-body {
+      padding: 25px;
+    }
+    
+    .contact-method {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f8f9fa;
+      transition: all 0.2s ease;
+    }
+    
+    .contact-method:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+    
+    .contact-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 24px;
+      color: white;
+    }
+    
+    .phone-icon { background: #0a7bff; }
+    .email-icon { background: #dc3545; }
+    .whatsapp-icon { background: #25d366; }
+    
+    .contact-details {
+      flex: 1;
+    }
+    
+    .contact-details h3 {
+      margin: 0 0 5px 0;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .contact-details p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .contact-link {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+    
+    .contact-link:hover {
+      background: #0056b3;
+    }
+    
+    .help-message {
+      background: #e8f5e9;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid #28a745;
+    }
+    
+    .help-message p {
+      margin: 0;
+      color: #2e7d32;
+      font-weight: 600;
+    }
+
+    /* Mobile Responsive Styles */
+    @media screen and (max-width: 768px) {
+      body {
+        background: var(--paper);
+        padding: 0;
+      }
+      
+      .page {
+        width: 100%;
+        min-height: auto;
+        margin: 0;
+        box-shadow: none;
+      }
+      
+      .masthead {
+        position: relative;
+        height: auto;
+        padding: 15px;
+        grid-template-columns: 80px 1fr;
+        gap: 10px;
+      }
+      
+      .logo {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .logo img {
+        margin-top: 0;
+      }
+      
+      .brand h1 {
+        font-size: 22px;
+      }
+      
+      .ribbons {
+        gap: 8px;
+      }
+      
+      .chip {
+        font-size: 14px;
+        padding: 2px 6px;
+      }
+      
+      .contact {
+        position: relative;
+        top: auto;
+        height: auto;
+        flex-wrap: wrap;
+        padding: 8px 15px;
+        gap: 10px;
+        font-size: 11px;
+      }
+      
+      .programs {
+        position: relative;
+        top: auto;
+        height: auto;
+        flex-wrap: wrap;
+        padding: 8px 15px;
+        gap: 10px;
+        font-size: 10px;
+      }
+      
+      .inner {
+        padding: 20px 15px 80px;
+      }
+      
+      .meta {
+        font-size: 12px;
+      }
+      
+      .body p {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      
+      .re {
+        font-size: 13px;
+      }
+      
+      .note {
+        font-size: 12px;
+      }
+      
+      .print-instruction {
+        font-size: 13px;
+        padding: 10px;
+      }
+      
+      .watermark {
+        display: none;
+      }
+      
+      .actions {
+        position: fixed;
+        bottom: 10px;
+        flex-wrap: wrap;
+      }
+      
+      .actions .btn {
+        padding: 10px 12px;
+        font-size: 14px;
+        flex: 1;
+        min-width: 120px;
+      }
+      
+      /* Mobile styles for modals */
+      .modal-content,
+      .help-modal-content {
+        width: 95%;
+        max-height: 95vh;
+      }
+      
+      .modal-header h2,
+      .help-modal-header h2 {
+        font-size: 20px;
+      }
+      
+      .modal-body,
+      .help-modal-body {
+        padding: 15px;
+      }
+      
+      .payment-summary {
+        padding: 15px;
+      }
+      
+      .modal-footer {
+        padding: 10px 15px;
+        flex-direction: column;
+      }
+      
+      .modal-btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .contact-method {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .contact-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media print{
+      body{background:#fff; -webkit-print-color-adjust: exact; print-color-adjust: exact}
+      .page{margin:0; box-shadow:none}
+      .actions{display:none}
+      #paymentModal{display:none !important}
+      #helpModal{display:none !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="page">
+    <!-- Watermark -->
+    <div class="watermark" id="wm">
+      <img id="wmLogo" src="images/favicon.png" alt="School Logo" />
+      <span id="wmText"></span>
+    </div>
+
+    <!-- Header -->
+    <div class="masthead">
+      <div class="logo">
+        <img id="logoImg" src="images/favicon.png" alt="School Logo"/>
+      </div>
+      <div class="brand">
+        <h1 id="brandName">GH FASHION SCHOOL</h1>
+        <div class="ribbons">
+          <span class="chip">REGULATED BY: COMMISSION FOR TECHNICAL AND VOCATIONAL EDUCATION TRAINING</span>
+          <span class="chip" id="accredit">FULLY ACCREDITED BY CVET FOR CBT</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact">
+      <span>0302 424909</span><span>0204 622250</span><span>0577 622250</span><span>0544 62250</span><span>admissions@ghschools.online</span>
+    </div>
+
+    <div class="programs" id="programBar"></div>
+
+    <!-- Letter -->
+    <div class="inner">
+      <div class="meta">
+       
+        <div><b>ATTN:</b> <span id="attnName">—</span></div>
+        <div id="idRow">—</div>
+        <div><b>Course:</b> <span id="courseRow">—</span></div>
+      </div>
+
+      <div id="salute" class="salute"><strong>Dear Sir/Madam,</strong></div>
+      <div class="re">PROVISIONAL LETTER OF ADMISSION</div>
+
+      <div class="body" id="letterBody">
+        <p id="p1">
+          The admissions board of <strong>GH Schools</strong> is pleased to inform you of 
+          <strong>your provisional admission</strong> into <strong id="schoolName1">GH CATERING SCHOOL</strong> 
+          to pursue a <strong id="programDuration">TWO (2)</strong> <strong id="programType"></strong> <strong id="programName">programme in Catering and Hospitality</strong>.
+        </p>
+
+        <p id="p2">
+          Our tuition is heavily hands-on, as such a lot of commitment is needed from you for the program, you have chosen to pursue.
+        </p>
+
+        <p id="p3">
+          The admission fee is <strong id="admFeeWords">Eight Hundred Cedis (GHC 800.00)</strong> which is
+          non-refundable and the tuition fee per semester is <strong id="tuitionFeeWords">Two thousand five hundred fifty Cedis (GHC 2,550)</strong>.
+          Payment of <strong>full admission fee i.e. GHC 800</strong> and <strong>80%</strong> of the <strong>school fees</strong>
+          secures your admission offer.
+        </p>
+
+        <p id="p4">
+          The management of the school expects your commitment and adherence to all rules and regulations binding the institution.
+        </p>
+
+        <p id="p5">
+          We congratulate you on this admission and expect that you will exhibit a high level of maturity, discipline and dedication
+          throughout the period of this program in our school.
+        </p>
+
+        <p id="p6">
+          We wish you success in the pursuance of your course in <strong id="schoolName2">GH Catering School</strong>. Congratulations!
+        </p>
+
+        <p id="p7">
+          For further clarification, kindly contact the admissions office (<strong id="admissionsPhone">0274622250</strong>).
+        </p>
+        
+        <!-- Print instruction for the student -->
+        <div class="print-instruction">
+          Please print this letter and present it to the Administration Office for further processing.
+        </div>
+
+        <div class="signoff">
+          <p>Thank You.</p>
+          <div class="divider"></div>
+          <p>Best Regards,</p>
+          <b>Mr. Confidence Agblobi - Tetteh</b>
+          <div>(REGISTRAR)</div>
+        </div>
+      </div>
+
+      <div class="actions">
+          <button class="btn btn-help" id="helpBtn">Get Admission Help</button>
+          <button class="btn" id="downloadBtn">Download Admission Letter</button>
+          <button class="btn btn-payment" id="paymentBtn">Proceed to Payment</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h2>Complete Your Admission Process</h2>
+        <button class="close-modal" id="closeModal">×</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Payment Summary -->
+        <div class="payment-summary">
+          <h3 style="margin-top: 0; color: #004085;">Fee Breakdown</h3>
+          <p style="margin-top: 0; color: #666; font-size: 14px;">The following fees are required to secure your admission:</p>
+          
+          <div class="fee-item">
+            <span>Admission Fee:</span>
+            <span id="modalAdmFee">GHC 800.00</span>
+          </div>
+          
+          <div class="fee-item">
+            <span>Tuition Fee (80% of first semester):</span>
+            <span id="modalTuitionFee">GHC 2,040.00</span>
+          </div>
+          
+          <div class="fee-item">
+            <span>SCR Dues:</span>
+            <span>GHC 50.00</span>
+          </div>
+          
+          <div class="fee-item">
+            <span>Medical Dues:</span>
+            <span>GHC 80.00</span>
+          </div>
+          
+          <div class="fee-item">
+            <span>Departmental Dues:</span>
+            <span>GHC 50.00</span>
+          </div>
+          
+          <div class="fee-total">
+            <span>Total Due:</span>
+            <span id="modalTotalFee">GHC 3,020.00</span>
+          </div>
+        </div>
+
+        <!-- Important Information -->
+        <div style="background: #fffdf2; border: 1px dashed #f0e2a2; border-radius: 8px; padding: 18px; margin-bottom: 25px;">
+          <h4 style="margin-top: 0; color: #856404;">Important Information</h4>
+          <ul style="padding-left: 20px; margin: 10px 0;">
+            <li>Your admission is provisional until full payment is received</li>
+            <li>Payment must be made within 7 days to secure your spot</li>
+            <li>After payment, send proof to <strong>0544 622250</strong> with your name and admission number</li>
+            <li>You will receive confirmation within 24 hours of payment verification</li>
+          </ul>
+        </div>
+
+        <!-- Contact Support -->
+        <div style="text-align: center; background: #e8f5e9; border-radius: 8px; padding: 15px; border: 1px solid #c8e6c9;">
+          <p style="margin: 0; font-weight: 600; color: #2e7d32;">Need assistance? Contact Admissions: <strong>0274 622250</strong></p>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button id="notNow" class="modal-btn btn-not-now">Not Now</button>
+        <button id="proceedToPay" class="modal-btn btn-pay">Proceed to Pay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="helpModal">
+    <div class="help-modal-content">
+      <!-- Modal Header -->
+      <div class="help-modal-header">
+        <h2>Get Admission Help</h2>
+        <button class="close-help-modal" id="closeHelpModal">×</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="help-modal-body">
+        <p style="margin-top: 0; color: #666; font-size: 16px; text-align: center;">
+          We're here to help you with any questions about your admission process. 
+          Choose your preferred way to contact us:
+        </p>
+        
+        <!-- Phone Contact -->
+        <div class="contact-method">
+          <div class="contact-icon phone-icon">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Call Us Directly</h3>
+            <p>Speak with our admission team for immediate assistance</p>
+            <div style="margin-top: 10px;">
+             
+              <a href="tel:0204622250" class="contact-link" style="margin-left: 8px;"><i class="fas fa-phone"></i> Call 0204 622250</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Email Contact -->
+        <div class="contact-method">
+          <div class="contact-icon email-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Send Us an Email</h3>
+            <p>Get detailed responses to your specific questions</p>
+            <div style="margin-top: 10px;">
+              <a href="mailto:admissions@ghschools.online" class="contact-link"><i class="fas fa-envelope-open-text"></i> Email Admissions</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- WhatsApp Contact -->
+        <div class="contact-method">
+          <div class="contact-icon whatsapp-icon">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Chat on WhatsApp</h3>
+            <p>Quick responses and file sharing available</p>
+            <div style="margin-top: 10px;">
+              <a href="https://wa.me/233539816189" target="_blank" class="contact-link"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Help Message -->
+        <div class="help-message">
+          <p>
+            <i class="fas fa-lightbulb"></i> <strong>Pro Tip:</strong> Have your admission number ready when contacting us 
+            for faster service. We're available Monday to Friday, 8:00 AM - 5:00 PM.
+          </p>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button id="closeHelpBtn" class="modal-btn btn-not-now">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  /* ===========================
+     SCHOOL CONFIGURATION (updated prefixes)
+  ============================ */
+  const SCHOOLS = {
+    FASHION:      { display:'GH FASHION SCHOOL',      email:'ghfashionschool@gmail.com',   cbt:'CBT IN FASHION',      programs:['Pattern Drafting','Garment Construction','Clothing And Textiles','Millinery & Accessories','Fashion Design'], logo:'images/fashiom.png',  prefix:'GHFS', color:'#0a7bff' },
+    CATERING:     { display:'GH CATERING SCHOOL',     email:'ghcateringschool@gmail.com',  cbt:'CBT IN CATERING',     programs:['Food & Beverage Production','Pastry, Cake, and Sugar Craft','Balloon, Floral Decoration and Event Management','Catering Service Management','Hotel, Tourism & Hospitality Management'],     logo:'images/caterig.png', prefix:'GHCS', color:'#f5d300' },
+    COSMETOLOGY:  { display:'GH COSMETOLOGY SCHOOL',  email:'ghcosmetologyschool@gmail.com',cbt:'CBT IN COSMETOLOGY', programs:['Make-up Artistry','Nail Technology','Body Therapy','Hair Technology','Salon and Spa Management'],                            logo:'images/cosme.png',   prefix:'GHCM', color:'#ff6600' },
+    MEDIA:        { display:'GH MEDIA SCHOOL',        email:'ghmediaschool@gmail.com',     cbt:'CBT IN MEDIA',        programs:['Journalism And Media Art','Journalism And Media Studies','TV & Film Production','Multimedia Production'],                                        logo:'images/Gh Media School.png', prefix:'GHMS', color:'#ff0000' },
+    TECHNOLOGY:   { display:'GH TECHNOLOGY SCHOOL',   email:'ghtechnologyschool@gmail.com',cbt:'CBT IN TECHNOLOGY',   programs:['Computer Hardware','Computer Software','Computer Networking','Broadcast Technology','Security Systems'],                                           logo:'images/tech.png',    prefix:'GHTS', color:'#8a2be2' }
+  };
+
+  /* ===========================
+     HELPERS (small, robust helpers)
+  =========================== */
+  const $ = id => document.getElementById(id);
+  const setText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+  const norm = s => (s||'').toUpperCase();
+
+  function numberToWords(num) {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    if (num === 0) return 'Zero';
+    if (num < 10) return ones[num];
+    if (num < 20) return teens[num - 10];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + ones[num % 10] : '');
+    if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 !== 0 ? ' and ' + numberToWords(num % 100) : '');
+    if (num < 1000000) {
+      return numberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 !== 0 ? ' ' + numberToWords(num % 1000) : '');
+    }
+    return 'Number too large';
+  }
+
+  /* ===========================
+     Supabase client
+  =========================== */
+  const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+  const { createClient } = supabase;
+  const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+  /* ===========================
+     Generate sequential admission number
+     Format: {PREFIX}{SEQUENTIAL_NUMBER} (e.g., GHTS001, GHTS002, etc.)
+  =========================== */
+  async function generateAdmissionNumber(schoolPrefix) {
+    try {
+      // Get the latest admission number for this school
+      const { data: latestRecord, error } = await supabaseClient
+        .from('newstudents')
+        .select('student_id, admission_number')
+        .or(`student_id.ilike.%${schoolPrefix}%,admission_number.ilike.%${schoolPrefix}%`)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) {
+        console.warn('Error fetching latest admission number:', error);
+        return `${schoolPrefix}001`; // Fallback to first number
+      }
+
+      if (!latestRecord || latestRecord.length === 0) {
+        return `${schoolPrefix}001`; // First admission for this school
+      }
+
+      // Extract the sequential number and increment
+      const latestNumber = latestRecord[0].student_id || latestRecord[0].admission_number;
+      
+      // Extract the numeric part after prefix
+      const prefixLength = schoolPrefix.length;
+      const numericPart = latestNumber.substring(prefixLength);
+      
+      let nextNumber;
+      if (numericPart && !isNaN(numericPart)) {
+        nextNumber = parseInt(numericPart, 10) + 1;
+      } else {
+        nextNumber = 1; // Fallback if extraction fails
+      }
+      
+      // Format with leading zeros (001, 002, etc.)
+      return `${schoolPrefix}${nextNumber.toString().padStart(3, '0')}`;
+    } catch (err) {
+      console.error('Error generating admission number:', err);
+      return `${schoolPrefix}001`; // Fallback
+    }
+  }
+
+ /* ===========================
+   Improved Program Type Determination
+   Now properly handles E8-F9 grades as certificate
+=========================== */
+function determineProgramTypeForRecord(rec) {
+    const passingGrades = new Set(['A1','B2','B3','C4','C5','C6','D7']);
+    const failingGrades = new Set(['E8','F9']);
+    
+    const getGrade = (r, candidates) => {
+        for (const k of candidates) {
+            if (r && r[k]) return String(r[k]).trim().toUpperCase();
+        }
+        return '';
+    };
+
+    const eng = getGrade(rec, ['english_grade','english','grade_english']);
+    const mat = getGrade(rec, ['mathematics_grade','mathematics','grade_mathematics','core_mathematics_grade']);
+    const soc = getGrade(rec, ['social_studies_grade','social_studies','grade_social_studies']);
+    const sci = getGrade(rec, ['integrated_science_grade','integrated_science','grade_integrated_science']);
+
+    const allCorePassing = [eng, mat, soc, sci].every(g => passingGrades.has(g));
+    const anyCoreFailing = [eng, mat, soc, sci].some(g => failingGrades.has(g));
+    
+    const durationRaw = String(rec.program_duration || rec.programDuration || rec.program_duration_local || rec.program || '').toUpperCase();
+    const isTwoYear = durationRaw.includes('TWO');
+
+    // If ANY core subject has E8 or F9, it MUST be certificate
+    if (anyCoreFailing) return 'certificate';
+    
+    // Only consider diploma when all cores are passing AND program is two-year
+    if (isTwoYear && allCorePassing) return 'diploma';
+    
+    return 'certificate';
+}
+
+/* ===========================
+   Improved Populate Letter Function
+   Now uses the actual program name from student's record
+=========================== */
+async function populateLetterFromRecord(rec) {
+    const schoolKeyRaw = (rec.school_selected || rec.school || rec.school_selected_value || '').toString().toUpperCase();
+    const SCHOOL = (SCHOOLS[schoolKeyRaw] || SCHOOLS.FASHION);
+
+    // Generate or use existing admission number
+    let admissionNo = rec.student_id;
+    if (!admissionNo) {
+      admissionNo = await generateAdmissionNumber(SCHOOL.prefix);
+    }
+
+    // Basic mapped values
+    const name = rec.full_name || rec.admitted_full_name || rec.name || ((rec.first_name || rec.firstname || '') + ' ' + (rec.last_name || rec.lastname || '')).trim() || 'STUDENT NAME';
+    const programName = rec.program_applying_for || rec.program || rec.programName || 'General Program';
+    const programDurationRaw = (rec.program_duration || rec.programDuration || '').toString().toUpperCase();
+    const programDurationText = programDurationRaw.includes('ONE') ? 'ONE (1)' : 
+                               (programDurationRaw.includes('TWO') ? 'TWO (2)' : 
+                               (rec.programDuration || 'TWO (2)').toString());
+
+    // Use the improved program type decision function
+    const programType = determineProgramTypeForRecord(rec);
+
+    // Inject into DOM
+    setText('brandName', SCHOOL.display);
+    setText('schoolName1', SCHOOL.display);
+    setText('schoolName2', SCHOOL.display);
+    setText('programDuration', programDurationText);
+    setText('attnName', norm(name));
+    setText('idRow', admissionNo);
+    setText('courseRow', programName);
+
+    // FIXED: Program type and program name are now properly combined
+    setText('programType', programType === 'diploma' ? 'diploma' : 'certificate');
+    setText('programName', `programme in ${programName}`);
+
+    // Fix the first paragraph to have proper grammar
+    const p1 = document.getElementById('p1');
+    if (p1) {
+        p1.innerHTML = `The admissions board of <strong>GH Schools</strong> is pleased to inform you of 
+        <strong>your provisional admission</strong> into <strong id="schoolName1">${SCHOOL.display}</strong> 
+        to pursue a <strong id="programDuration">${programDurationText}</strong> 
+        <strong id="programType">${programType}</strong> 
+        <strong id="programName">programme in ${programName}</strong>.`;
+    }
+
+    // fees (unchanged)
+    setText('admFeeWords', `${numberToWords(800)} Cedis (GHC 800.00)`);
+    setText('tuitionFeeWords', `${numberToWords(2550)} Cedis (GHC 2550.00)`);
+    setText('admissionsPhone', rec.phone_number || rec.phone || localStorage.getItem('admissions_phone') || '0274622250');
+
+    // Salutation by gender (unchanged)
+    const gender = (rec.gender || rec.student_gender || '').toString().toLowerCase();
+    const saluteText = gender === 'female' ? 'Dear Madam,' : gender === 'male' ? 'Dear Sir,' : 'Dear Sir/Madam,';
+    const saluteEl = $('salute');
+    if (saluteEl) saluteEl.innerHTML = '<strong>' + saluteText + '</strong>';
+
+    // Logo & watermark (unchanged)
+    const logoImg = $('logoImg');
+    const wmLogo = $('wmLogo');
+    const wmText = $('wmText');
+    const fallback = 'images/favicon.png';
+    const trySrc = (imgEl, src) => {
+        if (!imgEl) return;
+        imgEl.src = src || fallback;
+        imgEl.onerror = () => { imgEl.src = fallback; };
+    };
+    trySrc(logoImg, SCHOOL.logo || fallback);
+    trySrc(wmLogo, SCHOOL.logo || fallback);
+    if (wmText) wmText.textContent = SCHOOL.display;
+
+    // Program bar (unchanged)
+    const programBar = $('programBar');
+    if (programBar) {
+        programBar.innerHTML = (SCHOOL.programs||[]).map(p => `<span>${p}</span>`).join('');
+        programBar.style.backgroundColor = SCHOOL.color || '#000';
+    }
+
+    // Store the loaded record (unchanged)
+    try {
+        localStorage.setItem('admitted_full_name', name);
+        if (admissionNo) {
+          localStorage.setItem('student_id', admissionNo);
+        }
+        localStorage.setItem('admitted_program', programName);
+        localStorage.setItem('selected_school', schoolKeyRaw || 'FASHION');
+        localStorage.setItem('program_duration', programDurationText);
+        localStorage.setItem('admission_fee', 800);
+        localStorage.setItem('tuition_fee', 2550);
+        localStorage.setItem('student_gender', gender || '');
+    } catch (e) {
+        // ignore
+    }
+
+    // Enhanced note showing the decision reasoning
+    const letterBody = document.getElementById('letterBody');
+    if (letterBody) {
+        const existingNote = document.getElementById('autoDecisionNote');
+        if (existingNote) existingNote.remove();
+
+        const note = document.createElement('div');
+        note.id = 'autoDecisionNote';
+        note.className = 'note';
+        note.style.marginTop = '12px';
+        
+        const eng = (rec.english_grade || rec.grade_english || rec.english || '').toString().toUpperCase();
+        const mat = (rec.mathematics_grade || rec.grade_mathematics || rec.mathematics || rec.core_mathematics_grade || '').toString().toUpperCase();
+        const soc = (rec.social_studies_grade || rec.grade_social_studies || rec.social_studies || '').toString().toUpperCase();
+        const sci = (rec.integrated_science_grade || rec.grade_integrated_science || rec.integrated_science || '').toString().toUpperCase();
+        
+        if (programType === 'diploma') {
+            note.innerHTML = `<strong>Admission Decision Note:</strong> Student qualifies for Diploma program. Core WASSCE grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}) - all within A1–D7 range, and program duration is two years.`;
+        } else {
+            const failingSubjects = [];
+            if (['E8','F9'].includes(eng)) failingSubjects.push('English');
+            if (['E8','F9'].includes(mat)) failingSubjects.push('Mathematics');
+            if (['E8','F9'].includes(soc)) failingSubjects.push('Social Studies');
+            if (['E8','F9'].includes(sci)) failingSubjects.push('Integrated Science');
+            
+            if (failingSubjects.length > 0) {
+                note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program due to failing grades (E8/F9) in: ${failingSubjects.join(', ')}. Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
+            } else {
+                note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program (does not meet all diploma requirements). Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
+            }
+        }
+        letterBody.prepend(note);
+    }
+}
+
+  /* ===========================
+     Fetch logic:
+       - If localStorage has an admission_number, try to load that single record from Supabase
+       - Otherwise fetch a list of recent admissions (limit 200) and render the table
+  =========================== */
+  const currentAdmissionNo = localStorage.getItem('student_id') || '';
+  if (currentAdmissionNo) {
+    // try to fetch this specific applicant
+    try {
+      const { data: recs, error } = await supabaseClient
+        .from('newstudents')
+        .select('*')
+        .eq('student_id', currentAdmissionNo)
+        .limit(1);
+
+      if (error) {
+        console.warn('Supabase lookup error:', error);
+      }
+      if (recs && recs.length > 0) {
+        await populateLetterFromRecord(recs[0]);
+      } else {
+        // fallback: render list so operator can pick the student manually
+        const { data: rows, error: listError } = await supabaseClient
+          .from('newstudents')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(200);
+        if (listError) console.warn('Supabase list error:', listError);
+        renderAdmissionsTable(rows || []);
+      }
+    } catch (err) {
+      console.error('Unexpected supabase error:', err);
+    }
+  } else {
+    // no admission number in localStorage -> fetch list
+    try {
+      const { data: rows, error } = await supabaseClient
+        .from('newstudents')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(200);
+      if (error) {
+        console.warn('Supabase fetch error:', error);
+      }
+      renderAdmissionsTable(rows || []);
+    } catch (err) {
+      console.error('Unexpected supabase error:', err);
+    }
+  }
+
+  /* ===========================
+     Payment Modal Functionality
+  =========================== */
+  const paymentModal = document.getElementById('paymentModal');
+  const closeModal = document.getElementById('closeModal');
+  const notNowBtn = document.getElementById('notNow');
+  const proceedToPayBtn = document.getElementById('proceedToPay');
+  
+  // Update modal with actual fee amounts
+  function updateModalFees() {
+    const admFee = localStorage.getItem('admission_fee') || 800;
+    const tuitionFee = localStorage.getItem('tuition_fee') || 2550;
+    const tuitionEightyPercent = Math.floor(tuitionFee * 0.8);
+    
+    // Calculate total with additional dues
+    const scrDues = 50;
+    const medicalDues = 80;
+    const departmentalDues = 50;
+    const totalDue = parseInt(admFee) + tuitionEightyPercent + scrDues + medicalDues + departmentalDues;
+    
+    // Update modal display
+    document.getElementById('modalAdmFee').textContent = `GHC ${admFee}.00`;
+    document.getElementById('modalTuitionFee').textContent = `GHC ${tuitionEightyPercent.toLocaleString()}.00 (80% of GHC ${tuitionFee.toLocaleString()}.00)`;
+    document.getElementById('modalTotalFee').textContent = `GHC ${totalDue.toLocaleString()}.00`;
+    
+    // Also update the fee breakdown to be more clear
+    const paymentSummary = document.querySelector('.payment-summary');
+    if (paymentSummary) {
+        const existingNote = paymentSummary.querySelector('.tuition-note');
+        if (existingNote) existingNote.remove();
+        
+        const tuitionNote = document.createElement('div');
+        tuitionNote.className = 'tuition-note';
+        tuitionNote.style.marginTop = '10px';
+        tuitionNote.style.padding = '8px';
+        tuitionNote.style.background = '#e8f5e9';
+        tuitionNote.style.borderRadius = '4px';
+        tuitionNote.style.fontSize = '13px';
+        tuitionNote.innerHTML = `<strong>Note:</strong> Full tuition fee is GHC ${tuitionFee}.00 per semester. You're paying 80% (GHC ${tuitionEightyPercent.toLocaleString()}.00) to secure admission.`;
+        
+        paymentSummary.appendChild(tuitionNote);
+    }
+  }
+
+  // Show modal function
+  function showPaymentModal() {
+    updateModalFees();
+    paymentModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Hide modal function
+  function hidePaymentModal() {
+    paymentModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  // Event listeners for modal buttons
+  if (closeModal) {
+    closeModal.addEventListener('click', hidePaymentModal);
+  }
+  
+  if (notNowBtn) {
+    notNowBtn.addEventListener('click', function() {
+      // Redirect to index.html
+      window.location.href = 'index.html';
+    });
+  }
+  
+  if (proceedToPayBtn) {
+    proceedToPayBtn.addEventListener('click', function() {
+      // Redirect to newstudent.html and pass the current student_id if available
+      try {
+        const sid = localStorage.getItem('student_id') || localStorage.getItem('admission_number') || '';
+        if (sid && String(sid).trim()) {
+          const url = `newstudent.html?student_id=${encodeURIComponent(String(sid).trim())}`;
+          window.location.href = url;
+          return;
+        }
+      } catch (e) {
+        console.warn('Could not read student_id from localStorage', e);
+      }
+      // Fallback: simple redirect
+      window.location.href = 'newstudent.html';
+    });
+  }
+
+  // Close modal when clicking outside content
+  paymentModal.addEventListener('click', function(e) {
+    if (e.target === paymentModal) {
+      hidePaymentModal();
+    }
+  });
+
+  /* ===========================
+     Help Modal Functionality
+  =========================== */
+  const helpModal = document.getElementById('helpModal');
+  const closeHelpModal = document.getElementById('closeHelpModal');
+  const closeHelpBtn = document.getElementById('closeHelpBtn');
+  const helpBtn = document.getElementById('helpBtn');
+
+  // Show help modal function
+  function showHelpModal() {
+    helpModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Hide help modal function
+  function hideHelpModal() {
+    helpModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  // Event listeners for help modal buttons
+  if (closeHelpModal) {
+    closeHelpModal.addEventListener('click', hideHelpModal);
+  }
+  
+  if (closeHelpBtn) {
+    closeHelpBtn.addEventListener('click', hideHelpModal);
+  }
+
+  if (helpBtn) {
+    helpBtn.addEventListener('click', showHelpModal);
+  }
+
+  // Close help modal when clicking outside content
+  helpModal.addEventListener('click', function(e) {
+    if (e.target === helpModal) {
+      hideHelpModal();
+    }
+  });
+
+  /* ===========================
+     Enhanced PDF Download Function
+  =========================== */
+  function downloadAdmissionLetter() {
+    const element = document.getElementById('page');
+    const safeName = (localStorage.getItem('admitted_full_name') || 'STUDENT_NAME').replace(/[^a-z0-9]/gi, "_").toUpperCase();
+    const admissionNumber = localStorage.getItem('admission_number') || '';
+    const filename = `Admission_Letter_${safeName}_${admissionNumber}.png`;
+
+    // Save original actions display so we can restore it
+    const actionsEl = document.querySelector('.actions');
+    const prevActionsDisplay = actionsEl ? actionsEl.style.display : '';
+
+    // UI feedback
+    const originalText = downloadBtn.textContent;
+    downloadBtn.textContent = 'Generating image...';
+    downloadBtn.disabled = true;
+
+    // Temporarily hide actions on the live DOM to avoid any flash
+    if (actionsEl) actionsEl.style.display = 'none';
+
+    // compute full dimensions to capture entire content
+    const elWidth = element.scrollWidth || element.offsetWidth || 210 * 3.78;
+    const elHeight = element.scrollHeight || element.offsetHeight || 297 * 3.78;
+
+    // Use html2canvas to capture as an image. Use onclone to ensure cloned doc also hides actions.
+    window.html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: elWidth,
+      height: elHeight,
+      windowWidth: Math.max(elWidth, document.documentElement.clientWidth),
+      windowHeight: Math.max(elHeight, document.documentElement.clientHeight),
+      scrollY: 0,
+      onclone: function(clonedDoc) {
+        const a = clonedDoc.querySelector('.actions');
+        if (a) a.style.display = 'none';
+        const page = clonedDoc.querySelector('.page');
+        if (page) {
+          page.style.boxShadow = 'none';
+          page.style.margin = '0';
+          page.style.width = '100%';
+          page.style.minHeight = 'auto';
+          page.style.overflow = 'visible';
+        }
+        clonedDoc.documentElement.style.height = 'auto';
+        clonedDoc.body.style.height = 'auto';
+        clonedDoc.body.style.overflow = 'visible';
+      }
+    }).then(function(canvas) {
+      // restore actions display
+      if (actionsEl) actionsEl.style.display = prevActionsDisplay;
+
+      // Convert canvas to blob and trigger download
+      if (canvas.toBlob) {
+        canvas.toBlob(function(blob) {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 150);
+        }, 'image/png', 1.0);
+      } else {
+        // fallback for older browsers
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    }).catch(function(err) {
+      console.error('Error generating image:', err);
+      if (actionsEl) actionsEl.style.display = prevActionsDisplay;
+      alert('Failed to generate image. See console for details.');
+    }).finally(function() {
+      downloadBtn.textContent = originalText;
+      downloadBtn.disabled = false;
+    });
+  }
+
+  /* ===========================
+     Button Event Listeners
+  =========================== */
+  const downloadBtn = document.getElementById('downloadBtn');
+  const paymentBtn = document.getElementById('paymentBtn');
+
+  // Download PDF button - enhanced version
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', downloadAdmissionLetter);
+  }
+
+  // Payment button (shows payment modal)
+  if (paymentBtn) {
+    paymentBtn.addEventListener('click', showPaymentModal);
+  }
+
+  // Proceed to Login button: persist student id and redirect to login page
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function() {
+      // Prefer the canonical localStorage key if present
+      let admissionNo = localStorage.getItem('student_id') || localStorage.getItem('studentId') || '';
+      if (!admissionNo) {
+        const idRowEl = document.getElementById('idRow');
+        if (idRowEl) admissionNo = String(idRowEl.textContent || idRowEl.innerText || '').trim();
+      }
+
+      // Clean admission number (keep alphanumerics and common dashes/underscores)
+      if (admissionNo) {
+        const cleaned = String(admissionNo).replace(/[^A-Za-z0-9-_]/g, '').trim();
+        if (cleaned.length > 0) {
+          try {
+            localStorage.setItem('studentId', cleaned);
+            localStorage.setItem('student_id', cleaned);
+          } catch (e) { console.warn('Could not write student id to localStorage', e); }
+        }
+      }
+
+      // Redirect to login page where autofill will pick up the stored id
+      window.location.href = 'newstudent.html';
+    });
+  }
+
+});
+
+/* ===========================
+   Render Admissions Table (for admin selection)
+=========================== */
+function renderAdmissionsTable(rows) {
+    const body = document.body;
+    
+    // Create and style table container
+    const tableContainer = document.createElement('div');
+    tableContainer.style.padding = '20px';
+    tableContainer.style.maxWidth = '1200px';
+    tableContainer.style.margin = '0 auto';
+    tableContainer.style.background = '#f5f5f5';
+    tableContainer.style.minHeight = '100vh';
+    
+    // Create table
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+    table.style.background = 'white';
+    table.style.borderRadius = '8px';
+    table.style.overflow = 'hidden';
+    table.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+    
+    // Create table header
+    const thead = document.createElement('thead');
+    thead.style.background = '#0a7bff';
+    thead.style.color = 'white';
+    thead.innerHTML = `
+        <tr>
+            <th style="padding: 12px; text-align: left;">Select</th>
+            <th style="padding: 12px; text-align: left;">Student ID</th>
+            <th style="padding: 12px; text-align: left;">Full Name</th>
+            <th style="padding: 12px; text-align: left;">School</th>
+            <th style="padding: 12px; text-align: left;">Program</th>
+            <th style="padding: 12px; text-align: left;">Date Applied</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+    
+    // Create table body
+    const tbody = document.createElement('tbody');
+    
+    rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #e0e0e0';
+        tr.style.cursor = 'pointer';
+        tr.style.transition = 'background 0.2s ease';
+        
+        if (index % 2 === 0) {
+            tr.style.background = '#f8f9fa';
+        }
+        
+        tr.innerHTML = `
+            <td style="padding: 12px;">
+                <button class="select-btn" data-index="${index}" style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Select</button>
+            </td>
+            <td style="padding: 12px; font-weight: 600;">${row.student_id || 'N/A'}</td>
+            <td style="padding: 12px;">${row.full_name || row.name || ((row.first_name||row.firstname||'') + ' ' + (row.last_name||row.lastname||'')).trim() || 'N/A'}</td>
+            <td style="padding: 12px;">${row.school_selected || row.school || 'N/A'}</td>
+            <td style="padding: 12px;">${row.program_applying_for || row.program || 'N/A'}</td>
+            <td style="padding: 12px;">${new Date(row.created_at).toLocaleDateString()}</td>
+        `;
+        
+        tbody.appendChild(tr);
+    });
+    
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+    
+    // Add title
+    const title = document.createElement('h2');
+    title.textContent = 'Select Student for Admission Letter';
+    title.style.marginBottom = '20px';
+    title.style.color = '#333';
+    tableContainer.prepend(title);
+    
+    // Add instructions
+    const instructions = document.createElement('p');
+    instructions.textContent = 'Click "Select" to generate admission letter for the student';
+    instructions.style.marginBottom = '20px';
+    instructions.style.color = '#666';
+    tableContainer.insertBefore(instructions, table);
+    
+    // Replace body content
+    body.innerHTML = '';
+    body.appendChild(tableContainer);
+    
+    // Add select button event listeners
+    document.querySelectorAll('.select-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const index = this.getAttribute('data-index');
+            const selectedRow = rows[index];
+            
+            // Store selected student data
+            const selFull = selectedRow.full_name || selectedRow.name || ((selectedRow.first_name||selectedRow.firstname||'') + ' ' + (selectedRow.last_name||selectedRow.lastname||'')).trim();
+            localStorage.setItem('admitted_full_name', selFull || '');
+            localStorage.setItem('student_id', selectedRow.student_id || '');
+            localStorage.setItem('admitted_program', selectedRow.program_applying_for || selectedRow.program || '');
+            localStorage.setItem('selected_school', selectedRow.school_selected || selectedRow.school || '');
+            
+            // Reload page to generate letter
+            location.reload();
+        });
+    });
+    
+    // Add some basic styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .select-btn:hover {
+            background: #218838 !important;
+            transform: translateY(-1px);
+        }
+        tr:hover {
+            background: #e3f2fd !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+</script>
+</body>
+</html>

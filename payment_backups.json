@@ -1,0 +1,18 @@
+[
+  {
+    "student_id": "S1002",
+    "student_name": "Freshman",
+    "student_email": "eligible@example.com",
+    "department": "Media",
+    "level": "100",
+    "amount": 50,
+    "fee_type": "SRC Dues",
+    "fee_breakdown": "SRC Dues - GHS 50",
+    "reference": "TEST-NONELIG-1",
+    "receipt_number": "RCPT-NELIG-1",
+    "date_iso": "2025-12-06T23:21:58.485Z",
+    "date_display": "12/6/2025, 11:21:58 PM",
+    "backup_reason": "level_not_eligible",
+    "backup_timestamp": "2025-12-06T23:21:58.637Z"
+  }
+]

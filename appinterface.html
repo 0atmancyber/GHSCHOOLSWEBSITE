@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GH Schools Student Portal</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* Reset / Global basics */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #ff6a00;
+      --primary-dark: #e65c00;
+      --primary-light: #ff8a3d;
+      --secondary: #ffffff;
+      --accent: #ff8a00;
+      --danger: #d63939;
+      --warning: #f0a500;
+      --success: #2c9c3a;
+      --dark: #fefefe;
+      --gray: #6b7280;
+      --gray-light: #f3f4f6;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.986);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --border-radius: 16px;
+      --border-radius-sm: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #ffffff;
+      color: var(--dark);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-top: 80px; /* moved space from bottom to top */
+    }
+
+    /* Container for whole page */
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* Header / Logo area */
+    .header {
+      text-align: center;
+      padding: 1.75rem 0 1.5rem;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+
+      box-shadow: var(--shadow);
+      margin-top: 0px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-shield {
+      width: 120px;
+      height: 120px;
+      background: transparent;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+      border: none;
+      overflow: visible;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .logo-shield img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: 0;
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.975);
+    }
+
+    .site-subtitle {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    /* Main buttons area (stacked vertically) */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin: 2rem 0 3rem;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      text-align: left;
+      padding: 1.5rem 1.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover::before,
+    .action-btn:active::before {
+      opacity: 1;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .action-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-icon {
+      font-size: 1.75rem;
+      margin-right: 1.25rem;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .btn-content {
+      flex: 1;
+    }
+
+    .btn-content span {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-top: 0.25rem;
+    }
+
+    .portal {
+      background: linear-gradient(135deg, var(--danger), #ff4d4d);
+    }
+    
+    .radio {
+      background: linear-gradient(135deg, var(--warning), #ffb347);
+    }
+    
+    .tv {
+      background: linear-gradient(135deg, var(--success), #34c759);
+    }
+
+    /* Quick Access Cards */
+    .quick-access {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    /* Row of small school logos (placeholders) */
+    .logo-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mini-logo {
+      width: 60px;
+      height: 60px;
+      background: #ffffff;
+      border: 1px solid var(--gray-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .mini-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .card {
+      background: white;
+      padding: 1.25rem;
+      border-radius: var(--border-radius-sm);
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: var(--transition);
+      text-decoration: none;
+      color: var(--dark);
+      border: 1px solid var(--gray-light);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+      color: white;
+      font-size: 1.25rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      border-top: 1px solid var(--gray-light);
+      box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Fixed bottom action buttons */
+    .fixed-bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 0.75rem 0;
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
+      z-index: 1100;
+      display: flex;
+      justify-content: center;
+    }
+
+    .bottom-actions-inner {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bottom-btn {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      color: white;
+      background: var(--primary);
+      border: none;
+      box-shadow: var(--shadow);
+    }
+
+    /* Make all bottom buttons use the same primary background */
+    .bottom-btn.secondary,
+    .bottom-btn.ghost {
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: var(--shadow);
+    }
+
+    .bottom-btn:hover { transform: translateY(-2px); }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--gray);
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      flex: 1;
+      max-width: 100px;
+    }
+
+    .nav-item:hover {
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-item i {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: -5px;
+      right: 20px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Notification Bell */
+    .nav-item.notification {
+      position: relative;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .header {
+        padding: 1.5rem 0 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .logo-shield {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .logo-shield i {
+        font-size: 2rem;
+      }
+      
+      .site-title {
+        font-size: 1.6rem;
+      }
+      
+      .action-btn {
+        padding: 1.25rem 1.5rem;
+      }
+      
+      .btn-icon {
+        width: 45px;
+        height: 45px;
+        margin-right: 1rem;
+      }
+      
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      
+      .bottom-nav {
+        padding: 0.5rem 0;
+      }
+      
+      .nav-item {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.5rem;
+      }
+      
+      .nav-item i {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .site-title {
+        font-size: 1.4rem;
+      }
+      
+      .action-btn {
+        font-size: 1rem;
+        padding: 1rem 1.25rem;
+      }
+      
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+      }
+    }
+
+    /* Dark mode support (optional) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --dark: #f3f4f6;
+        --gray: #9ca3af;
+        --gray-light: #374151;
+      }
+      
+      /* Keep page background white even in dark mode per request */
+      body {
+        background: #ffffff;
+        color: var(--dark);
+      }
+      
+      .card {
+        background: #1f2937;
+        border-color: #374151;
+      }
+      
+      .bottom-nav {
+        background: rgba(31, 41, 55, 0.95);
+        border-color: #374151;
+      }
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header,
+    .action-btn,
+    .card {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .action-btn:nth-child(1) { animation-delay: 0.1s; }
+    .action-btn:nth-child(2) { animation-delay: 0.2s; }
+    .action-btn:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(1) { animation-delay: 0.4s; }
+    .card:nth-child(2) { animation-delay: 0.5s; }
+    .card:nth-child(3) { animation-delay: 0.6s; }
+    .card:nth-child(4) { animation-delay: 0.7s; }
+
+    /* Loader overlay for redirecting to student portal */
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.913);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .loader-card {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .loader-card {
+      gap: 0.75rem;
+    }
+
+    /* multiple student icons row */
+    .loader-icons {
+      display:flex;
+      gap:0.6rem;
+      align-items:center;
+      justify-content:center;
+      padding:0.25rem 0.5rem;
+    }
+
+    .loader-icons i {
+      font-size: 1.6rem;
+      color: var(--primary);
+      opacity: 0.95;
+      transform-origin: center;
+      animation: pop 1.2s ease-in-out infinite;
+    }
+
+    .loader-icons i:nth-child(2) { animation-delay: 0.12s; }
+    .loader-icons i:nth-child(3) { animation-delay: 0.24s; }
+    .loader-icons i:nth-child(4) { animation-delay: 0.36s; }
+
+    @keyframes pop {
+      0% { transform: translateY(0) scale(1); opacity: 0.6 }
+      50% { transform: translateY(-6px) scale(1.15); opacity: 1 }
+      100% { transform: translateY(0) scale(1); opacity: 0.6 }
+    }
+
+    .loader-spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(0,0,0,0.08);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Help modal styles */
+    .help-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2100;
+      padding: 1rem;
+    }
+    .help-modal {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-lg);
+      display:flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+    .help-modal h3 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+    .help-options { display:flex; gap:0.75rem; justify-content: space-between; }
+    .help-option {
+      flex: 1;
+      padding: 0.6rem 0.5rem;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      text-decoration: none;
+      color: white;
+      background: var(--primary);
+      box-shadow: var(--shadow);
+      display: inline-flex;
+      gap:0.5rem;
+      align-items:center;
+      justify-content:center;
+    }
+    .help-close { margin-top: 0.5rem; background: transparent; border: none; color: var(--gray); font-weight:600; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-container">
+        <div class="logo-shield" title="Click to change logo">
+            <img id="school-logo" src="images/GH Schools.png" alt="School Logo" />
+          </div>
+          <input id="logo-input" type="file" accept="image/*" style="display:none" />
+        <div>
+          <h1 class="site-title">GH Schools</h1>
+          <p class="site-subtitle">Student Portal</p>
+        </div>
+      </div>
+    </header>
+
+    
+
+    <main class="actions">
+      <a href="signup.html" id="enter-portal" class="action-btn portal">
+        <div class="btn-icon">
+          <i class="fas fa-door-open"></i>
+        </div>
+        <div class="btn-content">
+          Enter Portal
+          <span>Course registration & academic dashboard</span>
+        </div>
+        <i class="fas fa-chevron-right" style="opacity: 0.7;"></i>
+      </a>
+      
+      <a href="https://zeno.fm/radio/ghradioghschools/" class="action-btn radio">
+        <div class="btn-icon">
+          <i class="fas fa-podcast"></i>
+        </div>
+        <div class="btn-content">
+          Listen to GH Radio
+          <span>Live campus radio & podcasts</span>
+        </div>
+        <i class="fas fa-chevron-right" style="opacity: 0.7;"></i>
+      </a>
+      
+      <a href="https://m.youtube.com/@ghschools/featured" class="action-btn tv">
+        <div class="btn-icon">
+          <i class="fas fa-tv"></i>
+        </div>
+        <div class="btn-content">
+          Watch GH TV
+          <span>Campus TV & educational content</span>
+        </div>
+        <i class="fas fa-chevron-right" style="opacity: 0.7;"></i>
+      </a>
+    </main>
+
+    
+    <!-- Row of 5 school logo placeholders (click to upload) -->
+    <div class="logo-row" id="school-logos-row">
+      <div class="mini-logo" data-index="1" title="Click to upload logo 1">
+        <img src="images/media.png" alt="Logo 1" />
+        <input class="mini-logo-input" type="file" accept="image/*" data-index="1" style="display:none" />
+      </div>
+      <div class="mini-logo" data-index="2" title="Click to upload logo 2">
+        <img src="images/fashiom.png" alt="Logo 2" />
+        <input class="mini-logo-input" type="file" accept="image/*" data-index="2" style="display:none" />
+      </div>
+      <div class="mini-logo" data-index="3" title="Click to upload logo 3">
+        <img src="images/caterig.png" alt="Logo 3" />
+        <input class="mini-logo-input" type="file" accept="image/*" data-index="3" style="display:none" />
+      </div>
+      <div class="mini-logo" data-index="4" title="Click to upload logo 4">
+        <img src="images/cosme.png" alt="Logo 4" />
+        <input class="mini-logo-input" type="file" accept="image/*" data-index="4" style="display:none" />
+      </div>
+      <div class="mini-logo" data-index="5" title="Click to upload logo 5">
+        <img src="images/tech.png" alt="Logo 5" />
+        <input class="mini-logo-input" type="file" accept="image/*" data-index="5" style="display:none" />
+      </div>
+    </div>
+
+   
+
+  <!-- Bottom Navigation removed as requested -->
+
+  <!-- Fixed bottom action buttons -->
+  <div class="fixed-bottom-actions">
+    <div class="bottom-actions-inner">
+      <a href="#" class="bottom-btn" id="go-website">WEBSITE</a>
+      <a href="#" class="bottom-btn secondary" id="get-help">GET HELP</a>
+      <a href="#" class="bottom-btn ghost" id="see-app">SEE APP</a>
+    </div>
+  </div>
+
+  <!-- Loader overlay (hidden until used) -->
+  <div class="loader-overlay" id="loader-overlay" aria-hidden="true">
+    <div class="loader-card" role="status" aria-live="polite">
+      <div class="loader-icons" aria-hidden="true">
+        <i class="fas fa-user-graduate"></i>
+        <i class="fas fa-user-graduate"></i>
+        <i class="fas fa-user-graduate"></i>
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="loader-spinner" aria-hidden="true"></div>
+      <p>Loading Student Portal...</p>
+    </div>
+  </div>
+
+  <!-- Help modal (WhatsApp / Call / Email) -->
+  <div class="help-modal-overlay" id="help-modal" aria-hidden="true">
+    <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <h3 id="help-title">Need Help?</h3>
+      <p style="margin:0;color:var(--gray);font-size:0.95rem">Contact us via WhatsApp, phone call, or email.</p>
+      <div class="help-options">
+        <a class="help-option" id="help-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="help-option" id="help-call" href="#">Call</a>
+        <a class="help-option" id="help-email" href="#">Email</a>
+      </div>
+      <button class="help-close" id="help-close">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Add active state to bottom nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Show a simple feedback (in a real app, this would navigate)
+        const pageName = this.querySelector('span').textContent;
+        if(pageName !== 'Home') {
+          alert(`Navigating to ${pageName} page...`);
+        }
+      });
+    });
+
+    // Add ripple effect to action buttons
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        // Create ripple element
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.4);
+          transform: scale(0);
+          animation: ripple-animation 0.6s linear;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        // Remove ripple after animation
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple-animation {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Handle notification badge click (guarded)
+    const _notificationEl = document.querySelector('.notification');
+    if (_notificationEl) {
+      _notificationEl.addEventListener('click', function(e) {
+        e.preventDefault();
+        const badge = this.querySelector('.nav-badge');
+        if (badge) {
+          badge.style.transform = 'scale(0)';
+          setTimeout(() => {
+            badge.remove();
+          }, 300);
+        }
+      });
+    }
+
+    // Add pull-to-refresh simulation (for mobile)
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    });
+
+    document.addEventListener('touchend', e => {
+      const touchEndY = e.changedTouches[0].clientY;
+      const diff = touchStartY - touchEndY;
+      
+      // If user pulls down from top
+      if(diff < -50 && window.scrollY === 0) {
+        console.log('Pull to refresh triggered');
+        // In a real app, you would refresh data here
+      }
+    });
+
+    // Update time dynamically (optional)
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const dateString = now.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
+      
+      // You could display this in the header if desired
+    }
+    
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // Logo upload handler: click logo to select file, preview and persist to localStorage
+    (function() {
+      const logoImg = document.getElementById('school-logo');
+      const logoInput = document.getElementById('logo-input');
+
+      if (!logoImg || !logoInput) return;
+
+      // Load persisted logo if available
+      try {
+        const saved = localStorage.getItem('schoolLogo');
+        if (saved) {
+          logoImg.src = saved;
+        }
+      } catch (e) {
+        // ignore localStorage errors
+      }
+
+      // Clicking the logo opens file picker
+      logoImg.addEventListener('click', () => logoInput.click());
+
+      logoInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const dataUrl = ev.target.result;
+          logoImg.src = dataUrl;
+          try {
+            localStorage.setItem('schoolLogo', dataUrl);
+          } catch (err) {
+            // ignore storage errors (e.g., quota)
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    })();
+
+    // Mini logo row upload handlers (5 placeholders)
+    (function() {
+      const miniWrappers = document.querySelectorAll('.mini-logo');
+      if (!miniWrappers || miniWrappers.length === 0) return;
+
+      miniWrappers.forEach(wrapper => {
+        const idx = wrapper.getAttribute('data-index');
+        const img = wrapper.querySelector('img');
+        const input = wrapper.querySelector('.mini-logo-input');
+        if (!img || !input) return;
+
+        // Load saved logo
+        try {
+          const saved = localStorage.getItem('schoolLogoMini' + idx);
+          if (saved) img.src = saved;
+        } catch (e) {}
+
+        // Click wrapper to open file picker
+        wrapper.addEventListener('click', () => input.click());
+
+        // Handle file selection
+        input.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            const dataUrl = ev.target.result;
+            img.src = dataUrl;
+            try { localStorage.setItem('schoolLogoMini' + idx, dataUrl); } catch (err) {}
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    })();
+    
+    // ENTER PORTAL: show loading overlay then redirect to signup page
+    (function() {
+      const enterBtn = document.getElementById('enter-portal');
+      const loader = document.getElementById('loader-overlay');
+      if (!enterBtn || !loader) return;
+
+      enterBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // show overlay
+        loader.style.display = 'flex';
+        loader.setAttribute('aria-hidden', 'false');
+
+        // wait 4s for UX then redirect
+        setTimeout(() => {
+          window.location.href = 'signup.html';
+        }, 4000);
+      });
+    })();
+
+    // GET HELP modal behavior
+    (function() {
+      const helpBtn = document.getElementById('get-help');
+      const helpModal = document.getElementById('help-modal');
+      const helpClose = document.getElementById('help-close');
+      const btnWhats = document.getElementById('help-whatsapp');
+      const btnCall = document.getElementById('help-call');
+      const btnEmail = document.getElementById('help-email');
+      if (!helpBtn || !helpModal) return;
+
+      // Configure contact details here
+      const HELP_WHATSAPP_NUMBER = '233539816189'; // international (no + or dashes)
+      const HELP_CALL_NUMBER = '+233539816189';
+      const HELP_EMAIL = 'oat82984@gmail.com';
+      const HELP_MESSAGE = encodeURIComponent('Hello, I need help with the student portal');
+
+      // Wire up links
+      if (btnWhats) btnWhats.href = `https://wa.me/${HELP_WHATSAPP_NUMBER}?text=${HELP_MESSAGE}`;
+      if (btnCall) btnCall.href = `tel:${HELP_CALL_NUMBER}`;
+      if (btnEmail) btnEmail.href = `mailto:${HELP_EMAIL}?subject=${encodeURIComponent('Portal Help')}`;
+
+      // Open modal
+      helpBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        helpModal.style.display = 'flex';
+        helpModal.setAttribute('aria-hidden', 'false');
+      });
+
+      // Close handlers
+      function closeHelp() {
+        helpModal.style.display = 'none';
+        helpModal.setAttribute('aria-hidden', 'true');
+      }
+
+      helpClose && helpClose.addEventListener('click', closeHelp);
+      helpModal.addEventListener('click', function(e) {
+        if (e.target === helpModal) closeHelp();
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && helpModal.style.display === 'flex') closeHelp();
+      });
+    })();
+  </script>
+</body>
+</html>

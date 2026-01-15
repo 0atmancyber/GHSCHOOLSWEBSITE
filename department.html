@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GH Technical University — Schools & Courses</title>
+  <meta name="description" content="GH Technical University — explore Schools of Media, Fashion, Catering, Technology, and Cosmetology. Apply online." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+   
+    /* ===== GHTU — Professional, Responsive CSS ===== */
+
+/* ---------- Design tokens */
+:root{
+  --bg: #f9fafb;
+  --panel: #ffffff;
+  --text: #0f172a;      /* slate-900 */
+  --muted: #475569;     /* slate-600 */
+  --brand: #0ea5a1;     /* teal-500 */
+  --brand-700:#0f766e;  /* teal-700 */
+  --accent:#f59e0b;     /* amber-500 */
+  --border:#e5e7eb;     /* gray-200 */
+  --ring: #22c55e;      /* green focus ring */
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 8px 24px rgba(2,8,23,.08);
+}
+
+/* ---------- Base & a11y */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+  line-height:1.6;
+  color:var(--text);
+  background:var(--bg);
+}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{
+  outline:3px solid var(--ring);
+  outline-offset:2px;
+  border-radius:8px;
+}
+
+/* ---------- Layout helpers */
+.container{max-width:1100px;margin:0 auto;padding:0 1rem}
+.grid{display:grid}
+
+/* ---------- Top info bar */
+.topbar{
+  background:#0f172a;
+  color:#e2e8f0;
+  font-size:.85rem;
+}
+.topbar .container{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:.75rem;padding:.45rem 1rem;
+}
+.topbar small{opacity:.95}
+
+/* ---------- Header / Nav */
+header.site{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:saturate(180%) blur(8px);
+  background:rgba(255,255,255,.9);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .2s ease, background .2s ease;
+}
+header.site.shadow{box-shadow:var(--shadow-md)}
+header.site .nav{display:flex;align-items:center;gap:1rem;padding:.75rem 0}
+
+a.brand{
+  display:flex;align-items:center;gap:.65rem;
+  font-weight:800;text-decoration:none;white-space:nowrap;
+}
+a.brand .mark img{
+  width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-sm)
+}
+a.brand span{letter-spacing:.2px}
+
+.spacer{flex:1}
+
+.hamburger{
+  display:none;
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:.45rem .6rem;cursor:pointer;font-size:1.05rem;line-height:1;
+}
+
+.menu{
+  display:flex;align-items:center;gap:.25rem;
+}
+.menu a{
+  text-decoration:none;font-weight:600;color:var(--muted);
+  padding:.55rem .75rem;border-radius:.75rem;
+}
+.menu a:hover,.menu a:focus-visible{
+  background:#f1f5f9;color:var(--text)
+}
+.menu .cta, .cta{
+  background:var(--brand);color:#fff;border:0;
+  padding:.6rem 1rem;border-radius:999px;font-weight:700;
+  box-shadow:0 8px 22px rgba(14,165,233,.18);cursor:pointer
+}
+.menu .cta:hover,.cta:hover{background:var(--brand-700);transform:translateY(-1px)}
+
+/* ---------- Hero */
+.hero{
+  border-bottom:1px solid var(--border);
+  background:
+    radial-gradient(1100px 420px at 80% -120px, rgba(14,165,233,.22), transparent),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 60%);
+}
+.hero .container{
+  display:grid;grid-template-columns:repeat(12,1fr);gap:1.25rem;
+  padding:clamp(1.8rem,3vw,3.2rem) 1rem;
+}
+.hero .copy{grid-column:1 / span 7}
+.hero .copy h1{
+  margin:0 0 .5rem 0;
+  font-size:clamp(1.6rem, 3.4vw, 2.6rem);
+  line-height:1.15;letter-spacing:-.02em;
+}
+.hero .copy p{max-width:62ch;color:var(--muted);font-size:1rem}
+
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+.pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.42rem .72rem;border-radius:999px;
+  background:#ecfeff;color:#0e7490;border:1px solid #cffafe;
+  font-weight:700;font-size:.875rem
+}
+
+/* ---------- Feature strip */
+.features{background:#fff;border-bottom:1px solid var(--border)}
+.features .container{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;
+  padding:1rem
+}
+.feature{
+  display:flex;align-items:center;gap:.65rem;
+  background:#f8fafc;border:1px solid var(--border);
+  border-radius:var(--radius);padding:.75rem .95rem
+}
+.feature .ico{
+  color:var(--brand);background:#e0f2fe;border-radius:50%;
+  padding:.5rem;display:grid;place-items:center
+}
+.feature b{color:var(--text)}
+.feature small{color:var(--muted);margin-left:.25rem}
+
+/* ---------- Courses / Schools */
+#courses .container{padding:2rem 1rem}
+.section-head{display:grid;gap:.8rem;margin-bottom:1rem}
+.section-head h2{margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem}
+.tab{
+  background:#f8fafc;border:1px solid var(--border);
+  border-radius:999px;padding:.42rem .8rem;font-weight:700;
+  color:var(--muted);cursor:pointer;user-select:none
+}
+.tab.active,.tab[aria-selected="true"]{
+  background:#ecfeff;border-color:#99f6e4;color:#0e7490
+}
+.searchbox{
+  display:flex;align-items:center;gap:.5rem;background:#fff;
+  border:1px solid var(--border);border-radius:.8rem;
+  padding:.45rem .6rem;max-width:480px
+}
+.searchbox svg{flex:0 0 auto}
+.searchbox input{
+  border:0;outline:0;width:100%;font-size:.95rem;background:transparent
+}
+
+/* Course grid + card defaults (works even when JS injects items later) */
+.course-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem
+}
+.course-grid .card{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;
+  gap:.5rem;box-shadow:var(--shadow-sm)
+}
+.course-grid .card h3{margin:0;font-size:1.06rem}
+.course-grid .card .meta{font-size:.85rem;color:var(--muted)}
+.course-grid .card .tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.course-grid .card .tag{
+  font-size:.75rem;padding:.25rem .5rem;border-radius:999px;background:#f1f5f9
+}
+
+/* ---------- About / Contact */
+#about .container{padding:2rem 1rem}
+
+/* These override your inline grid styles on small screens */
+@media (max-width: 760px){
+  #about .grid{grid-template-columns:1fr !important;gap:1rem !important}
+  #about .grid > div{grid-column:1 / -1 !important}
+}
+
+/* Panels (in case inline styles are removed later) */
+#about .grid{grid-template-columns:repeat(12,1fr);gap:1.2rem}
+#about .grid > div{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem 1.1rem
+}
+.klist{margin:.6rem 0 0;padding-left:1.1rem}
+.klist li{margin:.25rem 0}
+
+/* ---------- Responsive nav & layout */
+@media (max-width: 1000px){
+  .hero .copy{grid-column:1 / span 12}
+  .features .container{grid-template-columns:repeat(2,1fr)}
+  .course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width: 760px){
+  .topbar .container{flex-direction:column;align-items:flex-start;gap:.3rem}
+  .hamburger{display:inline-flex}
+  .spacer{display:none}
+
+  /* Mobile menu as a collapsible sheet */
+  .menu{
+    position:fixed;left:0;right:0;top:60px; /* ~ header height */
+    background:#fff;border-bottom:1px solid var(--border);
+    flex-direction:column;align-items:stretch;gap:.25rem;
+    padding:.75rem 1rem 1rem;
+    max-height:0;overflow:hidden;transition:max-height .25s ease;
+  }
+  .menu.open{max-height:60vh}
+  .menu a,.menu .cta{width:100%;text-align:left}
+
+  .features .container{grid-template-columns:1fr}
+  .section-head{gap:.6rem}
+  .searchbox{max-width:none}
+  .course-grid{grid-template-columns:1fr}
+}
+
+/* ---------- Motion preferences */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+
+
+    .site-footer {
+  background: #111;
+  color: #fff;
+  padding: 40px 20px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: space-between;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 220px;
+}
+
+.footer-logo {
+  height: 70px;
+  margin-bottom: 15px;
+}
+
+.footer-column h3 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #f1c40f;
+}
+
+.footer-column p,
+.footer-column a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  line-height: 1.8;
+}
+
+.footer-column ul li a:hover {
+  text-decoration: underline;
+}
+
+.apply-btn {
+  display: inline-block;
+  margin-top: 10px;
+  background: #d60000;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.apply-btn:hover {
+  background: #a40000;
+}
+
+.footer-social a {
+  color: #fff;
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.footer-social a:hover {
+  color: #f1c40f;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+.site-footer hr {
+  border-color: rgba(255,255,255,0.1);
+  margin: 20px 0;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-column {
+    min-width: 100%;
+  }
+
+  .footer-social {
+    margin-top: 10px;
+  }
+
+  .footer-social a {
+    font-size: 20px;
+    margin: 0 8px;
+  }
+
+  .apply-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.brand .mark {
+  width: clamp(40px, 7vw, 60px);  /* responsive size (min 40px, max 60px) */
+  height: clamp(40px, 7vw, 60px);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-600));
+  box-shadow: 0 6px 16px rgba(140,21,54,.35);
+  overflow: hidden;
+}
+
+.brand .mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* keeps proportions */
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <!-- Top info bar -->
+  <div class="topbar" aria-label="University announcement bar">
+    <div class="container">
+      <small><b>GH Technical University</b> — Accra Achimota</small>
+      <small>CTVET Accredited</small>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site">
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="#">
+   <!-- Brand -->
+<div class="brand">
+  <span class="mark" aria-hidden="true">
+    <img src="images/favicon.png" alt="GHTU Logo">
+  </span>
+</div>
+
+
+        <span>GH Technical University</span>
+      </a>
+      <button class="hamburger" aria-controls="menu" aria-expanded="false" title="Toggle menu">☰</button>
+      <div class="spacer"></div>
+      <nav id="menu" class="menu" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="#schools">Schools</a>
+        <a href="#courses">Courses</a>
+        <a href="#admissions">Admissions</a>
+        <a href="#contact">Contact</a>
+        <button class="cta" onclick="document.getElementById('lead').scrollIntoView({behavior:'smooth'})">Apply Now</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="admissions">
+    <div class="container">
+      <div class="copy">
+        <h1>Vocational & Technical Education. Building Futures</h1>
+        <p>Study your passion with hands-on training and flexible tracks — <b>ICM (1 year)</b> or <b>Diploma (2 years)</b> — across Media, Fashion, Catering, Technology and Cosmetology.</p>
+        <div class="badges">
+          <span class="pill">Hands-on Workshops</span>
+          <span class="pill">Industry Internships</span>
+          <span class="pill">Online + On-Campus</span>
+        </div>
+      </div>
+
+      <!-- Lead form -->
+
+    </div>
+  </section>
+
+  <!-- Feature strip -->
+  <section class="features" aria-label="Key features">
+    <div class="container">
+      <div class="feature">
+        <div class="ico" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 4v6c0 5-3.8 9.3-8 10-4.2-.7-8-5-8-10V6l8-4z"/></svg>
+        </div>
+        <div><b>Nationally Accredited</b><small> • CTVET • </small></div>
+      </div>
+      <div class="feature">
+        <div class="ico" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v10H4zM2 17h20v2H2z"/></svg>
+        </div>
+        <div><b>Blended Learning</b><small>24hrs Campus study</small></div>
+      </div>
+      <div class="feature">
+        <div class="ico" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 100 14 7 7 0 000-14zm-4 16l4 2 4-2 2 4H6l2-4z"/></svg>
+        </div>
+        <div><b>Career-Ready</b><small>Internships & job placement</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses / Schools -->
+  <section id="courses">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="schools">Our Schools & Featured Programmes</h2>
+        <div class="tabs" role="tablist" aria-label="Filter by school">
+          <button class="tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="tab" data-filter="School of Media" role="tab">Media</button>
+          <button class="tab" data-filter="School of Fashion" role="tab">Fashion</button>
+          <button class="tab" data-filter="School of Catering" role="tab">Catering</button>
+          <button class="tab" data-filter="School of Technology" role="tab">Technology</button>
+          <button class="tab" data-filter="School of Cosmetology" role="tab">Cosmetology</button>
+        </div>
+        <div class="searchbox" role="search" aria-label="Search courses">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 2a8 8 0 105.3 14.3l4.2 4.2 1.4-1.4-4.2-4.2A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
+          <input id="search" placeholder="Search courses e.g. networking, pastry, makeup…" />
+        </div>
+      </div>
+
+      <div id="courseGrid" class="grid course-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- About / Contact -->
+  <section id="about">
+    <div class="container grid" style="grid-template-columns:repeat(12,1fr);gap:1.2rem">
+      <div style="grid-column:span 7;background:#fff;border:1px solid #eef2f7;border-radius:16px;padding:1rem 1.1rem">
+        <h2>Why GH Technical University?</h2>
+        <p>We combine globally relevant curricula with Ghanaian industry needs. Our graduates build strong portfolios and transition smoothly into the workplace through internships and employer projects across media houses, fashion ateliers, hotels, tech firms and salons.</p>
+        <ul class="klist">
+          <li>Studios, kitchens, labs & salons that mirror real workplaces.</li>
+          <li>Mentorship from practitioners and visiting industry experts.</li>
+          <li>campuses: Accra</li>
+        </ul>
+      </div>
+      <div id="contact" style="grid-column:span 5;background:#fff;border:1px solid #eef2f7;border-radius:16px;padding:1rem 1.1rem">
+        <h2>Contact Admissions</h2>
+        <p><b>Phone:</b> +233 55 000 1212 • <b>Email:</b> admissions@ghtu.edu.gh</p>
+        <p><b>Campuses:</b> Accra (North Ridge), Kumasi (Adum), Takoradi (Beach Rd.)</p>
+        <p>Office Hours: Mon–Fri, 8:30–17:00 GMT</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+  <div class="footer-container">
+
+    <!-- Logo & About -->
+    <div class="footer-column">
+      <img src="images/GH Schools.png" alt="GH Technical University" class="footer-logo">
+      <p>
+        GH Technical University College is dedicated to empowering the next generation through innovation, skill, and leadership.
+      </p>
+      <a href="admission.HTML" class="apply-btn">Apply Now</a>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-column">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="signup.html">Pay Fees</a></li>
+        <li><a href="all prorams.html">Programs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Admissions -->
+    <div class="footer-column">
+      <h3>Admissions</h3>
+      <ul>
+        <li><a href="admission.HTML">Apply</a></li>
+        <li><a href="reqirement.html">Requirements</a></li>
+        <li><a href="fees.html">Fees</a></li>
+        <li><a href="schorlarship.html">Scholarships</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-column">
+      <h3>Contact Us</h3>
+      <p>Email: <a href="mailto:admissions@ghschools.online">admissions@ghschools.online</a></p>
+      <p>Phone: +233 20 462 2250 / +233 27 762 2250</p>
+      <p>Address: Accra, Ghana</p>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/ghschoolsofficial"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+
+  </div>
+
+  <hr>
+  <p class="footer-bottom">
+    &copy; 2025 GH Technical University College. All Rights Reserved. designed by oatman
+  </p>
+</footer>
+  <!-- Modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="sheet">
+      <button class="closex" aria-label="Close details" id="closeModal">✕</button>
+      <div class="sheet-media"><img id="modalImg" alt=""></div>
+      <div class="sheet-body">
+        <div class="pill" id="modalSchool" style="align-self:flex-start;background:rgba(140,21,54,.1);color:var(--primary);border:1px solid rgba(140,21,54,.2)"></div>
+        <h3 id="modalTitle">Course title</h3>
+        <div class="detail" id="modalMeta"></div>
+        <p id="modalDesc" class="detail"></p>
+        <div>
+          <b>What you’ll learn</b>
+          <ul id="modalLearn" class="klist"></ul>
+        </div>
+        <div class="meta">
+          <span class="chip" id="modalDuration"></span>
+          <span class="chip" id="modalLevel"></span>
+          <span class="chip" id="modalMode"></span>
+          <span class="chip" id="modalCampus"></span>
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="document.getElementById('lead').scrollIntoView({behavior:'smooth'})">Apply for this programme</button>
+          <button class="ghost" id="modalCloseB">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+  <!-- ===== Tiny JS helper for mobile menu + subtle header shadow ===== -->
+<script>
+  (function () {
+    const header = document.querySelector('header.site');
+    const btn = document.querySelector('.hamburger');
+    const menu = document.getElementById('menu');
+
+    // Header shadow on scroll
+    const applyShadow = () => header && header.classList.toggle('shadow', window.scrollY > 4);
+    applyShadow(); window.addEventListener('scroll', applyShadow, { passive: true });
+
+    // Mobile menu toggle (a11y-friendly)
+    if (btn && menu) {
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        menu.classList.toggle('open', !open);
+      });
+      // Close menu after clicking a link/CTA
+      menu.querySelectorAll('a, .cta').forEach(el => {
+        el.addEventListener('click', () => {
+          btn.setAttribute('aria-expanded','false');
+          menu.classList.remove('open');
+        });
+      });
+    }
+  })();
+</script>
+
+
+  <script>
+    // ---------- Course Data (Updated to your exact lists; each offers ICM 1 year or Diploma 2 years)
+    const common = {
+      level: 'ICM or Diploma',
+      duration: '1 year (ICM) / 2 years (Diploma)'
+    };
+
+    const courses = [
+  // ===================== MEDIA — OUR COURSES =====================
+  {
+    id:'media-jms',
+    school:'School of Media',
+    title:'Journalism & Media Studies',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Newspaper',
+    summary:'Reporting, media law & ethics, news writing and modern newsroom workflows.',
+    learn:[
+      'News gathering & fact-checking',
+      'Media law & professional ethics',
+      'Editing for print, radio & digital',
+      'Mobile journalism & podcasting'
+    ]
+  },
+  {
+    id:'media-jma',
+    school:'School of Media',
+    title:'Journalism & Media Arts',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'PenLine',
+    summary:'Creative storytelling across audio, photo, video and design for digital platforms.',
+    learn:[
+      'Visual storytelling & photography',
+      'Audio production & sound design',
+      'Video editing & motion graphics',
+      'Brand communication basics'
+    ]
+  },
+  {
+    id:'media-tvfilm',
+    school:'School of Media',
+    title:'Television & Film Production',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Clapperboard',
+    summary:'From script to screen: cinematography, directing, lighting and post-production.',
+    learn:[
+      'Camera operation & lighting',
+      'Directing & production management',
+      'Editing with Premiere/Resolve',
+      'Set safety & crew collaboration'
+    ]
+  },
+  {
+    id:'media-multimedia',
+    school:'School of Media',
+    title:'Multimedia Production',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Film',
+    summary:'Design motion, graphics, audio and interactive content for web and social.',
+    learn:[
+      'Graphic & layout design',
+      'Motion graphics & animation',
+      'Audio mixing for media',
+      'Content strategy for social'
+    ]
+  },
+
+  // ===================== FASHION — OUR COURSES =====================
+  {
+    id:'fashion-fdi',
+    school:'School of Fashion',
+    title:'Fashion Design & Illustrations',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Scissors',
+    summary:'Concept to sketch to sample; build your portfolio with professional illustration.',
+    learn:[
+      'Figure drawing & illustration styles',
+      'Fabric selection & color theory',
+      'Tech packs & trend boards',
+      'Portfolio development'
+    ]
+  },
+  {
+    id:'fashion-gc',
+    school:'School of Fashion',
+    title:'Garment Construction',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Shirt',
+    summary:'Industrial sewing techniques, finishing and fitting for ready-to-wear.',
+    learn:[
+      'Measurements, grading & draping',
+      'Machine operation & finishes',
+      'Quality control & costing',
+      'Production line basics'
+    ]
+  },
+  {
+    id:'fashion-millinery',
+    school:'School of Fashion',
+    title:'Millinery & Accessories',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Crown',
+    summary:'Headwear & accessory creation blending tradition and modern design.',
+    learn:[
+      'Hat blocking & finishing',
+      'Accessory prototyping',
+      'Material exploration',
+      'Design for market trends'
+    ]
+  },
+  {
+    id:'fashion-mtd',
+    school:'School of Fashion',
+    title:'Machinery Textile Design',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Palette',
+    summary:'Explore surface design with print, dye and industrial textile machinery.',
+    learn:[
+      'Print & dye techniques',
+      'Digital textile patterns',
+      'Embroidery & embellishments',
+      'Fabric finishing'
+    ]
+  },
+  {
+    id:'fashion-pattern',
+    school:'School of Fashion',
+    title:'Pattern Drafting',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Ruler',
+    summary:'Drafting and grading patterns for bespoke and mass production garments.',
+    learn:[
+      'Manual & CAD drafting',
+      'Body measurements & grading',
+      'Pattern alterations',
+      'Industrial pattern making'
+    ]
+  },
+
+  // ===================== CATERING — OUR COURSES =====================
+  {
+    id:'catering-fbp',
+    school:'School of Catering',
+    title:'Food & Beverage Production',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'UtensilsCrossed',
+    summary:'Culinary techniques and food safety for professional kitchens.',
+    learn:[
+      'Knife skills & food prep',
+      'Menu planning & nutrition',
+      'Food hygiene & safety',
+      'Restaurant-style plating'
+    ]
+  },
+  {
+    id:'catering-pastry',
+    school:'School of Catering',
+    title:'Pastry, Cake & Sugar Craft',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Cake',
+    summary:'Specialized training in pastry, baking, cake decorating & sugar art.',
+    learn:[
+      'Pastry foundations',
+      'Sugar craft & fondant',
+      'Cake sculpting & icing',
+      'Event cake design'
+    ]
+  },
+  {
+    id:'catering-decor',
+    school:'School of Catering',
+    title:'Decoration & Event Management',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'PartyPopper',
+    summary:'Plan, design and manage events with creative decoration skills.',
+    learn:[
+      'Event theming & design',
+      'Lighting & stage setup',
+      'Floral & balloon art',
+      'Event logistics'
+    ]
+  },
+  {
+    id:'catering-service',
+    school:'School of Catering',
+    title:'Catering Service Management',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'ClipboardList',
+    summary:'Manage catering operations, staff, budgets and customer service.',
+    learn:[
+      'Catering logistics',
+      'Staff coordination',
+      'Costing & pricing',
+      'Client relations'
+    ]
+  },
+  {
+    id:'catering-hospitality',
+    school:'School of Catering',
+    title:'Hospitality Management',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Hotel',
+    summary:'Front office, guest service, housekeeping and hospitality marketing.',
+    learn:[
+      'Customer experience',
+      'Front office operations',
+      'Housekeeping & facilities',
+      'Hospitality marketing'
+    ]
+  },
+
+  // ===================== COSMETOLOGY — OUR COURSES =====================
+  {
+    id:'cosmo-makeup',
+    school:'School of Cosmetology',
+    title:'Makeup Artistry',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Sparkles',
+    summary:'Professional beauty makeup for fashion, bridal and media productions.',
+    learn:[
+      'Skin prep & color theory',
+      'Bridal & editorial makeup',
+      'Special effects basics',
+      'Product sanitation'
+    ]
+  },
+  {
+    id:'cosmo-nails',
+    school:'School of Cosmetology',
+    title:'Nail & Hair Technology',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Hand',
+    summary:'Modern nail artistry and hair styling technology.',
+    learn:[
+      'Manicure & pedicure',
+      'Hair braiding & extensions',
+      'Nail art techniques',
+      'Salon safety'
+    ]
+  },
+  {
+    id:'cosmo-massage',
+    school:'School of Cosmetology',
+    title:'Massage & Body Therapy',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Flower2',
+    summary:'Holistic massage, spa techniques and wellness practices.',
+    learn:[
+      'Massage techniques',
+      'Spa therapies',
+      'Anatomy basics',
+      'Client care & relaxation'
+    ]
+  },
+  {
+    id:'cosmo-management',
+    school:'School of Cosmetology',
+    title:'Cosmetology Service Management',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Briefcase',
+    summary:'Salon, spa and cosmetology business operations and entrepreneurship.',
+    learn:[
+      'Salon management',
+      'Customer relations',
+      'Inventory control',
+      'Small business finance'
+    ]
+  },
+
+  // ===================== TECHNOLOGY — OUR COURSES =====================
+  {
+    id:'tech-se',
+    school:'School of Technology',
+    title:'Software Engineering',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Code2',
+    summary:'Coding, databases and app development for real-world projects.',
+    learn:[
+      'Programming fundamentals',
+      'Databases & SQL',
+      'Web & mobile apps',
+      'Agile teamwork'
+    ]
+  },
+  {
+    id:'tech-hardware',
+    school:'School of Technology',
+    title:'Computer Hardware',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Cpu',
+    summary:'Build, repair and maintain computers and related devices.',
+    learn:[
+      'PC assembly & troubleshooting',
+      'Motherboard & peripherals',
+      'OS installation',
+      'Preventive maintenance'
+    ]
+  },
+  {
+    id:'tech-network',
+    school:'School of Technology',
+    title:'Networking',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Network',
+    summary:'Design, install and maintain wired and wireless networks.',
+    learn:[
+      'LAN & WAN setup',
+      'Routers & switches',
+      'Network security',
+      'Cloud networking basics'
+    ]
+  },
+  {
+    id:'tech-satellite',
+    school:'School of Technology',
+    title:'Satellite Dish Installation',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Satellite',
+    summary:'Installation and maintenance of satellite TV and communication systems.',
+    learn:[
+      'Dish alignment & setup',
+      'Signal troubleshooting',
+      'Decoder configuration',
+      'Client support'
+    ]
+  },
+  {
+    id:'tech-security',
+    school:'School of Technology',
+    title:'Security Systems',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Shield',
+    summary:'Surveillance, alarm and modern security technology training.',
+    learn:[
+      'CCTV setup',
+      'Alarm systems',
+      'Access control',
+      'System integration'
+    ]
+  },
+  {
+    id:'tech-broadcast',
+    school:'School of Technology',
+    title:'Broadcast Engineering',
+    ...common,
+    mode:'Lecture Halls',
+    campus:'Accra (Achimota)',
+    icon:'Radio',
+    summary:'Technical foundation for radio, TV and live broadcast systems.',
+    learn:[
+      'Radio studio setup',
+      'TV signal flow',
+      'Audio-visual systems',
+      'Broadcast transmission'
+    ]
+  }
+];
+
+
+
+
+    // ---------- Utilities
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+    const formatMeta = (c) => `
+      <span class="chip" title="Duration">🕒 ${c.duration}</span>
+      <span class="chip" title="Level">🎓 ${c.level}</span>
+      <span class="chip" title="Mode of study">💻 ${c.mode}</span>
+    `;
+
+    // ---------- Render course cards
+    const grid = $('#courseGrid');
+    function renderCourses(list){
+      grid.innerHTML = '';
+      list.forEach(c=>{
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.setAttribute('data-school', c.school);
+        card.setAttribute('data-title', c.title.toLowerCase());
+        card.innerHTML = `
+          <div class="thumb">
+            <img class="cover" src="${c.image}" alt="${c.title} cover image">
+            <span class="badge">${c.school}</span>
+          </div>
+          <div class="body">
+            <h3>${c.title}</h3>
+            <p class="detail" style="color:#475569">${c.summary}</p>
+            <div class="meta">${formatMeta(c)}</div>
+            <div class="actions">
+              <button class="primary" data-id="${c.id}" aria-label="View details of ${c.title}">View details</button>
+              <button class="ghost" onclick="document.getElementById('lead').scrollIntoView({behavior:'smooth'})">Apply</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    renderCourses(courses);
+
+    // ---------- Filtering tabs + Search
+    const tabs = $$('.tab');
+    function applyFilter(){
+      const active = $('.tab.active').dataset.filter;
+      const q = $('#search').value.trim().toLowerCase();
+      const filtered = courses.filter(c => {
+        const matchesSchool = active === 'all' || c.school === active;
+        const hay = `${c.title} ${c.school} ${c.summary} ${c.level} ${c.mode}`.toLowerCase();
+        const matchesQuery = q==='' || hay.includes(q);
+        return matchesSchool && matchesQuery;
+      });
+      renderCourses(filtered);
+    }
+    tabs.forEach(t=>{
+      t.addEventListener('click', ()=>{
+        tabs.forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        t.setAttribute('aria-selected','true');
+        applyFilter();
+      });
+    });
+    $('#search').addEventListener('input', applyFilter);
+
+    // ---------- Modal logic
+    const modal = $('#modal');
+    const openModal = (course) => {
+      $('#modalTitle').textContent = course.title;
+      $('#modalSchool').textContent = course.school;
+      $('#modalImg').src = course.image;
+      $('#modalImg').alt = course.title + ' preview';
+      $('#modalMeta').textContent = course.summary;
+      $('#modalLearn').innerHTML = course.learn.map(li=>`<li>${li}</li>`).join('');
+      $('#modalDuration').textContent = `🕒 ${course.duration}`;
+      $('#modalLevel').textContent = `🎓 ${course.level}`;
+      $('#modalMode').textContent = `💻 ${course.mode}`;
+      $('#modalCampus').textContent = `📍 ${course.campus}`;
+      modal.classList.add('open');
+      document.body.style.overflow='hidden';
+    };
+    const closeModal = () => { modal.classList.remove('open'); document.body.style.overflow=''; };
+    $('#closeModal').addEventListener('click', closeModal);
+    $('#modalCloseB').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+    // Delegate "View details"
+    grid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button.primary[data-id]');
+      if(!btn) return;
+      const course = courses.find(c=>c.id===btn.dataset.id);
+      if(course) openModal(course);
+    });
+
+    // ---------- Form validation & toast
+    function showToast(msg, type='ok'){
+      const el = $('#toast');
+      el.textContent = msg;
+      el.style.background = type==='error' ? 'var(--danger)' : (type==='ok' ? 'var(--success)' : '#0f172a');
+      el.classList.add('show');
+      setTimeout(()=>el.classList.remove('show'), 3200);
+    }
+    $('#applyForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const f = e.target;
+      const requiredOK = [...f.querySelectorAll('[required]')].every(i=>i.value.trim()!=='');
+      if(!requiredOK){
+        $('#formStatus').textContent = 'Please complete all required fields.';
+        showToast('Please complete all required fields.', 'error');
+        return;
+      }
+      const payload = {
+        fullName: f.fullName.value.trim(),
+        email: f.email.value.trim(),
+        phone: f.phone.value.trim(),
+        school: f.school.value,
+        notes: f.notes.value.trim()
+      };
+      console.log('Application (demo)', payload);
+      f.reset();
+      $('#formStatus').textContent = 'Request submitted successfully.';
+      showToast('Thanks! Admissions will contact you shortly. ✔️','ok');
+    });
+
+    // ---------- Mobile nav toggle
+    const burger = $('.hamburger'), menu = $('#menu');
+    burger.addEventListener('click', ()=>{
+      const open = menu.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open?'true':'false');
+    });
+
+    // Year
+    $('#year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

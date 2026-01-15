@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+<title>Iowa-style responsive header (sticky + mobile toggles)</title>
+<style>
+  :root{
+    --iowa-gold: #fef8ff;
+    --black: #000;
+    --muted: #f4f4f4;
+    --nav-break: 900px;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--black);}
+
+  /* STICKY HEADER WRAPPER */
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+  }
+
+  /* TOP YELLOW BAR */
+  .top-bar{
+    background: var(--iowa-gold);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: .45rem 2rem;
+    gap:1rem;
+  }
+  .top-left { display:flex; align-items:center; gap:1rem; }
+  .logo{
+    font-weight:900;
+    letter-spacing:1px;
+    font-size:1.25rem;
+    color:var(--black);
+  }
+
+  /* top links (Apply, Visit, Request Info, Search) */
+  .top-links{
+    display:flex;
+    gap:1rem;
+    align-items:center;
+    font-weight:700;
+    font-size:.95rem;
+  }
+  .top-links a{ color:var(--black); text-decoration:none; }
+  .top-links .search{ display:flex; align-items:center; gap:.35rem; }
+
+  /* top toggle button (mobile) */
+  .top-toggle{
+    display:none;
+    background:transparent;
+    border:0;
+    font-size:1.25rem;
+    cursor:pointer;
+    padding:.25rem;
+  }
+
+  /* MAIN NAV */
+  nav{
+    background:#fff;
+    border-bottom:1px solid #e6e6e6;
+  }
+  .nav-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    padding:.8rem 2rem;
+  }
+  .nav-left, .nav-right{
+    display:flex;
+    gap:1.25rem;
+    align-items:center;
+  }
+  .nav-left a, .nav-right a{
+    text-decoration:none;
+    color:var(--black);
+    padding:.25rem .5rem;
+    font-weight:600;
+    font-size:.95rem;
+  }
+  .nav-left a:hover, .nav-right a:hover{ color:var(--iowa-gold); }
+
+  /* Dropdowns */
+  .dropdown{ position:relative; }
+  .dropdown > a{ display:inline-flex; align-items:center; gap:.4rem; cursor:pointer; }
+  .dropdown-content{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    min-width:180px;
+    background:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    border-radius:4px;
+    overflow:hidden;
+    z-index:1100;
+  }
+  .dropdown-content a{
+    display:block;
+    padding:.55rem .9rem;
+    color:var(--black);
+    text-decoration:none;
+    font-weight:500;
+  }
+  .dropdown-content a:hover{ background:var(--muted); }
+
+  /* show on hover for desktop */
+  @media (min-width: 901px){
+    .dropdown:hover .dropdown-content{ display:block; }
+  }
+
+  /* menu toggle (main nav) */
+  .menu-toggle{
+    display:none;
+    font-size:1.4rem;
+    border:0;
+    background:transparent;
+    cursor:pointer;
+  }
+
+  /* Hero (same as before) */
+ .hero {
+  position: relative;
+  background-image: url('images/tech.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  text-align: center;
+  padding: 0 1rem; /* Prevent text from touching edges on mobile */
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  text-shadow: 2px 2px 8px rgba(0,0,0,.6);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center; /* Ensure buttons are centered */
+}
+
+.hero-buttons a {
+  background: var(--iowa-gold);
+  color: var(--black);
+  text-decoration: none;
+  padding: .75rem 1.4rem;
+  border-radius: 4px;
+  font-weight: 800;
+}
+
+.hero-buttons a:hover {
+  background: var(--black);
+  color: #fff;
+  transition: all .18s ease;
+}
+
+/* 📱 Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .hero {
+    height: auto; /* Allow content to expand naturally */
+    padding: 2rem 1rem;
+  }
+  
+  .hero h1 {
+    font-size: 2rem; /* Slightly smaller heading */
+  }
+  
+  .hero-buttons {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+  /* RESPONSIVE: below nav-break */
+  @media (max-width: 900px){
+    .top-bar{ padding:.55rem 1rem; }
+    .top-links{ display:none; flex-direction:column; width:100%; gap:.5rem; padding:.6rem 1rem; border-top:1px solid rgba(0,0,0,.05); }
+    .top-links.show{ display:flex; }
+
+    .top-toggle{ display:block; }
+
+    .nav-container{ padding:.6rem 1rem; }
+    .menu-toggle{ display:block; }
+
+    /* hide desktop nav items and show when toggled */
+    .nav-left, .nav-right{ display:none; flex-direction:column; width:100%; gap:0; background:#fff; padding: .6rem 0; border-top:1px solid rgba(0,0,0,.03); }
+    .nav-left.show, .nav-right.show{ display:flex; }
+
+    .nav-left a, .nav-right a{ padding:.8rem 1rem; border-bottom:1px solid #f2f2f2; width:100%; }
+
+    /* dropdowns become static block in mobile */
+    .dropdown-content{ position:static; box-shadow:none; border-radius:0; display:none; padding-left:.5rem; }
+    .dropdown.open > .dropdown-content{ display:block; }
+    .dropdown > a::after{ content:""; } /* remove hover arrow duplication if needed */
+  }
+
+  /* small screen typography */
+  @media (max-width: 480px){
+    .logo{ font-size:1.05rem; }
+    .hero h1{ font-size:1.8rem; padding: 0 1rem; }
+    .hero{ height:55vh; }
+  }
+
+  .programs-section {
+  background: #f9f9f9;
+  padding: 3rem 1.5rem;
+  max-width: 900px;
+  margin: 3rem auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.programs-section h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.programs-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+.programs-section ul li {
+  background: white;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.965);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: #070707;
+  transition: box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.programs-section ul li:hover {
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.programs-section ul li strong {
+  color: var(--iowa-gold);
+  font-weight: 700;
+}
+
+.programs-section .view-all-programs {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--iowa-gold);
+  text-decoration: none;
+  font-size: 1.1rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  max-width: 180px;
+}
+
+.programs-section .view-all-programs:hover,
+.programs-section .view-all-programs:focus {
+  border-color: var(--iowa-gold);
+  outline: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .programs-section {
+    padding: 2rem 1rem;
+  }
+  
+  .programs-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .programs-section ul {
+    grid-template-columns: 1fr;
+  }
+  
+  .programs-section ul li {
+    font-size: 1rem;
+  }
+  
+  .programs-section .view-all-programs {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+}
+
+
+
+.lecturers-grid {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;      /* enables horizontal scrolling if needed */
+  padding-bottom: 1rem;  /* some space below for scrollbar */
+  scroll-behavior: smooth;
+}
+
+.lecturer-card {
+  flex: 0 0 280px;       /* fixed width, no shrinking */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.981);
+  padding: 1.5rem 1.25rem 2rem;
+  text-align: center;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lecturer-card:hover,
+.lecturer-card:focus {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.978);
+  transform: translateY(-6px);
+  outline: none;
+}
+
+.lecturer-card img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid var(--iowa-gold);
+}
+
+.lecturer-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--black);
+}
+
+.lecturer-card .title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.7rem;
+}
+
+.lecturer-card p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #444;
+}
+
+
+#tech-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.9);
+  color: white;
+  display: flex;            /* keep flex but control visibility via opacity and pointer-events */
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 2000;
+  text-align: center;
+  overflow-y: auto;
+
+  opacity: 0;
+  pointer-events: none;    /* prevent interaction when hidden */
+  transition: opacity 0.4s ease;
+}
+
+#tech-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#tech-overlay .overlay-content {
+  max-width: 600px;
+  background: rgba(0,0,0,0.85);
+  border-radius: 10px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  position: relative;
+
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* When overlay is shown, animate content scale & opacity */
+#tech-overlay.show .overlay-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+#tech-overlay h2 {
+  margin-top: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+#tech-overlay p {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  margin: 1rem 0 0;
+}
+
+#close-overlay {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+#close-overlay:hover,
+#close-overlay:focus {
+  color: var(--iowa-gold);
+  outline: none;
+}
+
+
+.sticky-apply-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: var(--iowa-gold);
+  color: var(--black);
+  font-weight: 700;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(255, 210, 0, 0.6);
+  font-size: 1.1rem;
+  z-index: 3000;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sticky-apply-btn:hover,
+.sticky-apply-btn:focus {
+  background: #e6b800; /* slightly darker gold */
+  box-shadow: 0 6px 14px rgba(230, 184, 0, 0.9);
+  outline: none;
+}
+
+
+
+
+
+
+    .footer {
+      background-color: #1e294f;
+      padding: 50px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 30px;
+      color: #cbd5e1;
+    }
+
+    .footer-logo-section {
+      flex: 1 1 250px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+      width: 60px;
+    }
+
+    .footer-logo-text h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    .footer-logo-text p {
+      margin: 4px 0;
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+
+    .footer-contact {
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    .footer-contact p {
+      margin: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-contact i {
+      color: #ffc107;
+      width: 18px;
+    }
+
+    .footer-social {
+      margin-top: 20px;
+    }
+
+    .footer-social a {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      color: #cbd5e1;
+      transition: color 0.3s;
+    }
+
+    .footer-social a:hover {
+      color: white;
+    }
+
+    .footer-column {
+      flex: 1 1 180px;
+    }
+
+    .footer-column h4 {
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .footer-column ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-column li {
+      margin-bottom: 10px;
+    }
+
+    .footer-column a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .footer-column a:hover {
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .footer {
+        flex-direction: column;
+        padding: 30px 15px;
+      }
+
+      .footer-column,
+      .footer-logo-section {
+        flex: 1 1 100%;
+      }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <!-- Top yellow bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="logo">GH SCHOOL OF TECHNOLOGY</div>
+    </div>
+
+
+    <div id="tech-overlay" role="alert" aria-live="polite" tabindex="0">
+  <div class="overlay-content">
+    <h2>Technology is Changing the World</h2>
+    <p>From innovation in education to breakthroughs in healthcare and communication, technology positively impacts every aspect of our lives, driving progress and connecting communities worldwide.</p>
+    <button id="close-overlay" aria-label="Close information overlay">&times;</button>
+  </div>
+</div>
+
+
+    <!-- desktop top links -->
+    <div class="top-links" id="topLinks">
+      <a href="admission.HTML">Apply Now</a>
+      <a href="#">Campus Tour</a>
+      <a href="#">Request Program Info</a>
+      <div class="search">🔍 <span style="font-weight:700">SEARCH</span></div>
+    </div>
+
+    <!-- top toggle (mobile) -->
+    <button id="topToggle" class="top-toggle" aria-expanded="false" aria-controls="topLinks" aria-label="Toggle top bar menu">⋯</button>
+  </div>
+
+  <!-- Main navigation -->
+  <nav>
+  <div class="nav-container">
+    <!-- main hamburger (mobile) -->
+    <button id="mainToggle" class="menu-toggle" aria-expanded="false" aria-controls="navLeft navRight" aria-label="Toggle main navigation">☰</button>
+
+    <!-- left group -->
+    <div class="nav-left" id="navLeft">
+      <div class="dropdown">
+        <a href="#">
+          <i class="fas fa-user-graduate"></i> Admissions ▼
+        </a>
+        <div class="dropdown-content">
+          <a href="admission.HTML"><i class="fas fa-book-open"></i> Apply Here</a>
+          <a href="reqirement.html"><i class="fas fa-book-reader"></i> Requirement</a>
+          <a href="faq.html"><i class="fas fa-globe"></i> FAQ</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="#">
+          <i class="fas fa-building"></i> Courses ▼
+        </a>
+        <div class="dropdown-content">
+          <a href="#"><i class="fas fa-laptop-code"></i> Software Engineering</a>
+          <a href="#"><i class="fas fa-bolt"></i> Broadcast Engineering</a>
+          <a href="#"><i class="fas fa-network-wired"></i>Home security Systems</a>
+        </div>
+      </div>
+
+      
+      <div class="dropdown">
+        <a href="#">
+          <i class="fas fa-university"></i> Campus Life ▼
+        </a>
+        <div class="dropdown-content">
+          <a href="#"><i class="fas fa-home"></i> Student Housing</a>
+          <a href="#"><i class="fas fa-users"></i> Clubs & Societies</a>
+          <a href="#"><i class="fas fa-calendar-alt"></i> Events & Hackathons</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="#">
+          <i class="fas fa-info-circle"></i> About Us ▼
+        </a>
+        <div class="dropdown-content">
+          <a href="#"><i class="fas fa-history"></i> Our History</a>
+          <a href="#"><i class="fas fa-bullseye"></i> Mission & Vision</a>
+          <a href="#"><i class="fas fa-user-tie"></i> Leadership</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- right group -->
+  
+</nav>
+
+</header>
+
+<!-- Hero -->
+<section class="hero" role="region" aria-label="Main hero">
+  <h1>Empowering the Next Generation of Innovators</h1>
+  <div class="hero-buttons" role="navigation" aria-label="hero links">
+    <a href="#">EXPLORE OUR PROGRAMS →</a>
+    <a href="#">RESEARCH & INNOVATION →</a>
+    <a href="#">SCHOLARSHIPS & AID →</a>
+  </div>
+</section>
+
+
+<section aria-labelledby="programs-title" class="programs-section">
+  <h2 id="programs-title">Our Programs</h2>
+  <ul>
+    <li><i class="fas fa-code"></i> <strong>Computer Software Engineering:</strong> Designing and developing software solutions</li>
+    <li><i class="fas fa-microchip"></i> <strong>Computer Hardware:</strong> Study of physical components and devices</li>
+    <li><i class="fas fa-network-wired"></i> <strong>Computer Networking:</strong> Network design, administration, and security</li>
+    <li><i class="fas fa-satellite-dish"></i> <strong>Satellite Dish Installation:</strong> Setup and maintenance of satellite communication systems</li>
+    <li><i class="fas fa-shield-alt"></i> <strong>Security Systems:</strong> Physical and digital security solutions</li>
+    <li><i class="fas fa-broadcast-tower"></i> <strong>Broadcast Engineering:</strong> Transmission and production of radio and TV broadcasts</li>
+  </ul>
+  <a href="#" class="view-all-programs">View All Programs &rarr;</a>
+</section>
+
+
+
+<section aria-labelledby="lecturers-title" class="lecturers-section" style="max-width:900px; margin:3rem auto 4rem; padding: 0 1rem;">
+  <h2 id="lecturers-title" style="text-align:center; font-size:2rem; font-weight:800; margin-bottom:2rem; color: var(--black);">Our Lecturers</h2>
+  
+  <div class="lecturers-grid">
+    <article class="lecturer-card" tabindex="0">
+      <img src="" alt="Dr. Amankwah" />
+      <h3>Dr. Kwame Amankwah</h3>
+      <p class="title">Professor of Computer Software Engineering</p>
+      <p>Expert in software architecture and AI systems with 15 years of teaching experience.</p>
+    </article>
+
+    <article class="lecturer-card" tabindex="0">
+      <img src="" alt="Mrs. Mensah" />
+      <h3>Mrs. Akosua Mensah</h3>
+      <p class="title">Senior Lecturer, Computer Hardware</p>
+      <p>Specializes in microprocessor design and hardware troubleshooting techniques.</p>
+    </article>
+
+    <article class="lecturer-card" tabindex="0">
+      <img src="" alt="Mr. Owusu" />
+      <h3>Mr. Daniel Owusu</h3>
+      <p class="title">Lecturer, Computer Networking</p>
+      <p>Focused on network security protocols and wireless communication technologies.</p>
+    </article>
+
+    
+
+    <article class="lecturer-card" tabindex="0">
+      <img src="images/" alt="Mr. Tetteh" />
+      <h3>Mr. Joseph Tetteh</h3>
+      <p class="title">Lecturer, Broadcast Engineering</p>
+      <p>Specialist in broadcast transmission and multimedia production technologies.</p>
+    </article>
+  </div>
+</section>
+
+<a href="admission.HTML" class="sticky-apply-btn" aria-label="Apply Now">Apply Now</a>
+
+
+
+<script>
+  // Toggles
+  const topToggle = document.getElementById('topToggle');
+  const topLinks = document.getElementById('topLinks');
+  const mainToggle = document.getElementById('mainToggle');
+  const navLeft = document.getElementById('navLeft');
+  const navRight = document.getElementById('navRight');
+
+  topToggle && topToggle.addEventListener('click', () => {
+    const open = topLinks.classList.toggle('show');
+    topToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  mainToggle && mainToggle.addEventListener('click', () => {
+    const leftOpen = navLeft.classList.toggle('show');
+    const rightOpen = navRight.classList.toggle('show');
+    const expanded = leftOpen || rightOpen;
+    mainToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  });
+
+  // Make dropdowns tappable on mobile (and still hoverable on desktop)
+  document.querySelectorAll('.dropdown > a').forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      // only intercept taps on narrow screens
+      if (window.innerWidth <= 900) {
+        e.preventDefault();
+        const parent = anchor.parentElement;
+        parent.classList.toggle('open');
+      }
+      // on desktop do nothing (hover will show)
+    });
+  });
+
+  // Optional: close open mobile dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 900) {
+      const isDropdownArea = !!e.target.closest('.dropdown');
+      if (!isDropdownArea) {
+        document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+      }
+    }
+  });
+
+  // Keep dropdown state sensible on resize (close mobile menus when returning to desktop)
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      topLinks.classList.remove('show');
+      navLeft.classList.remove('show');
+      navRight.classList.remove('show');
+      document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+      topToggle && topToggle.setAttribute('aria-expanded','false');
+      mainToggle && mainToggle.setAttribute('aria-expanded','false');
+    }
+  });
+</script>
+
+
+<script>
+  const logo = document.querySelector('.logo');
+const overlay = document.getElementById('tech-overlay');
+const closeBtn = document.getElementById('close-overlay');
+
+// Show overlay on logo hover
+logo.addEventListener('mouseenter', () => {
+  overlay.classList.add('show');
+  overlay.focus();
+});
+
+// Optional: Hide overlay when mouse leaves logo or overlay
+logo.addEventListener('mouseleave', () => {
+  // Comment this out if you want overlay to stay until closed manually
+  // overlay.classList.remove('show');
+});
+
+// Close button hides overlay
+closeBtn.addEventListener('click', () => {
+  overlay.classList.remove('show');
+  logo.focus();
+});
+
+// Also close overlay if user presses Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === "Escape" && overlay.classList.contains('show')) {
+    overlay.classList.remove('show');
+    logo.focus();
+  }
+});
+
+</script>
+
+</body>
+<footer class="footer">
+  <!-- Logo and Contact -->
+  <div class="footer-logo-section">
+    <div class="footer-logo">
+      <img src="images/GH Schools.png" alt="UPSA Logo" />
+      <div class="footer-logo-text">
+        <h2>GH SCHOLS</h2>
+        <p>GH SCHOOLS COLLEGE, Accra</p>
+        <p>Scholarship with Professionalism</p>
+      </div>
+    </div>
+
+    <div class="footer-contact">
+      <p><i class="fas fa-phone"></i> +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909</p>
+    </div>
+
+    <div class="footer-social">
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+
+  <!-- Column 1 -->
+  <div class="footer-column">
+    <h4>University</h4>
+    <ul>
+      <li><a href="#">About GH SCHOOLS</a></li>
+      <li><a href="#">Our History</a></li>
+      <li><a href="#">Governance</a></li>
+      <li><a href="#">Leadership</a></li>
+      <li><a href="#">Policies & Regulations</a></li>
+      
+    </ul>
+  </div>
+
+ 
+
+  <!-- Column 3 -->
+  <div class="footer-column">
+    <h4>Academics</h4>
+    <ul>
+      <li><a href="#">Academic Affairs</a></li>
+      <li><a href="#">Schools & Faculties</a></li>
+      <li><a href="#">Fees Schedule</a></li>
+      <li><a href="#">Academic Calendar</a></li>
+      <li><a href="#">Centres of Excellence</a></li>
+      <li><a href="#">Graduation</a></li>
+      <li><a href="#">Graduation List</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 4 -->
+  <div class="footer-column">
+    <h4>Student</h4>
+    <ul>
+      <li><a href="#">Students Portal</a></li>
+      <li><a href="#">Student Services</a></li>
+      <li><a href="#">Freshmen Guidelines</a></li>
+      <li><a href="#">The SRC</a></li>
+      <li><a href="#">Hostels</a></li>
+      <li><a href="#">Sports & Recreation</a></li>
+      <li><a href="#">Counseling Unit</a></li>
+   
+    </ul>
+  </div>
+</footer>
+
+</html>

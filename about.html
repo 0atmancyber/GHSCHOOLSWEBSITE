@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — GH SCHOOLS COLLEGE</title>
+  <style>
+    :root {
+      --brand: #b00000;
+      --brand-700: #8a0000;
+      --brand-900: #670000;
+      --accent: #f1c40f;
+      --ink: #121212;
+      --muted: #5f5f5f;
+      --bg: #ffffff;
+      --card: #fafafa;
+      --panel: #f4f4f4;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.998);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --header-h: 80px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    /* Utility */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    section[id] { scroll-margin-top: calc(var(--header-h) + 24px); }
+
+    /* Header */
+    header.site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    }
+    .header-inner { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand img { width: 64px; height: 64px; object-fit: contain; }
+    .brand .title { display: grid; }
+    .brand .title strong { font-size: 18px; letter-spacing: 0.4px; }
+    .brand .title small { font-size: 12px; opacity: .9; letter-spacing: 1px; }
+
+    /* Nav */
+    .nav { display: flex; align-items: center; gap: 16px; }
+    .nav a { color: #fff; text-decoration: none; font-weight: 600; padding: 4px 12px; border-radius: 8px; }
+    .nav a:hover { background: rgba(255,255,255,.12); }
+
+    .nav-item { position: relative; }
+    .nav-item > button, .nav-item > a.nav-link { 
+      background: transparent; border: 0; color: #fff; font-weight: 700; cursor: pointer; padding: 10px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; }
+    .nav-item > button:hover, .nav-item > a.nav-link:hover { background: rgba(255,255,255,.12); }
+    .nav-item .chev { font-size: 12px; opacity: .9; }
+
+    .dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 220px; background: #111; color: #fff; border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: none; }
+    .dropdown a { display: block; color: #fff; text-decoration: none; padding: 10px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+    .dropdown a:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-item:hover .dropdown { display: block; }
+
+    .apply-btn { background: #050505b8; color: var(--brand); padding: 10px 14px; font-weight: 800; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+
+    /* Mobile nav */
+    .hamburger { display: none; background: #fff; color: var(--brand); border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 800; }
+    .mobile-panel { display: none; background: var(--brand-700); }
+    .mobile-panel .group { border-top: 1px solid rgba(255,255,255,.15); }
+    .mobile-panel a, .mobile-panel button { display: block; width: 100%; text-align: left; padding: 14px 20px; background: transparent; border: 0; color: #fff; text-decoration: none; font-weight: 700; }
+    .mobile-panel .sub { background: var(--brand-900); display: none; }
+    .mobile-panel .sub a { font-weight: 600; opacity: .95; }
+
+    /* Hero */
+.hero {
+  position: relative;
+  min-height: 380px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #000000a8;
+  z-index: 1;
+}
+
+/* Background with slow zoom & pan animation */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('images/building.webp');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  animation: bg-pan-zoom 20s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+.hero .inner {
+  position: relative;
+  z-index: 2;
+  padding: 60px 20px;
+}
+
+/* Dangling Animation for Text */
+.hero h1,
+.hero p {
+  display: inline-block;
+  transform-origin: top center;
+  animation: dangle 3s ease-in-out infinite;
+}
+
+.hero h1 {
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.1;
+  margin: 0 0 8px;
+}
+
+.hero p {
+  margin: 0;
+  opacity: 0.95;
+  font-weight: 500;
+  animation-delay: 0.1s; /* Stagger effect */
+}
+
+/* Keyframes for background animation */
+@keyframes bg-pan-zoom {
+  0% {
+    transform: scale(1) translate(1, 0);
+  }
+  50% {
+    transform: scale(1.05) translate(-5px, -5px);
+  }
+  100% {
+    transform: scale(1.4) translate(5px, 5px);
+  }
+}
+
+/* Keyframes for dangling swing */
+@keyframes dangle {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(2deg); }
+  50%  { transform: rotate(-2deg); }
+  75%  { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+    
+
+    /* Layout */
+    .page { padding: 40px 0 80px; }
+    .grid {
+      display: grid; gap: 28px;
+      grid-template-columns: 260px 1fr;
+      align-items: start;
+    }
+    aside.toc { position: sticky; top: calc(var(--header-h) + 16px); background: var(--panel); border: 1px solid #e8e8e8; border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); }
+    .toc h2 { margin: 0 0 12px; font-size: 16px; color: var(--brand); }
+    .toc a { display: block; color: #333; text-decoration: none; padding: 8px 10px; border-radius: 8px; font-size: 14px; }
+    .toc a.active, .toc a:hover { background: #fff; box-shadow: var(--shadow); }
+
+    .content { display: grid; gap: 28px; }
+    .card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 22px; }
+    .card h2 { margin-top: 0; font-size: 24px; color: var(--brand); position: relative; padding-bottom: 8px; }
+    .card h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 60px; height: 3px; background: var(--accent); border-radius: 2px; }
+    .card p { text-align: justify; }
+
+    /* People grid */
+    .people-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .person { background: #fff; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand); background: #eee; display: block; }
+    .person h4 { margin: 0; font-size: 16px; }
+    .person span.role { display: block; font-size: 13px; color: var(--muted); }
+
+    /* Floating buttons */
+    .fab { position: fixed; right: 20px; z-index: 900; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; text-decoration: none; font-weight: 800; box-shadow: var(--shadow); transition: transform .15s ease-in-out; }
+    .fab:hover { transform: translateY(-3px); }
+    .fab.apply { bottom: 88px; background: var(--brand); color: #fff; }
+    .fab.top { bottom: 28px; background: #000; color: #fff; }
+
+    /* Footer */
+    footer.site-footer { background: #222; color: #ddd; padding: 48px 0; }
+    .footer-grid { display: grid; gap: 28px; grid-template-columns: repeat(4, minmax(160px, 1fr)); }
+    .footer-brand { display: grid; gap: 16px; }
+    .footer-brand .brandline { display: flex; align-items: center; gap: 12px; }
+    .footer-brand img { width: 64px; height: auto; }
+    .footer-brand h3 { margin: 0; color: var(--accent); }
+    .footer-col h4 { margin: 0 0 10px; color: var(--accent); }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .footer-col a { color: #ccc; text-decoration: none; font-size: 14px; }
+    .footer-col a:hover { text-decoration: underline; }
+
+    /* Mobile */
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: 1fr; }
+      aside.toc { display: none; }
+    }
+    @media (max-width: 840px) {
+      .nav { display: none; }
+      .hamburger { display: inline-flex; }
+      .mobile-panel { display: block; }
+    }
+
+    /* Sidebar & Navbar Responsive Enhancements */
+@media (max-width: 768px) {
+  /* Grid becomes single column */
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Hide sidebar, add toggle button */
+  aside.toc {
+    display: none;
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    width: 260px;
+    height: 100%;
+    background: var(--panel);
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  aside.toc.open {
+    transform: translateX(0);
+  }
+
+  /* Sidebar toggle button */
+  .sidebar-toggle {
+    display: inline-block;
+    background: #fff;
+    color: var(--brand);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  /* Navbar changes */
+  .nav {
+    display: none;
+  }
+  .hamburger {
+    display: inline-flex;
+  }
+
+  /* Footer becomes single column */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .footer-brand .brandline {
+    justify-content: center;
+  }
+}
+
+/* Mobile nav panel smooth transition */
+.mobile-panel[hidden] {
+  display: none;
+}
+
+  </style>
+</head>
+<body>
+  <a class="visually-hidden" href="#main">Skip to content</a>
+  
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <img src="images/GH Schools.png" alt="GH Schools Logo" />
+        <span class="title">
+          <strong>GH SCHOOLS COLLEGE</strong>
+          <small>TRAIN • PRACTICE • ACHIEVE</small>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <div class="nav-item">
+          <a class="nav-link" href="about.html">About GH <span class="chev">▾</span></a>
+          <div class="dropdown" role="menu">
+            <a href="#vision-mission">Mission & Vision</a>
+            <a href="#quality">Quality Assurance</a>
+            <a href="e-resource.html">Accreditation</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="admission.html">Admissions <span class="chev">▾</span></a>
+          <div class="dropdown" role="menu">
+            <a href="admission.html">Apply</a>
+            <a href="admission.html#how">How to Apply</a>
+            <a href="reqirement.html">Entry Requirements</a>
+            <a href="schorlarship.html">Fees & Scholarships</a>
+            <a href="faq.html">FAQ</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="resource.html">Student <span class="chev">▾</span></a>
+          <div class="dropdown" role="menu">
+            <a href="results portal.html">Student Portal</a>
+            <a href="resource.html#calendar">Academic Calendar</a>
+            <a href="resource.html#timetable">Timetable</a>
+            <a href="resource.html#results">Exam Results</a>
+            <a href="resource.html#support">Student Support</a>
+            <a href="resource.html#registration">Course Registration</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <button type="button" aria-expanded="false" aria-controls="schools-menu">Schools <span class="chev">▾</span></button>
+          <div id="schools-menu" class="dropdown" role="menu">
+            <a href="media.html">School of Media</a>
+            <a href="fashion.html">School of Fashion</a>
+            <a href="catering.html">School of Catering</a>
+            <a href="#">School of Cosmetology</a>
+            <a href="tech.html">School of Technology</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="e-resource.html">Library <span class="chev">▾</span></a>
+          <div class="dropdown" role="menu">
+            <a href="#">Library Hours</a>
+            <a href="#">Borrowing Policy</a>
+          </div>
+        </div>
+        <a class="apply-btn" href="admission.html">Apply Now</a>
+      </nav>
+
+      <button class="hamburger" type="button" aria-expanded="false" aria-controls="mobileNav" onclick="toggleMobileNav()">Menu</button>
+    </div>
+
+    <!-- Mobile Panel -->
+    <nav id="mobileNav" class="mobile-panel" hidden>
+      <div class="container">
+        <div class="group">
+          <button type="button" onclick="toggleSub(this)" aria-expanded="false">About GH ▾</button>
+          <div class="sub" hidden>
+            <a href="#vision-mission">Mission & Vision</a>
+            <a href="#quality">Quality Assurance</a>
+            <a href="e-resource.html">Accreditation</a>
+          </div>
+        </div>
+        <div class="group">
+          <a href="admission.html">Admissions</a>
+          <div class="sub" hidden>
+            <a href="admission.html">Apply</a>
+            <a href="admission.html#how">How to Apply</a>
+            <a href="reqirement.html">Entry Requirements</a>
+            <a href="schorlarship.html">Fees & Scholarships</a>
+            <a href="faq.html">FAQ</a>
+          </div>
+        </div>
+        <div class="group">
+          <button type="button" onclick="toggleSub(this)" aria-expanded="false">Student Resources ▾</button>
+          <div class="sub" hidden>
+            <a href="results portal.html">Student Portal</a>
+            <a href="resource.html#calendar">Academic Calendar</a>
+            <a href="resource.html#timetable">Timetable</a>
+            <a href="resource.html#results">Exam Results</a>
+            <a href="resource.html#support">Student Support</a>
+            <a href="resource.html#registration">Course Registration</a>
+          </div>
+        </div>
+        <div class="group">
+          <button type="button" onclick="toggleSub(this)" aria-expanded="false">Schools ▾</button>
+          <div class="sub" hidden>
+            <a href="media.html">School of Media</a>
+            <a href="fashion.html">School of Fashion</a>
+            <a href="catering.html">School of Catering</a>
+            <a href="#">School of Cosmetology</a>
+            <a href="tech.html">School of Technology</a>
+          </div>
+        </div>
+        <div class="group">
+          <button type="button" onclick="toggleSub(this)" aria-expanded="false">Library ▾</button>
+          <div class="sub" hidden>
+            <a href="#">Library Hours</a>
+            <a href="#">Borrowing Policy</a>
+          </div>
+        </div>
+        <div class="group" style="padding: 14px 0 24px;">
+          <a class="apply-btn" style="background:#fff;color:var(--brand);display:inline-flex;" href="admission.html">Apply Now</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" role="img" aria-label="Campus background">
+    <div class="inner container">
+      <h1>About GH SCHOOLS COLLEGE</h1>
+      <p>World-class hands-on technical and vocational education in Ghana</p>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <main id="main" class="page">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Sidebar Menu</button>
+    <div class="container grid">
+      <!-- Sidebar TOC (desktop) -->
+      <aside class="toc" aria-label="On this page">
+        <h2>About Sections</h2>
+        <nav>
+          <a href="#institution">Institution</a>
+          <a href="#management-board">Management Board</a>
+          <a href="#head-of-schools">Head of Schools</a>
+          <a href="#registrar">Registrar</a>
+          <a href="#students-affairs">Students Affairs</a>
+          <a href="#finance-directorate">Finance Directorate</a>
+          <a href="#academic-affairs">Academic Affairs</a>
+          <a href="#students-production">Students Production</a>
+          <a href="#marketing-directorate">Marketing Directorate</a>
+          <a href="#communication-directorate">Communication Directorate</a>
+          <a href="#human-resource">Human Resource</a>
+          <a href="#office-chancellor">Office of the Chancellor</a>
+          <a href="#office-rector">Office of the Rector</a>
+          <a href="#vision-mission">Vision & Mission</a>
+          <a href="#values">Our Values</a>
+          <a href="#strategy">The Strategy</a>
+          <a href="#quality">Quality Assurance</a>
+          <a href="#pillars">Pillars of Engagement</a>
+          <a href="#principles">Principles of Module Design</a>
+          <a href="#quality-policy">Quality Management Policy</a>
+          <a href="#philosophy">The Philosophy</a>
+          <a href="#administration">Administration</a>
+        </nav>
+      </aside>
+
+      <!-- Content -->
+      <div class="content">
+        <section id="institution" class="card">
+          <h2>Institution</h2>
+          <p>GH SCHOOLS COLLEGE is dedicated to competency-based training across technical disciplines, blending industry with academia. We bring real-world practice into the classroom through state-of-the-art facilities and experienced faculty.</p>
+        </section>
+
+        <section id="management-board" class="card">
+          <h2>The Management Board</h2>
+          <p>The Management Board is the highest executive body responsible for strategic planning and policy-making to achieve the overall objectives of the institution. It meets quarterly and includes the chairman, the registrar, the heads of schools, and the rector.</p>
+
+          <!-- People cards (add actual images at /images/management/...) -->
+          <div class="people-grid" style="margin-top: 16px;">
+            <article class="person">
+              <img class="avatar" src="images/dr_kofi_osei_kusi.jpg" alt="Board Chairperson" />
+              <div>
+                <h4>Board Chairperson</h4>
+                <span class="role">Management Board</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/LESLIe.png" alt="Rector" />
+              <div>
+                <h4>Rector</h4>
+                <span class="role">Academic & Executive Leadership</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/Mr. Confidence Aglobi-Tetteh.jpg" alt="Registrar" />
+              <div>
+                <h4>Registrar</h4>
+                <span class="role">Administration & Records</span>
+              </div>
+            </article>
+           
+        </section>
+
+        <section id="head-of-schools" class="card">
+          <h2>Head of Schools</h2>
+          <p>Each school is headed by a director with overall responsibility for academic and administrative activities.</p>
+          <div class="people-grid" style="margin-top: 16px;">
+            <article class="person">
+              <img class="avatar" src="images/Mr. Dromo Apenten.jpg" alt="Head, School of Media" />
+              <div>
+                <h4>Head, School of Media</h4>
+                <span class="role">Media & Communication</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/fashion.jpg" alt="Head, School of Fashion" />
+              <div>
+                <h4>Head, School of Fashion</h4>
+                <span class="role">Design & Style</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/catering.jpg" alt="Head, School of Catering" />
+              <div>
+                <h4>Head, School of Catering</h4>
+                <span class="role">Hospitality & Culinary Arts</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/cosmetology.jpg" alt="Head, School of Cosmetology" />
+              <div>
+                <h4>Head, School of Cosmetology</h4>
+                <span class="role">Beauty & Wellness</span>
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
+              <div>
+                <h4>Head, School of Technology</h4>
+                <span class="role">ICT & Innovation</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="registrar" class="card">
+          <h2>The Registrar</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person" style="grid-template-columns: 100px 1fr;">
+              <img class="avatar" style="width:100px;height:100px;" src="images/Mr. Confidence Aglobi-Tetteh.jpg" alt="Registrar" />
+              <div>
+                <h4>Registrar</h4>
+                <span class="role">Records, Admissions, Exams & Certification</span>
+                <p style="margin-top:8px">The Registrar is the chief administrative officer responsible for record keeping, admissions, examinations, and certification.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="students-affairs" class="card">
+          <h2>The Students Affairs Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/Vincent Sackitey.jpg" alt="Director, Students Affairs" />
+              <div>
+                <h4>Director, Students Affairs</h4>
+                <span class="role">Discipline, Welfare & Activities</span>
+              </div>
+            </article>
+          </div>
+          <p style="margin-top:12px">This directorate handles student discipline, welfare and co-curricular activities.</p>
+        </section>
+
+        <section id="finance-directorate" class="card">
+          <h2>Finance Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/directorates/finance.jpg" alt="Finance Director" />
+              <div>
+                <h4>Finance Director</h4>
+                <span class="role">Budget, Payroll, Audit & Financial Administration</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="academic-affairs" class="card">
+          <h2>Academic Affairs Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/Mr. Clifford Ladzekpo.jpg" alt="Director, Academic Affairs" />
+              <div>
+                <h4>Director, Academic Affairs</h4>
+                <span class="role">Program Design, Planning & Implementation</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="students-production" class="card">
+          <h2>Students Production Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images//Mr. Dromo Apenten.jpg" alt="Director, Students Production" />
+              <div>
+                <h4>Director, Students Production</h4>
+                <span class="role">Practical Projects & Productions</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="marketing-directorate" class="card">
+          <h2>Marketing Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/directorates/marketing.jpg" alt="Marketing Director" />
+              <div>
+                <h4>Marketing Director</h4>
+                <span class="role">School Promotion & Student Recruitment</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="communication-directorate" class="card">
+          <h2>Communication Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/directorates/communications.jpg" alt="Director, Communications" />
+              <div>
+                <h4>Director, Communications</h4>
+                <span class="role">Public Relations & Media</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="human-resource" class="card">
+          <h2>Human Resource Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/Mr. Ebenezer Ocran.jpg" alt="HR Director" />
+              <div>
+                <h4>HR Director</h4>
+                <span class="role">Staff Recruitment, Training & Welfare</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="office-chancellor" class="card">
+          <h2>Office of the Chancellor</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/dr_kofi_osei_kusi.jpg" alt="Chancellor" />
+              <div>
+                <h4>Chancellor</h4>
+                <span class="role">Institutional Governance & Policy</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="office-rector" class="card">
+          <h2>Office of the Rector</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/LESLIe.png" alt="Rector" />
+              <div>
+                <h4>Rector</h4>
+                <span class="role">Academic & Administrative Leadership</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Vision & Mission -->
+        <section id="vision-mission" class="card">
+          <h2>Vision and Mission</h2>
+          <h3 style="color:var(--brand);margin:12px 0 4px">Vision</h3>
+          <p>Our vision is to become the foremost private technical institution in Africa and beyond that provides competency-based training in all technical disciplines, particularly in trade areas by creating a hub where talents could be identified, shaped, and developed for the benefit of the society.</p>
+          <h3 style="color:var(--brand);margin:12px 0 4px">Mission</h3>
+          <p>To equip passion-driven and determined students with the requisite knowledge, skills, and attitudes necessary to be relevant, competent, and competitive professionals in their chosen career paths.</p>
+        </section>
+
+        <section id="objective" class="card">
+          <h2>Objective</h2>
+          <p>We do this through proximal learning where industry is brought closer to the learner, coupled with tuition based on sound academic standards and industrial practice with hands-on experience using State-of-The-Art equipment, and facilitated by well-qualified faculty with focus on mastery and measured outcomes.</p>
+        </section>
+
+        <section id="values" class="card">
+          <h2>Our Values (3Ps)</h2>
+          <ul>
+            <li><strong>Passionate</strong></li>
+            <li><strong>Professionalism</strong></li>
+            <li><strong>Progressiveness</strong></li>
+          </ul>
+        </section>
+
+        <section id="strategy" class="card">
+          <h2>The Strategy</h2>
+          <p>The plan is to transform lives and give our students hope through hands-on technical and vocational education to make them better people with employable skill sets and also cause them to be competent, relevant and competitive in the market place.</p>
+        </section>
+
+        <section id="quality" class="card">
+          <h2>Quality Assurance</h2>
+          <p>Our learning environment demonstrates that quality is happening; facilities and equipment that meet industrial standards are used in training. Quality assurance mechanisms like industrial practices, technological changes, and verification systems build confidence among learners and stakeholders.</p>
+        </section>
+
+        <section id="pillars" class="card">
+          <h2>Pillars of Engagement</h2>
+          <ul>
+            <li>Competency-Based Training (skills, knowledge & attitude)</li>
+            <li>Occupational Standard Generation (industry-led standards)</li>
+            <li>Learner-Centered Approaches (facilitation over instruction)</li>
+            <li>Outcome-Based Paradigm</li>
+            <li>Transparent Assessment Regime (panel-based)</li>
+            <li>Internal Verification Systems</li>
+            <li>Enhanced Zone of Proximal Learning</li>
+          </ul>
+        </section>
+
+        <section id="principles" class="card">
+          <h2>Principles of Module Design</h2>
+          <ul>
+            <li>Clarity of Focus</li>
+            <li>Designing Back</li>
+            <li>High Expectations</li>
+            <li>Expanding Opportunities</li>
+            <li>Reducing Proximal Learning Gaps</li>
+          </ul>
+        </section>
+
+        <section id="quality-policy" class="card">
+          <h2>Quality Management Policy</h2>
+          <p>We are committed to excellence in education, recognizing each student’s uniqueness. Our programs focus on personal development, individualized instruction, hands-on training, safe and conducive learning environments, and exposure to real industry experiences.</p>
+        </section>
+
+        <section id="philosophy" class="card">
+          <h2>The Philosophy</h2>
+          <p>Our philosophy is based on proximal learning, bridging education and industry through state-of-the-art equipment, academic excellence, and industry best practices to produce graduates with measurable outcomes and real-world readiness.</p>
+        </section>
+
+        <section id="administration" class="card">
+          <h2>Administration</h2>
+          <h3 style="color:var(--brand);margin:6px 0 8px">The Management Board</h3>
+          <p>The management board is an ad-hoc board whose professional membership is drawn from the pool of the Heads of Departments (HODs). This board is a key decision-making entity within the schools that holds meetings—sometimes bi-weekly—on matters affecting the day-to-day affairs of the schools.</p>
+          <p>Intermittently, the board deliberates on progressive and consultative decisions based on detailed reports furnished by the HODs. These are reviewed critically for feasibility and implementation, resulting in practical resolutions for school development.</p>
+          <p>One uncontestable fact about the GH Schools Management Board is their commitment to accountability—they conduct calculated reviews of every facilitator’s performance, creating a culture of excellence and responsibility.</p>
+
+          <h3 style="color:var(--brand);margin:16px 0 8px">School Governance Structure</h3>
+          <ul>
+            <li>Chancellor – Supreme institutional figurehead</li>
+            <li>Rector – Chair of the Management Board and Chief Executive Officer</li>
+            <li>Vice Rector – Academic and Research Oversight</li>
+            <li>Heads of Departments (HODs) – Operational management</li>
+            <li>Deans of Schools – Academic leadership and student support</li>
+            <li>Registrar – Student records and administration</li>
+            <li>Finance Officer – Budgeting and expenditure management</li>
+            <li>Quality Assurance Officer – Monitoring academic and operational standards</li>
+          </ul>
+
+          <h3 style="color:var(--brand);margin:16px 0 8px">Roles of the Board</h3>
+          <ul>
+            <li>Review academic and administrative policies</li>
+            <li>Ensure staff accountability and performance</li>
+            <li>Evaluate student performance and support systems</li>
+            <li>Oversee infrastructure and resource development</li>
+            <li>Implement and monitor strategic initiatives</li>
+            <li>Engage with stakeholders and industry partners</li>
+          </ul>
+
+          <p style="margin-top:10px">Through collaboration, transparency, and firm leadership, the Administration ensures GH SCHOOLS provides world-class vocational and technical education rooted in discipline, innovation, and practical excellence.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Buttons -->
+  <a href="admission.html" class="fab apply" aria-label="Apply Now">Apply Now</a>
+  <a href="#" class="fab top" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Back to Top">Back to Top</a>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <section class="footer-brand">
+        <div class="brandline">
+          <img src="images/GH Schools.png" alt="GH Schools Logo" />
+          <div>
+            <h3>GH SCHOOLS</h3>
+            <p style="margin:0;color:#fffdfd">GH SCHOOLS COLLEGE, Accra</p>
+            <p style="margin:0;color:#fbfafa">Scholarship with Professionalism</p>
+          </div>
+        </div>
+        <div>
+          <p style="margin:0 0 4px">+233 303 958 571</p>
+          <p style="margin:0 0 4px">+233 303 937 542</p>
+        </div>
+      </section>
+
+      <section class="footer-col">
+        <h4>University</h4>
+        <ul>
+          <li><a href="#">About GH SCHOOLS</a></li>
+          <li><a href="#">Our History</a></li>
+          <li><a href="#">Governance</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Policies & Regulations</a></li>
+        </ul>
+      </section>
+
+      <section class="footer-col">
+        <h4>Admissions</h4>
+        <ul>
+          
+          <li><a href="#">Diploma programs</a></li>
+          <li><a href="admission.HTML">Apply</a></li>
+          <li><a href="#">noe year programs </a></li>
+        </ul>
+      </section>
+
+      <section class="footer-col">
+        <h4>Academics</h4>
+        <ul>
+          <li><a href="#">Academic Affairs</a></li>
+          <li><a href="#">Schools & Faculties</a></li>
+          <li><a href="#">Fees Schedule</a></li>
+          <li><a href="#">Academic Calendar</a></li>
+        </ul>
+      </section>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggles
+    function toggleMobileNav(){
+      const panel = document.getElementById('mobileNav');
+      const btn = document.querySelector('.hamburger');
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      panel.hidden = expanded;
+    }
+    function toggleSub(el){
+      const expanded = el.getAttribute('aria-expanded') === 'true';
+      el.setAttribute('aria-expanded', String(!expanded));
+      const sub = el.nextElementSibling;
+      if(sub){ sub.hidden = expanded; }
+    }
+
+    // Scrollspy for desktop TOC
+    const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+    const sections = tocLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = '#' + entry.target.id;
+        const link = tocLinks.find(a => a.getAttribute('href') === id);
+        if(link){
+          if(entry.isIntersecting){ link.classList.add('active'); }
+          else { link.classList.remove('active'); }
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: [0, 1] });
+    sections.forEach(sec => io.observe(sec));
+  </script>
+
+  <script>
+function toggleMobileNav() {
+  const nav = document.getElementById("mobileNav");
+  const btn = document.querySelector(".hamburger");
+  const isOpen = !nav.hasAttribute("hidden");
+  if (isOpen) {
+    nav.setAttribute("hidden", "");
+    btn.setAttribute("aria-expanded", "false");
+  } else {
+    nav.removeAttribute("hidden");
+    btn.setAttribute("aria-expanded", "true");
+  }
+}
+
+function toggleSub(btn) {
+  const subMenu = btn.nextElementSibling;
+  const isOpen = !subMenu.hasAttribute("hidden");
+  if (isOpen) {
+    subMenu.setAttribute("hidden", "");
+    btn.setAttribute("aria-expanded", "false");
+  } else {
+    subMenu.removeAttribute("hidden");
+    btn.setAttribute("aria-expanded", "true");
+  }
+}
+
+function toggleSidebar() {
+  const sidebar = document.querySelector("aside.toc");
+  sidebar.classList.toggle("open");
+}
+</script>
+
+</body>
+</html>

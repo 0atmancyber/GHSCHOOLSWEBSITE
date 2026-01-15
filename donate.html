@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donate in Cedis</title>
+   <link rel="icon" type="image/png" href="images/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f7f9fc; color:#333; padding:20px; }
+    .container { max-width:500px; margin:auto; background:#fff; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:30px; animation:fadeIn 0.4s }
+    h2 { text-align:center; margin-bottom:10px; }
+    .amounts { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:15px; }
+    button.amount { flex:1 1 30%; padding:10px; border:none; border-radius:6px; background:#f60707; color:#fff; font-size:16px; cursor:pointer; transition:background 0.3s }
+    button.amount:hover { background:#0056b3 }
+    input[type=number], input[type=text], input[type=email] {
+      width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; font-size:16px;
+    }
+    button#donate { width:100%; padding:15px; background:#f20404; color:#fff; border:none; border-radius:8px; font-size:18px; cursor:pointer; transition:background 0.3s }
+    button#donate:hover { background:#218838 }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    #thankyou-modal { display:none; position:fixed;top:0;left:0;width:100%;height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center }
+    #thankyou-content { background:#fff; padding:30px; border-radius:10px; width:90%; max-width:400px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+    #thankyou-content button { margin-top:20px; padding:10px 20px; border:none; border-radius:5px; background:#f60707; color:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Support Our Work</h2>
+  <p style="text-align:center;color:#666;">Your contribution helps us serve the community better.</p>
+
+  <div class="amounts">
+    <button class="amount" onclick="setAmount(50)">₵50</button>
+    <button class="amount" onclick="setAmount(100)">₵100</button>
+    <button class="amount" onclick="setAmount(250)">₵250</button>
+    <button class="amount" onclick="setAmount(500)">₵500</button>
+  </div>
+
+  <input type="number" id="amount" placeholder="Custom amount (₵)" />
+  <input type="text" id="name" placeholder="Your Full Name" />
+  <input type="email" id="email" placeholder="Your Email" />
+
+  <button id="donate" onclick="pay()">Donate Now</button>
+</div>
+
+<!-- Add this inside your <body>, below the Donate form container -->
+<div style="text-align:center; margin-top:20px;">
+  <a href="index.html" style="
+    display:inline-block;
+    padding:12px 24px;
+    background-color:#010204;
+    color:#fff;
+    text-decoration:none;
+    border-radius:6px;
+    font-weight:bold;
+    transition:background 0.3s ease;
+  " onmouseover="this.style.backgroundColor='#5a6268'" onmouseout="this.style.backgroundColor='#6c757d'">
+    ← Back to Home
+  </a>
+</div>
+
+
+
+
+<!-- Thank You Modal + Receipt -->
+<div id="thankyou-modal">
+  <div id="thankyou-content">
+    <h2>Thank You!</h2>
+    <p>Your donation was successful.</p>
+    <p><strong>Reference:</strong> <span id="ref"></span></p>
+    <p><strong>Amount:</strong> ₵<span id="amt"></span></p>
+    <p><strong>Email:</strong> <span id="eml"></span></p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<!-- Paystack -->
+<script src="https://js.paystack.co/v2/inline.js"></script>
+<script>
+  function setAmount(val){ document.getElementById('amount').value = val; }
+
+  function pay(){
+    const amt = document.getElementById('amount').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+
+    if(!amt || !name || !email){
+      alert('Please fill all fields');
+      return;
+    }
+
+    const handler = PaystackPop.setup({
+      key: 'pk_test_xxxxxxxxxxxxxxxxxx', // REPLACE WITH YOUR PUBLIC KEY
+      email: email,
+      amount: amt * 100, // Convert to kobo equivalent
+      currency: 'GHS',   // Ghana Cedis
+      ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+      metadata: {
+        custom_fields: [{ display_name: name, variable_name: "donor_name", value: name }]
+      },
+      callback: function(response){
+        showReceipt(response.reference, amt, email);
+      },
+      onClose: function(){
+        alert('Payment cancelled');
+      }
+    });
+
+    handler.openIframe();
+  }
+
+  function showReceipt(ref, amt, email){
+    document.getElementById('ref').textContent = ref;
+    document.getElementById('amt').textContent = amt;
+    document.getElementById('eml').textContent = email;
+    document.getElementById('thankyou-modal').style.display = 'flex';
+  }
+
+  function closeModal(){
+    document.getElementById('thankyou-modal').style.display = 'none';
+  }
+</script>
+
+</body>
+<footer style="background-color: #222; color: #ddd; padding: 40px 20px 30px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; line-height: 1.6; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; max-width: 1200px; margin: 0 auto;">
+  
+  <!-- Logo and Contact -->
+  <div style="flex: 1 1 300px; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <img src="images/GH Schools.png" alt="GH Schools Logo" style="width: 75px; height: auto; object-fit: contain;" />
+      <div>
+        <h2 style="font-size: 22px; margin-bottom: 5px; color: #f1c40f; letter-spacing: 1.2px;">GH SCHOOLS</h2>
+        <p style="font-size: 13px; color: #bbb;">GH TECHNICAL UNIVERSITY COLLEGE, Accra</p>
+        <p style="font-size: 13px; color: #bbb;">Scholarship with Professionalism</p>
+      </div>
+    </div>
+
+    <div>
+      <p style="margin-bottom: 8px;"><i class="fas fa-phone" style="color: #f1c40f; margin-right: 8px;"></i> +233 303 958 571</p>
+      <p style="margin-bottom: 8px;"><i class="fas fa-phone" style="color: #f1c40f; margin-right: 8px;"></i> +233 303 937 542</p>
+      <p style="margin-bottom: 8px;"><i class="fas fa-phone" style="color: #f1c40f; margin-right: 8px;"></i> +233 208 381 583</p>
+      <p style="margin-bottom: 8px;"><i class="fas fa-envelope" style="color: #f1c40f; margin-right: 8px;"></i> admissions@upsamail.edu.gh</p>
+    </div>
+
+    <div style="margin-top: 10px;">
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-twitter"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-instagram"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+
+  <!-- Column 1 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">University</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">About GH SCHOOLS</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Our History</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Governance</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Leadership</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Policies & Regulations</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 2 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Admissions</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Undergraduate Admissions</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Postgraduate Admissions</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Professional Programmes</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Diploma</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Distance Learning (BOL)</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Short Courses</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 3 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Academics</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Affairs</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Schools & Faculties</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Fees Schedule</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Calendar</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Centres of Excellence</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation List</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 4 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Student</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Students Portal</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Student Services</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Freshmen Guidelines</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">The SRC</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Hostels</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Sports & Recreation</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Counseling Unit</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">UEIC</a></li>
+    </ul>
+  </div>
+
+</footer>
+
+</html>

@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GH SCHOOLS Admission Form</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2575fc;
+      --primary-dark: #1a6be0;
+      --secondary: #f19d01;
+      --secondary-dark: #d88a00;
+      --accent: #6a11cb;
+      --light: #f7f9fc;
+      --dark: #2c3e50;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --gray: #7f8c8d;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.999);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23ffffff" opacity="0.05"><polygon points="50,0 100,50 50,100 0,50"/></svg>');
+      background-size: 80px;
+      z-index: -1;
+    }
+    
+    .container {
+      max-width: 850px;
+      width: 95%;
+      margin: 20px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transform: translateY(0);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    
+    .container:hover {
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--dark);
+      font-size: clamp(20px, 4vw, 28px);
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      border-radius: 10px;
+    }
+    
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    .step.active {
+      display: block;
+    }
+    
+    .step-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding: 15px;
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .step-header:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .step-icon {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      margin-right: 15px;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
+      transition: var(--transition);
+    }
+    
+    .step-header:hover .step-icon {
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(37, 117, 252, 0.4);
+    }
+    
+    .step-info h3 {
+      color: var(--dark);
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+    
+    .step-info p {
+      color: var(--gray);
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    
+    .input-group {
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .input-group:hover {
+      transform: translateY(-2px);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 15px;
+      margin-top: 5px;
+      border: 2px solid #e1e5ee;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      background: white;
+    }
+    
+    /* Keep focus styles but avoid scaling to prevent layout shift / mobile zoom */
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.12);
+      outline: none;
+      transform: none;
+    }
+    
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    
+    .input-group:hover .input-icon {
+      color: var(--primary);
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .buttons {
+      margin-top: 30px;
+      text-align: center;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      margin: 5px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      min-width: 150px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    button:active::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    button.prev {
+      background: var(--gray);
+      box-shadow: 0 4px 15px rgba(127, 140, 141, 0.3);
+    }
+    
+    button.prev:hover {
+      background: #6c757d;
+    }
+    
+    #printPreview {
+      display: none;
+      background: white;
+      padding: 30px;
+      margin-top: 30px;
+      border-radius: 15px;
+      width: 100%;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e1e5ee;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .grid div {
+      border: 1px solid #e1e5ee;
+      padding: 15px;
+      border-radius: 10px;
+      background: var(--light);
+      transition: var(--transition);
+    }
+    
+    .grid div:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .school-logo {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .school-logo:hover {
+      transform: scale(1.02);
+    }
+    
+    .school-logo img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 15px;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+      transition: var(--transition);
+    }
+    
+    .school-logo:hover img {
+      transform: scale(1.05);
+      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.15));
+    }
+    
+    .school-logo h2 {
+      font-size: clamp(18px, 4vw, 24px);
+      margin: 0;
+      color: var(--dark);
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .school-logo p {
+      margin: 5px 0 0 0;
+      font-size: 15px;
+      color: var(--gray);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .note {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 6px;
+      line-height: 1.5;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      transition: var(--transition);
+    }
+    
+    .note:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-block {
+      background: #f0f7ff;
+      padding: 15px;
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      transition: var(--transition);
+    }
+    
+    .info-block:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Affirmation block styles */
+    .affirmation-block {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .affirmation-content {
+      max-width: 820px;
+      width: 100%;
+      background: linear-gradient(90deg, #28a745, #56cc80);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(39, 174, 96, 0.14);
+      border: 1px solid rgba(255,255,255,0.14);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .affirmation-content input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      transform: scale(1.15);
+      accent-color: #ffffff;
+      flex: 0 0 auto;
+    }
+
+    .affirm-buttons {
+      display: none;
+      gap: 10px;
+      margin-left: 8px;
+    }
+
+    .affirm-buttons button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .affirm-buttons button.active {
+      background: rgba(255,255,255,0.22);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .affirmation-text {
+      font-size: 14px;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .affirmation-text strong { display:block; font-size:15px; margin-bottom:6px; }
+
+    @media (max-width: 480px) {
+      .affirmation-content { flex-direction: column; align-items: center; }
+      /* On small screens hide the native checkbox and show Yes/No buttons */
+      .affirmation-content input[type="checkbox"] { display: none; }
+      .affirm-buttons { display: flex; }
+    }
+    
+    .small-muted {
+      font-size: 12px;
+      color: var(--gray);
+    }
+    
+    h3 {
+      color: var(--dark);
+      margin-bottom: 20px;
+      font-size: 22px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+    }
+    
+    h4 {
+      margin: 15px 0 8px 0;
+      font-size: 17px;
+      color: var(--dark);
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: #e1e5ee;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .progress-bar:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      border-radius: 10px;
+      width: 33.33%;
+      transition: width 0.5s ease;
+    }
+    
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .progress-step:hover {
+      transform: translateY(-5px);
+    }
+    
+    .step-bubble {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e1e5ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 5px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .step-bubble:hover {
+      transform: scale(1.1);
+    }
+    
+    .step-bubble.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 5px rgba(37, 117, 252, 0.2);
+    }
+    
+    .step-label {
+      font-size: 12px;
+      color: var(--gray);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .step-label.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Course Selection Section */
+    .course-selection {
+      margin: 25px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .course-options {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .course-option {
+      flex: 1;
+      min-width: 200px;
+      padding: 20px;
+      border: 2px solid #e1e5ee;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      background: white;
+    }
+    
+    .course-option:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
+    }
+    
+    .course-option.selected {
+      border-color: var(--primary);
+      background: #f0f7ff;
+      box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
+    }
+    
+    .course-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    .course-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+    
+    .course-desc {
+      font-size: 13px;
+      color: var(--gray);
+      margin-bottom: 15px;
+    }
+    
+    .info-link {
+      color: var(--primary);
+      font-size: 13px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+    }
+    
+    .info-link:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      transform: translateY(20px);
+      animation: modalSlideIn 0.4s ease forwards;
+    }
+    
+    .modal-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid #e1e5ee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--primary);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .modal-body h4 {
+      color: var(--primary);
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .modal-body ul, .modal-body ol {
+      padding-left: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .modal-body li {
+      margin-bottom: 8px;
+    }
+    
+    .modal-body strong {
+      color: var(--dark);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        margin: 10px auto;
+        padding: 20px 15px;
+        width: 100%;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      button {
+        min-width: 130px;
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+      
+      input, select, textarea {
+        padding: 12px;
+        /* Prevent mobile browsers from auto-zooming on inputs by ensuring font-size >= 16px */
+        font-size: 16px;
+      }
+      
+      .step-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .step-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      
+      .course-options {
+        flex-direction: column;
+      }
+      
+      .course-option {
+        min-width: auto;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px 10px;
+      }
+      
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      button {
+        width: 100%;
+        max-width: 250px;
+      }
+      
+      .progress-steps {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .progress-step {
+        flex: 1;
+        min-width: 80px;
+      }
+      
+      .modal-content {
+        margin: 10px;
+      }
+      
+      .modal-header {
+        padding: 15px 20px;
+      }
+      
+      .modal-body {
+        padding: 20px;
+      }
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      
+      #printPreview, #printPreview * {
+        visibility: visible;
+      }
+      
+      #printPreview {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(37, 117, 252, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(37, 117, 252, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 117, 252, 0); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes modalSlideIn {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .floating {
+      animation: float 5s ease-in-out infinite;
+    }
+    
+    /* Toast Notification */
+    #toast {
+      visibility: hidden;
+      min-width: 300px;
+      background: var(--success);
+      color: white;
+      text-align: center;
+      border-radius: 12px;
+      padding: 18px;
+      position: fixed;
+      z-index: 1000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 16px;
+      transform: translateX(-50%);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    #toast.error {
+      background: var(--danger);
+    }
+    
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    
+    /* Custom select styling */
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 16px;
+    }
+    
+    /* File input styling */
+    input[type="file"] {
+      padding: 12px;
+      background: var(--light);
+      border: 2px dashed #e1e5ee;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    input[type="file"]:hover {
+      background: #f0f7ff;
+      border-color: var(--primary);
+    }
+    
+    input[type="file"]:focus {
+      border-color: var(--primary);
+      background: #f0f7ff;
+    }
+    
+    /* Enhanced focus states */
+    input:focus, select:focus, textarea:focus {
+      animation: inputFocus 0.3s ease;
+    }
+    
+    @keyframes inputFocus {
+      /* avoid scaling animation (causes mobile zoom/layout shift); keep a subtle glow */
+      0% { box-shadow: 0 0 0 0 rgba(37, 117, 252, 0); }
+      100% { box-shadow: 0 0 0 6px rgba(37, 117, 252, 0.04); }
+    }
+    
+    /* Click animation for form elements */
+    .clickable {
+      transition: transform 0.1s ease;
+    }
+    
+    .clickable:active {
+      transform: scale(0.98);
+    }
+    
+    /* Enhanced transitions for all interactive elements */
+    .interactive {
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 64px;
+      height: 64px;
+      border: 8px solid rgba(0,0,0,0.08);
+      border-top: 8px solid var(--primary);
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating particles for background effect -->
+  <div class="particles" id="particles"></div>
+  
+  <div class="container">
+    <div class="school-logo floating">
+      <img src="images/favicon.png" alt="School Logo">
+      <h2>GH SCHOOLS COLLEGE</h2>
+      <p><strong>Official Admission Form</strong></p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <div class="progress-steps">
+          <div class="progress-step" onclick="goToStep(1)">
+            <div class="step-bubble active">1</div>
+            <div class="step-label active">Personal</div>
+          </div>
+          <div class="progress-step" onclick="goToStep(2)">
+            <div class="step-bubble">2</div>
+            <div class="step-label">Sponsor</div>
+          </div>
+          <div class="progress-step" onclick="goToStep(3)">
+            <div class="step-bubble">3</div>
+            <div class="step-label">Academic</div>
+          </div>
+        </div>
+    </div>
+
+    <form id="admissionForm">
+      <!-- Step 1: Personal Information -->
+      <div class="step active" id="step1">
+        <div class="step-header" onclick="toggleStepInfo(1)">
+          <div class="step-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="step-info">
+            <h3>Personal Information</h3>
+            <p>Tell us about yourself</p>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div>
+            <label for="first_name"><i class="fas fa-signature"></i> First Name</label>
+            <div class="input-group interactive">
+              <input type="text" id="first_name" required placeholder="First name" class="clickable">
+              <span class="input-icon"><i class="fas fa-user"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="middle_name"><i class="fas fa-signature"></i> Middle Name</label>
+            <div class="input-group interactive">
+              <input type="text" id="middle_name" placeholder="Middle name (optional)" class="clickable">
+              <span class="input-icon"><i class="fas fa-user"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="last_name"><i class="fas fa-signature"></i> SurName</label>
+            <div class="input-group interactive">
+              <input type="text" id="last_name" required placeholder="Last name" class="clickable">
+              <span class="input-icon"><i class="fas fa-user"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="address"><i class="fas fa-home"></i> Address</label>
+            <div class="input-group interactive">
+              <input type="text" id="address" required placeholder="Enter your address" class="clickable">
+              <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="gender"><i class="fas fa-venus-mars"></i> Gender</label>
+            <div class="input-group interactive">
+              <input type="text" id="gender" placeholder="e.g. Male, Female, Other" class="clickable">
+              <span class="input-icon"><i class="fas fa-venus-mars"></i></span>
+            </div>
+          </div>
+
+          <!-- Gender removed from form by request -->
+
+          <div>
+            <label for="dob"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+            <div class="input-group interactive">
+              <input type="date" id="dob" required class="clickable">
+              <span class="input-icon"><i class="fas fa-calendar"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+            <div class="input-group interactive">
+              <input type="tel" id="phone" required placeholder="Enter your phone number" class="clickable">
+              <span class="input-icon"><i class="fas fa-mobile-alt"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="nationality"><i class="fas fa-flag"></i> Nationality</label>
+            <div class="input-group interactive">
+              <select id="nationality" required class="clickable">
+                <option value="">-- Select Country --</option>
+                <option>Ghana</option>
+                <option>Nigeria</option>
+                <option>Ivory Coast</option>
+                <option>Burkina Faso</option>
+                <option>Togo</option>
+                <option>Benin</option>
+                <option>Sierra Leone</option>
+                <option>Liberia</option>
+                <option>Niger</option>
+                <option>The Gambia</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-globe"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="email"><i class="fas fa-envelope"></i> Email</label>
+            <div class="input-group interactive">
+              <input type="email" id="email" required placeholder="Enter your email address" class="clickable">
+              <span class="input-icon"><i class="fas fa-at"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="national_id_type"><i class="fas fa-id-card"></i> National ID Type</label>
+            <div class="input-group interactive">
+              <select id="national_id_type" required class="clickable">
+                <option value="">-- Select ID Type --</option>
+                <option>Voters ID</option>
+                <option>Ghana Card</option>
+                <option>Driver Licence</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-id-card"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="national_id_number"><i class="fas fa-hashtag"></i> National ID Number</label>
+            <div class="input-group interactive">
+              <input type="text" id="national_id_number" required placeholder="Enter national ID number" class="clickable">
+              <span class="input-icon"><i class="fas fa-hashtag"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="present_job"><i class="fas fa-briefcase"></i> Present Job</label>
+            <div class="input-group interactive">
+              <input type="text" id="present_job" required placeholder="Enter current occupation" class="clickable">
+              <span class="input-icon"><i class="fas fa-briefcase"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="language_spoken"><i class="fas fa-language"></i> Languages Spoken</label>
+            <div class="input-group interactive">
+              <input type="text" id="language_spoken" required placeholder="e.g. Twi, Fante, Akan, Ewe" class="clickable">
+              <span class="input-icon"><i class="fas fa-language"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="region"><i class="fas fa-map"></i> Region</label>
+            <div class="input-group interactive">
+              <select id="region" required class="clickable">
+                <option value="">-- Select Region --</option>
+                <option>Ashanti</option>
+                <option>Ahafo</option>
+                <option>Bono</option>
+                <option>Bono East</option>
+                <option>Western North</option>
+                <option>Western</option>
+                <option>Central</option>
+                <option>Greater Accra</option>
+                <option>Eastern</option>
+                <option>Volta</option>
+                <option>Oti</option>
+                <option>Northern</option>
+                <option>Savanah</option>
+                <option>Upper East</option>
+                <option>Upper West</option>
+                <option>North East</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-map"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="current_residence"><i class="fas fa-home"></i> Current Residence</label>
+            <div class="input-group interactive">
+              <input type="text" id="current_residence" required placeholder="Where are you currently residing?" class="clickable">
+              <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="hostel_pref"><i class="fas fa-bed"></i> Hostel Preference</label>
+            <div class="input-group interactive">
+              <select id="hostel_pref" required class="clickable">
+                <option value="">-- Select --</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-bed"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="any_medical"><i class="fas fa-notes-medical"></i> Any Medical Condition?</label>
+            <div class="input-group interactive">
+              <select id="any_medical" required class="clickable">
+                <option value="">-- Select --</option>
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-heartbeat"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="medical_spec"><i class="fas fa-file-medical"></i> If any, specify</label>
+            <div class="input-group interactive">
+              <textarea id="medical_spec" rows="2" placeholder="Specify medical condition if applicable" class="clickable"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <label for="disability_spec"><i class="fas fa-wheelchair"></i> Specify Disability (if any)</label>
+            <div class="input-group interactive">
+              <textarea id="disability_spec" rows="2" placeholder="Specify disability if any (optional)" class="clickable"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <label for="heard_source_select"><i class="fas fa-bullhorn"></i> Where did you hear about the school?</label>
+            <div class="input-group interactive">
+              <select id="heard_source_select" required class="clickable">
+                <option value="">-- Select --</option>
+                <option>Radio</option>
+                <option>TV</option>
+                <option>Social Media</option>
+                <option>Other</option>
+              </select>
+              <input type="text" id="heard_spec" placeholder="If other, please specify" class="clickable" style="margin-top:8px; display:none;">
+            </div>
+          </div>
+
+          <div>
+            <label for="passport"><i class="fas fa-camera"></i> Upload Passport Photo (Optional)</label>
+            <input type="file" id="passport" required accept="image/*" class="interactive clickable">
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button type="button" onclick="nextStep(2)" class="interactive">
+            <i class="fas fa-arrow-right"></i> Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Sponsor Information -->
+      <div class="step" id="step2">
+        <div class="step-header" onclick="toggleStepInfo(2)">
+          <div class="step-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="step-info">
+            <h3>Sponsor Information</h3>
+            <p>Tell us about your sponsor</p>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div>
+            <label for="sponsor_name"><i class="fas fa-user"></i> Name of Sponsor</label>
+            <div class="input-group interactive">
+              <input type="text" id="sponsor_name" required placeholder="Enter sponsor's full name" class="clickable">
+              <span class="input-icon"><i class="fas fa-user"></i></span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="sponsor_relationship"><i class="fas fa-link"></i> Relationship with Sponsor</label>
+            <div class="input-group interactive">
+              <input type="text" id="sponsor_relationship" required placeholder="e.g. Parent, Guardian, Employer" class="clickable">
+              <span class="input-icon"><i class="fas fa-user-friends"></i></span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="sponsor_occupation"><i class="fas fa-briefcase"></i> Occupation of Sponsor</label>
+            <div class="input-group interactive">
+              <input type="text" id="sponsor_occupation" required placeholder="Enter sponsor's occupation" class="clickable">
+              <span class="input-icon"><i class="fas fa-briefcase"></i></span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="sponsor_address"><i class="fas fa-home"></i> Address / Residence of Sponsor</label>
+            <div class="input-group interactive">
+              <input type="text" id="sponsor_address" required placeholder="Enter sponsor's address" class="clickable">
+              <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="sponsor_phone"><i class="fas fa-phone"></i> Phone Number of Sponsor</label>
+            <div class="input-group interactive">
+              <input type="tel" id="sponsor_phone" required placeholder="Enter sponsor's phone number" class="clickable">
+              <span class="input-icon"><i class="fas fa-mobile-alt"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button type="button" class="prev interactive" onclick="prevStep(1)">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button type="button" onclick="nextStep(3)" class="interactive">
+            <i class="fas fa-arrow-right"></i> Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Academic Details -->
+      <div class="step" id="step3">
+        <div class="step-header" onclick="toggleStepInfo(3)">
+          <div class="step-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="step-info">
+            <h3>Academic Details</h3>
+            <p>Provide your academic information</p>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div>
+            <label for="school_name"><i class="fas fa-school"></i> School Name</label>
+            <div class="input-group interactive">
+              <input type="text" id="school_name" required placeholder="Enter name of school attended" class="clickable">
+              <span class="input-icon"><i class="fas fa-university"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="school_location"><i class="fas fa-map-marker-alt"></i> School Location</label>
+            <div class="input-group interactive">
+              <input type="text" id="school_location" required placeholder="Town / District" class="clickable">
+              <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="school_year"><i class="fas fa-calendar"></i> Year of Completion</label>
+            <div class="input-group interactive">
+              <input type="number" id="school_year" required placeholder="e.g. 2020" min="1900" max="2100" class="clickable">
+              <span class="input-icon"><i class="fas fa-calendar"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="school_qualification"><i class="fas fa-certificate"></i> Qualification</label>
+            <div class="input-group interactive">
+              <select id="school_qualification" required class="clickable" onchange="handleQualificationChange()">
+                <option value="">-- Select Qualification --</option>
+                <option>JHS</option>
+                <option>SHS</option>
+                <option>Tertiary</option>
+                <option>None</option>
+                <option>No SHS</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-certificate"></i></span>
+            </div>
+          </div>
+
+          <div id="resultsUploadWrapper">
+            <label for="resultsFile"><i class="fas fa-file-upload"></i> Upload Results</label>
+            <input type="file" id="resultsFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="interactive clickable">
+          </div>
+        </div>
+
+        <h4><i class="fas fa-book-open"></i> WASSCE - Core Subjects (provide grade for each)</h4>
+        <div class="note interactive">
+          <i class="fas fa-info-circle"></i> Select the exact grade as shown on your WASSCE certificate. Options: A1, B2, B3, C4, C5, C6, D7, E8, F9. If you have not attended SHS, choose "None (No SHS)".
+        </div>
+
+        <div class="results-grid">
+          <div>
+            <label for="grade_english">English Language</label>
+            <div class="input-group interactive">
+              <select id="grade_english" required class="clickable">
+                <option value="">-- Select Grade --</option>
+                <option>A1</option><option>B2</option><option>B3</option><option>C4</option>
+                <option>C5</option><option>C6</option><option>D7</option><option>E8</option><option>F9</option>
+                <option value="None">None (No SHS)</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-language"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="grade_mathematics">Core Mathematics</label>
+            <div class="input-group interactive">
+              <select id="grade_mathematics" required class="clickable">
+                <option value="">-- Select Grade --</option>
+                <option>A1</option><option>B2</option><option>B3</option><option>C4</option>
+                <option>C5</option><option>C6</option><option>D7</option><option>E8</option><option>F9</option>
+                <option value="None">None (No SHS)</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-calculator"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="grade_social_studies">Social Studies</label>
+            <div class="input-group interactive">
+              <select id="grade_social_studies" required class="clickable">
+                <option value="">-- Select Grade --</option>
+                <option>A1</option><option>B2</option><option>B3</option><option>C4</option>
+                <option>C5</option><option>C6</option><option>D7</option><option>E8</option><option>F9</option>
+                <option value="None">None (No SHS)</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-globe-africa"></i></span>
+            </div>
+          </div>
+
+          <div>
+            <label for="grade_integrated_science">Integrated Science</label>
+            <div class="input-group interactive">
+              <select id="grade_integrated_science" required class="clickable">
+                <option value="">-- Select Grade --</option>
+                <option>A1</option><option>B2</option><option>B3</option><option>C4</option>
+                <option>C5</option><option>C6</option><option>D7</option><option>E8</option><option>F9</option>
+                <option value="None">None (No SHS)</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-flask"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Selection Section -->
+        <div class="course-selection">
+          <h4><i class="fas fa-graduation-cap"></i> Select Your Course Type</h4>
+          <p>Choose between our Diploma and ICC programs. Both can be pursued for 2 years, but differ in certification.</p>
+          
+          <div class="course-options">
+            <div class="course-option interactive" data-course="Diploma">
+              <div class="course-icon">
+                <i class="fas fa-university"></i>
+              </div>
+              <div class="course-title">Diploma Program</div>
+              <div class="course-desc">Formal academic award from GH SCHOOLS COLLEGE</div>
+              <a href="#" class="info-link" onclick="showCourseInfo('Diploma'); return false;">
+                <i class="fas fa-info-circle"></i> Learn More
+              </a>
+            </div>
+            
+            <div class="course-option interactive" data-course="ICC">
+              <div class="course-icon">
+                <i class="fas fa-award"></i>
+              </div>
+              <div class="course-title">ICC Program</div>
+              <div class="course-desc">Internal Certificate of Competence from the school/department</div>
+              <a href="#" class="info-link" onclick="showCourseInfo('ICC'); return false;">
+                <i class="fas fa-info-circle"></i> Learn More
+              </a>
+            </div>
+          </div>
+          
+          <input type="hidden" id="selectedCourse" name="selectedCourse" required>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label for="schoolSelect"><i class="fas fa-university"></i> Select School</label>
+            <div class="input-group interactive">
+              <select id="schoolSelect" onchange="populatePrograms()" required class="clickable">
+                <option value="">-- Select School --</option>
+                <option value="MEDIA">GH Media School</option>
+                <option value="FASHION">GH Fashion School</option>
+                <option value="CATERING">GH Catering School</option>
+                <option value="COSMETOLOGY">GH Cosmetology School</option>
+                <option value="TECHNOLOGY">GH Technology School</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-chevron-down"></i></span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="program"><i class="fas fa-book"></i> Program Applying For</label>
+            <div class="input-group interactive">
+              <select id="program" required class="clickable">
+                <option value="">-- Select Program --</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-graduation-cap"></i></span>
+            </div>
+          </div>
+          
+          <div>
+            <label for="programDuration"><i class="fas fa-clock"></i> Program Duration</label>
+            <div class="input-group interactive">
+              <select id="programDuration" required class="clickable">
+                <option value="">-- Select Duration --</option>
+                <option value="ONE (1) YEAR">One Year</option>
+                <option value="TWO (2) YEAR">Two Years</option>
+              </select>
+              <span class="input-icon"><i class="fas fa-calendar-alt"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Affirmation removed per request -->
+
+        <div class="buttons">
+          <button type="button" class="prev interactive" onclick="prevStep(2)">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button type="button" onclick="submitForm()" class="interactive">
+            <i class="fas fa-paper-plane"></i> Submit Application
+          </button>
+        </div>
+
+        <!-- Print Preview Section -->
+        <div id="printPreview" style="display: none;">
+          <div style="text-align: center; margin-bottom: 20px;">
+              <p style="font-size: 14px; color: #070606; text-align: center;">
+              Achimota - Abofu | Tel: +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909 | Website: www.ghtu.edu.gh
+            </p>
+            <hr style="margin-top: 20px; border: 1px solid #000;">
+          </div>
+
+          <div id="previewGrid" class="grid"></div>
+
+          <div style="margin-top: 30px;">
+            <strong>Passport Photo:</strong><br>
+            <img id="passportPreview" src="" alt="Passport Photo" style="max-width: 150px; display: none; border: 1px solid #ccc; border-radius: 8px;" />
+          </div>
+
+          <div style="margin-top: 20px;" id="resultsPreview" class="preview-item"></div>
+
+          <div style="margin-top: 30px; text-align: center;">
+            <button onclick="window.print()" class="interactive">
+              <i class="fas fa-print"></i> Print Form
+            </button>
+            <button onclick="downloadPDF()" class="interactive">
+              <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
+            <button onclick="downloadAsImage()" class="interactive">
+              <i class="fas fa-image"></i> Download Image
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Affirmation script removed -->
+
+  <!-- Course Info Modal -->
+  <!-- Loading overlay shown before redirecting to admission letter -->
+  <div class="modal" id="loadingOverlay" aria-hidden="true">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-header" style="background: linear-gradient(90deg, var(--accent), var(--primary)); color: white;">
+        <h3 class="modal-title">Preparing Letter</h3>
+      </div>
+      <div class="modal-body" style="text-align:center; padding: 30px 25px;">
+        <div class="spinner" role="status" aria-hidden="true"></div>
+        <p style="font-size:16px; margin-top:6px; color:var(--dark);">Preparing your admission letter. Please wait...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="courseInfoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Course Information</h3>
+        <button class="modal-close" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Content will be loaded here dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span>Form submitted and is being processed.</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Supabase setup
+    const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+    const { createClient } = supabase;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Course information data
+    const courseInfoData = {
+      "Diploma": {
+        title: "Diploma — explanation & requirements",
+        body: `
+          <p><strong>Summary (important):</strong> Both the <em>Diploma</em> and <em>ICC</em> options may be pursued for <strong>2 years</strong> (student choice / program planning). The main difference is the certificate awarded at completion: a formal <strong>Diploma</strong> from GH SCHOOLS COLLEGE vs an <strong>Internal Certificate of Competence (ICC)</strong> issued by the school/department.</p>
+
+          <h4>Diploma description (based on this admission form)</h4>
+          <ul>
+            <li>The Diploma is the college's formal academic award for successful completion of the chosen program (you select a School & Program above).</li>
+            <li>To apply you must provide core WASSCE subject grades (English, Core Mathematics, Social Studies, Integrated Science) via the dropdowns on this form and upload your results file. The form uses these fields to compute a numeric core score and average for evaluation.</li>
+            <li>Other application items required on this form: passport photo upload, guardian details, contact & email, and the program/school selection. An admission number is automatically generated after submission.</li>
+          </ul>
+
+          <h4>Requirements shown in the form</h4>
+          <ol>
+            <li>Provide exact WASSCE grades using the dropdowns (A1 to F9).</li>
+            <li>Upload your results file (resultsFile) and a passport photo (passport).</li>
+            <li>Fill guardian information and a valid contact email/phone (used to detect duplicate submissions).</li>
+            <li>Select the School and Program you intend to join (e.g., Journalism, Fashion, Catering, Cosmetology, Computer Science).</li>
+          </ol>
+
+          <div class="small-muted">Note: This description is derived from the form structure (WASSCE grade fields, result uploads, admission-number generation and program selection). The application logic computes a 'WASSCE core score' (A1->1 ... F9->9) to help evaluation. See the form fields for exact behavior.</div>
+        `
+      },
+
+      "ICC": {
+        title: "ICC — explanation & requirements",
+        body: `
+          <p><strong>Summary (important):</strong> The <em>ICC (Internal Certificate of Competence)</em> is an institution/department-level competence certificate. Per the note above, both Diploma and ICC may be pursued for <strong>2 years</strong> but certification differs: ICC awards a competence certificate; Diploma awards the formal college diploma.</p>
+
+          <h4>ICC description (based on this admission form)</h4>
+          <ul>
+            <li>ICC is for applicants seeking documented competence recognition by the school's program. It uses the same application fields on this form for enrollment and evaluation.</li>
+            <li>Required items (same as Diploma on this form): WASSCE core subject grades, upload of results, passport photo, guardian & contact information, and program selection.</li>
+            <li>The form's evaluation fields (grades & computed core score) will also be stored for ICC applicants and used in the same way as for Diploma applicants.</li>
+          </ul>
+
+          <h4>Requirements shown in the form</h4>
+          <ol>
+            <li>Choose a School & Program above.</li>
+            <li>Provide the WASSCE grades (English, Core Maths, Social Studies, Integrated Science).</li>
+            <li>Upload your results file and passport photo, and provide guardian contact details.</li>
+            <li>Confirm your selection in this dialog to proceed — the system will store the chosen course type when submitting the form.</li>
+          </ol>
+
+          <div class="small-muted">Note: the form previously labeled ICC with a one-year hint; the interface now explains both programs can be pursued for 2 years and clarifies that the primary difference is the certificate awarded.</div>
+        `
+      }
+    };
+
+    // Create floating particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 15;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        const size = Math.random() * 10 + 5;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const duration = Math.random() * 20 + 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Update progress bar
+    function updateProgressBar(step) {
+      const progress = document.getElementById('progress');
+      const stepBubbles = document.querySelectorAll('.step-bubble');
+      const stepLabels = document.querySelectorAll('.step-label');
+      
+      // Update progress width
+      progress.style.width = `${(step / 3) * 100}%`;
+      
+      // Update active step indicators
+      stepBubbles.forEach((bubble, index) => {
+        if (index < step) {
+          bubble.classList.add('active');
+        } else {
+          bubble.classList.remove('active');
+        }
+      });
+      
+      stepLabels.forEach((label, index) => {
+        if (index < step) {
+          label.classList.add('active');
+        } else {
+          label.classList.remove('active');
+        }
+      });
+    }
+
+    // Handle qualification change - disable WASSCE and Diploma for None/No SHS
+    function handleQualificationChange() {
+      const qualSelect = document.getElementById('school_qualification');
+      const qualValue = qualSelect.value;
+      const isNoQualification = qualValue === 'None' || qualValue === 'No SHS';
+
+      // Disable/enable WASSCE grade fields
+      const gradeFields = ['grade_english', 'grade_mathematics', 'grade_social_studies', 'grade_integrated_science'];
+      gradeFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (isNoQualification) {
+          field.disabled = true;
+          field.value = 'None'; // Auto-set to None
+          field.style.opacity = '0.5';
+          field.style.cursor = 'not-allowed';
+        } else {
+          field.disabled = false;
+          field.style.opacity = '1';
+          field.style.cursor = 'pointer';
+        }
+      });
+
+      // Disable/enable results file upload
+      const resultsUploadWrapper = document.getElementById('resultsUploadWrapper');
+      const resultsFile = document.getElementById('resultsFile');
+      if (isNoQualification) {
+        resultsUploadWrapper.style.display = 'none';
+        resultsFile.disabled = true;
+        resultsFile.value = '';
+      } else {
+        resultsUploadWrapper.style.display = 'block';
+        resultsFile.disabled = false;
+      }
+
+      // Hide/show Diploma course option
+      const diplomaCourseOption = document.querySelector('.course-option[data-course="Diploma"]');
+      if (isNoQualification) {
+        diplomaCourseOption.style.display = 'none';
+        diplomaCourseOption.classList.remove('selected');
+        
+        // Auto-select ICC course
+        const courseOptions = document.querySelectorAll('.course-option');
+        courseOptions.forEach(opt => opt.classList.remove('selected'));
+        const iccOption = document.querySelector('.course-option[data-course="ICC"]');
+        if (iccOption) {
+          iccOption.classList.add('selected');
+          document.getElementById('selectedCourse').value = 'ICC';
+        }
+      } else {
+        diplomaCourseOption.style.display = 'block';
+      }
+
+      // Disable/enable program duration (filter to only ICC)
+      const durationSelect = document.getElementById('programDuration');
+      if (isNoQualification) {
+        // Keep duration enabled but user can only select ICC program
+        // Set course to ICC only
+        const courseInput = document.getElementById('selectedCourse');
+        courseInput.value = 'ICC';
+        
+        showToast('Students without SHS can only apply for ICC program.', false);
+      }
+    }
+
+    // Navigate to specific step
+    function goToStep(step) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+      updateProgressBar(step);
+      window.scrollTo(0, 0);
+    }
+
+    function nextStep(step) {
+      // Validate current step before moving forward
+      const from = parseInt(step, 10) - 1;
+      if (from >= 1) {
+        if (!validateStep(from)) return; // prevent navigation if validation fails
+      }
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+      updateProgressBar(step);
+      window.scrollTo(0, 0);
+    }
+
+    function validateStep(stepIndex) {
+      try {
+        const container = document.getElementById('step' + stepIndex);
+        if (!container) return true;
+        const inputs = container.querySelectorAll('input, select, textarea');
+        for (const el of inputs) {
+          // Skip hidden elements
+          if (el.offsetParent === null) continue;
+          // Required attribute enforcement
+          if (el.hasAttribute('required')) {
+            if (el.type === 'file') {
+              if (!el.files || el.files.length === 0) {
+                el.focus();
+                showToast('Please upload the required file.', true);
+                return false;
+              }
+            } else if (!String(el.value || '').trim()) {
+              el.focus();
+              if (typeof el.reportValidity === 'function') el.reportValidity();
+              else showToast('Please fill out all required fields.', true);
+              return false;
+            }
+          }
+
+          // Conditional: if the user indicated a medical condition, ensure the spec is provided
+          if (el.id === 'medical_spec') {
+            const anyMed = document.getElementById('any_medical');
+            if (anyMed && anyMed.value === 'Yes') {
+              if (!String(el.value || '').trim()) {
+                el.focus();
+                showToast('Please specify the medical condition.', true);
+                return false;
+              }
+            }
+          }
+
+          // Conditional: if heard_source_select is Other ensure heard_spec
+          if (el.id === 'heard_spec') {
+            const heard = document.getElementById('heard_source_select');
+            if (heard && heard.value === 'Other') {
+              if (!String(el.value || '').trim()) {
+                el.focus();
+                showToast('Please specify where you heard about the school.', true);
+                return false;
+              }
+            }
+          }
+        }
+        return true;
+      } catch (e) { console.error('validateStep error', e); return false; }
+    }
+
+    function prevStep(step) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+      updateProgressBar(step);
+      window.scrollTo(0, 0);
+    }
+
+    // Toggle step info (for cinematic effect)
+    function toggleStepInfo(step) {
+      const stepHeader = document.querySelector(`#step${step} .step-header`);
+      const stepIcon = document.querySelector(`#step${step} .step-icon`);
+      
+      stepHeader.classList.toggle('expanded');
+      stepIcon.classList.toggle('pulse');
+      
+      // Add a slight animation to the step icon
+      stepIcon.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        stepIcon.style.transform = 'scale(1)';
+      }, 300);
+    }
+
+    // School to program mapping
+    const SCHOOL_PROGRAMS = {
+      'MEDIA': ["Journalism and Media Studies", "Journalism and Media Art", "TV and Film Production", "Multimedia Production"],
+      'FASHION': ["Fashion Design and Technology"],
+      'CATERING': ["Catering"],
+      'COSMETOLOGY': ["Cosmetology", "Beauty Specialist", "Beauty Therapy"],
+      'TECHNOLOGY': ["Computer Systems"]
+    };
+
+    // School display names mapping
+    const SCHOOL_DISPLAY_NAMES = {
+      'MEDIA': 'GH MEDIA SCHOOL',
+      'FASHION': 'GH FASHION SCHOOL', 
+      'CATERING': 'GH CATERING SCHOOL',
+      'COSMETOLOGY': 'GH COSMETOLOGY SCHOOL',
+      'TECHNOLOGY': 'GH TECHNOLOGY SCHOOL'
+    };
+
+    function populatePrograms() {
+      const school = document.getElementById("schoolSelect").value;
+      const programDropdown = document.getElementById("program");
+
+      programDropdown.innerHTML = `<option value="">-- Select Program --</option>`;
+
+      if (school && SCHOOL_PROGRAMS[school]) {
+        SCHOOL_PROGRAMS[school].forEach(program => {
+          const option = document.createElement("option");
+          option.value = program;
+          option.textContent = program;
+          programDropdown.appendChild(option);
+        });
+      }
+    }
+
+    // Course selection functionality
+    function initializeCourseSelection() {
+      const courseOptions = document.querySelectorAll('.course-option');
+      const selectedCourseInput = document.getElementById('selectedCourse');
+      
+      courseOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          // Remove selected class from all options
+          courseOptions.forEach(opt => opt.classList.remove('selected'));
+          
+          // Add selected class to clicked option
+          this.classList.add('selected');
+          
+          // Set the hidden input value
+          const courseType = this.getAttribute('data-course');
+          selectedCourseInput.value = courseType;
+          
+          // Show confirmation toast
+          showToast(`Selected: ${courseType} Program`);
+        });
+      });
+    }
+
+    // Show course info modal
+    function showCourseInfo(courseType) {
+      const modal = document.getElementById('courseInfoModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      if (courseInfoData[courseType]) {
+        modalTitle.textContent = courseInfoData[courseType].title;
+        modalBody.innerHTML = courseInfoData[courseType].body;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+      }
+    }
+
+    // Close modal
+    function closeModal() {
+      const modal = document.getElementById('courseInfoModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
+
+    // School code mapping
+    const SCHOOL_CODES = {
+      'MEDIA': 'GHMS',
+      'FASHION': 'GHFS',
+      'CATERING': 'GHCT', 
+      'COSMETOLOGY': 'GHCM',
+      'TECHNOLOGY': 'GHTS'
+    };
+    
+    // Generate student ID with format: [SchoolCode][3-digit-sequence][26]
+    // Example: GHMS01026 -> GHMS + 010 (10th applicant) + 26 (constant year suffix)
+    async function generateAdmissionNumber(schoolCode) {
+      const YEAR_SUFFIX = '26'; // constant suffix as requested
+      const prefix = String(schoolCode || '').toUpperCase();
+
+      // Try to find the highest sequence for this school from `newstudents` and `students`
+      try {
+        // Get recent candidate IDs from newstudents
+        const { data: recentNew, error: errNew } = await supabaseClient
+          .from('newstudents')
+          .select('student_id,created_at')
+          .ilike('student_id', `${prefix}%`)
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (errNew) console.warn('Could not query newstudents for id generation', errNew);
+
+        const { data: recentStudents, error: errStudents } = await supabaseClient
+          .from('students')
+          .select('student_id,created_at')
+          .ilike('student_id', `${prefix}%`)
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (errStudents) console.warn('Could not query students for id generation', errStudents);
+
+        const candidates = (recentNew || []).concat(recentStudents || []);
+
+        // Collect existing sequence numbers for this prefix/year suffix
+        const seqSet = new Set();
+        for (const row of candidates) {
+          const sid = String((row && row.student_id) || '');
+          if (!sid.startsWith(prefix)) continue;
+          if (!sid.endsWith(YEAR_SUFFIX)) continue;
+          const middle = sid.slice(prefix.length, sid.length - YEAR_SUFFIX.length);
+          const n = parseInt(middle, 10);
+          if (!isNaN(n) && n > 0) seqSet.add(n);
+        }
+
+        // Also include any locally stored counter as used (prevents reuse)
+        const counterKey = `student_counter_${prefix}`;
+        const storedCounter = parseInt(localStorage.getItem(counterKey)) || 0;
+        if (storedCounter > 0) seqSet.add(storedCounter);
+
+        // Find smallest unused positive integer sequence starting from 1
+        let nextSeq = 1;
+        while (seqSet.has(nextSeq)) nextSeq++;
+
+        const seqPadded = String(nextSeq).padStart(3, '0');
+
+        // Persist counter as this assigned sequence to reduce reuse
+        try { localStorage.setItem(counterKey, String(nextSeq)); } catch(_) {}
+
+        return `${prefix}${seqPadded}${YEAR_SUFFIX}`;
+      } catch (e) {
+        console.warn('Error generating admission number, falling back to local increment', e);
+        const counterKey = `student_counter_${schoolCode}`;
+        let counter = parseInt(localStorage.getItem(counterKey)) || 0;
+        counter++;
+        localStorage.setItem(counterKey, counter.toString());
+        const padded = counter.toString().padStart(3, '0');
+        return `${schoolCode}${padded}26`;
+      }
+    }
+
+    // Function to upload files to Supabase Storage
+    async function uploadFileToSupabase(file, bucketName) {
+      try {
+        // Generate unique file name
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        // Upload file to Supabase Storage
+        const uploadRes = await supabaseClient.storage
+          .from(bucketName)
+          .upload(filePath, file);
+
+        if (uploadRes.error) {
+          console.error('Error uploading file:', uploadRes.error);
+          // show user-friendly message
+          showToast('Upload failed: ' + (uploadRes.error.message || uploadRes.error), true);
+          return null;
+        }
+
+        // Get public URL (handle response safely)
+        const pubRes = await supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
+        if (pubRes.error) {
+          console.warn('Could not get public URL:', pubRes.error);
+          // return path as fallback or null
+          return null;
+        }
+
+        const publicUrl = (pubRes.data && pubRes.data.publicUrl) ? pubRes.data.publicUrl : null;
+        return publicUrl;
+      } catch (error) {
+        console.error('File upload error:', error);
+        showToast("Error uploading file. Please try again or contact support.", true);
+        return null;
+      }
+    }
+
+    async function submitForm() {
+      try {
+        // Basic validation (passport photo is optional). Required fields list.
+        const requiredFields = [
+          'first_name', 'last_name', 'dob', 'gender', 'phone', 'email', 'address',
+          'nationality', 'national_id_type', 'national_id_number', 'school_name', 'school_location', 'school_year', 'school_qualification',
+          'schoolSelect', 'program', 'programDuration', 'selectedCourse',
+          'sponsor_name', 'sponsor_relationship', 'sponsor_occupation', 'sponsor_address', 'sponsor_phone',
+          'current_residence', 'hostel_pref', 'any_medical', 'language_spoken', 'region', 'present_job', 'heard_source_select',
+          'passport'
+        ];
+
+        for (const fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (!field) {
+            showToast(`Please fill in ${fieldId.replace(/_/g, ' ')}`, true);
+            return;
+          }
+          // Handle file inputs separately
+          if (field.type === 'file') {
+            if (!field.files || field.files.length === 0) {
+              showToast(`Please upload ${fieldId.replace(/_/g, ' ')}`, true);
+              field.focus();
+              return;
+            }
+            continue;
+          }
+          if (!String(field.value || '').trim()) {
+            showToast(`Please fill in ${fieldId.replace(/_/g, ' ')}`, true);
+            if (field && field.focus) field.focus();
+            return;
+          }
+        }
+
+        // Affirmation requirement removed - proceeding without affirmation check
+
+        // Validate WASSCE grades
+        const wassceGrades = [
+          'grade_english', 'grade_mathematics', 'grade_social_studies', 'grade_integrated_science'
+        ];
+
+        for (const gradeField of wassceGrades) {
+          const grade = document.getElementById(gradeField).value;
+          if (!grade) {
+            showToast(`Please select a grade for ${gradeField.replace('grade_', '').replace(/_/g, ' ')}`, true);
+            return;
+          }
+        }
+
+        // If applicant selected "None (No SHS)" for any WASSCE grade, the results file is optional.
+        const isNoSHS = wassceGrades.some(id => document.getElementById(id).value === 'None');
+        if (!isNoSHS) {
+          const resultsInput = document.getElementById('resultsFile');
+          if (!resultsInput || !resultsInput.files || resultsInput.files.length === 0) {
+            showToast('Please upload your WASSCE results file or select "None (No SHS)" for your grades.', true);
+            resultsInput && resultsInput.focus();
+            return;
+          }
+        }
+
+        // If heard source is 'Other', ensure the specification is provided
+        const heardSelectEl = document.getElementById('heard_source_select');
+        if (heardSelectEl && heardSelectEl.value === 'Other') {
+          const heardSpecVal = document.getElementById('heard_spec').value.trim();
+          if (!heardSpecVal) {
+            showToast('Please specify where you heard about the school', true);
+            document.getElementById('heard_spec').focus();
+            return;
+          }
+        }
+
+        // If applicant indicated a medical condition, ensure the medical_spec is provided
+        const anyMedEl = document.getElementById('any_medical');
+        if (anyMedEl && anyMedEl.value === 'Yes') {
+          const medSpecVal = document.getElementById('medical_spec').value.trim();
+          if (!medSpecVal) {
+            showToast('Please specify the medical condition', true);
+            document.getElementById('medical_spec').focus();
+            return;
+          }
+        }
+
+        // Collect form values
+        const heardSelect = document.getElementById('heard_source_select');
+        const rawGenderValue = (document.getElementById("gender") && document.getElementById("gender").value) ? document.getElementById("gender").value.trim() : '';
+
+        // Normalize gender to canonical form expected by DB constraints
+        // Accept single-letter codes or full words; produce one of: M/F/O or Male/Female/Other
+        let normalizedGender = '';
+        if (rawGenderValue) {
+          const g = rawGenderValue.trim();
+          if (g.length === 1) {
+            const map = { 'm': 'M', 'f': 'F', 'o': 'O', 'M': 'M', 'F': 'F', 'O': 'O' };
+            normalizedGender = map[g] || g.toUpperCase();
+          } else {
+            // Accept common full-word variants and canonicalize to Title Case
+            const candidate = g.charAt(0).toUpperCase() + g.slice(1).toLowerCase();
+            if (['Male','Female','Other'].includes(candidate)) {
+              normalizedGender = candidate;
+            } else {
+              // If user entered an unexpected value, coerce to 'Other' to satisfy DB constraint
+              console.warn('Unrecognized gender value, coercing to Other:', g);
+              normalizedGender = 'Other';
+            }
+          }
+        }
+
+        // Ensure final value is one of the allowed set for DB check constraint
+        const allowedGenders = new Set(['M','F','O','Male','Female','Other','m','f','o','male','female','other']);
+        if (normalizedGender && !allowedGenders.has(String(normalizedGender))) {
+          console.warn('Normalized gender not in allowed set; coercing to Other:', normalizedGender);
+          normalizedGender = 'Other';
+        }
+        
+        // Helper to safely truncate values to max length for database fields
+        function truncate(value, maxLen) {
+          if (!value) return value;
+          return String(value).substring(0, maxLen);
+        }
+        
+        const formValues = {
+          first_name: truncate(document.getElementById("first_name").value.trim(), 50),
+          middle_name: truncate(document.getElementById("middle_name").value.trim(), 50),
+          last_name: truncate(document.getElementById("last_name").value.trim(), 50),
+          dob: document.getElementById("dob").value,
+          gender: truncate(normalizedGender, 50),
+          phone_number: truncate(document.getElementById("phone").value.trim(), 50),
+          email: truncate(document.getElementById("email").value.trim(), 50),
+          home_address: truncate(document.getElementById("address").value.trim(), 50),
+          nationality: truncate(document.getElementById("nationality").value.trim(), 50),
+          national_id_type: truncate(document.getElementById("national_id_type").value.trim(), 50),
+          national_id_number: truncate(document.getElementById("national_id_number").value.trim(), 50),
+          present_job: truncate(document.getElementById("present_job").value.trim(), 50),
+          language_spoken: truncate(document.getElementById("language_spoken").value.trim(), 50),
+          region: truncate(document.getElementById("region").value.trim(), 50),
+          current_residence: truncate(document.getElementById("current_residence").value.trim(), 50),
+          hostel_preference: truncate(document.getElementById("hostel_pref").value.trim(), 50),
+          any_medical: truncate(document.getElementById("any_medical").value.trim(), 50),
+          medical_spec: truncate(document.getElementById("medical_spec").value.trim(), 50),
+          disability_spec: truncate(document.getElementById("disability_spec").value.trim(), 50),
+          heard_source: truncate((heardSelect && heardSelect.value) ? heardSelect.value : '', 50),
+          heard_spec: truncate(document.getElementById("heard_spec").value.trim(), 50),
+
+          sponsor_name: truncate(document.getElementById("sponsor_name").value.trim(), 50),
+          sponsor_relationship: truncate(document.getElementById("sponsor_relationship").value.trim(), 50),
+          sponsor_occupation: truncate(document.getElementById("sponsor_occupation").value.trim(), 50),
+          sponsor_address: truncate(document.getElementById("sponsor_address").value.trim(), 50),
+          sponsor_phone: truncate(document.getElementById("sponsor_phone").value.trim(), 50),
+
+          school_name: truncate(document.getElementById("school_name").value.trim(), 50),
+          school_location: truncate(document.getElementById("school_location").value.trim(), 50),
+          school_year: parseInt(document.getElementById("school_year").value, 10) || null,
+          school_qualification: truncate(document.getElementById("school_qualification").value.trim(), 50),
+
+          school_selected: truncate(document.getElementById("schoolSelect").value, 50),
+          program_applying_for: truncate(document.getElementById("program").value, 50),
+          program_duration: truncate(document.getElementById("programDuration").value, 50),
+          course_type: truncate(document.getElementById("selectedCourse").value, 50),
+          created_at: new Date().toISOString(),
+        };
+
+        // Add WASSCE grades with correct keys for admission letter
+        formValues.english_grade = truncate(document.getElementById("grade_english").value, 50);
+        formValues.mathematics_grade = truncate(document.getElementById("grade_mathematics").value, 50);
+        formValues.social_studies_grade = truncate(document.getElementById("grade_social_studies").value, 50);
+        formValues.integrated_science_grade = truncate(document.getElementById("grade_integrated_science").value, 50);
+
+        // Compute numeric scores
+        const gradeToScore = { A1:1, B2:2, B3:3, C4:4, C5:5, C6:6, D7:7, E8:8, F9:9 };
+        const numericSum = 
+          (gradeToScore[formValues.english_grade] || 0) +
+          (gradeToScore[formValues.mathematics_grade] || 0) +
+          (gradeToScore[formValues.social_studies_grade] || 0) +
+          (gradeToScore[formValues.integrated_science_grade] || 0);
+
+        formValues.wassce_core_score = parseInt(numericSum, 10) || null;
+        formValues.wassce_core_average = parseFloat(((numericSum / 4) || 0).toFixed(2));
+
+        // Handle file uploads
+        let passportPhotoUrl = null;
+        let wassceResultsUrl = null;
+
+        // Upload passport photo if provided (now optional)
+        const passportFile = document.getElementById("passport").files[0];
+        if (passportFile) {
+          passportPhotoUrl = await uploadFileToSupabase(passportFile, 'passport-photos');
+        }
+
+        // Upload WASSCE results file if provided
+        const resultsFile = document.getElementById("resultsFile").files[0];
+        if (resultsFile) {
+          wassceResultsUrl = await uploadFileToSupabase(resultsFile, 'wassce-results');
+        }
+
+        // Add file URLs to form values
+        formValues.passport_photo_url = passportPhotoUrl;
+        formValues.wassce_results_url = wassceResultsUrl;
+
+        // Check for duplicate submissions: require BOTH email (case-insensitive) AND phone to match
+        // Normalize phone/email values used for the check
+        const checkEmail = (formValues.email || '').trim();
+        const checkPhone = (formValues.phone_number || '').trim();
+
+        const { data: existing, error: checkError } = await supabaseClient
+          .from('newstudents')
+          .select('student_id')
+          .ilike('email', checkEmail)
+          .eq('phone_number', checkPhone)
+          .limit(1);
+
+        if (checkError) {
+          console.error("Error checking existing registration:", checkError);
+          showToast("Something went wrong. Try again later.", true);
+          return;
+        }
+
+        if (existing && existing.length > 0) {
+          showToast("❌ A registration already exists with this email and phone number.", true);
+          return;
+        }
+
+        // Generate student ID with new format (async generator)
+        const schoolCode = SCHOOL_CODES[formValues.school_selected] || 'GHXX';
+        const student_id = await generateAdmissionNumber(schoolCode);
+
+        formValues.student_id = student_id;
+
+        // Enforce client-side max lengths to avoid DB varchar/truncation errors
+        const maxLengths = {
+          first_name: 100,
+          middle_name: 100,
+          last_name: 100,
+          email: 254,
+          phone_number: 20,
+          sponsor_phone: 20,
+          passport_photo_url: 1024,
+          wassce_results_url: 1024,
+          student_id: 64,
+          program_applying_for: 128,
+          program_duration: 64,
+          school_selected: 128,
+          school_name: 128,
+          region: 128,
+          home_address: 512,
+          sponsor_address: 512,
+          present_job: 256,
+          nationality: 128,
+          medical_spec: 256,
+          disability_spec: 256,
+          heard_spec: 256
+        };
+
+        const truncated = {};
+        Object.keys(formValues).forEach(k => {
+          const v = formValues[k];
+          if (typeof v === 'string' && maxLengths[k]) {
+            if (v.length > maxLengths[k]) {
+              truncated[k] = { from: v.length, to: maxLengths[k] };
+              formValues[k] = v.slice(0, maxLengths[k]);
+            }
+          }
+        });
+
+        if (Object.keys(truncated).length > 0) {
+          console.warn('Truncated oversized form fields before insert:', truncated);
+          try { showToast('Some long fields were shortened to fit the database. Please review your submission.', true); } catch(e){}
+        }
+
+        // Generate reference code for sms_trigger_master constraint
+        const referenceCode = 'REF-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
+        formValues.reference_code = referenceCode;
+
+        // Save to Supabase (now using `newstudents` table)
+        const { data, error } = await supabaseClient
+          .from('newstudents')
+          .insert([formValues]);
+
+        if (error) {
+          console.error('Supabase insert error:', error);
+          console.error('Form values being inserted:', formValues);
+          console.error('Field lengths:', Object.entries(formValues).reduce((acc, [k, v]) => {
+            if (typeof v === 'string') acc[k] = v.length;
+            return acc;
+          }, {}));
+          
+          // Handle gender check constraint error (kept for safety)
+          if (error.code === '23514' && error.message.includes('gender')) {
+            console.error('Gender-related DB constraint triggered during insert. Raw gender:', rawGenderValue, 'Normalized gender:', normalizedGender);
+            showToast("Gender field validation failed on the server. Tried value: " + (normalizedGender || rawGenderValue) + ". Please contact support.", true);
+            return;
+          }
+
+          // Handle varchar length errors (value too long for column)
+          if (error.code === '22001') {
+            console.error('Field too long for column. Form values lengths:', Object.entries(formValues).reduce((acc, [k, v]) => {
+              if (typeof v === 'string') acc[k] = v.length;
+              return acc;
+            }, {}));
+            showToast("A form field is too long for the database column. The gender column appears to be limited to 2 characters. To accept full words (Male/Female/Other) update the DB schema or run the provided migration at `supabase_migrations/003_fix_newstudents_gender_constraint.sql`.", true);
+            return;
+          }
+          
+          // If it's a duplicate student_id error, retry with a new number
+          if (error.code === '23505' && error.message.includes('student_id')) {
+            showToast("Generating new student ID...", false);
+            // Retry with a freshly generated student ID (re-run generator)
+            try {
+              formValues.student_id = await generateAdmissionNumber(schoolCode);
+              const { data: retryData, error: retryError } = await supabaseClient
+                .from('newstudents')
+                .insert([formValues]);
+              if (retryError) {
+                showToast("Error saving form: " + retryError.message, true);
+                return;
+              }
+            } catch (retryErr) {
+              showToast("Error generating retry student ID: " + (retryErr.message || retryErr), true);
+              return;
+            }
+          } else {
+            showToast("Error saving form: " + error.message, true);
+            return;
+          }
+        }
+
+        // Also upsert a corresponding students record so the applicant exists in `students`
+        try {
+          const firstname = formValues.first_name || '';
+          const lastname = formValues.last_name || '';
+
+          const studentPayload = {
+            student_id: student_id,
+            firstname: firstname,
+            lastname: lastname,
+            email: formValues.email || null,
+            phone: formValues.phone_number || null,
+            department: SCHOOL_DISPLAY_NAMES[formValues.school_selected] || formValues.school_selected || null,
+            level: '',
+            school: SCHOOL_DISPLAY_NAMES[formValues.school_selected] || formValues.school_selected || null,
+            course_type: formValues.course_type || null,
+            created_at: new Date().toISOString()
+          };
+
+          // Use email as the conflict key so repeated submissions update the same student row.
+          const { data: studentData, error: studentError } = await supabaseClient
+            .from('students')
+            .upsert([studentPayload], { onConflict: 'email' });
+
+          if (studentError) {
+            console.warn('Could not upsert students table:', studentError);
+          } else {
+            console.log('Upserted student record:', studentData);
+          }
+        } catch (e) {
+          console.error('Error upserting student record:', e);
+        }
+
+        // Store values in localStorage for admission letter with CORRECT keys
+        localStorage.setItem("admitted_full_name", (formValues.first_name + ' ' + formValues.last_name).trim());
+        localStorage.setItem("admitted_program", formValues.program_applying_for);
+        localStorage.setItem("selected_school", formValues.school_selected);
+        localStorage.setItem("school_name", SCHOOL_DISPLAY_NAMES[formValues.school_selected]);
+        localStorage.setItem("student_id", student_id);
+        localStorage.setItem("program_duration", formValues.program_duration);
+        localStorage.setItem("course_type", formValues.course_type);
+        localStorage.setItem("student_gender", formValues.gender);
+        localStorage.setItem("intake_label", "February 2025");
+        localStorage.setItem("admissions_phone", "0274622250");
+        
+        // Store WASSCE grades with correct keys that the admission letter expects
+        localStorage.setItem("english_grade", formValues.english_grade);
+        localStorage.setItem("mathematics_grade", formValues.mathematics_grade);
+        localStorage.setItem("social_studies_grade", formValues.social_studies_grade);
+        localStorage.setItem("integrated_science_grade", formValues.integrated_science_grade);
+
+        // Show preview
+        showPreview(formValues);
+
+        showToast("✅ Form submitted successfully!");
+        
+        // Show loading screen and redirect to admission letter after 5 seconds
+        showLoadingAndRedirect('admissionletter1.html', 5);
+
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        showToast("Something went wrong:\n" + (err.message || err), true);
+      }
+    }
+
+    function showPreview(formValues) {
+      const grid = document.getElementById("previewGrid");
+      grid.innerHTML = "";
+      
+      for (const key in formValues) {
+        if (formValues[key] && key !== 'created_at') {
+          const div = document.createElement("div");
+          div.className = "preview-item interactive";
+          div.innerHTML = `<strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong><br>${formValues[key]}`;
+          grid.appendChild(div);
+        }
+      }
+
+      // Handle passport photo preview
+      const passportInput = document.getElementById("passport");
+      const passportPreview = document.getElementById("passportPreview");
+      if (passportInput.files && passportInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          passportPreview.src = e.target.result;
+          passportPreview.style.display = "block";
+        };
+        reader.readAsDataURL(passportInput.files[0]);
+      }
+
+      // Handle results file preview
+      const resultsInput = document.getElementById("resultsFile");
+      const resultsPreview = document.getElementById("resultsPreview");
+      if (resultsInput.files && resultsInput.files[0]) {
+        const file = resultsInput.files[0];
+        resultsPreview.innerHTML = `
+          <strong>Uploaded Results File:</strong><br>
+          File Name: ${file.name}<br>
+          Type: ${file.type}<br>
+          <a href="#" onclick="previewResultsFile('${URL.createObjectURL(file)}')">Click to view</a>
+        `;
+      } else {
+        resultsPreview.innerHTML = `<strong>Uploaded Results File:</strong><br>No file uploaded.`;
+      }
+
+      document.getElementById("admissionForm").style.display = "none";
+      document.getElementById("printPreview").style.display = "block";
+      window.scrollTo(0, 0);
+    }
+
+    // Show loading overlay and redirect after given seconds
+    function showLoadingAndRedirect(url, seconds) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (!overlay) {
+        setTimeout(() => { window.location.href = url; }, seconds * 1000);
+        return;
+      }
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      // Wait specified time then redirect
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        window.location.href = url;
+      }, seconds * 1000);
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.innerHTML = isError 
+        ? `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`
+        : `<i class="fas fa-check-circle"></i><span>${message}</span>`;
+      
+      toast.className = isError ? 'error' : '';
+      toast.style.visibility = "visible";
+      
+      setTimeout(() => {
+        toast.style.visibility = "hidden";
+      }, 4000);
+    }
+
+    function previewResultsFile(url) {
+      window.open(url, '_blank');
+    }
+
+    // Toggle visibility/requiredness of results upload when applicant selects 'None (No SHS)'
+    function toggleResultsUploadVisibility() {
+      const gradeIds = ['grade_english','grade_mathematics','grade_social_studies','grade_integrated_science'];
+      let anyNoSHS = false;
+      for (const id of gradeIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.value === 'None') { anyNoSHS = true; break; }
+      }
+
+      const wrapper = document.getElementById('resultsUploadWrapper');
+      const input = document.getElementById('resultsFile');
+      const preview = document.getElementById('resultsPreview');
+      if (anyNoSHS) {
+        if (wrapper) wrapper.style.display = 'none';
+        if (input) {
+          input.disabled = true;
+          // clear selected file
+          try { input.value = ''; } catch(e) { /* ignore */ }
+        }
+        if (preview) preview.innerHTML = `<strong>Uploaded Results File:</strong><br>No file uploaded.`;
+      } else {
+        if (wrapper) wrapper.style.display = '';
+        if (input) input.disabled = false;
+      }
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById("printPreview");
+      const opt = {
+        margin: 0.5,
+        filename: 'GH-Admission-Form.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // Helper: preload cross-origin images with CORS enabled
+    function preloadImageWithCORS(src) {
+      return new Promise((resolve, reject) => {
+        try {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(src);
+          img.onerror = (err) => reject(err || new Error('Image load error'));
+          img.src = src;
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    // Export the print preview as an image (PNG). Attempts to preload images with CORS.
+    async function downloadAsImage() {
+      const element = document.getElementById("printPreview");
+      if (!element) return alert('Preview not available');
+
+      // Find images inside preview and try to reload them with CORS (best-effort)
+      const imgs = Array.from(element.querySelectorAll('img'));
+      const preloadPromises = imgs.map(imgEl => {
+        try {
+          const src = imgEl.src || imgEl.getAttribute('src');
+          if (!src) return Promise.resolve();
+          const url = new URL(src, window.location.href);
+          if (url.origin === window.location.origin) return Promise.resolve();
+          // attempt to preload
+          return preloadImageWithCORS(src)
+            .then(() => {
+              // swap the src to the CORS-loaded resource (may be same URL)
+              imgEl.src = src;
+            })
+            .catch(err => {
+              console.warn('Could not preload image with CORS:', src, err);
+            });
+        } catch (err) {
+          return Promise.resolve();
+        }
+      });
+
+      await Promise.all(preloadPromises);
+
+      // Require html2canvas (bundled by html2pdf). Check availability.
+      if (typeof html2canvas === 'undefined') {
+        alert('html2canvas is not available in this environment. Download as PDF instead.');
+        return;
+      }
+
+      try {
+        const canvas = await html2canvas(element, {
+          useCORS: true,
+          scale: 2,
+          logging: true,
+          allowTaint: false
+        });
+
+        // Convert to blob and trigger download
+        canvas.toBlob(function(blob) {
+          if (!blob) {
+            alert('Could not create image blob (canvas may be tainted by cross-origin resources).');
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Admission-Letter.png';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+        }, 'image/png', 0.95);
+      } catch (err) {
+        console.error('Error exporting image:', err);
+        alert('Could not export image. This is usually caused by cross-origin images that do not allow CORS. See console for details.');
+      }
+    }
+
+    // Initialize form on load
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      updateProgressBar(1);
+      initializeCourseSelection();
+      
+      // Add clickable class to all interactive elements
+      document.querySelectorAll('input, select, textarea, button').forEach(el => {
+        el.classList.add('clickable');
+      });
+      
+      // Close modal when clicking outside content
+      document.getElementById('courseInfoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeModal();
+        }
+      });
+      
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeModal();
+        }
+      });
+
+      // Show/hide heard_spec when 'Other' is selected in the dropdown
+      const heardSelect = document.getElementById('heard_source_select');
+      const heardSpec = document.getElementById('heard_spec');
+      if (heardSelect && heardSpec) {
+        heardSelect.addEventListener('change', function() {
+          if (this.value === 'Other') {
+            heardSpec.style.display = 'block';
+            heardSpec.focus();
+          } else {
+            heardSpec.style.display = 'none';
+            heardSpec.value = '';
+          }
+        });
+      }
+
+      // Attach listeners to grade selects so we can auto-hide results upload when 'None' is chosen
+      const gradeIds = ['grade_english','grade_mathematics','grade_social_studies','grade_integrated_science'];
+      gradeIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', toggleResultsUploadVisibility);
+      });
+      // Run once on init to set correct visibility
+      toggleResultsUploadVisibility();
+
+    });
+  </script>
+</body>
+</html>

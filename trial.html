@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard — Fixed</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <!-- Libraries -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: #f4f2ff; padding: 20px; animation: pageFadeIn 3s ease-in; }
+    @keyframes pageFadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+
+    .container { background: white; border-radius: 25px; display: grid; grid-template-columns: 240px 1fr; max-width: 1170px; margin: auto; overflow: hidden; box-shadow: 0 10px 40px rgba(3, 3, 3, 0.964); position: relative; }
+
+    .sidebar { background: linear-gradient(180deg, #0137c2, #4a00e0); color: white; display: flex; flex-direction: column; padding: 30px 0; gap: 25px; align-items: center; transition: all .3s ease; }
+    .sidebar a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: #faf6f6; text-decoration: none; width: 100%; }
+    .sidebar a:hover { background: #f6d502; color: #080808; }
+
+    .main { padding: 30px; display: flex; flex-direction: column; gap: 25px; }
+
+    .top-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .student-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  background: #fff; /* Needed for shadow to show clearly */
+  padding: 10px; /* Adds breathing room */
+  border-radius: 8px; /* Smooth edges */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.985); /* Soft shadow */
+}
+
+    .student-info img { width: 50px; height: 50px; border-radius: 50%; }
+    .search { padding: 12px 20px; border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.967); background-color: #f0f0f0; width: 300px; }
+
+    .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: #4a00e0; position: absolute; top: 20px; left: 20px; z-index: 1000; }
+
+    .welcome { background: linear-gradient(120deg, #4a00e0, #8e2de2); color: white; border-radius: 20px; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; animation: slideIn .8s ease-in-out; }
+    .welcome img { width: 80px; border-radius: 10%; }
+    @keyframes slideIn { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .cards { display: flex; gap: 20px; flex-wrap: wrap; }
+    .card { flex: 1; background: linear-gradient(135deg, #7f00ff, #e100ff); color: white; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.966); transition: transform .3s ease; min-width: 250px; }
+    .card:hover { transform: translateY(-8px); }
+
+    .payment-section h3 { margin-bottom: 10px; }
+    .payment-buttons { display: flex; gap: 20px; flex-wrap: wrap; }
+    .payment-card { background: #0225bf; color: white; padding: 20px; border-radius: 20px; flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-width: 250px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.966); }
+    .payment-card button { margin-top: 15px; padding: 10px; background: #f4b802; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: background .3s; }
+    .payment-card button:hover { background: #ffe680; }
+
+    .notice { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.979); }
+    .support-btn { position: fixed; bottom: 25px; right: 25px; background: #4a00e0; color: white; font-size: 22px; padding: 14px 18px; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.975); transition: transform .3s; }
+    .support-btn:hover { transform: scale(1.1); }
+
+    footer { margin-top: 40px; text-align: center; color: #666; }
+    footer a { color: #4a00e0; text-decoration: none; }
+
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; border-radius: 12px; overflow: hidden; }
+    th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; }
+    th { background: #e5e7eb; }
+
+    /* Modal (single, consolidated rules) */
+    .modal { position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal.show { display: flex; animation: modalFade .3s ease-out; }
+    @keyframes modalFade { from { opacity: 0 } to { opacity: 1 } }
+    .modal-content { background: #fff; padding: 25px 30px; border-radius: 16px; max-width: 520px; width: 92%; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,.25); }
+    .modal h3 { margin-top: 0; color: #ff6a00; font-size: 22px; font-weight: 700; }
+    .modal p { color: #444; font-size: 16px; margin: 12px 0; }
+    .fee-option { display: flex; justify-content: space-between; align-items: center; background: #f8f8f8; padding: 10px 15px; margin: 10px 0; border-radius: 8px; font-size: 16px; }
+    .fee-option input { transform: scale(1.2); }
+    .confirm-btn { margin-top: 15px; background: #ff6a00; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; transition: background .3s; }
+    .confirm-btn:hover { background: #e65c00; }
+    .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #888; transition: color .2s; }
+    .close-btn:hover { color: #ff6a00; }
+
+    .student-info-card { display: flex; gap: 20px; align-items: center; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,.12); margin-top: 20px; flex-wrap: wrap; flex-direction: row; }
+    .profile-pic { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #070707; }
+    .student-details { flex: 1; min-width: 200px; }
+    .student-details h3 { margin-bottom: 10px; color: #4a00e0; }
+    .student-details p { margin: 4px 0; font-size: 15px; color: #333; }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .sidebar.mobile { display: flex; flex-direction: column; position: absolute; background: linear-gradient(180deg, #8e2de2, #4a00e0); width: 220px; top: 60px; left: 15px; border-radius: 15px; z-index: 999; padding: 15px; box-shadow: 0 6px 12px rgba(0,0,0,.25); }
+      .menu-toggle { display: block; }
+      .cards, .payment-buttons { flex-direction: column; }
+      .search { width: 100%; margin-top: 60px; }
+    }
+
+    @media (max-width: 600px) {
+      .main { padding: 20px 10px; align-items: center; text-align: center; }
+      .top-section { flex-direction: column; align-items: center; }
+      .student-info { flex-direction: column; align-items: center; text-align: center; }
+      .search { width: 100%; max-width: 100%; }
+      .welcome { flex-direction: column; text-align: center; padding: 20px; gap: 20px; }
+      .welcome img { width: 60px; }
+      .cards, .payment-buttons { width: 100%; align-items: center; }
+      .card, .payment-card { width: 100%; max-width: 100%; }
+      .card h3, .card p { font-size: 1rem; }
+      table, th, td { font-size: 14px; text-align: center; }
+      th, td { padding: 10px 5px; }
+      #tuitionFeeModal div, #otherFeesModal div { width: 95% !important; padding: 20px !important; }
+      .support-btn { font-size: 18px; padding: 10px 14px; }
+    }
+
+    @media print { body * { visibility: hidden; } #receiptModal, #receiptModal * { visibility: visible; } #receiptModal { position: absolute; top:0; left:0; width:100%; } }
+  </style>
+</head>
+<body>
+  <a href="#" class="support-btn">💬</a>
+  <div class="container">
+    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('mobile')">☰</button>
+
+    <div class="sidebar">
+      <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#"><i class="fas fa-credit-card"></i> Payment</a>
+      <a href="#" id="resultsLink"><i class="fas fa-chart-line"></i> Results</a>
+
+      <!-- Results Modal (single) -->
+      <div id="resultsModal" class="modal">
+        <div class="modal-content">
+          <button class="close-btn" onclick="hideModal('resultsModal')">&times;</button>
+          <div id="modalBody">
+            <h2>🎉 Congratulations!</h2>
+            <p>You have successfully completed your examination. We’re proud of your hard work and dedication!</p>
+            <p>Click the button below to view your results and see how well you did!</p>
+            <a href="https://moderndtsystems.com/studentportal/RegstCourses.aspx" id="checkResultsBtn" target="_blank" style="display:inline-block; padding:10px 20px; background:#007bff; color:#fff; border-radius:5px; text-decoration:none; font-weight:bold;">Check Results</a>
+          </div>
+        </div>
+      </div>
+
+      <a href="#"><i class="fas fa-blog"></i> Blog</a>
+      <a href="#"><i class="fas fa-calendar-alt"></i> Calendar</a>
+      <a href="#"><i class="fas fa-user"></i> Profile</a>
+      <a href="#"><i class="fas fa-headset"></i> Support</a>
+      <a href="#"><i class="fas fa-cog"></i> Settings</a>
+      <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="main">
+      <div class="top-section">
+        <input class="search" type="text" placeholder="Search..." />
+        <div class="student-info-card">
+          <img src="images/AVATAR.png" alt="Student Profile" class="profile-pic" />
+          <div class="student-details">
+            <h3 id="student-name">Loading Name...</h3>
+            <p><strong>ID:</strong> <span id="student-id">...</span></p>
+            <p><strong>Level:</strong> <span id="student-level">...</span></p>
+            <p><strong>Department:</strong> <span id="student-department">...</span></p>
+            <p><i class="fas fa-envelope" style="color: #4a00e0;"></i> <span id="student-email">...</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome">
+        <div>
+          <h2>GH SCHOOLS COLLEGE</h2>
+          <p>Hello, You are warmly welcome back to school! Enjoy your semester</p>
+        </div>
+        <img src="images/favicon.png" alt="Logo" />
+      </div>
+
+      <div class="cards" style="display: flex; gap: 20px;">
+        <div class="card">
+          <i class="fas fa-wallet fa-2x" style="margin-bottom: 10px;"></i>
+          <h3 id="totalPayable">GHS 2,690.00</h3>
+          <p>Total Payable</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-money-bill-wave fa-2x" style="margin-bottom: 10px;"></i>
+          <h3 id="totalPaid">GHS 0.00</h3>
+          <p>Total Paid</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-exclamation-circle fa-2x" style="margin-bottom: 10px;"></i>
+          <h3 id="outstandingBalance">GHS 2,690.00</h3>
+          <p>Outstanding Balance</p>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <div class="payment-buttons" style="display: flex; gap: 20px;">
+          <div class="payment-card">
+            <i class="fas fa-graduation-cap fa-2x" style="margin-bottom: 10px;"></i>
+            <p style="margin: 10px 0; font-weight: bold;">Tuition Fee</p>
+            <button id="payTuitionBtn" onclick="openTuitionModal()">Pay Tuition</button>
+          </div>
+          <div class="payment-card">
+            <i class="fas fa-file-invoice-dollar fa-2x" style="margin-bottom: 10px;"></i>
+            <p style="margin: 10px 0; font-weight: bold;">Other Fees</p>
+            <button id="showOtherFeesBtn" onclick="openOtherFeesModal()">Other Fees</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="register-card" style="margin-top: 30px; background-color: #1ca117; padding: 20px; border-radius: 10px; text-align: center; color: #fcf9f9;">
+        <p style="margin-bottom: 10px;">Ready to Register?</p>
+        <a href="#" id="registerCoursesBtn" onclick="registerCourses()" style="display:inline-block; padding:10px 20px; background:#f9f9f9; color:#018d28; border-radius:5px; text-decoration:none; font-weight:bold;">Register Courses</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single Restriction Modal -->
+  <div id="restrictionModal" class="modal">
+    <div class="modal-content" style="text-align:center; max-width:420px;">
+      <button class="close-btn" onclick="hideModal('restrictionModal')">&times;</button>
+      <h3>Access Restricted</h3>
+      <p>You must pay at least 50% of your tuition fee and all other fees to register for courses.</p>
+      <button class="confirm-btn" onclick="hideModal('restrictionModal')">OK</button>
+    </div>
+  </div>
+
+  <!-- Welcome Modal -->
+  <div class="modal" id="welcomeModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="hideModal('welcomeModal')">&times;</button>
+      <h3>Welcome Back!</h3>
+      <p>Wishing you a successful semester at GH SCHOOLS 🎓</p>
+      <button class="confirm-btn" onclick="hideModal('welcomeModal')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Tuition Modal -->
+  <div class="modal" id="tuitionModal" onclick="backdropClose(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="hideModal('tuitionModal')">&times;</button>
+      <h3>Pay Tuition Fee</h3>
+      <p style="text-align: left; font-size: 15px; color: #333; margin-bottom: 15px;">
+        The full tuition fee for the semester is <strong style="color: #ff6a00;">GHS 2550</strong>.
+        <br>You have the option to pay either the full amount or at least <strong style="color: #ff6a00;">50%</strong> (GHS 1275) to begin your registration and access other fee payments.
+      </p>
+      <div class="fee-option"><label><input type="radio" name="tuitionAmount" value="1275"> Pay 50% - GHS 1275</label></div>
+      <div class="fee-option"><label><input type="radio" name="tuitionAmount" value="2550"> Pay 100% - GHS 2550</label></div>
+      <button class="confirm-btn" onclick="payTuition()">Proceed to Pay</button>
+    </div>
+  </div>
+
+  <!-- Other Fees Modal -->
+  <div class="modal" id="otherFeesModal" onclick="backdropClose(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="hideModal('otherFeesModal')">&times;</button>
+      <h3>Select Other Fees to Pay</h3>
+      <p style="text-align: left; font-size: 15px; color: #333; margin-bottom: 15px;">In addition to your tuition fee, the following are required fees to complete your registration:</p>
+      <div class="fee-option"><label><input type="checkbox" name="otherFee" value="SRC Dues|50"> <strong>SRC Dues</strong> – GHS 50<br><small style="color:#777;">Supports student union and welfare activities.</small></label></div>
+      <div class="fee-option"><label><input type="checkbox" name="otherFee" value="Medical Dues|70"> <strong>Medical Dues</strong> – GHS 70<br><small style="color:#777;">Covers basic healthcare and first aid services.</small></label></div>
+      <div class="fee-option"><label><input type="checkbox" name="otherFee" value="Departmental Dues|20"> <strong>Departmental Dues</strong> – GHS 20<br><small style="color:#777;">Used for departmental resources and academic materials.</small></label></div>
+      <button class="confirm-btn" onclick="payOtherFees()">Proceed to Pay</button>
+    </div>
+  </div>
+
+  <!-- ===== Scripts ===== -->
+  <!-- Supabase (single init) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = 'https://gpcwexnsysnclywiggls.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY3dleG5zeXNuY2x5d2lnZ2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNzE5MzYsImV4cCI6MjA2Nzc0NzkzNn0.Hjd-wf3BkbRBHxyj3KCyfr_pXKD6f3ujK0wWWmRSYm4';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
+
+  <script>
+    // ===== Dashboard totals =====
+    let totalPayable = 2690.00; // 2550 + 50 + 70 + 20
+    let totalPaid = 0.00;
+
+    function updateCards() {
+      const outstanding = Math.max(totalPayable - totalPaid, 0);
+      document.getElementById('totalPayable').textContent = `GHS ${totalPayable.toFixed(2)}`;
+      document.getElementById('totalPaid').textContent = `GHS ${totalPaid.toFixed(2)}`;
+      document.getElementById('outstandingBalance').textContent = `GHS ${outstanding.toFixed(2)}`;
+    }
+
+    // Initial render
+    updateCards();
+  </script>
+
+  <script>
+    // ===== Modal helpers =====
+    const showModal = (id) => document.getElementById(id).classList.add('show');
+    const hideModal = (id) => document.getElementById(id).classList.remove('show');
+    const backdropClose = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('show'); };
+
+    function openTuitionModal() { showModal('tuitionModal'); }
+    function openOtherFeesModal() { showModal('otherFeesModal'); }
+
+    // Welcome Modal only first session
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!sessionStorage.getItem('welcomed')) { showModal('welcomeModal'); sessionStorage.setItem('welcomed', 'true'); }
+    });
+
+    // Results modal open
+    document.getElementById('resultsLink').addEventListener('click', (e) => { e.preventDefault(); showModal('resultsModal'); });
+  </script>
+
+  <script>
+    // ===== Supabase save =====
+    async function savePaymentToSupabase(payment) {
+      try {
+        const { data, error } = await supabase.from('payments').insert([payment]);
+        if (error) throw error;
+        console.log('✅ Supabase insert success:', data);
+      } catch (err) {
+        console.error('❌ Supabase insert error:', err);
+        alert('❌ Error saving to Supabase: ' + (err.message || err));
+      }
+    }
+
+    function getFormattedDateTime() { return new Date().toLocaleString(); }
+  </script>
+
+  <script>
+    // ===== PDF Receipt =====
+    async function generateAndDownloadPDFReceipt(details) {
+      const { name, id, level, department, paymentId, paymentType, amountPaid = 0, transactionRef, paymentDate, allPayments = [], feeBreakdown = '' } = details;
+      const { jsPDF } = window.jspdf; const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth(); const lineHeight = 10;
+      const round2 = (n) => Math.round((parseFloat(n) + Number.EPSILON) * 100) / 100;
+
+      const tuitionFull = 2550;
+      const tuitionPaid = round2(allPayments.reduce((s, p) => s + parseFloat(p), 0));
+      const tuitionOutstanding = round2(Math.max(tuitionFull - tuitionPaid, 0));
+      const tuitionPercentage = Math.min((tuitionPaid / tuitionFull) * 100, 100).toFixed(2);
+
+      const dues = { 'SRC Dues': 50, 'Departmental Dues': 20, 'Medical Dues': 70 };
+      let paidDues = {}; let paidDuesTotal = 0;
+      if (feeBreakdown) {
+        feeBreakdown.split('<br>').forEach(line => { const m = line.match(/(.*) - GHS\s*([\d.]+)/i); if (m) { const label = m[1].trim(); const amount = parseFloat(m[2]); paidDues[label] = amount; paidDuesTotal += amount; } });
+      }
+
+      const totalFee = round2(tuitionFull + Object.values(dues).reduce((a,b)=>a+b,0));
+      const totalPaidNow = round2(tuitionPaid + paidDuesTotal);
+      const remainingBalance = round2(Math.max(totalFee - totalPaidNow, 0));
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(24); doc.setTextColor('#D32F2F');
+      doc.text('GH SCHOOLS COLLEGE', pageWidth / 2, 30, { align: 'center' });
+      doc.setDrawColor('#D32F2F'); doc.setLineWidth(1.5); doc.line(40, 35, pageWidth - 40, 35);
+      doc.setFontSize(18); doc.setTextColor('#1976D2'); doc.text('Payment Receipt', pageWidth / 2, 50, { align: 'center' });
+
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.setTextColor('#000');
+      let y = 65; const centerText = (label, value) => { doc.text(`${label}: ${value}`, pageWidth/2, y, { align:'center' }); y += lineHeight; };
+      centerText('Payment ID', paymentId); centerText('Student Name', name); centerText('Student ID', id); centerText('Level', level); centerText('Department', department);
+      centerText('Payment Type', paymentType); centerText('Amount Paid (This Transaction)', `GHS ${round2(amountPaid).toFixed(2)}`);
+      centerText('Total Paid (So Far)', `GHS ${totalPaidNow.toFixed(2)}`); centerText('Total Fee', `GHS ${totalFee.toFixed(2)}`);
+      centerText('Outstanding Balance', `GHS ${remainingBalance.toFixed(2)}`); centerText('Transaction Ref', transactionRef); centerText('Payment Date', paymentDate);
+
+      y += 5; doc.setFont('helvetica','bold'); doc.setTextColor('#1976D2'); doc.text('Tuition Payment Summary:', pageWidth/2, y, { align:'center' }); y += lineHeight;
+      doc.setFont('helvetica','normal'); doc.setTextColor('#000'); doc.text(`Tuition Paid: GHS ${tuitionPaid.toFixed(2)} (${tuitionPercentage}%)`, pageWidth/2, y, { align:'center' }); y += lineHeight;
+      doc.text(`Outstanding Tuition Balance: GHS ${tuitionOutstanding.toFixed(2)}`, pageWidth/2, y, { align:'center' }); y += lineHeight + 5;
+
+      doc.setFont('helvetica','bold'); doc.setTextColor('#1976D2'); doc.text('Other Fees Summary:', pageWidth/2, y, { align:'center' }); y += lineHeight;
+      doc.setFont('helvetica','normal'); doc.setTextColor('#000');
+      Object.entries(dues).forEach(([label, fullAmount]) => {
+        const paid = paidDues[label] || 0; const remaining = round2(fullAmount - paid);
+        doc.text(`${label}: Paid GHS ${paid.toFixed(2)}, Outstanding GHS ${remaining.toFixed(2)}`, pageWidth/2, y, { align:'center' }); y += lineHeight;
+      });
+
+      y += 30; const sigLineWidth = 80; const sigX = (pageWidth - sigLineWidth) / 2; doc.setDrawColor('#1976D2'); doc.setLineWidth(0.8);
+      doc.line(sigX, y, sigX + sigLineWidth, y); doc.setFontSize(12); doc.setTextColor('#1976D2'); doc.text('Authorized Signature', pageWidth/2, y + 7, { align:'center' });
+      doc.setFontSize(10); doc.setFont('helvetica', 'italic'); doc.setTextColor('#1976D2');
+      doc.text('Contact: info@ghtuc.edu.gh | +233 26 462 2250', pageWidth/2, 290, { align:'center' });
+      doc.text('Thank you for your payment.', pageWidth/2, 296, { align:'center' });
+      doc.save(`${paymentId}_receipt.pdf`);
+    }
+  </script>
+
+  <script>
+    // ===== Payments (Paystack) =====
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_20834c6b266695a845aec74214208749f118ffd9';
+
+    function buildStudent() {
+      return {
+        name: localStorage.getItem('studentName') || 'Unknown',
+        id: localStorage.getItem('studentId') || 'N/A',
+        email: localStorage.getItem('studentEmail') || 'N/A',
+        level: localStorage.getItem('studentLevel') || 'N/A',
+        department: localStorage.getItem('studentDepartment') || 'N/A',
+      };
+    }
+
+    function genPaymentId(studentName, studentId) {
+      const firstName = (studentName || 'Unknown').split(' ')[0] || 'Student';
+      return `${firstName}${studentId}${new Date().getFullYear()}`;
+    }
+
+    function payTuition() {
+      const amount = document.querySelector('input[name="tuitionAmount"]:checked')?.value;
+      if (!amount) { alert('Please select an amount to pay.'); return; }
+
+      const student = buildStudent();
+      const paymentId = genPaymentId(student.name, student.id);
+
+      PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: student.email,
+        amount: parseFloat(amount) * 100,
+        currency: 'GHS',
+        label: 'Tuition Fee Payment',
+        callback: function (response) {
+          alert('Payment successful! Transaction ref: ' + response.reference);
+          const paymentDate = getFormattedDateTime();
+
+          // Update cumulative tuition in localStorage
+          let tuitionPaid = parseFloat(localStorage.getItem('tuitionPaid') || '0');
+          tuitionPaid += parseFloat(amount);
+          localStorage.setItem('tuitionPaid', tuitionPaid);
+
+          // Update dashboard totals live
+          totalPaid += parseFloat(amount); updateCards();
+
+          const payment = {
+            student_id: student.id,
+            student_name: student.name,
+            student_email: student.email,
+            department: student.department,
+            level: student.level,
+            amount_paid: parseFloat(amount),
+            payment_type: 'Tuition Fee',
+            transaction_ref: response.reference,
+            status: 'Paid',
+            timestamp: new Date().toISOString(),
+            payment_id: paymentId,
+            fee_breakdown: null,
+            payment_date: new Date().toISOString().split('T')[0]
+          };
+          savePaymentToSupabase(payment);
+
+          const paidOtherFees = JSON.parse(localStorage.getItem('paidOtherFees') || '{}');
+          const feeBreakdown = Object.entries(paidOtherFees).map(([label, amt]) => `${label} - GHS ${amt}`).join('<br>');
+
+          generateAndDownloadPDFReceipt({
+            ...student,
+            paymentId,
+            paymentType: 'Tuition Fee',
+            amountPaid: parseFloat(amount),
+            transactionRef: response.reference,
+            allPayments: [tuitionPaid],
+            feeBreakdown,
+            paymentDate
+          });
+
+          updateRegisterButtonStateFromSupabase();
+          hideModal('tuitionModal');
+        },
+        onClose: function () { alert('Payment window closed.'); }
+      }).openIframe();
+    }
+
+    function payOtherFees() {
+      const selected = [...document.querySelectorAll('input[name="otherFee"]:checked')];
+      if (selected.length === 0) { alert('Please select at least one fee.'); return; }
+
+      let totalAmount = 0; let feeSummary = '';
+      const paidFees = JSON.parse(localStorage.getItem('paidOtherFees') || '{}');
+
+      selected.forEach(fee => {
+        const [label, amount] = fee.value.split('|');
+        const amt = parseFloat(amount);
+        paidFees[label] = (paidFees[label] || 0) + amt;
+        totalAmount += amt; feeSummary += `${label} - GHS ${amt}<br>`;
+      });
+
+      localStorage.setItem('paidOtherFees', JSON.stringify(paidFees));
+
+      const student = buildStudent();
+      const paymentId = genPaymentId(student.name, student.id);
+
+      PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: student.email,
+        amount: totalAmount * 100,
+        currency: 'GHS',
+        label: 'Other Fee Payment',
+        metadata: { custom_fields: [{ display_name: 'Fee Breakdown', variable_name: 'fee_breakdown', value: feeSummary }] },
+        callback: function (response) {
+          alert('Payment successful! Transaction ref: ' + response.reference);
+          const paymentDate = getFormattedDateTime();
+
+          // Update dashboard totals live
+          totalPaid += totalAmount; updateCards();
+
+          const payment = {
+            student_id: student.id,
+            student_name: student.name,
+            student_email: student.email,
+            department: student.department,
+            level: student.level,
+            amount_paid: totalAmount,
+            payment_type: 'Other Fees',
+            transaction_ref: response.reference,
+            status: 'Paid',
+            timestamp: new Date().toISOString(),
+            payment_id: paymentId,
+            fee_breakdown: feeSummary,
+            payment_date: new Date().toISOString().split('T')[0]
+          };
+          savePaymentToSupabase(payment);
+
+          generateAndDownloadPDFReceipt({
+            ...student,
+            paymentId,
+            paymentType: 'Other Fees',
+            amountPaid: totalAmount,
+            transactionRef: response.reference,
+            feeBreakdown: Object.entries(paidFees).map(([label, amt]) => `${label} - GHS ${amt}`).join('<br>'),
+            paymentDate
+          });
+
+          updateRegisterButtonStateFromSupabase();
+          hideModal('otherFeesModal');
+        },
+        onClose: function () { alert('Payment window closed.'); }
+      }).openIframe();
+    }
+  </script>
+
+  <script>
+    // ===== Registration eligibility (Supabase-driven) =====
+    const REGISTRATION_URL = 'https://moderndtsystems.com/StudentPortal/Login.aspx?ReturnUrl=%2fstudentportal%2fRegstCourses.aspx';
+
+    const tuitionRequired = 1275; // 50%
+    const requiredDues = { 'SRC Dues': 50, 'Departmental Dues': 20, 'Medical Dues': 70 };
+
+    async function isEligibleForRegistrationFromSupabase(studentId) {
+      if (!studentId) return false;
+
+      // Tuition sum
+      let tuitionPaid = 0;
+      const { data: tuitionData, error: tuitionError } = await supabase
+        .from('payments').select('amount_paid').eq('student_id', studentId).eq('payment_type', 'Tuition Fee').eq('status', 'Paid');
+      if (!tuitionError && Array.isArray(tuitionData)) {
+        tuitionPaid = tuitionData.reduce((sum, r) => sum + parseFloat(r.amount_paid || 0), 0);
+      }
+
+      // Other fees breakdown
+      const paidOtherFees = {};
+      const { data: otherData, error: otherError } = await supabase
+        .from('payments').select('fee_breakdown, amount_paid').eq('student_id', studentId).eq('payment_type', 'Other Fees').eq('status', 'Paid');
+      if (!otherError && Array.isArray(otherData)) {
+        otherData.forEach(row => {
+          if (row.fee_breakdown) {
+            row.fee_breakdown.split('<br>').forEach(line => {
+              const match = line.match(/(.*) - GHS\s*([\d.]+)/i);
+              if (match) {
+                const label = match[1].trim();
+                const amt = parseFloat(match[2]);
+                paidOtherFees[label] = (paidOtherFees[label] || 0) + amt;
+              }
+            });
+          }
+        });
+      }
+
+      const hasEnoughTuition = tuitionPaid >= tuitionRequired;
+      let allDuesPaid = true;
+      for (const [fee, amount] of Object.entries(requiredDues)) {
+        if ((paidOtherFees[fee] || 0) < amount) { allDuesPaid = false; break; }
+      }
+      return hasEnoughTuition && allDuesPaid;
+    }
+
+    async function updateRegisterButtonStateFromSupabase() {
+      const studentId = localStorage.getItem('studentId');
+      const registerBtn = document.getElementById('registerCoursesBtn');
+      if (!registerBtn) return;
+      const eligible = await isEligibleForRegistrationFromSupabase(studentId);
+      if (eligible) { registerBtn.style.opacity = '1'; registerBtn.style.pointerEvents = 'auto'; registerBtn.style.cursor = 'pointer'; }
+      else { registerBtn.style.opacity = '0.6'; registerBtn.style.pointerEvents = 'none'; registerBtn.style.cursor = 'not-allowed'; }
+    }
+
+    async function registerCourses() {
+      const studentId = localStorage.getItem('studentId');
+      const eligible = await isEligibleForRegistrationFromSupabase(studentId);
+      if (eligible) { window.location.href = REGISTRATION_URL; }
+      else { showModal('restrictionModal'); }
+    }
+
+    window.addEventListener('DOMContentLoaded', updateRegisterButtonStateFromSupabase);
+  </script>
+
+  <script>
+    // ===== Populate student info from localStorage =====
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('student-name').textContent = localStorage.getItem('studentName') || 'Unknown';
+      document.getElementById('student-id').textContent = localStorage.getItem('studentId') || 'N/A';
+      document.getElementById('student-level').textContent = localStorage.getItem('studentLevel') || 'N/A';
+      document.getElementById('student-department').textContent = localStorage.getItem('studentDepartment') || 'N/A';
+      document.getElementById('student-email').textContent = localStorage.getItem('studentEmail') || 'N/A';
+    });
+  </script>
+</body>
+</html>

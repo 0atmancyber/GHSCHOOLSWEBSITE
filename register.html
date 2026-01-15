@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <!-- Supabase configuration (set to project values) -->
+    <meta name="supabase-url" content="https://fyriapqeztevzkcaaiqw.supabase.co">
+    <meta name="supabase-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY">
+    <title>Course Registration Dashboard</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Font Awesome for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            /* Orange & White theme */
+            --primary: #ff6a00; /* main orange */
+            --primary-dark: #e65c00; /* darker orange */
+            --primary-light: #ff8a3d; /* lighter orange */
+            --secondary: #ffffff; /* white accent */
+            --secondary-dark: #fff7f0;
+            --accent: #ff8a00;
+            --dark: #1f2937; /* primary text color */
+            --darker: #f97316; /* used for subtle gradients */
+            --light: #ffffff;
+            --gray: #6b7280;
+            --gray-light: #f1f5f9;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #fff7f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            min-height: 70px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+        }
+
+        .sidebar-nav {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 16px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            min-height: 52px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-left-color: var(--primary-light);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(255,106,0,0.18) 0%, rgba(255,106,0,0.06) 100%);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-info p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: var(--transition);
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: white;
+            padding: 18px 22px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            flex: 2;
+        }
+
+        .search-container {
+            position: relative;
+            min-width: 200px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border-radius: 50px;
+            border: 1px solid var(--gray-light);
+            background-color: white;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            height: 48px;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            pointer-events: none;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, var(--success), #34d399);
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        }
+
+        .stat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stat-info h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        /* Course Cards */
+        .school-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 8px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .section-header i {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .course-header {
+            padding: 18px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            flex-shrink: 0;
+        }
+
+        .course-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .course-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--dark);
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .course-list {
+            padding: 18px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+            min-height: 52px;
+        }
+
+        .course-item:hover {
+            background-color: #f8fafc;
+            border-radius: var(--border-radius-sm);
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .course-item:last-child {
+            border-bottom: none;
+        }
+
+        .course-checkbox {
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .course-checkbox input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .course-name {
+            flex: 1;
+            font-size: 0.92rem;
+            line-height: 1.4;
+            padding-right: 8px;
+            word-break: break-word;
+        }
+
+        .course-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 24px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 48px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #0da271);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #0da271, var(--success));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, var(--danger));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal {
+            background: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            text-align: left;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-right: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--gray-light);
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            height: 48px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Success Popup */
+        .popup {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--success), #0da271);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            font-size: 16px;
+            display: none;
+            z-index: 2001;
+            animation: fadeInOut 3s ease-in-out;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 30px); }
+            10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, 30px); }
+        }
+
+        /* Scroll to top button */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            transition: var(--transition);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #scrollTopBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Toggle button for mobile */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            background: white;
+            padding: 10px;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            width: 48px;
+            height: 48px;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+        }
+
+        /* Badge for core courses */
+        .core-badge {
+            background: linear-gradient(135deg, var(--accent), #f59e0b);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* Progress bar for registration status */
+        .progress-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        /* Input + icon styles */
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-wrapper .input-icon {
+            position: absolute;
+            left: 16px;
+            color: var(--gray);
+            font-size: 0.95rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .input-icon-wrapper .form-control,
+        .input-icon-wrapper select.form-control {
+            padding-left: 48px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Student Info Card */
+        #studentInfoCard .stat-card {
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* ============ RESPONSIVE BREAKPOINTS ============ */
+
+        /* Tablet and below (768px and below) */
+        @media (max-width: 768px) {
+            html {
+                font-size: 15px;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 16px;
+                margin-top: 60px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+                width: 100%;
+            }
+            
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .search-container {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 18px;
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .course-card {
+                width: 100%;
+            }
+            
+            .course-header {
+                padding: 16px;
+            }
+            
+            .course-list {
+                padding: 16px;
+                max-height: 350px;
+            }
+            
+            .course-item {
+                padding: 12px 0;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal {
+                padding: 20px;
+                width: 95%;
+                max-height: 85vh;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .modal-actions .btn {
+                width: 100%;
+            }
+            
+            #scrollTopBtn {
+                bottom: 16px;
+                right: 16px;
+                width: 52px;
+                height: 52px;
+            }
+        }
+
+        /* Small phones (480px and below) */
+        @media (max-width: 480px) {
+            html {
+                font-size: 14px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .header {
+                padding: 14px;
+                border-radius: 12px;
+                margin-top: 50px;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .header h1 i {
+                margin-right: 0;
+            }
+            
+            .search-container input {
+                padding: 12px 16px 12px 44px;
+                height: 44px;
+                font-size: 0.9rem;
+            }
+            
+            .stat-card {
+                padding: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 1.4rem;
+            }
+            
+            .courses-grid {
+                gap: 12px;
+            }
+            
+            .course-header {
+                padding: 14px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .course-icon {
+                width: 44px;
+                height: 44px;
+            }
+            
+            .course-title {
+                font-size: 1rem;
+            }
+            
+            .course-list {
+                padding: 14px;
+                max-height: 300px;
+            }
+            
+            .course-item {
+                padding: 10px 0;
+                align-items: flex-start;
+            }
+            
+            .course-checkbox {
+                margin-top: 2px;
+            }
+            
+            .course-checkbox input {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .course-name {
+                font-size: 0.88rem;
+                line-height: 1.3;
+            }
+            
+            .modal-overlay {
+                padding: 12px;
+                align-items: flex-end;
+            }
+            
+            .modal {
+                padding: 20px 16px;
+                border-radius: 16px 16px 0 0;
+                max-height: 90vh;
+                max-width: 100%;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .form-control {
+                padding: 12px 14px;
+                height: 44px;
+                font-size: 0.95rem;
+            }
+            
+            .input-icon-wrapper .form-control {
+                padding-left: 44px;
+            }
+            
+            .input-icon-wrapper .input-icon {
+                left: 14px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                min-height: 44px;
+                font-size: 0.9rem;
+            }
+            
+            .menu-toggle {
+                top: 12px;
+                left: 12px;
+                width: 44px;
+                height: 44px;
+            }
+            
+            .nav-item {
+                padding: 14px 16px;
+                margin: 3px 6px;
+                min-height: 48px;
+            }
+            
+            .sidebar-header {
+                padding: 16px 14px;
+            }
+            
+            .sidebar-header h2 {
+                font-size: 1.1rem;
+            }
+            
+            #studentInfoCard .stat-card {
+                padding: 14px;
+            }
+            
+            #studentInfoCard .stat-card > div:first-child {
+                width: 60px;
+                height: 60px;
+                font-size: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .section-actions {
+                width: 100%;
+            }
+            
+            .section-actions .btn {
+                width: 100%;
+            }
+            
+            #scrollTopBtn {
+                width: 48px;
+                height: 48px;
+                bottom: 12px;
+                right: 12px;
+            }
+            
+            /* Fix modal scroll on very small screens */
+            .modal-overlay {
+                overflow-y: auto;
+            }
+            
+            .modal {
+                margin-bottom: 0;
+            }
+            
+            /* Improve touch targets */
+            .course-checkbox input,
+            .core-course,
+            .nav-item,
+            .btn {
+                cursor: pointer;
+                -webkit-tap-highlight-color: rgba(255, 106, 0, 0.1);
+            }
+            
+            /* Prevent zoom on input focus */
+            @media screen and (max-width: 480px) {
+                input,
+                select,
+                textarea {
+                    font-size: 16px !important;
+                }
+            }
+        }
+
+        /* Very small phones (360px and below) */
+        @media (max-width: 360px) {
+            html {
+                font-size: 13px;
+            }
+            
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 1.3rem;
+            }
+            
+            .course-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .course-title {
+                font-size: 0.95rem;
+            }
+            
+            .course-name {
+                font-size: 0.85rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                font-size: 0.85rem;
+                padding: 10px 16px;
+            }
+            
+            .sidebar-header h2 {
+                font-size: 1rem;
+            }
+            
+            .nav-item {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Landscape orientation for mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .sidebar {
+                overflow-y: auto;
+            }
+            
+            .modal {
+                max-height: 80vh;
+            }
+            
+            .course-list {
+                max-height: 200px;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .header {
+                margin-bottom: 16px;
+                padding: 12px;
+            }
+        }
+
+        /* Large tablets and small laptops (769px to 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+                padding: 20px;
+            }
+            
+            .header {
+                flex-wrap: nowrap;
+            }
+            
+            .header-actions {
+                flex: 1;
+            }
+            
+            .search-container {
+                min-width: 180px;
+            }
+            
+            .courses-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 18px;
+            }
+            
+            .course-card {
+                min-width: 280px;
+            }
+        }
+
+        /* Prevent body scroll when sidebar is open */
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile overlay for sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-book-open icon" aria-hidden="true"></i>
+            <h2>COURSE REGISTRATION PORTAL</h2>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-item active">
+                <i class="fa-solid fa-tachometer-alt" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" id="navMyCourses">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                <span>My Courses</span>
+            </div>
+            <div class="nav-item" id="navAcademicProgress">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                <span>Academic Progress</span>
+            </div>
+            <div class="nav-item" id="navStudents">
+                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                <span>Students</span>
+            </div>
+            
+            <div class="nav-item">
+                <i class="fa-solid fa-cog" aria-hidden="true"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="user-info">
+                    <h4 id="sidebarStudentName">Alex Johnson</h4>
+                    <p id="sidebarStudentRole">Student</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <button class="menu-toggle" id="menuToggle">
+            <i data-lucide="menu"></i>
+        </button>
+        
+        <div class="header">
+            <h1><i class="fa-solid fa-award" aria-hidden="true"></i> GH SCHOOLS Course Registration</h1>
+            <div class="header-actions">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search" placeholder="Search courses or departments..." />
+                </div>
+                <button class="btn btn-primary" id="openRegisterModal">
+                    <i data-lucide="clipboard-list"></i>
+                    Register Courses
+                </button>
+            </div>
+        </div>
+
+        <!-- Student Info (populated when redirected from dashboard) -->
+        <div id="studentInfoCard" style="display:none; margin-bottom:18px;">
+            <div class="stat-card" style="padding:16px; display:flex; align-items:center; gap:16px;">
+                <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#0ea5e9); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.2rem;">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div>
+                            <div style="font-weight:700; font-size:1.05rem;" id="studentFullName">Student Name</div>
+                            <div style="color:var(--gray); font-size:0.9rem;" id="studentId">ID: —</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div id="studentLevel" style="font-weight:700">Level</div>
+                            <div style="color:var(--gray); font-size:0.85rem;" id="studentProgram">Program</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px; display:flex; gap:20px; color:var(--gray); font-size:0.9rem;">
+                        <div id="studentEmailInfo">email@example.com</div>
+                        <div id="studentPhoneInfo">+000000000</div>
+                    </div>
+                    <div style="margin-top:8px; display:flex; gap:20px; color:var(--gray); font-size:0.9rem;">
+                        <div><strong>Department:</strong> <span id="studentDepartment">—</span></div>
+                        <div><strong>Course Type:</strong> <span id="studentCourseType">—</span></div>
+                    </div>
+                    <div style="margin-top:8px; color:var(--primary-dark); font-weight:600;" id="registrationEligibility">Registration eligibility verified</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="selected-count">0</h3>
+                    <p>Selected Courses</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="available-courses">80</h3>
+                    <p>Available Courses</p>
+                </div>
+            </div>
+               
+                <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="fa-solid fa-award" aria-hidden="true"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>8</h3>
+                    <p>Available Departments</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- School of Media -->
+        <div class="school-section">
+            <div class="section-header">
+                <h2><i data-lucide="video"></i> Media School</h2>
+                <div class="section-actions">
+                    <button class="btn btn-secondary">
+                        <i data-lucide="filter"></i>
+                        Filter
+                    </button>
+                </div>
+            </div>
+            <div class="courses-grid">
+                <!-- Journalism And Media Art -->
+                <div class="course-card">
+                        <div class="course-header">
+                            <div class="course-icon">
+                                <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+                            </div>
+                            <div class="course-title">Journalism And Media Art</div>
+                        </div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_1" /></div><div class="course-name">TV PRESENTING / TV JOURNALISM</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_2" /></div><div class="course-name">RADIO PRESENTING / RADIO JOURNALISM</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_3" /></div><div class="course-name">RADIO, TV & FILM PRODUCTION</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_4" /></div><div class="course-name">PROFESSIONAL ACTING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_5" /></div><div class="course-name">EVENT MANAGEMENT</div></div>
+                        <!-- core courses (also shown within this program) -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_core_comm" class="core-course" data-core="COMMUNICATION SKILLS" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_core_africa" class="core-course" data-core="AFRICAN STUDIES" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_core_ict" class="core-course" data-core="ICT" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_core_enter" class="core-course" data-core="ENTREPRENEURSHIP" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jma_core_prod" class="core-course" data-core="PRODUCTION MANAGEMENT" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- Journalism And Media Studies -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <div class="course-icon">
+                            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                        </div>
+                        <div class="course-title">Journalism And Media Studies</div>
+                    </div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_1" /></div><div class="course-name">TV PRESENTING / TV JOURNALISM</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_2" /></div><div class="course-name">RADIO PRESENTING / RADIO JOURNALISM</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_3" /></div><div class="course-name">NEWSPAPER REPORTING / PRINT JOURNALISM</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_4" /></div><div class="course-name">MEDIA LAW & ETHICS</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_5" /></div><div class="course-name">MEDIA MARKETING</div></div>
+                        <!-- core courses (also shown within this program) -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_core_comm" class="core-course" data-core="COMMUNICATION SKILLS" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_core_africa" class="core-course" data-core="AFRICAN STUDIES" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_core_ict" class="core-course" data-core="ICT" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_core_enter" class="core-course" data-core="ENTREPRENEURSHIP" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="jms_core_prod" class="core-course" data-core="PRODUCTION MANAGEMENT" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- TV & Film Production -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <div class="course-icon">
+                            <i class="fa-solid fa-film" aria-hidden="true"></i>
+                        </div>
+                        <div class="course-title">TV & Film Production</div>
+                    </div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_1" /></div><div class="course-name">CAMERA OPERATION AND LIGHTING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_2" /></div><div class="course-name">DIGITAL VIDEO EDITING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_3" /></div><div class="course-name">SOUND PRODUCTION / ENGINEERING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_4" /></div><div class="course-name">DIRECTING AND SCRIPT WRITING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_5" /></div><div class="course-name">POST PRODUCTION DESIGN</div></div>
+                        <!-- core courses (also shown within this program) -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_core_comm" class="core-course" data-core="COMMUNICATION SKILLS" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_core_africa" class="core-course" data-core="AFRICAN STUDIES" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_core_ict" class="core-course" data-core="ICT" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_core_enter" class="core-course" data-core="ENTREPRENEURSHIP" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tvf_core_prod" class="core-course" data-core="PRODUCTION MANAGEMENT" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- Multimedia Production -->
+                <div class="course-card">
+                    <div class="course-header">
+                        <div class="course-icon">
+                            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                        </div>
+                        <div class="course-title">Multimedia Production</div>
+                    </div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_1" /></div><div class="course-name">DIGITAL VIDEO EDITING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_2" /></div><div class="course-name">MULTIMEDIA SOUND PRODUCTION</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_3" /></div><div class="course-name">GRAPHIC DESIGNING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_4" /></div><div class="course-name">ANIMATIONS</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_5" /></div><div class="course-name">POST PRODUCTION DESIGN</div></div>
+                        <!-- core courses (also shown within this program) -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_core_comm" class="core-course" data-core="COMMUNICATION SKILLS" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_core_africa" class="core-course" data-core="AFRICAN STUDIES" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_core_ict" class="core-course" data-core="ICT" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_core_enter" class="core-course" data-core="ENTREPRENEURSHIP" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="mm_core_prod" class="core-course" data-core="PRODUCTION MANAGEMENT" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Schools: Cosmetology, Fashion, Catering, Technology -->
+        <div class="school-section">
+            <div class="section-header">
+                <h2><i data-lucide="school"></i> Other Schools</h2>
+                <div class="section-actions">
+                    <button class="btn btn-secondary">
+                        <i data-lucide="filter"></i>
+                        Filter
+                    </button>
+                </div>
+            </div>
+            <div class="courses-grid">
+                <!-- Cosmetology School -->
+                <div class="course-card">
+                    <div class="course-header"><div class="course-icon"><i class="fa-solid fa-heart" aria-hidden="true"></i></div><div class="course-title">Cosmetology School</div></div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cos_1" /></div><div class="course-name">MAKE-UP ARTISTRY</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cos_2" /></div><div class="course-name">NAIL TECHNOLOGY</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cos_3" /></div><div class="course-name">BODY THERAPY</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cos_4" /></div><div class="course-name">HAIR TECHNOLOGY</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cos_5" /></div><div class="course-name">SALON AND SPA MANAGEMENT</div></div>
+                        <!-- core courses for Cosmetology (shared core) -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="COMMUNICATION SKILLS" id="cos_core_comm" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="AFRICAN STUDIES" id="cos_core_africa" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ICT" id="cos_core_ict" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ENTREPRENEURSHIP" id="cos_core_enter" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="PRODUCTION MANAGEMENT" id="cos_core_prod" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- School of Fashion -->
+                <div class="course-card">
+                    <div class="course-header"><div class="course-icon"><i class="fa-solid fa-scissors" aria-hidden="true"></i></div><div class="course-title">School of Fashion</div></div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="fash_1" /></div><div class="course-name">PATTERN DRAFTING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="fash_2" /></div><div class="course-name">GARMENT CONSTRUCTION</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="fash_3" /></div><div class="course-name">CLOTHING AND TEXTILES</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="fash_4" /></div><div class="course-name">MILLINERY AND ACCESSORIES</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="fash_5" /></div><div class="course-name">FASHION DESIGN</div></div>
+                        <!-- core courses for Fashion -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="COMMUNICATION SKILLS" id="fash_core_comm" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="AFRICAN STUDIES" id="fash_core_africa" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ICT" id="fash_core_ict" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ENTREPRENEURSHIP" id="fash_core_enter" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="PRODUCTION MANAGEMENT" id="fash_core_prod" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- Catering School -->
+                <div class="course-card">
+                    <div class="course-header"><div class="course-icon"><i class="fa-solid fa-mug-saucer" aria-hidden="true"></i></div><div class="course-title">Catering School</div></div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cat_1" /></div><div class="course-name">FOOD & BEVERAGE PRODUCTION</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cat_2" /></div><div class="course-name">PASTRY, CAKE, AND SUGAR CRAFT</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cat_3" /></div><div class="course-name">BALLOON, FLORAL DECORATION AND EVENT MANAGEMENT</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cat_4" /></div><div class="course-name">CATERING SERVICE MANAGEMENT</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="cat_5" /></div><div class="course-name">HOTEL, TOURISM & HOSPITALITY MANAGEMENT</div></div>
+                        <!-- core courses for Catering -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="COMMUNICATION SKILLS" id="cat_core_comm" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="AFRICAN STUDIES" id="cat_core_africa" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ICT" id="cat_core_ict" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ENTREPRENEURSHIP" id="cat_core_enter" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="PRODUCTION MANAGEMENT" id="cat_core_prod" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+
+                <!-- School of Technology -->
+                <div class="course-card">
+                    <div class="course-header"><div class="course-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></div><div class="course-title">School of Technology</div></div>
+                    <div class="course-list">
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tech_1" /></div><div class="course-name">COMPUTER HARDWARE</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tech_2" /></div><div class="course-name">COMPUTER SOFTWARE</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tech_3" /></div><div class="course-name">COMPUTER NETWORKING</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tech_4" /></div><div class="course-name">BROADCAST TECHNOLOGY</div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" id="tech_5" /></div><div class="course-name">SECURITY SYSTEMS</div></div>
+                        <!-- core courses for Technology -->
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="COMMUNICATION SKILLS" id="tech_core_comm" /></div><div class="course-name">COMMUNICATION SKILLS <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="AFRICAN STUDIES" id="tech_core_africa" /></div><div class="course-name">AFRICAN STUDIES <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ICT" id="tech_core_ict" /></div><div class="course-name">ICT <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="ENTREPRENEURSHIP" id="tech_core_enter" /></div><div class="course-name">ENTREPRENEURSHIP <span class="core-badge">CORE</span></div></div>
+                        <div class="course-item"><div class="course-checkbox"><input type="checkbox" class="core-course" data-core="PRODUCTION MANAGEMENT" id="tech_core_prod" /></div><div class="course-name">PRODUCTION MANAGEMENT <span class="core-badge">CORE</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Confirm Your Registration</h2>
+            </div>
+            <div class="form-group">
+                <label for="modalStudentName">Full Name</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-user input-icon" aria-hidden="true"></i>
+                    <input type="text" id="modalStudentName" class="form-control" placeholder="Enter your full name" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="modalStudentEmail">Email</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-envelope input-icon" aria-hidden="true"></i>
+                    <input type="email" id="modalStudentEmail" class="form-control" placeholder="you@example.com" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="modalStudentPhone">Phone</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-phone input-icon" aria-hidden="true"></i>
+                    <input type="tel" id="modalStudentPhone" class="form-control" placeholder="+233501234567" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="modalStudentLevel">Academic Level</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-graduation-cap input-icon" aria-hidden="true"></i>
+                    <input type="text" id="modalStudentLevel" class="form-control" placeholder="e.g., 100, 200, etc." />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="studentSchoolSelect">School</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-school input-icon" aria-hidden="true"></i>
+                    <select id="studentSchoolSelect" class="form-control">
+                        <option value="">-- Select School --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="programGroup" style="display:none;">
+                <label for="studentProgramSelect">Program / Department</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-briefcase input-icon" aria-hidden="true"></i>
+                    <select id="studentProgramSelect" class="form-control">
+                        <option value="">-- Select Program --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="coreCoursesGroup" style="display:none;">
+                <label>Core Courses (optional)</label>
+                <div id="coreCoursesList" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelBtn"><i class="fa-solid fa-ban" aria-hidden="true"></i> Cancel</button>
+                <button class="btn btn-primary" id="confirmBtn"><i class="fa-solid fa-check" aria-hidden="true"></i> Confirm Registration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Course Confirmation Modal -->
+    <div class="modal-overlay" id="coreConfirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Core Course Confirmation</h2>
+            </div>
+            <div class="form-group">
+                <p id="coreConfirmText">Core courses are compulsory. Do you want to add this core course to your selection?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="coreConfirmNo">Cancel</button>
+                <button class="btn btn-primary" id="coreConfirmYes">Add Core Course</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Congratulations Modal (shown after successful registration) -->
+    <div class="modal-overlay" id="congratsModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Congratulations</h2>
+            </div>
+            <div class="form-group">
+                <p id="congratsMessage">Registration Successful!</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="congratsCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Courses Modal -->
+    <div class="modal-overlay" id="myCoursesModal" style="display:none;">
+        <div class="modal" style="max-width:820px;">
+            <div class="modal-header">
+                <h2>My Courses</h2>
+            </div>
+            <div class="form-group">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                    <div>
+                        <div style="font-weight:700;font-size:1.05rem;" id="mcStudentName">Student</div>
+                        <div style="color:var(--gray);font-size:0.9rem;" id="mcStudentMeta">ID — • Level — • Program —</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:0.95rem;color:var(--gray);">Registered Courses</div>
+                        <div style="font-weight:700;font-size:1.2rem;" id="mcRegisteredCount">0</div>
+                    </div>
+                </div>
+                <hr style="margin:12px 0" />
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.9rem;color:var(--gray);margin-bottom:6px;">Academic Progress</div>
+                    <div style="background:#efefef;border-radius:8px;height:14px;overflow:hidden;">
+                        <div id="mcProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s;"></div>
+                    </div>
+                    <div style="font-size:0.85rem;color:var(--gray);margin-top:6px;" id="mcProgressLabel">0 / 0 courses</div>
+                </div>
+                <div>
+                    <ul id="mcCourseList" style="list-style:none;padding:0;margin:0;max-height:320px;overflow:auto;">
+                        <!-- Course rows inserted here -->
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="mcCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Progress Modal -->
+    <div class="modal-overlay" id="academicProgressModal" style="display:none;">
+        <div class="modal" style="max-width:520px;">
+            <div class="modal-header">
+                <h2>Academic Progress</h2>
+            </div>
+            <div class="form-group" style="text-align:center;">
+                <canvas id="apChartCanvas" width="220" height="220" style="display:block;margin:12px auto;"></canvas>
+                <div id="apChartLabel" style="font-weight:700;margin-top:8px;">0 / 0 courses (0%)</div>
+                <div style="font-size:0.9rem;color:var(--gray);margin-top:8px;">This chart shows registered courses vs required course load.</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="apCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal-overlay" id="studentDetailsModal" style="display:none;">
+        <div class="modal" style="max-width:720px;">
+            <div class="modal-header">
+                <h2>Student Details</h2>
+            </div>
+            <div class="form-group">
+                <div id="sdContent">
+                    <div style="font-weight:700;font-size:1.05rem;" id="sdName">Student Name</div>
+                    <div style="color:var(--gray);margin-bottom:8px;" id="sdMeta">ID • Level • Program</div>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                        <div><strong>Email:</strong> <span id="sdEmail"></span></div>
+                        <div><strong>Phone:</strong> <span id="sdPhone"></span></div>
+                        <div><strong>Department:</strong> <span id="sdDept"></span></div>
+                        <div><strong>Course Type:</strong> <span id="sdCourseType"></span></div>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <strong>Additional Info</strong>
+                        <pre id="sdRaw" style="background:#f6f8fa;padding:8px;border-radius:6px;overflow:auto;max-height:200px;font-size:0.85rem;color:#333;"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="sdCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" title="Go to top">
+        <i data-lucide="arrow-up"></i>
+    </button>
+
+    <script>
+        // Initialize Supabase client using provided project keys (overrides meta tags)
+        const SUPABASE_URL = "https://fyriapqeztevzkcaaiqw.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY";
+        // kept for backwards-compatibility where other files expect SUPABASE_KEY
+        const SUPABASE_KEY = SUPABASE_ANON_KEY;
+
+        // Validate the Supabase URL before creating the client to avoid runtime errors
+        let supabaseClient = null;
+        const isValidUrl = (u) => typeof u === 'string' && /^https?:\/\//i.test(u) && u.indexOf('YOUR_') === -1;
+        if (!isValidUrl(SUPABASE_URL) || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.indexOf('YOUR_') === 0) {
+            console.error('Invalid Supabase configuration: please set a valid SUPABASE_URL and SUPABASE_ANON_KEY. You can set them in <meta name="supabase-url"> and <meta name="supabase-key"> in the page <head>.');
+        } else if (window.supabase && typeof window.supabase.createClient === 'function') {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (e) {
+                console.error('Failed to initialize Supabase client:', e.message || e);
+            }
+        } else {
+            console.warn('Supabase script not loaded. Ensure @supabase/supabase-js is included before this script.');
+        }
+        if (!supabaseClient) console.warn('Supabase client not initialized. Check the @supabase/supabase-js script and meta keys.');
+        // Lightweight global message helper (fallback if dashboard's helper is not present)
+        function showModalMessage(message, title = 'Notice'){
+            try{
+                let toast = document.getElementById('registerPopup');
+                if(!toast){
+                    toast = document.createElement('div');
+                    toast.id = 'registerPopup';
+                    toast.className = 'popup';
+                    document.body.appendChild(toast);
+                }
+                toast.textContent = (title ? title + ': ' : '') + (typeof message === 'string' ? message : JSON.stringify(message));
+                toast.style.display = 'block';
+                // auto-hide after 3s
+                setTimeout(()=>{ try{ toast.style.display = 'none'; }catch(e){} }, 3000);
+            }catch(e){ try{ alert((title ? title + ': ' : '') + message); }catch(_){ /* ignore */ } }
+        }
+
+        // Initialize Lucide icons
+        window.onload = () => {
+            lucide.createIcons();
+            
+            // Mobile sidebar functionality
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.querySelector('.main-content');
+
+            function toggleSidebar() {
+                console.debug('[toggleSidebar] called', { sidebarExists: !!sidebar, overlayExists: !!sidebarOverlay });
+                if (!sidebar) return;
+                if (sidebar.classList) sidebar.classList.toggle('active');
+                if (sidebarOverlay && sidebarOverlay.classList) sidebarOverlay.classList.toggle('active');
+                try{ document.body.classList.toggle('sidebar-open'); }catch(e){}
+
+                // Update menu icon if present and safe
+                try{
+                    const menuIcon = menuToggle && menuToggle.querySelector ? menuToggle.querySelector('i') : null;
+                    if(menuIcon && sidebar.classList.contains && sidebar.classList.contains('active')){
+                        menuIcon.setAttribute && menuIcon.setAttribute('data-lucide','x');
+                    } else if(menuIcon){
+                        menuIcon.setAttribute && menuIcon.setAttribute('data-lucide','menu');
+                    }
+                }catch(e){ /* ignore icon update errors */ }
+                try{ lucide.createIcons(); }catch(e){}
+                console.debug('[toggleSidebar] newState', { sidebarActive: sidebar.classList && sidebar.classList.contains('active'), overlayActive: sidebarOverlay && sidebarOverlay.classList && sidebarOverlay.classList.contains('active') });
+            }
+
+            function closeSidebar() {
+                console.debug('[closeSidebar] called');
+                if (sidebar && sidebar.classList) sidebar.classList.remove('active');
+                if (sidebarOverlay && sidebarOverlay.classList) sidebarOverlay.classList.remove('active');
+                try{ document.body.classList.remove('sidebar-open'); }catch(e){}
+
+                // Update menu icon
+                try{
+                    const menuIcon = menuToggle && menuToggle.querySelector ? menuToggle.querySelector('i') : null;
+                    if(menuIcon) menuIcon.setAttribute && menuIcon.setAttribute('data-lucide','menu');
+                }catch(e){}
+                try{ lucide.createIcons(); }catch(e){}
+                console.debug('[closeSidebar] newState', { sidebarActive: sidebar.classList && sidebar.classList.contains('active'), overlayActive: sidebarOverlay && sidebarOverlay.classList && sidebarOverlay.classList.contains('active') });
+            }
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', toggleSidebar);
+            }
+
+            // Fallback delegation: if the toggle button or its inner icon is replaced by the icon library,
+            // this delegated listener will still handle clicks on elements that match the toggle.
+            document.addEventListener('click', function delegatedMenuToggle(e){
+                try{
+                    const clicked = e.target && e.target.closest ? e.target.closest('#menuToggle') : null;
+                    if (clicked) {
+                        e.preventDefault();
+                        // ensure the original handler runs
+                        toggleSidebar();
+                    }
+                }catch(e){ /* ignore delegation errors */ }
+            });
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // Close sidebar when clicking on a nav item on mobile
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+            
+            // Close sidebar on window resize if it becomes desktop size
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+
+            // Populate student info card if redirected from dashboard (localStorage contains student data)
+            try {
+                const studentCard = document.getElementById('studentInfoCard');
+                const st = getStudentFromLocalStorage();
+                if (st && (st.name || st.email || st.phone || st.id)) {
+                    const fullNameEl = document.getElementById('studentFullName');
+                    const idEl = document.getElementById('studentId');
+                    const levelEl = document.getElementById('studentLevel');
+                    const programEl = document.getElementById('studentProgram');
+                    const emailEl = document.getElementById('studentEmailInfo');
+                    const phoneEl = document.getElementById('studentPhoneInfo');
+                    const eligEl = document.getElementById('registrationEligibility');
+
+                    if (fullNameEl) fullNameEl.textContent = st.name || st.full_name || '';
+                    if (idEl) idEl.textContent = 'ID: ' + (st.id || st.student_id || st.studentId || '—');
+                    if (levelEl) levelEl.textContent = st.level || st.studentLevel || st.level || '';
+                    if (programEl) programEl.textContent = st.program || st.studentProgram || st.program || '';
+                    if (emailEl) emailEl.textContent = st.email || '';
+                    if (phoneEl) phoneEl.textContent = st.phone || '';
+                    // department and course type (if available)
+                    const deptEl = document.getElementById('studentDepartment');
+                    const ctEl = document.getElementById('studentCourseType');
+                    if (deptEl) deptEl.textContent = st.department || st.studentDepartment || st.school || '';
+                    if (ctEl) ctEl.textContent = st.courseType || st.studentCourseType || '';
+                    if (eligEl) eligEl.textContent = 'Registration eligibility verified';
+
+                    if (studentCard) studentCard.style.display = 'block';
+                }
+            } catch (e) {
+                console.warn('Could not populate student info card', e);
+            }
+
+            // Update sidebar user name/role to show the real student (localStorage -> Supabase fallback)
+            (async function updateSidebarUser(){
+                try{
+                    const st = getStudentFromLocalStorage() || {};
+                    const sid = st.id || st.student_id || st.studentId;
+                    let name = st.name || st.full_name || st.studentName || '';
+                    let role = st.role || 'Student';
+                    if(supabaseClient && sid){
+                        try{
+                            // Prefer student_id (string) lookup first to avoid PostgREST filtering issues
+                            let dbRow = null;
+                            try{
+                                const { data: d1, error: e1 } = await supabaseClient.from('students').select('*').eq('student_id', String(sid)).maybeSingle();
+                                if(!e1 && d1) dbRow = d1;
+                            }catch(e){ /* ignore */ }
+                            if(!dbRow){
+                                try{
+                                    const { data: d2, error: e2 } = await supabaseClient.from('students').select('*').eq('id', String(sid)).maybeSingle();
+                                    if(!e2 && d2) dbRow = d2;
+                                }catch(e){ /* ignore */ }
+                            }
+                            if(dbRow){
+                                const dbName = dbRow.full_name || dbRow.fullname || [dbRow.first_name, dbRow.last_name].filter(Boolean).join(' ') || dbRow.name;
+                                if(dbName) name = dbName;
+                                if(dbRow.role) role = dbRow.role;
+                            }
+                        }catch(err){ /* ignore DB lookup errors, fallback to local */ }
+                    }
+                    const snameEl = document.getElementById('sidebarStudentName');
+                    const sroleEl = document.getElementById('sidebarStudentRole');
+                    if(snameEl) snameEl.textContent = name || (st.email ? st.email.split('@')[0] : 'Student');
+                    if(sroleEl) sroleEl.textContent = role;
+                }catch(e){ console.warn('updateSidebarUser failed', e); }
+            })();
+
+            // If we have a student id, verify payment eligibility live from the DB
+            async function parseBreakdownToMap(breakdown){
+                const map = { src:0, medical:0, departmental:0, tuition:0 };
+                if(!breakdown) return map;
+                const items = String(breakdown).split(',');
+                items.forEach(piece => {
+                    const lower = piece.toLowerCase();
+                    const n = parseFloat(piece.replace(/[^\d.]/g,'')) || 0;
+                    if(lower.includes('src')) map.src += n;
+                    else if(lower.includes('medical')) map.medical += n;
+                    else if(lower.includes('department')) map.departmental += n;
+                    else if(lower.includes('tuition')) map.tuition += n;
+                });
+                return map;
+            }
+
+            async function fetchPaymentsSummaryLocal(studentIdParam){
+                if(!studentIdParam || !supabaseClient) return { totalPaid:0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows:[] };
+                try{
+                    const { data: payments, error } = await supabaseClient
+                        .from('payments')
+                        .select('amount, fee_breakdown, fee_type, status')
+                        .eq('student_id', String(studentIdParam))
+                        .in('status', ['success','approved_manual']);
+                    if(error){ console.error('fetchPaymentsSummaryLocal failed:', error); return { totalPaid:0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows:[] } }
+
+                    let tuitionPaid=0, srcPaid=0, medPaid=0, deptPaid=0;
+                    let total = 0;
+                    (payments || []).forEach(p => {
+                        const amt = Number(p.amount ?? p.amount_paid ?? 0) || 0;
+                        total += amt;
+                        const breakdownMap = parseBreakdownToMap(p.fee_breakdown);
+                        const breakdownSum = Object.values(breakdownMap).reduce((s,x)=>s+x,0);
+                        if(breakdownSum > 0){
+                            tuitionPaid += breakdownMap.tuition || 0;
+                            srcPaid += breakdownMap.src || 0;
+                            medPaid += breakdownMap.medical || 0;
+                            deptPaid += breakdownMap.departmental || 0;
+                        } else {
+                            const type = ((p.fee_type || '')).toString().toLowerCase();
+                            if(type.includes('tuition')) tuitionPaid += amt;
+                            else if(type.includes('src')) srcPaid += amt;
+                            else if(type.includes('medical')) medPaid += amt;
+                            else if(type.includes('department')) deptPaid += amt;
+                            else tuitionPaid += amt; // fallback: count as tuition
+                        }
+                    });
+                    return { totalPaid: total, tuitionPaid, srcPaid, medPaid, deptPaid, rows: payments || [] };
+                }catch(err){ console.error('fetchPaymentsSummaryLocal error', err); return { totalPaid:0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows:[] } }
+            }
+
+            async function verifyAndDisplayEligibility(studentIdParam){
+                if(!studentIdParam) return;
+                const REQUIRED = { tuition: 2040, src:50, medical:80, departmental:50 };
+                try{
+                    const sum = await fetchPaymentsSummaryLocal(studentIdParam);
+                    const tuitionOK = (sum.tuitionPaid || 0) >= (REQUIRED.tuition - 1e-6);
+                    const srcOK = (sum.srcPaid || 0) >= (REQUIRED.src - 1e-6);
+                    const medOK = (sum.medPaid || 0) >= (REQUIRED.medical - 1e-6);
+                    const deptOK = (sum.deptPaid || 0) >= (REQUIRED.departmental - 1e-6);
+                    const totalPaid = Number(sum.totalPaid) || 0;
+                    const totalPayable = 2550 + 50 + 80 + 50; // keep consistent with dashboard
+                    const outstanding = Math.max(0, totalPayable - totalPaid);
+
+                    const eligEl = document.getElementById('registrationEligibility');
+                    const openBtn = document.getElementById('openRegisterModal');
+                    if(eligEl){
+                        if(tuitionOK && srcOK && medOK && deptOK){
+                            eligEl.textContent = `Eligible to register — Outstanding: GHS ${outstanding.toFixed(2)}`;
+                            eligEl.style.color = 'var(--success)';
+                            if(openBtn) openBtn.disabled = false;
+                        } else {
+                            eligEl.textContent = `Not eligible — Outstanding: GHS ${outstanding.toFixed(2)}`;
+                            eligEl.style.color = 'var(--danger)';
+                            if(openBtn) openBtn.disabled = true;
+                        }
+                    }
+                }catch(e){ console.warn('verifyAndDisplayEligibility failed', e); }
+            }
+
+            // If we have a student id, run live eligibility check
+            try{
+                const st = getStudentFromLocalStorage();
+                const sid = st && (st.id || st.student_id || st.studentId || st.student_id);
+                if(sid) verifyAndDisplayEligibility(sid);
+            }catch(e){ /* ignore */ }
+
+            // --- My Courses modal wiring ---
+            try {
+                const navMyCourses = document.getElementById('navMyCourses');
+                const myCoursesModal = document.getElementById('myCoursesModal');
+                const mcCloseBtn = document.getElementById('mcCloseBtn');
+                const mcStudentName = document.getElementById('mcStudentName');
+                const mcStudentMeta = document.getElementById('mcStudentMeta');
+                const mcRegisteredCount = document.getElementById('mcRegisteredCount');
+                const mcCourseList = document.getElementById('mcCourseList');
+                const mcProgressBar = document.getElementById('mcProgressBar');
+                const mcProgressLabel = document.getElementById('mcProgressLabel');
+
+                async function loadMyCourses(){
+                    // Clear
+                    if(mcCourseList) mcCourseList.innerHTML = '';
+                    let stored = getStudentFromLocalStorage() || {};
+                    if(mcStudentName) mcStudentName.textContent = stored.name || stored.full_name || stored.studentName || 'Student';
+                    if(mcStudentMeta) mcStudentMeta.textContent = `ID ${stored.id||stored.student_id||''} • Level ${stored.level||''} • ${stored.program||''}`;
+
+                    // Determine registered courses: prefer DB registrations if Supabase is available
+                    let registered = [];
+                    if(window.supabase && typeof window.supabase.createClient === 'function' && supabaseClient && (stored.id||stored.student_id)){
+                        try{
+                            const sid = stored.id || stored.student_id || stored.studentId;
+                            const { data, error } = await supabaseClient.from('registrations').select('courses,core_courses,created_at,status').eq('student_id', sid);
+                            if(!error && data && data.length){
+                                data.forEach(r=>{
+                                    const cs = (r.courses || []);
+                                    const core = (r.core_courses || []);
+                                    registered = registered.concat(cs).concat(core);
+                                });
+                            }
+                        }catch(e){ console.warn('loadMyCourses db fetch failed', e); }
+                    }
+
+                    // Fallback: look for cached selections in localStorage
+                    if(registered.length === 0){
+                        try{
+                            const last = JSON.parse(localStorage.getItem('lastSelectedCourses') || 'null');
+                            if(Array.isArray(last)) registered = registered.concat(last);
+                        }catch(e){}
+                    }
+
+                    // Normalize and dedupe
+                    registered = (registered || []).map(x=> (typeof x === 'string' ? x : (x.name||x.title||JSON.stringify(x)))).filter(Boolean);
+                    registered = [...new Set(registered)];
+
+                    const registeredCount = registered.length;
+                    const targetCourses = Number(localStorage.getItem('requiredCourseLoad') || 6);
+                    const pct = Math.min(100, Math.round((registeredCount / (targetCourses||1)) * 100));
+
+                    if(mcRegisteredCount) mcRegisteredCount.textContent = registeredCount;
+                    if(mcProgressBar) mcProgressBar.style.width = pct + '%';
+                    if(mcProgressLabel) mcProgressLabel.textContent = `${registeredCount} / ${targetCourses} courses (${pct}%)`;
+
+                    if(registered.length === 0){
+                        const li = document.createElement('li');
+                        li.style.padding = '12px';
+                        li.style.color = 'var(--gray)';
+                        li.textContent = 'No registered courses found.';
+                        if(mcCourseList) mcCourseList.appendChild(li);
+                    } else {
+                        for(const c of registered){
+                            const li = document.createElement('li');
+                            li.style.padding = '10px 12px';
+                            li.style.borderBottom = '1px solid #f0f0f0';
+                            li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-weight:600">${c}</div><div style="color:var(--gray);font-size:0.85rem">Registered</div></div>`;
+                            mcCourseList.appendChild(li);
+                        }
+                    }
+                }
+
+                if(navMyCourses){
+                    navMyCourses.addEventListener('click', async (e)=>{
+                        e.preventDefault();
+                        if(myCoursesModal) myCoursesModal.style.display = 'flex';
+                        await loadMyCourses();
+                    });
+                }
+                if(mcCloseBtn){
+                    mcCloseBtn.addEventListener('click', ()=>{ if(myCoursesModal) myCoursesModal.style.display = 'none'; });
+                }
+            } catch (e) { console.warn('My Courses wiring failed', e); }
+            
+            // --- Academic Progress wiring ---
+            try{
+                const navAP = document.getElementById('navAcademicProgress');
+                const apModal = document.getElementById('academicProgressModal');
+                const apCloseBtn = document.getElementById('apCloseBtn');
+                const apCanvas = document.getElementById('apChartCanvas');
+                const apLabel = document.getElementById('apChartLabel');
+
+                function drawDonut(canvas, percent){
+                    if(!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const w = canvas.width; const h = canvas.height; const cx = w/2; const cy = h/2; const r = Math.min(w,h)/2 - 10;
+                    ctx.clearRect(0,0,w,h);
+                    // background
+                    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle = '#f1f5f9'; ctx.fill();
+                    // arc
+                    const start = -Math.PI/2;
+                    const end = start + (Math.PI*2) * (percent/100);
+                    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath(); ctx.fillStyle = 'rgba(124,58,237,0.9)'; ctx.fill();
+                    // center cutout
+                    ctx.beginPath(); ctx.arc(cx,cy,r*0.6,0,Math.PI*2); ctx.fillStyle = '#fff'; ctx.fill();
+                    // text
+                    ctx.fillStyle = '#111827'; ctx.font = 'bold 20px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(Math.round(percent) + '%', cx, cy);
+                }
+
+                async function showAcademicProgress(){
+                    const st = getStudentFromLocalStorage() || {};
+                    let registeredCount = 0;
+                    if(supabaseClient && (st.id || st.student_id)){
+                        try{
+                            const sid = st.id || st.student_id || st.studentId;
+                            const { data, error } = await supabaseClient.from('registrations').select('courses,core_courses').eq('student_id', sid);
+                            if(!error && data && data.length){
+                                let regs = [];
+                                data.forEach(r=>{ regs = regs.concat(r.courses||[]).concat(r.core_courses||[]); });
+                                regs = regs.map(x=> typeof x === 'string' ? x : (x.name||x.title||JSON.stringify(x))).filter(Boolean);
+                                regs = [...new Set(regs)];
+                                registeredCount = regs.length;
+                            }
+                        }catch(e){ console.warn('showAcademicProgress db failed', e); }
+                    }
+                    if(registeredCount === 0){
+                        try{ const last = JSON.parse(localStorage.getItem('lastSelectedCourses')||'null'); if(Array.isArray(last)) registeredCount = last.length; }catch(e){}
+                    }
+                    const required = Number(localStorage.getItem('requiredCourseLoad')||6);
+                    const pct = Math.min(100, required>0 ? (registeredCount/required)*100 : 0);
+                    if(apLabel) apLabel.textContent = `${registeredCount} / ${required} courses (${Math.round(pct)}%)`;
+                    if(apCanvas) drawDonut(apCanvas, pct);
+                    if(apModal) apModal.style.display = 'flex';
+                }
+
+                if(navAP){ navAP.addEventListener('click', async (e)=>{ e.preventDefault(); await showAcademicProgress(); }); }
+                if(apCloseBtn){ apCloseBtn.addEventListener('click', ()=>{ if(apModal) apModal.style.display = 'none'; }); }
+            } catch(e){ console.warn('Academic Progress wiring failed', e); }
+
+            // --- Student Details wiring ---
+            try{
+                const navStudents = document.getElementById('navStudents');
+                const sdModal = document.getElementById('studentDetailsModal');
+                const sdCloseBtn = document.getElementById('sdCloseBtn');
+                const sdName = document.getElementById('sdName');
+                const sdMeta = document.getElementById('sdMeta');
+                const sdEmail = document.getElementById('sdEmail');
+                const sdPhone = document.getElementById('sdPhone');
+                const sdDept = document.getElementById('sdDept');
+                const sdCourseType = document.getElementById('sdCourseType');
+                const sdRaw = document.getElementById('sdRaw');
+
+                async function showStudentDetails(){
+                    const st = getStudentFromLocalStorage() || {};
+                    let details = Object.assign({}, st);
+                    if(supabaseClient && (st.id || st.student_id)){
+                        try{
+                            const sid = st.id || st.student_id || st.studentId;
+                            let dbRow = null;
+                            try{
+                                const { data: d1, error: e1 } = await supabaseClient.from('students').select('*').eq('student_id', String(sid)).maybeSingle();
+                                if(!e1 && d1) dbRow = d1;
+                            }catch(e1){ /* ignore */ }
+                            if(!dbRow){
+                                try{
+                                    const { data: d2, error: e2 } = await supabaseClient.from('students').select('*').eq('id', String(sid)).maybeSingle();
+                                    if(!e2 && d2) dbRow = d2;
+                                }catch(e2){ /* ignore */ }
+                            }
+                            if(dbRow) details = Object.assign({}, details, dbRow);
+                        }catch(e){ console.warn('fetch student details failed', e); }
+                    }
+                    if(sdName) sdName.textContent = details.full_name || details.name || details.studentName || '';
+                    if(sdMeta) sdMeta.textContent = `ID ${details.id||details.student_id||''} • Level ${details.level||''} • ${details.program||''}`;
+                    if(sdEmail) sdEmail.textContent = details.email || '';
+                    if(sdPhone) sdPhone.textContent = details.phone || '';
+                    if(sdDept) sdDept.textContent = details.department || details.school || '';
+                    if(sdCourseType) sdCourseType.textContent = details.courseType || details.course_type || '';
+                    if(sdRaw) sdRaw.textContent = JSON.stringify(details, null, 2);
+                    if(sdModal) sdModal.style.display = 'flex';
+                }
+
+                if(navStudents){ navStudents.addEventListener('click', async (e)=>{ e.preventDefault(); await showStudentDetails(); }); }
+                if(sdCloseBtn){ sdCloseBtn.addEventListener('click', ()=>{ if(sdModal) sdModal.style.display = 'none'; }); }
+            } catch(e){ console.warn('Student Details wiring failed', e); }
+
+            // --- School / Program / Core Courses mapping ---
+            const schoolData = {
+                "Media School": {
+                    programs: {
+                        "Journalism And Media Art": [
+                            "TV PRESENTING / TV JOURNALISM",
+                            "RADIO PRESENTING / RADIO JOURNALISM",
+                            "RADIO, TV & FILM PRODUCTION",
+                            "PROFESSIONAL ACTING",
+                            "EVENT MANAGEMENT"
+                        ],
+                        "Journalism And Media Studies": [
+                            "TV PRESENTING / TV JOURNALISM",
+                            "RADIO PRESENTING / RADIO JOURNALISM",
+                            "NEWSPAPER REPORTING / PRINT JOURNALISM",
+                            "MEDIA LAW & ETHICS",
+                            "MEDIA MARKETING"
+                        ],
+                        "TV & Film Production": [
+                            "CAMERA OPERATION AND LIGHTING",
+                            "DIGITAL VIDEO EDITING",
+                            "SOUND PRODUCTION / ENGINEERING",
+                            "DIRECTING AND SCRIPT WRITING",
+                            "POST PRODUCTION DESIGN"
+                        ],
+                        "Multimedia Production": [
+                            "DIGITAL VIDEO EDITING",
+                            "MULTIMEDIA SOUND PRODUCTION",
+                            "GRAPHIC DESIGNING",
+                            "ANIMATIONS",
+                            "POST PRODUCTION DESIGN"
+                        ]
+                    },
+                    coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+                },
+                "Cosmetology School": {
+                    courses: ["MAKE-UP ARTISTRY","NAIL TECHNOLOGY","BODY THERAPY","HAIR TECHNOLOGY","SALON AND SPA MANAGEMENT"],
+                    coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+                },
+                "School of Fashion": {
+                    courses: ["PATTERN DRAFTING","GARMENT CONSTRUCTION","CLOTHING AND TEXTILES","MILLINERY AND ACCESSORIES","FASHION DESIGN"],
+                    coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+                },
+                "Catering School": {
+                    courses: ["FOOD & BEVERAGE PRODUCTION","PASTRY, CAKE, AND SUGAR CRAFT","BALLOON, FLORAL DECORATION AND EVENT MANAGEMENT","CATERING SERVICE MANAGEMENT","HOTEL, TOURISM & HOSPITALITY MANAGEMENT"],
+                    coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+                },
+                "School of Technology": {
+                    courses: ["COMPUTER HARDWARE","COMPUTER SOFTWARE","COMPUTER NETWORKING","BROADCAST TECHNOLOGY","SECURITY SYSTEMS"],
+                    coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+                }
+            };
+
+            const schoolSelect = document.getElementById('studentSchoolSelect');
+            const programGroup = document.getElementById('programGroup');
+            const programSelect = document.getElementById('studentProgramSelect');
+            const coreCoursesGroup = document.getElementById('coreCoursesGroup');
+            const coreCoursesList = document.getElementById('coreCoursesList');
+
+            function populateSchools() {
+                Object.keys(schoolData).forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    schoolSelect.appendChild(opt);
+                });
+            }
+
+            function clearChildren(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+
+            function onSchoolChange() {
+                const school = schoolSelect.value;
+                clearChildren(coreCoursesList);
+                programSelect.innerHTML = '<option value="">-- Select Program --</option>';
+                if (!school) {
+                    programGroup.style.display = 'none';
+                    coreCoursesGroup.style.display = 'none';
+                    return;
+                }
+                const info = schoolData[school];
+                // If school has programs (Media School), show program select
+                if (info.programs) {
+                    programGroup.style.display = '';
+                    Object.keys(info.programs).forEach(p => {
+                        const op = document.createElement('option'); op.value = p; op.textContent = p; programSelect.appendChild(op);
+                    });
+                } else {
+                    programGroup.style.display = 'none';
+                }
+                // Show core courses if available
+                if (info.coreCourses && info.coreCourses.length) {
+                    coreCoursesGroup.style.display = '';
+                    info.coreCourses.forEach(cc => {
+                        const id = `core_${cc.replace(/[^a-z0-9]/gi,'_')}`;
+                        const wrap = document.createElement('label');
+                        wrap.style.display = 'inline-flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '6px'; wrap.style.marginBottom = '8px';
+                        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = cc; cb.id = id; cb.className = 'core-course'; cb.setAttribute('data-core', cc);
+                        const span = document.createElement('span'); span.textContent = cc; span.style.fontSize = '0.9rem';
+                        wrap.appendChild(cb); wrap.appendChild(span);
+                        coreCoursesList.appendChild(wrap);
+                    });
+                } else {
+                    coreCoursesGroup.style.display = 'none';
+                }
+            }
+
+            function onProgramChange() {
+                // reserved for future auto-matching of checkboxes or course lists
+            }
+
+            populateSchools();
+            schoolSelect.addEventListener('change', onSchoolChange);
+            programSelect.addEventListener('change', onProgramChange);
+            
+            // Core-course confirmation modal handling
+            const coreConfirmModal = document.getElementById('coreConfirmModal');
+            const coreConfirmText = document.getElementById('coreConfirmText');
+            const coreConfirmYes = document.getElementById('coreConfirmYes');
+            const coreConfirmNo = document.getElementById('coreConfirmNo');
+            let pendingCoreCheckbox = null;
+
+            function showCoreConfirm(cb) {
+                pendingCoreCheckbox = cb;
+                const name = cb.dataset.core || cb.nextElementSibling?.textContent || 'Core Course';
+                coreConfirmText.textContent = `Core courses are compulsory for your programme. Add "${name}" to your selection?`;
+                coreConfirmModal.style.display = 'flex';
+            }
+
+            coreConfirmYes.addEventListener('click', () => {
+                if (pendingCoreCheckbox) {
+                    pendingCoreCheckbox.checked = true;
+                    // update counters
+                    updateSelectedCount();
+                }
+                coreConfirmModal.style.display = 'none';
+                pendingCoreCheckbox = null;
+            });
+
+            coreConfirmNo.addEventListener('click', () => {
+                if (pendingCoreCheckbox) pendingCoreCheckbox.checked = false;
+                coreConfirmModal.style.display = 'none';
+                pendingCoreCheckbox = null;
+            });
+
+            // Delegate core-course checkbox clicks (works for existing and dynamically added checkboxes)
+            document.addEventListener('click', function (e) {
+                const target = e.target;
+                if (target && target.matches && target.matches('input.core-course')) {
+                    e.preventDefault();
+                    showCoreConfirm(target);
+                }
+            });
+            
+            // Search filter
+            document.getElementById('search').addEventListener('input', function () {
+                const query = this.value.toLowerCase();
+                document.querySelectorAll('.course-card').forEach(card => {
+                    const courseName = card.querySelector('.course-title').textContent.toLowerCase();
+                    const courseList = Array.from(card.querySelectorAll('.course-name')).some(item =>
+                        item.textContent.toLowerCase().includes(query)
+                    );
+                    if (courseName.includes(query) || courseList) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            // Count selected courses
+            const updateSelectedCount = () => {
+                const selected = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                document.getElementById('selected-count').textContent = selected;
+                
+                // Update progress bar
+                const progressBar = document.querySelector('.progress-bar');
+                const maxCourses = 10; // Example max courses
+                const progress = (selected / maxCourses) * 100;
+                if (progressBar) progressBar.style.width = `${Math.min(progress, 100)}%`;
+            };
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb =>
+                cb.addEventListener('change', updateSelectedCount)
+            );
+
+            // Scroll to top
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            window.onscroll = () => {
+                if (scrollTopBtn) scrollTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+            };
+            if (scrollTopBtn) scrollTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Modal functionality
+            const openRegisterModal = document.getElementById('openRegisterModal');
+            const modal = document.getElementById('confirmationModal');
+            const congratsModal = document.getElementById('congratsModal');
+            const congratsMessage = document.getElementById('congratsMessage');
+            const congratsCloseBtn = document.getElementById('congratsCloseBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            function getStudentFromLocalStorage(){
+                // check common keys used across dashboard pages
+                const sid = localStorage.getItem('studentId') || localStorage.getItem('student_id') || localStorage.getItem('STUDENT_ID');
+                const name = localStorage.getItem('studentName') || localStorage.getItem('student_full_name') || localStorage.getItem('student');
+                const email = localStorage.getItem('studentEmail') || localStorage.getItem('student_email');
+                const phone = localStorage.getItem('studentPhone') || localStorage.getItem('student_phone') || localStorage.getItem('studentMobile');
+                const level = localStorage.getItem('studentLevel') || localStorage.getItem('student_level');
+                const school = localStorage.getItem('studentSchool') || localStorage.getItem('studentDepartment') || localStorage.getItem('studentSchool');
+                const department = localStorage.getItem('studentDepartment') || localStorage.getItem('studentDept') || '';
+                const courseType = localStorage.getItem('studentCourseType') || localStorage.getItem('student_course_type') || '';
+                const program = localStorage.getItem('studentProgram') || localStorage.getItem('studentProgram');
+                return { id: sid, name, email, phone, level, school, department, courseType, program };
+            }
+
+            async function saveRegistration(payload, selectedCourses, selectedCore){
+                if (!supabaseClient) {
+                    console.warn('Supabase client not configured — skipping save.');
+                    return { ok: false, message: 'Supabase not configured' };
+                }
+
+                // Do not create or update a student record here.
+                // Use existing student id from localStorage when available; otherwise store student info inside the registration row.
+                let studentId = null;
+                try {
+                    const stored = getStudentFromLocalStorage();
+                    if (stored) {
+                        studentId = stored.id || stored.student_id || null;
+                    }
+                } catch (err) {
+                    console.warn('could not read student from localStorage', err);
+                }
+
+                // Create registration row linked to studentId
+                    try {
+                        // Ensure arrays are sent as JSON for jsonb columns
+                        const payloadRow = {
+                            student_id: studentId,
+                            level: payload.level,
+                            school: payload.school,
+                            program: payload.program || null,
+                            courses: selectedCourses || [],
+                            core_courses: selectedCore || [],
+                            status: 'pending',
+                            created_at: new Date().toISOString()
+                        };
+
+                        // If there is no linked student record, embed basic student info in the registration
+                        if (!studentId) {
+                            // include department and course type if available in payload or localStorage
+                            const stored = getStudentFromLocalStorage() || {};
+                            payloadRow.student_info = {
+                                name: payload.name || stored.name || null,
+                                email: payload.email || stored.email || null,
+                                phone: payload.phone || stored.phone || null,
+                                level: payload.level || stored.level || null,
+                                school: payload.school || stored.school || null,
+                                department: payload.department || stored.department || null,
+                                course_type: payload.course_type || payload.courseType || stored.courseType || null,
+                                program: payload.program || stored.program || null
+                            };
+                        }
+
+                        // Simpler insert + select flow: insert row and read returned rows (array)
+                        const { data, error } = await supabaseClient.from('registrations').insert(payloadRow).select();
+                        if (error) {
+                            console.error('[saveRegistration] registration insert error', error);
+                            if (error.details) console.error('details:', error.details);
+                            return { ok: false, error };
+                        }
+                        const regData = Array.isArray(data) ? data[0] : data;
+                        console.log('[saveRegistration] Registration saved:', regData);
+                        return { ok: true, reg: regData };
+                    } catch (err) {
+                        console.error('Failed to save registration', err);
+                        return { ok: false, error: err };
+                    }
+            }
+
+            // Auto-register flow: if student info exists in localStorage, save immediately when clicking Register
+            if (openRegisterModal) {
+                openRegisterModal.addEventListener('click', async (evt) => {
+                    try {
+                        if (evt && evt.preventDefault) evt.preventDefault();
+
+                        // Collect selected courses and core courses
+                        const selectedCoursesElems = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+                        if (selectedCoursesElems.length === 0) {
+                            showModalMessage('Please select at least one course before registering.', 'No Courses Selected');
+                            return;
+                        }
+                        const selectedCourses = selectedCoursesElems.map(cb => cb.nextElementSibling ? cb.nextElementSibling.textContent.trim() : cb.value);
+                        const selectedCore = Array.from(document.querySelectorAll('input.core-course:checked')).map(cb => cb.dataset.core || cb.value || (cb.nextElementSibling && cb.nextElementSibling.textContent) || '');
+
+                        // Ensure core courses selected
+                        if (!selectedCore.length) {
+                            showModalMessage('Core courses are compulsory. Please add at least one core course before registering.', 'Core Courses Required');
+                            return;
+                        }
+
+                        // Prefill the confirmation modal with any stored student info (if available)
+                        const stored = getStudentFromLocalStorage() || {};
+                        try { document.getElementById('modalStudentName').value = stored.name || stored.studentName || '';}catch(e){}
+                        try { document.getElementById('modalStudentEmail').value = stored.email || stored.studentEmail || '';}catch(e){}
+                        try { document.getElementById('modalStudentPhone').value = stored.phone || stored.studentPhone || '';}catch(e){}
+                        try { document.getElementById('modalStudentLevel').value = stored.level || stored.studentLevel || '';}catch(e){}
+                        try { document.getElementById('studentSchoolSelect').value = stored.school || stored.studentSchool || '';}catch(e){}
+                        try { document.getElementById('studentProgramSelect').value = stored.program || stored.studentProgram || '';}catch(e){}
+
+                        // Store the selected courses temporarily on the modal element so confirm handler can read them
+                        if (modal) {
+                            modal.dataset.selectedCourses = JSON.stringify(selectedCourses);
+                            modal.dataset.selectedCore = JSON.stringify(selectedCore);
+                            modal.style.display = 'flex';
+                        }
+
+                        // Close mobile sidebar if open
+                        if (window.innerWidth <= 768) {
+                            try { closeSidebar(); } catch(e){}
+                        }
+                    } catch (err) {
+                        console.error('openRegisterModal click handler failed', err);
+                        showModalMessage('An unexpected error occurred. See console for details.', 'Error');
+                    }
+                });
+            } else {
+                console.warn('openRegisterModal element not found — registration button disabled on this page.');
+            }
+
+            // Close handler for the congratulations modal — redirect to signup.html after user clicks
+            if (congratsCloseBtn) {
+                congratsCloseBtn.addEventListener('click', () => {
+                    if (congratsModal) congratsModal.style.display = 'none';
+                    // Redirect user to signup page after they dismiss the modal
+                    window.location.href = 'signup.html';
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    if (modal) modal.style.display = 'none';
+                });
+            }
+
+            // When modal confirm is used, reuse saveRegistration
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', async () => {
+                const studentName = document.getElementById('modalStudentName').value.trim();
+                const email = document.getElementById('modalStudentEmail').value.trim();
+                const phone = document.getElementById('modalStudentPhone').value.trim();
+                const level = document.getElementById('modalStudentLevel').value.trim();
+                const school = document.getElementById('studentSchoolSelect').value.trim();
+                const program = document.getElementById('studentProgramSelect').value.trim();
+
+                // If program group is visible, program must be chosen
+                if (!studentName || !level || !school || (programGroup.style.display !== 'none' && !program) || (!email && !phone)) {
+                    alert("Please fill in all required fields (including email or phone) before confirming.");
+                    return;
+                }
+
+                // Collect selected courses (from page checkboxes)
+                const selectedCourses = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.nextElementSibling ? cb.nextElementSibling.textContent : cb.value);
+                // Collect selected core courses (from any school's card)
+                const selectedCore = Array.from(document.querySelectorAll('input.core-course:checked')).map(cb => cb.dataset.core || cb.value || (cb.nextElementSibling && cb.nextElementSibling.textContent) || '');
+
+                // Core courses are compulsory — require at least one core course selection
+                if (!selectedCore.length) {
+                    alert('Core courses are compulsory. Please add at least one core course before confirming registration.');
+                    return;
+                }
+
+                const payload = {
+                    name: studentName,
+                    email: email || null,
+                    phone: phone || null,
+                    level,
+                    school,
+                    program: program || null
+                };
+
+                const res = await saveRegistration(payload, selectedCourses, selectedCore);
+                if (res && res.ok) {
+                    if (modal) modal.style.display = 'none';
+                    congratsMessage.textContent = 'Congratulations — Registration Successful!';
+                    congratsModal.style.display = 'flex';
+
+                    // Clear form
+                    document.getElementById('modalStudentName').value = '';
+                    document.getElementById('modalStudentEmail').value = '';
+                    document.getElementById('modalStudentPhone').value = '';
+                    document.getElementById('modalStudentLevel').value = '';
+                    document.getElementById('studentSchoolSelect').value = '';
+                    document.getElementById('studentProgramSelect').value = '';
+                    programGroup.style.display = 'none';
+                    coreCoursesGroup.style.display = 'none';
+                    clearChildren(coreCoursesList);
+                    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                    updateSelectedCount();
+                } else {
+                    alert('Failed to save registration. See console for details.');
+                }
+                });
+            }
+            
+            // Close modals when clicking outside on mobile
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                try {
+                    if (window.innerWidth <= 768 && sidebar && sidebar.classList && sidebar.classList.contains('active')) {
+                        const clickedOutsideSidebar = !sidebar.contains(e.target) && (!menuToggle || (e.target !== menuToggle && !menuToggle.contains(e.target)));
+                        if (clickedOutsideSidebar) {
+                            closeSidebar();
+                        }
+                    }
+                } catch (err) {
+                    // Defensive: avoid breaking page due to rare DOM state
+                    console.warn('Error in document click handler for sidebar close:', err);
+                }
+            });
+            
+            // Prevent zoom on input focus on mobile
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // Initialize selected count
+            updateSelectedCount();
+        };
+    </script>
+</body>
+</html>

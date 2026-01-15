@@ -1,0 +1,4561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level 100 Student Dashboard</title>
+
+  <!-- Icons, PDF and Paystack -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Supabase SDK -->
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+
+  <style>
+    :root {
+      /* Red-only theme */
+      --primary: #ff0000; /* deep red for sidebar and primary accents */
+      --primary-light: #ff5252; /* lighter red for highlights */
+      --primary-dark: #f80707; /* darker red */
+      --secondary: #ff0000; /* secondary also a red shade */
+      --accent: #ff1744; /* bright accent red */
+      --success: #b71c1c; /* treat success as red to keep theme uniform */
+      --warning: #ef5350; /* reddish warning */
+      --danger: #c62828;
+      --light: #fff8f0;
+      --dark: #050505;
+      --gray: #757575;
+      --gray-light: #e0e0e0;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.999);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Make layout responsive and avoid horizontal overflow */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    .dashboard-container { overflow-x: hidden; }
+    img, picture, video, iframe { max-width: 100%; height: auto; display: block; }
+    .main-content { -webkit-overflow-scrolling: touch; }
+    @media (max-width: 600px) {
+      .dashboard-content { padding: 12px; }
+      .search-bar { width: 100%; }
+      .user-avatar { width: 48px; height: 48px; }
+    }
+
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Close sidebar button */
+    .close-sidebar {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .close-sidebar:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Show close button only on mobile */
+    @media (max-width: 768px) {
+      .close-sidebar {
+        display: block;
+      }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--primary);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .sidebar-header .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      color: rgb(255, 255, 255);
+      text-decoration: none;
+      transition: all 0.3s;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(0, 0, 0, 0.936);
+      color: var(--white);
+      border-left-color: var(--accent);
+    }
+
+    .nav-item i {
+      width: 24px;
+      margin-right: 12px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .student-card {
+      background: rgba(0, 0, 0, 0.943);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .student-card h4 {
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .student-card p {
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--light);
+      border-radius: 24px;
+      padding: 8px 16px;
+      width: 320px;
+    }
+
+    .search-bar input {
+      border: none;
+      background: transparent;
+      padding: 8px;
+      width: 100%;
+      outline: none;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-actions i {
+      font-size: 1.2rem;
+      color: var(--gray);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .user-actions i:hover {
+      color: var(--primary);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    /* Dashboard Content */
+    .dashboard-content {
+      padding: 24px;
+      flex: 1;
+    }
+
+    .welcome-banner {
+      /* monochrome red gradient */
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .welcome-banner .school-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px;
+    }
+
+    .welcome-text h2 {
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+    }
+
+    .welcome-text p {
+      opacity: 0.9;
+      max-width: 600px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .dashboard-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      font-size: 1.5rem;
+    }
+
+    .card-icon.pay {
+      background: rgba(255, 152, 0, 0.1);
+      color: var(--primary);
+    }
+
+    .card-icon.results {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--success);
+    }
+
+    .card-icon.announce {
+      background: rgba(245, 124, 0, 0.1);
+      color: var(--warning);
+    }
+
+    .card-icon.register {
+      background: rgba(198, 40, 40, 0.1);
+      color: var(--danger);
+    }
+
+    .card-icon.profile {
+      background: rgba(117, 117, 117, 0.1);
+      color: var(--gray);
+    }
+
+    .card-icon.calendar {
+      background: rgba(230, 81, 0, 0.1);
+      color: var(--secondary);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 16px;
+    }
+
+    .card-actions {
+      margin-top: auto;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--gray-light);
+      color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray);
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-success:hover {
+      background: #1b5e20;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+    }
+
+    .btn-warning:hover {
+      background: #e65100;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #b71c1c;
+    }
+
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+
+    .payment-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-paid {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--success);
+    }
+
+    .status-pending {
+      background: rgba(245, 124, 0, 0.1);
+      color: var(--warning);
+    }
+
+    .status-under-review {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196f3;
+    }
+
+    /* Mobile Toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--primary);
+      cursor: pointer;
+      margin-right: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        width: 280px;
+        overflow-y: auto; /* allow scrolling when content overflows */
+        -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+        padding-bottom: 40px; /* space for bottom items */
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .main-content {
+        width: 100%;
+      }
+
+      .search-bar {
+        width: 200px;
+      }
+
+      .welcome-banner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-bar {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .search-bar {
+        width: 100%;
+        order: 3;
+      }
+
+      .user-actions {
+        margin-left: auto;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: var(--primary);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray);
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Profile Modal scroll controls */
+    #profileModal .modal-content {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #profileModal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    #profileModal .scroll-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #profileModal .scroll-controls button {
+      padding: 6px 8px;
+      font-size: 12px;
+      border: 1px solid var(--gray-light);
+      background: var(--white);
+      color: var(--primary);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    #profileModal .scroll-controls button:hover {
+      background: var(--light);
+      border-color: var(--primary);
+    }
+
+    #profileModal .scroll-controls button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    #profileModal .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* Custom scrollbar for profile modal */
+    #profileModal .modal-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #profileModal .modal-body::-webkit-scrollbar-track {
+      background: var(--light);
+    }
+
+    #profileModal .modal-body::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    #profileModal .modal-body::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Firefox scrollbar */
+    #profileModal .modal-body {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--light);
+    }
+
+    /* Level 100 notification modal specific styles */
+    #level100NotificationModal .modal-content {
+      max-width: 520px;
+      width: 92%;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #level100NotificationModal .notif-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      background: linear-gradient(90deg, rgba(255,106,0,0.06), rgba(230,81,0,0.04));
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    #level100NotificationModal .notif-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    #level100NotificationModal .notif-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    #level100NotificationModal .notif-timestamp {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    #level100NotificationModal .notif-body {
+      padding: 18px 20px;
+      color: #333;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      background: var(--white);
+    }
+
+    #level100NotificationModal .notif-footer {
+      padding: 12px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--gray-light);
+      background: #fafafa;
+    }
+
+    #level100NotificationModal .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: transparent;
+      color: var(--gray);
+      font-size: 1.2rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid var(--white);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Fee breakdown styles */
+    .fee-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    .fee-item:last-child {
+      border-bottom: none;
+    }
+
+    .fee-total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 2px solid var(--primary);
+    }
+
+    .payment-step {
+      margin-bottom: 24px;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .step-description {
+      margin-bottom: 16px;
+      color: var(--gray);
+    }
+
+    .checkbox-group {
+      margin: 16px 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-item input {
+      margin-right: 8px;
+    }
+
+    .selected-total {
+      margin-top: 16px;
+      font-weight: 600;
+    }
+
+    /* Approval-related UI removed */
+
+    /* Payment Status Banner */
+    .payment-status-banner {
+      background: linear-gradient(135deg, #2196f3, #21cbf3);
+      color: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .payment-status-banner.approved { background: linear-gradient(135deg, var(--success), #4caf50); }
+
+    .payment-status-banner.rejected {
+      background: linear-gradient(135deg, var(--danger), #f44336);
+    }
+
+    .status-banner-icon {
+      font-size: 2rem;
+    }
+
+    .status-banner-content h3 {
+      margin-bottom: 4px;
+    }
+
+    .status-banner-content p {
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    /* --- Animations & Click Effects --- */
+    @keyframes fadeUp { 
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse { 
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .dashboard-card { will-change: transform, opacity; transform-origin: center; }
+    .dashboard-card.animate-in { animation: fadeUp 420ms ease forwards; }
+
+    .welcome-banner { transition: transform 300ms ease, box-shadow 300ms ease; }
+    .welcome-banner:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+
+    .nav-item { transition: transform 140ms ease, background 160ms ease; }
+    .nav-item:active { transform: translateX(4px); }
+
+    /* Ripple element for buttons */
+    .ripple { position: absolute; border-radius: 50%; transform: scale(0); background: rgba(255,255,255,0.45); animation: ripple-effect 600ms linear; pointer-events:none; }
+    @keyframes ripple-effect { to { transform: scale(6); opacity: 0; } }
+
+    /* Sidebar overlay (mobile) */
+    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 90; opacity: 0; transition: opacity 220ms ease; display:none; }
+    .sidebar.open ~ .sidebar-overlay, .sidebar-overlay.show { display:block; opacity: 1; }
+
+    /* ========== MOBILE BOTTOM NAVIGATION BAR ========== */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: var(--white);
+      border-top: 2px solid var(--primary-light);
+      box-shadow: 0 -4px 12px rgba(255, 0, 0, 0.15);
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      /* Ensure it stays above other content when scrolling */
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .mobile-bottom-nav .nav-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding: 0 10px;
+    }
+
+    .mobile-bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      height: 100%;
+      text-decoration: none;
+      color: var(--primary);
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .mobile-bottom-nav .nav-item i {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+      transition: all 0.3s ease;
+      color: var(--primary);
+    }
+
+    .mobile-bottom-nav .nav-item span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-bottom-nav .nav-item.active {
+      color: var(--primary);
+      transform: translateY(-8px);
+    }
+
+    .mobile-bottom-nav .nav-item.active i {
+      transform: scale(1.2);
+      text-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+    }
+
+    .mobile-bottom-nav .nav-item.active span {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .mobile-bottom-nav .nav-item:hover:not(.active) {
+      color: var(--primary-light);
+      transform: translateY(-4px);
+    }
+
+    /* Active indicator dot */
+    .mobile-bottom-nav .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Animation for bottom nav items */
+    @keyframes bounceIn {
+      0% { transform: translateY(10px) scale(0.8); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .mobile-bottom-nav .nav-item {
+      animation: bounceIn 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .mobile-bottom-nav .nav-item:nth-child(1) { animation-delay: 0.1s; }
+    .mobile-bottom-nav .nav-item:nth-child(2) { animation-delay: 0.2s; }
+    .mobile-bottom-nav .nav-item:nth-child(3) { animation-delay: 0.3s; }
+    .mobile-bottom-nav .nav-item:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Fix for iOS Safari to prevent bouncing over the bottom nav */
+    @supports (-webkit-touch-callout: none) {
+      .mobile-bottom-nav {
+        /* iOS specific fix for fixed positioning */
+        position: fixed;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
+      body {
+        /* Prevent overscroll on iOS */
+        overscroll-behavior-y: none;
+      }
+    }
+
+    /* Ensure body doesn't scroll behind the fixed nav */
+    body.has-bottom-nav {
+      padding-bottom: 70px;
+    }
+
+    /* ========== ENHANCED STUDENT WELCOME ========== */
+    .student-welcome-card {
+      background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 82, 82, 0.08));
+      border: 1px solid rgba(255, 0, 0, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .student-welcome-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(255, 0, 0, 0.15);
+      border-color: var(--primary-light);
+    }
+
+    .student-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 2rem;
+      border: 4px solid white;
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .student-avatar-large:hover {
+      transform: scale(1.05) rotate(5deg);
+    }
+
+    .student-details h3 {
+      margin: 0 0 8px 0;
+      color: var(--primary-dark);
+      font-size: 1.4rem;
+    }
+
+    .student-details .student-id {
+      background: var(--primary-light);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .student-details .student-program {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    /* ========== QUICK ACTION BUTTONS ========== */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .quick-action-btn {
+      flex: 1;
+      min-width: 140px;
+      background: white;
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--dark);
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-btn i {
+      color: var(--primary);
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+    }
+
+    .quick-action-btn:hover i {
+      transform: scale(1.2);
+    }
+
+    /* ========== RESPONSIVE ENHANCEMENTS ========== */
+    @media (max-width: 768px) {
+      /* Show mobile bottom navigation */
+      .mobile-bottom-nav {
+        display: block;
+        position: fixed;
+        bottom: 0;
+      }
+
+      /* Adjust main content padding for bottom nav */
+      .main-content {
+        padding-bottom: 80px !important;
+      }
+      
+      /* Enhance mobile sidebar */
+      .sidebar {
+        box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
+      }
+
+      .nav-item {
+        border-radius: 8px;
+        margin: 4px 8px;
+      }
+
+      /* Make welcome banner more compact on mobile */
+      .welcome-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .welcome-banner .school-logo {
+        width: 60px;
+        height: 60px;
+      }
+
+      .welcome-text h2 {
+        font-size: 1.2rem;
+      }
+
+      /* Adjust student welcome card for mobile */
+      .student-welcome-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+      }
+
+      .student-avatar-large {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+      }
+
+      /* Stack quick action buttons on mobile */
+      .quick-actions {
+        flex-direction: column;
+      }
+
+      .quick-action-btn {
+        min-width: 100%;
+      }
+
+      /* Enhance dashboard cards for mobile */
+      .dashboard-card {
+        border-left: 4px solid var(--primary);
+        animation: fadeUp 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+      .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+      .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+      .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+      .dashboard-card:nth-child(5) { animation-delay: 0.5s; }
+      .dashboard-card:nth-child(6) { animation-delay: 0.6s; }
+    }
+
+    @media (max-width: 576px) {
+      /* Make top bar more compact */
+      .top-bar {
+        padding: 12px 16px;
+      }
+
+      .user-avatar {
+        width: 48px;
+        height: 48px;
+      }
+
+      /* Adjust modal for mobile */
+      .modal-content {
+        width: 95%;
+        margin: 10px;
+      }
+
+      /* Touch-friendly buttons */
+      .btn, .nav-item {
+        min-height: 48px;
+        padding: 12px 20px;
+      }
+    }
+
+    /* ========== INTERACTIVE ANIMATIONS ========== */
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
+
+    .pulse {
+      animation: pulse-glow 2s infinite;
+    }
+
+    /* ========== TOUCH-FRIENDLY INTERACTIONS ========== */
+    .touch-feedback:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
+    }
+
+    /* ========== IMPROVED LOADING STATES ========== */
+    .skeleton-loading {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+</style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">GH SCHOOLS</div>
+        <button class="close-sidebar" onclick="toggleSidebar()" aria-label="Close sidebar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-book"></i>
+          <span>Courses</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-wallet"></i>
+          <span>Fees</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Timetable</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-bell"></i>
+          <span>Notifications</span>
+        </a>
+        <a href="#" class="nav-item" onclick="confirmLogout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+        <!-- Sidebar profile avatar (placed immediately after Logout as requested) -->
+        <div id="sidebarAvatar" style="width:120px;height:120px;border-radius:12px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:40px;margin:12px auto;color:#444;overflow:hidden;">
+          S
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="student-card">
+          <h4><i class="fas fa-user-graduate"></i> Student Profile</h4>
+          <p><strong>Name:</strong> <span id="displayName">Loading...</span></p>
+          <p><strong>ID:</strong> <span id="displayStudentID">Loading...</span></p>
+          <p><strong>Level:</strong> <span id="displayLevel">Level 100</span></p>
+          <p><strong>Department:</strong> <span id="displayDept">Loading...</span></p>
+        </div>
+
+        <div class="student-card">
+          <h4><i class="fas fa-info-circle"></i> Admission Info</h4>
+          <p><strong>Program:</strong> <span id="infoProgram">Loading...</span></p>
+          <p><strong>Duration:</strong> <span id="infoDuration">Loading...</span></p>
+          <p><strong>Type:</strong> <span id="infoType">Loading...</span></p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <h2 id="welcomeHeading">Welcome, Student</h2>
+        
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search..." aria-label="Search">
+        </div>
+        
+        <div class="user-actions">
+          <i class="fas fa-envelope" title="Messages"></i>
+          <button id="level100NotifBell" class="icon-btn" title="Notifications" aria-label="Notifications" style="background:none;border:none;cursor:pointer;color:inherit;font-size:1.05rem;position:relative;">
+            <i class="fas fa-bell"></i>
+            <span id="level100NotifBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc3545;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center;">!</span>
+          </button>
+          <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">S</div>
+          </div>
+        </div>
+        <!-- Debug controls: loading indicator (hidden) -->
+        <div id="debugControls" style="display:flex;align-items:center;gap:8px;margin-left:12px;">
+          <div id="dashboardLoadingIndicator" style="display:none;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--primary);color:var(--white);font-weight:600;">
+            <span id="dashboardLoadingSpinner" class="loading" style="width:18px;height:18px;border-width:3px;border-top-color:var(--white);"></span>
+            <span id="dashboardLoadingText">Loading...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Top-stats removed per request -->
+
+      <div class="dashboard-content">
+        <!-- Debug panel removed -->
+        <!-- Payment Status Banner removed (approval workflow disabled) -->
+
+        <!-- Student Not Found Banner (shown when student_id present but no record) -->
+        <div id="studentNotFoundBanner" style="display:none; margin-bottom:16px;">
+          <div style="background: linear-gradient(135deg,#fff4e6,#fff9f0); border:1px solid #ffdca8; padding:12px 16px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="display:flex; gap:12px; align-items:center;">
+              <i class="fas fa-exclamation-triangle" style="color:#e07b00; font-size:1.2rem;"></i>
+              <div>
+                <div style="font-weight:700; color:#8a4b00;">Student record not found</div>
+                <div id="studentNotFoundMessage" style="color:#6b4a1a; font-size:0.95rem;">We couldn't find a student record for the provided Student ID.</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button class="btn btn-secondary btn-sm" onclick="hideStudentNotFound()">Dismiss</button>
+            </div>
+          </div>
+        </div>
+
+            <!-- Password Reset Modal -->
+            <div id="passwordResetModal" class="modal" style="display:none;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2>Reset Password</h2>
+                  <button class="close-btn" onclick="document.getElementById('passwordResetModal').style.display='none'" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <div style="text-align:left; max-width:640px; margin:0 auto;">
+                    <p>Enter your <strong>Student ID</strong>, <strong>email</strong> or <strong>phone</strong> and click <em>Send code</em>. You'll receive a one-time code (SMS if phone configured). Then provide the code and choose a strong password (min 12 characters, 3 of: uppercase, lowercase, digit, symbol).</p>
+
+                    <div style="display:grid; gap:8px; margin-top:8px;">
+                      <input id="pr_key" placeholder="Student ID (preferred)" class="" />
+                      <input id="pr_email" placeholder="Email (optional)" type="email" />
+                      <input id="pr_phone" placeholder="Phone (e.g. 233539816189)" />
+                      <div style="display:flex; gap:8px;">
+                        <button class="btn" onclick="requestPasswordReset()">Send code</button>
+                        <div id="pr_status" style="align-self:center; color:#333;">&nbsp;</div>
+                      </div>
+
+                      <div id="pr_code_section" style="display:none; margin-top:6px;">
+                        <input id="pr_code" placeholder="Enter 6-digit code" />
+                        <input id="pr_new_password" type="password" placeholder="New password" />
+                        <input id="pr_confirm_password" type="password" placeholder="Confirm new password" />
+                        <div style="display:flex; gap:8px; margin-top:6px;">
+                          <button class="btn btn-success" onclick="confirmPasswordReset()">Set new password</button>
+                          <button class="btn btn-secondary" onclick="document.getElementById('pr_code_section').style.display='none'">Hide</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" onclick="document.getElementById('passwordResetModal').style.display='none'">Close</button>
+                </div>
+              </div>
+            </div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+          <img src="images/favicon.png" alt="School Logo" class="school-logo">
+          <div class="welcome-text">
+            <h2 id="personalizedWelcome">WELCOME TO GH SCHOOLS COLLEGE</h2>
+            <p id="welcomeMessage">
+              We're excited to have you on board! As a Level 100 student, you are about to embark on an enriching journey of academic and personal growth. 
+              Use your dashboard to access your courses, pay fees, view your schedule, check results, and stay updated with the latest announcements.
+            </p>
+          </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+          <!-- Pay Fee Card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-icon pay">
+                <i class="fas fa-money-check-alt"></i>
+              </div>
+              <div>
+                <div class="card-title">Pay Fee</div>
+                <div class="card-desc">Check your detailed fee breakdown and pay your fees online.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="javascript:void(0)" class="btn btn-block" onclick="openModal('feeModal')">Pay Now</a>
+            </div>
+          </div>
+
+          <!-- Check Results Card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-icon results">
+                <i class="fas fa-clipboard-list"></i>
+              </div>
+              <div>
+                <div class="card-title">Check Results</div>
+                <div class="card-desc">View your academic performance and grade reports anytime.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="javascript:void(0)" class="btn btn-block" onclick="openResultsModal()">View Results</a>
+            </div>
+          </div>
+
+          <!-- Announcements Card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-icon announce">
+                <i class="fas fa-bullhorn"></i>
+              </div>
+              <div>
+                <div class="card-title">Announcements</div>
+                <div class="card-desc">Stay updated with important school news and events.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="javascript:void(0)" class="btn btn-block" onclick="openAnnouncementModal()">View Notices</a>
+            </div>
+          </div>
+
+          <!-- Course Registration Card -->
+          <div class="dashboard-card" id="registerCard">
+            <div class="card-header">
+              <div class="card-icon register">
+                <i class="fas fa-pen"></i>
+              </div>
+              <div>
+                <div class="card-title">Course Registration</div>
+                <div class="card-desc">Register your courses once fee criteria are met.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a id="registerBtn" class="btn btn-block" href="javascript:void(0)" target="_blank">
+                Register Courses
+              </a>
+              <small id="registerHint" style="color:#555; margin-top:8px; display:none; text-align:center;">
+                Complete the required fees to unlock registration.
+              </small>
+            </div>
+          </div>
+
+          <!-- Student Profile Card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-icon profile">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <div>
+                <div class="card-title">Student Profile</div>
+                <div class="card-desc">View and update your personal information.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="javascript:void(0)" class="btn btn-block" onclick="openModal('profileModal')">View Profile</a>
+            </div>
+          </div>
+
+          <!-- Academic Calendar Card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-icon calendar">
+                <i class="fas fa-calendar"></i>
+              </div>
+              <div>
+                <div class="card-title">Academic Calendar</div>
+                <div class="card-desc">Check important dates and academic schedules.</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="javascript:void(0)" class="btn btn-block" onclick="openCalendarModal()">View Calendar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" aria-hidden="true"></div>
+
+  <!-- Fee Details Modal -->
+  <div id="feeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="feeModalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="feeModalTitle">Fee Payment</h2>
+        <button class="close-btn" onclick="closeModal('feeModal')" aria-label="Close">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Payment Status Display -->
+        <div id="paymentStatusDisplay" style="display: none;">
+          <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Step 1: Admission Fee -->
+        <div id="step1" class="payment-step">
+          <h3 class="step-title">Admission Fee Payment</h3>
+          <p class="step-description">You must pay your full Admission Fee (GHS 800) before proceeding to the remaining fees.</p>
+          
+          <div class="fee-item">
+            <span>Admission Fee:</span>
+            <span>GHS 800</span>
+          </div>
+          
+          <div style="margin-top: 16px;">
+            <button class="btn btn-block" onclick="payAdmission()" id="admissionPayBtn">
+              <span id="admissionPayText">Pay Full Admission Fee (GHS 800)</span>
+              <span id="admissionPaySpinner" class="loading" style="display: none;"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Will be rendered dynamically by renderFeeUI() -->
+        <div id="step2" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div id="resultModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-exclamation-circle"></i> No Exams Taken</h2>
+        <button class="close-btn" onclick="closeResultsModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Hi there! 😊 It looks like you haven't taken any exams yet.</p>
+        <p>Once you complete your exams, your grades and performance results will appear here for you to review anytime.</p>
+        <p style="margin-top: 16px; font-style: italic; color: var(--warning);">
+          Stay focused and keep preparing — your success is ahead! 🎓
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Receipt Modal -->
+  <div id="receiptModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Payment Receipt</h2>
+        <button class="close-btn" onclick="closeModal('receiptModal')" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="receiptContent"></div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('receiptModal')" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- Loading overlay shown when redirecting to registration -->
+  <div id="registrationLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:linear-gradient(135deg,#fff,#fff7ed); padding:20px 24px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); max-width:320px; width:90%; text-align:center;">
+      <div class="loader" style="width:48px;height:48px;border-radius:50%;border:6px solid rgba(0,0,0,0.08);border-top-color:#ff6a00; animation:spin 1s linear infinite"></div>
+      <div style="font-weight:700; color:#1f2937;">Preparing Registration</div>
+      <div style="color:#6b7280; font-size:0.95rem;">Please wait while we prepare your registration page...</div>
+    </div>
+  </div>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- Approval modals removed (approval workflow disabled). -->
+  </div>
+
+  <!-- Announcements Modal -->
+  <div id="announcementModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Upcoming Announcements</h2>
+        <button class="close-btn" onclick="closeAnnouncementModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Orientation for Level 100 Students:</strong><br>
+        The university will hold a mandatory orientation session for all newly admitted Level 100 students on <strong>Monday, 18th August, 2025</strong> at the MEGA STUDIO.</p>
+        
+        <p style="margin-top: 16px;"><strong>SRC Week Celebration:</strong><br>
+        Join the week-long SRC celebration with exciting events starting <strong>19th August, 2025</strong>. Activities include debate competitions, cultural night, sports, and more!</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeAnnouncementModal()" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Student Profile</h2>
+        <div class="scroll-controls">
+          <button id="profileScrollUp" title="Scroll to top" onclick="scrollProfileModal('up')">↑ Top</button>
+          <button id="profileScrollDown" title="Scroll to bottom" onclick="scrollProfileModal('down')">↓ Bottom</button>
+        </div>
+        <button class="close-btn" onclick="closeModal('profileModal')" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="profileContent">
+          <!-- Profile content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Modal -->
+  <div id="level100NotificationModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('level100NotificationModal')" aria-label="Close">&times;</button>
+
+      <div class="notif-header">
+        <div class="notif-icon"><i class="fas fa-bell"></i></div>
+        <div style="flex:1;">
+          <div class="notif-title">Message from Admin</div>
+          <div class="notif-timestamp" id="level100NotificationTimestamp"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-left:8px;">
+          <button class="btn btn-sm" title="Scroll up" onclick="scrollNotifications('up')" style="padding:6px 8px;">▲</button>
+          <button class="btn btn-sm" title="Scroll down" onclick="scrollNotifications('down')" style="padding:6px 8px;">▼</button>
+        </div>
+      </div>
+
+      <div class="notif-body" id="level100NotificationContent">
+        <p style="color:#666;margin:0;">No notifications</p>
+      </div>
+
+      <div class="notif-footer">
+        <button class="btn btn-secondary" onclick="markAllNotificationsRead()">Mark all read</button>
+        <button class="btn btn-danger" onclick="deleteAllNotifications()">Delete all</button>
+        <button id="ackLevel100ModalBtn" class="btn">Acknowledge</button>
+        <button class="btn btn-secondary" onclick="closeModal('level100NotificationModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Academic Calendar Modal -->
+  <div id="calendarModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Academic Calendar 2025</h2>
+        <button class="close-btn" onclick="closeModal('calendarModal')" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: left;">
+          <p><strong>Semester 1:</strong></p>
+          <ul>
+            <li>Orientation: August 18, 2025</li>
+            <li>Classes Begin: August 25, 2025</li>
+            <li>Mid-Semester Break: October 13-17, 2025</li>
+            <li>Examinations: December 1-15, 2025</li>
+          </ul>
+          <p><strong>Semester 2:</strong></p>
+          <ul>
+            <li>Classes Begin: January 12, 2026</li>
+            <li>Mid-Semester Break: March 2-6, 2026</li>
+            <li>Examinations: April 27 - May 15, 2026</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('calendarModal')" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
+ <script>
+    /* ===========================================
+      Enhanced Student Dashboard (payments auto-approved)
+      =========================================== */
+
+  /* -------------- CONFIG -------------- */
+  const SUPABASE_URL = "https://fyriapqeztevzkcaaiqw.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY";
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Ensure a safe global badge updater exists to avoid ReferenceError
+  // (Some code paths call `updateLevel100Badge` before it's defined.)
+  if (typeof window.updateLevel100Badge !== 'function') {
+    window.updateLevel100Badge = function () {
+      try {
+        const b = document.getElementById('level100NotifBadge');
+        if (!b) return;
+        if (window.level100NotificationUnread) b.style.display = 'flex';
+        else b.style.display = 'none';
+      } catch (e) { /* ignore */ }
+    };
+  }
+
+  const PAYSTACK_KEY = 'pk_live_0563b84aae2c983dcbf04ec1fad441f04ef25d07';
+  const REGISTRATION_PORTAL_URL = 'https://moderndtsystems.com/studentportgtal/LOGIN.aspx';
+
+  const ADMISSION_FEE = 800;
+  const TUITION = 2550;
+  const TUITION_80 = Math.round(0.80 * TUITION); // 2040
+  const SRC_DUES = 50;
+  const DEPT_DUES = 50;
+  const MED_DUES = 50;
+
+  const LS_KEYS = { 
+    studentData: 'student_data',
+    paymentStatus: 'payment_status'
+  };
+
+  // SMS proxy config (use server-side proxy to keep API keys secret)
+  if (typeof window.USE_PROXY === 'undefined') window.USE_PROXY = true;
+  // Default proxy endpoint: can be set to your hosted proxy or Supabase Function URL.
+  if (typeof window.PROXY_ENDPOINT === 'undefined') window.PROXY_ENDPOINT = 'https://fyriapqeztevzkcaaiqw.supabase.co/functions/v1/hyper-action';
+
+  async function sendViaProxy(phoneNumbers, message, meta) {
+    if (!phoneNumbers || phoneNumbers.length === 0) return;
+    // Prefer sending a single request with `phones` array (Supabase Function / unified proxy shape)
+    try {
+      const payload = {
+        phones: phoneNumbers,
+        message: message,
+        student_id: meta && meta.student_id || null,
+        meta: meta || null
+      };
+
+      const resp = await fetch(window.PROXY_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // record provider response and entries in `sms_messages` table if Supabase client available
+      try {
+        const text = await resp.text();
+        const status = resp.ok ? 'sent' : 'failed';
+        for (const to of phoneNumbers) {
+          try { await sb.from('sms_messages').insert([{ student_id: meta && meta.student_id || null, phone: to, message: message, created_at: new Date().toISOString(), status: status, gateway_response: String(text) }]); } catch(e){}
+        }
+      } catch (e) { /* ignore recording errors */ }
+
+      if (!resp.ok) {
+        // Fall back to per-number send using legacy `to` key (some proxies expect `to`)
+        for (let i = 0; i < phoneNumbers.length; i++) {
+          const to = phoneNumbers[i];
+          try {
+            await fetch(window.PROXY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to, message, meta }) });
+          } catch (e) { console.warn('Fallback per-number send failed for', to, e); }
+          await new Promise(res => setTimeout(res, 250));
+        }
+      }
+      return;
+    } catch (err) {
+      console.warn('sendViaProxy bulk send failed, falling back to per-number:', err);
+      // fallback: per-number attempts (legacy proxies expect `to`)
+      for (let i = 0; i < phoneNumbers.length; i++) {
+        const to = phoneNumbers[i];
+        try {
+          const resp = await fetch(window.PROXY_ENDPOINT, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to, message, meta })
+          });
+          try { const text = await resp.text(); const status = resp.ok ? 'sent' : 'failed'; await sb.from('sms_messages').insert([{ student_id: meta && meta.student_id || null, phone: to, message: message, created_at: new Date().toISOString(), status: status, gateway_response: String(text) }]); } catch(e){}
+        } catch (e) { console.warn('Failed sending SMS to', to, e); try { await sb.from('sms_messages').insert([{ student_id: meta && meta.student_id || null, phone: to, message: message, created_at: new Date().toISOString(), status: 'failed', gateway_response: String(e) }]); } catch(_){}}
+        await new Promise(res => setTimeout(res, 250));
+      }
+    }
+  }
+
+  // Global variables
+  let allPayments = [];
+  let currentStudent = null;
+  let paymentCheckInterval = null;
+
+  /* -------------- UTIL -------------- */
+  const cedis = (n) => `GHS ${Number(n).toFixed(2)}`;
+  const uid = () => 'p' + Date.now().toString(36) + Math.floor(Math.random()*1e6).toString(36);
+
+  // Small HTML-escape helper used when injecting text into innerHTML
+  function escapeHtml(s){ if(s === null || s === undefined) return ''; return String(s).replace(/[&<>\"]/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]); }); }
+
+  // Remove any <div> tags from admin-supplied messages (leaves inner text intact)
+  function stripDivTags(s){ if (s === null || s === undefined) return ''; try { return String(s).replace(/<\/?div[^>]*>/gi, ''); } catch(e){ return String(s); } }
+
+  /* -------------- SIDEBAR -------------- */
+  function toggleSidebar() {
+    const sbEl = document.getElementById('sidebar');
+    if (sbEl) sbEl.classList.toggle('open');
+  }
+
+  async function confirmLogout() {
+    const ok = await showConfirm('Are you sure you want to log out?', 'Confirm Logout');
+    if (!ok) return;
+    try{
+      // Clear all student-related data from localStorage
+      Object.values(LS_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+      });
+      localStorage.removeItem('student_info');
+      localStorage.removeItem('student_id');
+      localStorage.removeItem('admitted_full_name');
+    }catch(e){ /* ignore */ }
+    // Clear interval
+    if (paymentCheckInterval) {
+      clearInterval(paymentCheckInterval);
+    }
+    // Redirect to login page
+    window.location.href = 'index.html';
+  }
+
+  // Global modal helper to replace alert()
+  function showModalMessage(message, title = 'Notice'){
+    try{
+      // If modal exists use it, otherwise create it
+      let modal = document.getElementById('globalMessageModal');
+      if(!modal){
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <div id="globalMessageModal" class="modal" style="display:none;">
+            <div class="modal-content">
+              <div class="modal-header"><h2 id="globalMessageTitle">${title}</h2><button class="close-btn" id="globalMessageClose">&times;</button></div>
+              <div class="modal-body"><div id="globalMessageBody" style="white-space:pre-wrap;"></div></div>
+              <div class="modal-footer"><button class="btn" id="globalMessageOk">OK</button></div>
+            </div>
+          </div>`;
+        document.body.appendChild(div.firstElementChild);
+        modal = document.getElementById('globalMessageModal');
+        document.getElementById('globalMessageClose').addEventListener('click', ()=>{ modal.style.display='none'; });
+        document.getElementById('globalMessageOk').addEventListener('click', ()=>{ modal.style.display='none'; });
+      }
+      const titleEl = document.getElementById('globalMessageTitle');
+      const bodyEl = document.getElementById('globalMessageBody');
+      if(titleEl) titleEl.textContent = title;
+      if(bodyEl) bodyEl.textContent = typeof message === 'string' ? message : JSON.stringify(message);
+      modal.style.display = 'flex';
+    }catch(e){ try{ console.warn('Modal unavailable — message:', message); }catch(_){ /* ignore */ } }
+  }
+
+  // Ensure consistent modal styles (added once)
+  async function renderProfileModal() {
+    const profileContent = document.getElementById('profileContent');
+    if (!profileContent) return;
+
+    profileContent.innerHTML = `
+      <div style="text-align: left;">
+        <p><strong>Loading profile information...</strong></p>
+      </div>
+    `;
+
+    // Load actual student data
+    if (currentStudent) {
+      // Ensure payments loaded for this student
+      try {
+        await loadPayments();
+      } catch (e) {
+        console.warn('Could not load payments for profile modal', e);
+      }
+
+      const status = getOverallPaymentStatus();
+      const statusText = status === 'approved' ? 'Approved' : 
+            status === 'pending' ? 'Pending' : 'Incomplete';
+
+      const payments = Array.isArray(allPayments) ? allPayments : [];
+      const totalPaid = Number(window.totalPaid || payments.filter(p=>String(p.status||'').toLowerCase()==='approved').reduce((s,p)=>s+Number(p.amount_paid||p.amount||0),0));
+      const totalPayable = Number(window.totalPayable || (ADMISSION_FEE||0) + (TUITION||0) + (SRC_DUES||0) + (DEPT_DUES||0) + (MED_DUES||0));
+      const outstanding = Number(typeof window.outstandingBalance !== 'undefined' ? window.outstandingBalance : Math.max(0, totalPayable - totalPaid).toFixed(2));
+
+      // Build payments table html
+      let paymentsHTML = '<p>No payment records found.</p>';
+      if (payments.length > 0) {
+        paymentsHTML = `
+          <table style="width:100%;border-collapse:collapse;margin-top:8px;">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Fee Type</th>
+                <th style="text-align:right;padding:6px;border-bottom:1px solid #eee;">Amount</th>
+                <th style="text-align:right;padding:6px;border-bottom:1px solid #eee;">Paid</th>
+                <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Status</th>
+                <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${payments.map(p => `
+                <tr>
+                  <td style="padding:6px;border-bottom:1px solid #fafafa;">${p.fee_type || p.fee || 'Unknown'}</td>
+                  <td style="padding:6px;border-bottom:1px solid #fafafa;text-align:right;">${Number(p.amount || 0).toFixed(2)}</td>
+                  <td style="padding:6px;border-bottom:1px solid #fafafa;text-align:right;">${Number(p.amount_paid || p.amount || 0).toFixed(2)}</td>
+                  <td style="padding:6px;border-bottom:1px solid #fafafa;">${p.status || p.payment_status || 'N/A'}</td>
+                  <td style="padding:6px;border-bottom:1px solid #fafafa;">${formatDate(p.created_at)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      profileContent.innerHTML = `
+        <div style="text-align: left; display:flex; gap:16px; align-items:flex-start;">
+          <div id="profileAvatar" style="width:160px;height:160px;border-radius:12px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:48px;color:#444;overflow:hidden;">
+            ${(currentStudent.firstname || '').charAt(0).toUpperCase()}
+          </div>
+          <div style="flex:1;">
+            <p><strong>Full Name:</strong> ${currentStudent.firstname || ''} ${currentStudent.lastname || ''}</p>
+            <p><strong>Student ID:</strong> ${currentStudent.id || currentStudent.student_id || ''}</p>
+            <p><strong>Level:</strong> ${currentStudent.level || ''}</p>
+            <p><strong>Department:</strong> ${currentStudent.department || ''}</p>
+            <p><strong>Program:</strong> ${currentStudent.program || ''}</p>
+            <p><strong>Program Type:</strong> ${(currentStudent.program_type || '').charAt(0).toUpperCase() + (currentStudent.program_type || '').slice(1)}</p>
+            <p><strong>Program Duration:</strong> ${currentStudent.program_duration || ''}</p>
+            <p><strong>Email:</strong> ${currentStudent.email || ''}</p>
+            <p><strong>Phone:</strong> ${currentStudent.phone || 'Not provided'}</p>
+            <p><strong>School:</strong> ${currentStudent.school || ''}</p>
+            <p><strong>Admission Date:</strong> ${currentStudent.admission_date || ''}</p>
+            <hr>
+            <p><strong>Payment Status:</strong> <span class="payment-status ${status === 'approved' ? 'status-paid' : status === 'pending' ? 'status-pending' : 'status-pending'}">${statusText}</span></p>
+            <p><strong>Total Paid:</strong> GHS ${totalPaid.toFixed(2)}</p>
+            <p><strong>Total Payable:</strong> GHS ${Number(totalPayable).toFixed(2)}</p>
+            <p><strong>Outstanding Balance:</strong> <span style="font-weight:700;color:${outstanding>0? '#d9534f':'#28a745'};">GHS ${Number(outstanding).toFixed(2)}</span></p>
+            <p><strong>Payment History:</strong></p>
+            ${paymentsHTML}
+            <div style="margin-top:12px; display:flex; gap:8px;">
+              <button class="btn btn-warning" onclick="openPasswordResetModal()">Change Password</button>
+              <button class="btn btn-secondary" onclick="closeModal('profileModal')">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Simple confirm helper that returns a Promise<boolean>
+  function showConfirm(message, title = 'Confirm') {
+    return new Promise((resolve) => {
+      try {
+        let modal = document.getElementById('globalConfirmModal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'globalConfirmModal';
+          modal.className = 'modal';
+          modal.style.display = 'none';
+          modal.innerHTML = `
+            <div class="modal-content">
+              <div class="modal-header"><h2 id="globalConfirmTitle">${escapeHtml(title)}</h2><button class="close-btn" id="globalConfirmClose">&times;</button></div>
+              <div class="modal-body"><div id="globalConfirmBody" style="white-space:pre-wrap;">${escapeHtml(message)}</div></div>
+              <div class="modal-footer" style="display:flex;gap:8px;justify-content:flex-end;">
+                <button class="btn btn-outline" id="globalConfirmNo">No</button>
+                <button class="btn btn-primary" id="globalConfirmYes">Yes</button>
+              </div>
+            </div>`;
+          document.body.appendChild(modal);
+        }
+
+        const open = () => { modal.style.display = 'flex'; };
+        const close = () => { modal.style.display = 'none'; };
+
+        const yesBtn = modal.querySelector('#globalConfirmYes');
+        const noBtn = modal.querySelector('#globalConfirmNo');
+        const closeBtn = modal.querySelector('#globalConfirmClose');
+        const body = modal.querySelector('#globalConfirmBody');
+        const titleEl = modal.querySelector('#globalConfirmTitle');
+
+        if (body) body.textContent = typeof message === 'string' ? message : JSON.stringify(message);
+        if (titleEl) titleEl.textContent = title;
+
+        function cleanup() {
+          try {
+            yesBtn && yesBtn.removeEventListener('click', onYes);
+            noBtn && noBtn.removeEventListener('click', onNo);
+            closeBtn && closeBtn.removeEventListener('click', onClose);
+          } catch (e) { }
+        }
+
+        function onYes() { cleanup(); close(); resolve(true); }
+        function onNo() { cleanup(); close(); resolve(false); }
+        function onClose() { cleanup(); close(); resolve(false); }
+
+        yesBtn && yesBtn.addEventListener('click', onYes);
+        noBtn && noBtn.addEventListener('click', onNo);
+        closeBtn && closeBtn.addEventListener('click', onClose);
+
+        open();
+      } catch (e) {
+        console.warn('showConfirm failed:', e);
+        resolve(false);
+      }
+    });
+  }
+
+  // Top-stats totals (used by the small header widget)
+  window.totalPayable = window.totalPayable || 0;
+  window.totalPaid = window.totalPaid || 0;
+  window.outstandingBalance = window.outstandingBalance || 0;
+
+  // Top-stats UI removed — no-op placeholder to avoid errors if called elsewhere
+  function updateDashboardUI(){ /* intentionally empty */ }
+
+  // Dashboard loading helper (shows small inline loading indicator in header)
+  function setDashboardLoading(on, message) {
+    try {
+      const indicator = document.getElementById('dashboardLoadingIndicator');
+      const text = document.getElementById('dashboardLoadingText');
+      if (!indicator) return;
+      if (on) {
+        if (text && message) text.textContent = message;
+        indicator.style.display = 'flex';
+      } else {
+        indicator.style.display = 'none';
+        if (text) text.textContent = 'Loading...';
+      }
+    } catch (e) { console.warn('setDashboardLoading failed', e); }
+  }
+
+  // expose loading helper globally so other scripts can use it
+  try { window.setDashboardLoading = setDashboardLoading; } catch(e){}
+
+  /* Debug panel helper removed */
+
+  /* ========== MOBILE BOTTOM NAVIGATION ========== */
+  function createMobileBottomNav() {
+    // Check if already exists
+    if (document.querySelector('.mobile-bottom-nav')) return;
+    
+    const bottomNav = document.createElement('div');
+    bottomNav.className = 'mobile-bottom-nav';
+    bottomNav.innerHTML = `
+      <div class="nav-container">
+        <a href="#" class="nav-item active" onclick="handleMobileNavClick(event, 'dashboard')">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" onclick="handleMobileNavClick(event, 'courses')">
+          <i class="fas fa-book"></i>
+          <span>Courses</span>
+        </a>
+        <a href="#" class="nav-item" onclick="handleMobileNavClick(event, 'fees')">
+          <i class="fas fa-wallet"></i>
+          <span>Fees</span>
+        </a>
+        <a href="#" class="nav-item" onclick="handleMobileNavClick(event, 'notifications')">
+          <i class="fas fa-bell"></i>
+          <span>Alerts</span>
+        </a>
+      </div>
+    `;
+    document.body.appendChild(bottomNav);
+    // Ensure it's visible and above other content
+    try { bottomNav.style.display = 'block'; bottomNav.style.zIndex = '10000'; } catch(e){}
+  }
+
+  function handleMobileNavClick(event, section) {
+    event.preventDefault();
+    
+    // Update active state
+    document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    // Handle navigation
+    switch(section) {
+      case 'dashboard':
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      case 'courses':
+        showModalMessage('Course registration will open soon!', 'Courses');
+        break;
+      case 'fees':
+        openModal('feeModal');
+        break;
+      case 'notifications':
+        document.getElementById('level100NotifBell').click();
+        break;
+    }
+    
+    // Add haptic feedback for mobile
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+  }
+
+  /* ========== ENHANCED STUDENT WELCOME ========== */
+  function createEnhancedStudentWelcome(student) {
+    // Check if already exists
+    if (document.querySelector('.student-welcome-card')) return;
+    
+    const welcomeSection = document.createElement('div');
+    welcomeSection.className = 'student-welcome-card touch-feedback';
+    welcomeSection.onclick = () => openProfileModal();
+    
+    const firstLetter = student.firstname ? student.firstname.charAt(0).toUpperCase() : 'S';
+    
+    welcomeSection.innerHTML = `
+      <div class="student-avatar-large" id="welcomeAvatar">
+        ${firstLetter}
+      </div>
+      <div class="student-details">
+        <h3>Welcome back, ${student.firstname || 'Student'}!</h3>
+        <div class="student-id">${student.student_id || 'STUDENT ID'}</div>
+        <p class="student-program">${student.program || 'General Program'}</p>
+        <p style="font-size: 0.9rem; color: var(--primary); margin-top: 8px;">
+          <i class="fas fa-circle" style="font-size: 8px; margin-right: 6px;"></i>
+          Level 100 Student
+        </p>
+      </div>
+    `;
+    
+    // Insert after welcome banner
+    const welcomeBanner = document.querySelector('.welcome-banner');
+    if (welcomeBanner) {
+      welcomeBanner.parentNode.insertBefore(welcomeSection, welcomeBanner.nextSibling);
+    }
+    
+    // Load student photo for avatar
+    resolveStudentPhotoUrl(student.rawData).then(url => {
+      const avatar = document.getElementById('welcomeAvatar');
+      if (url && avatar) {
+        avatar.innerHTML = '';
+        avatar.style.backgroundImage = `url('${url}')`;
+        avatar.style.backgroundSize = 'cover';
+        avatar.style.backgroundPosition = 'center';
+      }
+    });
+  }
+
+  /* ========== QUICK ACTIONS ========== */
+  function createQuickActions() {
+    // Check if already exists
+    if (document.querySelector('.quick-actions')) return;
+    
+    const quickActions = document.createElement('div');
+    quickActions.className = 'quick-actions';
+    quickActions.innerHTML = `
+      <a href="javascript:void(0)" class="quick-action-btn touch-feedback" onclick="openModal('feeModal')">
+        <i class="fas fa-money-check-alt"></i>
+        <span>Pay Fees</span>
+      </a>
+      <a href="javascript:void(0)" class="quick-action-btn touch-feedback" onclick="openResultsModal()">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Check Results</span>
+      </a>
+      <a href="javascript:void(0)" class="quick-action-btn touch-feedback" onclick="openAnnouncementModal()">
+        <i class="fas fa-bullhorn"></i>
+        <span>Announcements</span>
+      </a>
+      <a href="javascript:void(0)" class="quick-action-btn touch-feedback" onclick="openCalendarModal()">
+        <i class="fas fa-calendar"></i>
+        <span>Calendar</span>
+      </a>
+    `;
+    
+    // Insert after student welcome card
+    const welcomeCard = document.querySelector('.student-welcome-card');
+    if (welcomeCard) {
+      welcomeCard.parentNode.insertBefore(quickActions, welcomeCard.nextSibling);
+    }
+  }
+
+  /* ========== SWIPE GESTURES FOR MOBILE ========== */
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  function setupSwipeGestures() {
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+  }
+
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndX - touchStartX;
+    
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+      if (swipeDistance > 0) {
+        // Swipe right - open sidebar on mobile
+        if (window.innerWidth <= 768) {
+          toggleSidebar();
+        }
+      } else {
+        // Swipe left - close sidebar on mobile
+        if (window.innerWidth <= 768) {
+          const sidebar = document.getElementById('sidebar');
+          if (sidebar && sidebar.classList.contains('open')) {
+            toggleSidebar();
+          }
+        }
+      }
+    }
+  }
+
+  /* ========== PULL TO REFRESH ========== */
+  let pullStartY = 0;
+  let pullDistance = 0;
+
+  function setupPullToRefresh() {
+    document.addEventListener('touchstart', e => {
+      if (window.scrollY === 0) {
+        pullStartY = e.touches[0].pageY;
+      }
+    });
+
+    document.addEventListener('touchmove', e => {
+      if (pullStartY && window.scrollY === 0) {
+        pullDistance = e.touches[0].pageY - pullStartY;
+        
+        if (pullDistance > 0) {
+          e.preventDefault();
+          // You could add a pull-to-refresh indicator here
+        }
+      }
+    });
+
+    document.addEventListener('touchend', e => {
+      if (pullDistance > 100) {
+        // Pull to refresh action
+        showModalMessage('Refreshing dashboard...', 'Loading');
+        setTimeout(() => {
+          location.reload();
+        }, 800);
+      }
+      pullStartY = 0;
+      pullDistance = 0;
+    });
+  }
+
+  /* -------------- STUDENT DATA LOADING FROM SUPABASE -------------- */
+  // Helper for signup/login: store student_id so dashboard will fetch by it
+  window.setLoggedInStudentId = function(studentIdValue, email){
+    try{
+      if(studentIdValue) localStorage.setItem('student_id', String(studentIdValue));
+      if(email) localStorage.setItem('student_email', String(email));
+    }catch(e){ console.warn('Could not persist student_id', e); }
+  };
+
+  // Debug helper: run both lookups (students table and newstudents) for a term
+  window.debugStudentLookup = async function(term){
+    try{
+      console.groupCollapsed('debugStudentLookup: ' + String(term));
+      console.log('term:', term);
+      if(!term) { console.warn('No term provided'); console.groupEnd(); return; }
+
+      if(typeof fetchStudentByStudentId === 'function'){
+        try{
+          const s = await fetchStudentByStudentId(term);
+          console.log('fetchStudentByStudentId ->', s);
+        }catch(e){ console.error('fetchStudentByStudentId error', e); }
+      } else { console.warn('fetchStudentByStudentId not defined'); }
+
+      if(typeof fetchStudentFromSupabase === 'function'){
+        try{
+          const a = await fetchStudentFromSupabase(term);
+          console.log('fetchStudentFromSupabase ->', a);
+        }catch(e){ console.error('fetchStudentFromSupabase error', e); }
+      } else { console.warn('fetchStudentFromSupabase not defined'); }
+
+      // Show stored local keys that matter
+      console.log('localStorage.student_id =', localStorage.getItem('student_id'));
+      console.log('localStorage.studentId =', localStorage.getItem('studentId'));
+      console.log('localStorage.studentEmail =', localStorage.getItem('studentEmail') || localStorage.getItem('student_email'));
+      console.groupEnd();
+    }catch(err){ console.error('debugStudentLookup failed', err); }
+  };
+
+  async function getStudentInfo() {
+    // Helper: try several sources for a student identifier (URL, sessionStorage, localStorage, stored object)
+    function getStudentIdFromSources() {
+      try {
+        const params = new URLSearchParams(window.location.search || '');
+        const urlKeys = ['studentId','student_id','id','admission_number','admissionNumber'];
+        for (const k of urlKeys) {
+          const v = params.get(k);
+          if (v && String(v).trim()) return { id: String(v).trim(), source: `url(${k})` };
+        }
+
+        const sessionKeys = ['studentId','student_id','studentID'];
+        for (const k of sessionKeys) {
+          const v = sessionStorage.getItem(k);
+          if (v && String(v).trim()) return { id: String(v).trim(), source: `sessionStorage(${k})` };
+        }
+
+        const localKeys = ['student_id','studentId','admission_number','admissionNumber'];
+        for (const k of localKeys) {
+          const v = localStorage.getItem(k);
+          if (v && String(v).trim()) return { id: String(v).trim(), source: `localStorage(${k})` };
+        }
+
+        // If a full student_data object exists, prefer its student_id if present
+        try {
+          // Check several common storage keys used across pages
+          const candidateKeys = [LS_KEYS.studentData, 'studentData', 'student_data', 'student_info', 'student', 'student-info'];
+          for (const key of candidateKeys) {
+            try {
+              const stored = localStorage.getItem(key);
+              if (!stored) continue;
+              const parsed = JSON.parse(stored);
+              const sid = parsed && (parsed.student_id || parsed.id || parsed.studentId || parsed.admission_number || parsed.admissionNumber);
+              if (sid && String(sid).trim()) return { id: String(sid).trim(), source: `localStorage(${key})` };
+            } catch (inner) { /* ignore parse errors for this key and continue */ }
+          }
+        } catch (e) { /* ignore parse errors */ }
+
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // If we can find a primary identifier early (URL/session/local), try to use it first
+    try {
+      const primary = getStudentIdFromSources();
+      if (primary && primary.id) {
+        console.log('Found student id from source', primary.source, primary.id);
+        const admRow = await fetchStudentFromSupabase(primary.id);
+        if (admRow) {
+          try { localStorage.setItem(LS_KEYS.studentData, JSON.stringify(admRow)); } catch(e){}
+          try { if(admRow.student_id) localStorage.setItem('student_id', admRow.student_id); } catch(e){}
+          currentStudent = formatStudentData(admRow);
+          hideStudentNotFound();
+          return currentStudent;
+        }
+        console.warn('Student id provided but no matching record found (from', primary.source, '). Will not show student info.');
+        currentStudent = null;
+        showStudentNotFound(primary.id);
+        return null;
+      }
+    } catch (e) {
+      console.warn('Primary student id lookup failed:', e);
+    }
+
+    // If a full student object was stored during login, prefer fetching a fresh record
+    try {
+      const storedCandidates = [LS_KEYS.studentData, 'studentData', 'student_data', 'student_info', 'student'];
+      let stored = null;
+      for (const k of storedCandidates) {
+        try { const v = localStorage.getItem(k); if (v) { stored = v; break; } } catch(_){}
+      }
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const sid = parsed && (parsed.student_id || parsed.id || parsed.studentId || parsed.admission_number || parsed.admissionNumber);
+          if (sid && String(sid).trim()) {
+            // Attempt to fetch the authoritative record from Supabase
+            try {
+              const admRow = await fetchStudentFromSupabase(String(sid).trim());
+              if (admRow) {
+                try { localStorage.setItem(LS_KEYS.studentData, JSON.stringify(admRow)); } catch(_){}
+                currentStudent = formatStudentData(admRow);
+                hideStudentNotFound();
+                return currentStudent;
+              }
+            } catch(fetchErr){ console.warn('Fresh fetch of stored student failed:', fetchErr); }
+
+            // If fetch didn't return, fall back to the parsed stored object to allow offline behavior
+            try { currentStudent = formatStudentData(parsed); } catch(e){ console.warn('formatStudentData failed on stored object', e); currentStudent = parsed; }
+            return currentStudent;
+          }
+        } catch(parseErr){ console.warn('Could not parse stored student_data candidate', parseErr); }
+      }
+    } catch (e) {
+      console.warn('Stored student-data lookup failed:', e);
+    }
+
+    // Prefer an explicit student_id stored during signup/login.
+    const admissionNumber = localStorage.getItem('student_id');
+    if (admissionNumber) {
+      console.log('Fetching student by student_id:', admissionNumber);
+      const admRow = await fetchStudentFromSupabase(admissionNumber);
+      if (admRow) {
+        try { localStorage.setItem(LS_KEYS.studentData, JSON.stringify(admRow)); } catch(e){}
+        currentStudent = formatStudentData(admRow);
+        // Hide any previous 'not found' banner
+        hideStudentNotFound();
+        return currentStudent;
+      }
+
+      // If a `student_id` was provided but no matching row found, do NOT fall back
+      // to local stored values. The dashboard should show no student info in this case.
+      console.warn('Student ID provided but no matching record found. Will not show student info.');
+      currentStudent = null;
+      showStudentNotFound(admissionNumber);
+      return null;
+    }
+
+    // Fallback: if a generic studentId is stored, try the canonical students table
+    const storedStudentId = localStorage.getItem('studentId') || localStorage.getItem('student_id');
+    if (storedStudentId) {
+      console.log('Attempting to fetch student by stored studentId:', storedStudentId);
+      const byId = await fetchStudentByStudentId(storedStudentId);
+      if (byId) {
+        // persist student_id if present on the found row
+        try { if(byId.student_id) localStorage.setItem('student_id', byId.student_id); }catch(e){}
+        try { localStorage.setItem(LS_KEYS.studentData, JSON.stringify(byId)); } catch(e){}
+        currentStudent = formatStudentData(byId);
+        return currentStudent;
+      }
+    }
+
+    // Final fallback to localStorage-based values (legacy keys allowed)
+    console.warn('No student_id or studentId found/lookup failed — using local fallback');
+    // Ensure the 'not found' banner is hidden when we are using fallback or no admission number was provided
+    try{ hideStudentNotFound(); }catch(e){}
+    const fallback = getFallbackStudentInfo();
+    return fallback;
+  }
+
+  async function fetchStudentFromSupabase(admissionNumber) {
+    // admissionNumber is always a student_id
+    // the login/signup flow stored it. Query newstudents trying both fields
+    // and falling back to email if necessary. Avoid using columns that may not
+    // exist in all schemas (e.g. `student_id`) — perform safe sequential queries.
+    try {
+      const term = String(admissionNumber || '').trim();
+      /* debug removed */
+      if (!term) return null;
+
+      // 1) Try exact student_id match
+      try {
+        const { data, error } = await sb
+          .from('newstudents')
+          .select('*')
+          .eq('student_id', term)
+          .limit(1);
+
+        if (!error && data && data.length > 0) {
+          console.log('Found student in newstudents by student_id:', data[0]);
+          /* debug removed */
+          return data[0];
+        }
+      } catch (e) {
+        // Query error for student_id — log and continue to next attempt
+        console.warn('student_id lookup failed:', e);
+      }
+
+      // 2) Try email-like match (term may be an email or partial email)
+      try {
+        const { data: data2, error: err2 } = await sb
+          .from('newstudents')
+          .select('*')
+          .ilike('email', `%${term}%`)
+          .limit(1);
+
+        if (!err2 && data2 && data2.length > 0) {
+          console.log('Found student in newstudents by email:', data2[0]);
+          /* debug removed */
+          return data2[0];
+        }
+      } catch (e2) {
+        console.warn('email ilike lookup failed:', e2);
+      }
+
+      // 3) Not found
+      console.log('No student found in newstudents for term:', term);
+      /* debug removed */
+      return null;
+    } catch (error) {
+      console.error('Exception fetching student from newstudents:', error);
+      /* debug removed */
+      return null;
+    }
+  }
+
+  // Try fetching from the canonical `students` table by student_id
+  async function fetchStudentByStudentId(studentId) {
+    try {
+      const term = String(studentId || '').trim();
+      /* debug removed */
+      if (!term) return null;
+      const { data, error } = await sb
+        .from('students')
+        .select('*')
+        .or(`student_id.eq.${term},email.ilike.%${term}%`)
+        .limit(1);
+      if (error) {
+        console.warn('Error fetching student by id:', error);
+        /* debug removed */
+        return null;
+      }
+      if (data && data.length > 0) {
+        /* debug removed */
+        return data[0];
+      }
+      return null;
+    } catch (err) {
+      console.error('Exception fetching student by studentId:', err);
+      /* debug removed */
+      return null;
+    }
+  }
+
+  function getFallbackStudentInfo() {
+    try {
+      const fullName = localStorage.getItem('admitted_full_name');
+      const admissionNo = localStorage.getItem('student_id');
+      const program = localStorage.getItem('admitted_program');
+      const school = localStorage.getItem('selected_school');
+      const programDuration = localStorage.getItem('program_duration');
+      
+      if (fullName && fullName !== 'STUDENT NAME' && fullName !== '—') {
+        const [firstname, ...lastnameParts] = fullName.split(' ');
+        const lastname = lastnameParts.join(' ') || '';
+        
+        const student = {
+          firstname: firstname || 'Student',
+          lastname: lastname,
+          id: admissionNo || 'ID' + Date.now().toString().slice(-6),
+          name: fullName,
+          level: 'Level 100',
+          department: program || 'Not Assigned',
+          program: program || 'General Program',
+          email: 'student@ghschools.online',
+          student_id: admissionNo || 'ID' + Date.now().toString().slice(-6),
+          phone_number: localStorage.getItem('student_phone') || '',
+          school_selected: school || 'FASHION',
+          program_duration: programDuration || 'TWO (2)',
+          program_type: localStorage.getItem('program_type') || 'certificate',
+          created_at: new Date().toISOString()
+        };
+        
+        currentStudent = student;
+        return student;
+      }
+      
+      // Ultimate fallback
+      const student = {
+        firstname: 'Student',
+        lastname: '',
+        id: 'ID000000',
+        name: 'Unknown Student',
+        level: 'Level 100',
+        department: 'Not Assigned',
+        program: 'General Program',
+        email: 'noemail@example.com',
+        student_id: 'ID000000',
+        phone_number: '',
+        school_selected: 'FASHION',
+        program_duration: 'TWO (2)',
+        program_type: 'certificate',
+        created_at: new Date().toISOString()
+      };
+      
+      currentStudent = student;
+      return student;
+    } catch (error) {
+      console.error('Error getting fallback student info:', error);
+      const student = {
+        firstname: 'Student',
+        lastname: '',
+        id: 'ID000000',
+        name: 'Unknown Student',
+        level: 'Level 100',
+        department: 'Not Assigned',
+        program: 'General Program',
+        email: 'noemail@example.com',
+        student_id: 'ID000000'
+      };
+      
+      currentStudent = student;
+      return student;
+    }
+  }
+
+  function formatStudentData(studentData) {
+    const name = studentData.name || studentData.full_name || `${studentData.firstname || studentData.first_name || ''} ${studentData.lastname || studentData.last_name || ''}`.trim() || 'Unknown Student';
+    const [firstname, lastname = ''] = name.split(' ');
+    
+    // Determine program type based on grades if available
+    let programType = studentData.program_type || 'certificate';
+    if (!studentData.program_type && studentData.english_grade && studentData.mathematics_grade) {
+      const passingGrades = new Set(['A1','B2','B3','C4','C5','C6','D7']);
+      const failingGrades = new Set(['E8','F9']);
+      
+      const eng = (studentData.english_grade || '').toString().toUpperCase();
+      const mat = (studentData.mathematics_grade || '').toString().toUpperCase();
+      const soc = (studentData.social_studies_grade || '').toString().toUpperCase();
+      const sci = (studentData.integrated_science_grade || '').toString().toUpperCase();
+      
+      const anyCoreFailing = [eng, mat, soc, sci].some(g => failingGrades.has(g));
+      const isTwoYear = (studentData.program_duration || '').toString().toUpperCase().includes('TWO');
+      
+      programType = (isTwoYear && !anyCoreFailing) ? 'diploma' : 'certificate';
+    }
+    
+    const student = {
+      firstname,
+      lastname,
+      id: studentData.student_id || studentData.id,
+      name: name,
+      level: 'Level 100',
+      department: studentData.department || studentData.program_applying_for || 'Not Assigned',
+      program: studentData.program || studentData.program_applying_for || 'General Program',
+      email: studentData.email || 'student@ghschools.online',
+      student_id: studentData.student_id || studentData.id,
+      phone: studentData.phone || studentData.phone_number || '',
+      school: studentData.school || studentData.school_selected || 'FASHION',
+      program_duration: studentData.program_duration || 'TWO (2)',
+      program_type: programType,
+      admission_date: studentData.created_at ? new Date(studentData.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+      rawData: studentData // Keep original data for reference
+    };
+    
+    currentStudent = student;
+    return student;
+  }
+
+  // Resolve a student's passport/photo URL from raw student data.
+  // Supports either a direct public URL stored in the record (e.g. passport_photo_url)
+  // or a storage path which will be converted to a public URL from the
+  // `passport-photos` bucket. Returns null if none found.
+  async function resolveStudentPhotoUrl(raw) {
+    try {
+      if (!raw) return null;
+      const keys = ['passport_photo_url','passport_photo','photo_url','avatar_url','photo','passport','passport_path','photo_path'];
+      for (const k of keys) {
+        const v = raw[k] || raw[k.replace(/_/g,'')] || null;
+        if (!v) continue;
+        const s = String(v).trim();
+        if (!s) continue;
+        // If it's already a full URL, use it
+        if (s.startsWith('http://') || s.startsWith('https://')) return s;
+        // Otherwise assume it's a storage path in the `passport-photos` bucket
+        try {
+          const res = sb.storage.from('passport-photos').getPublicUrl(s);
+          const pub = res && res.data && res.data.publicUrl;
+          if (pub) return pub;
+        } catch (e) {
+          // ignore and continue
+        }
+      }
+      return null;
+    } catch (err) { console.warn('resolveStudentPhotoUrl failed', err); return null; }
+  }
+
+  /* -------------- UPDATE UI WITH STUDENT INFO -------------- */
+  function clearStudentUI(){
+    const displayName = document.getElementById('displayName');
+    const displayLevel = document.getElementById('displayLevel');
+    const displayDept = document.getElementById('displayDept');
+    const displayStudentID = document.getElementById('displayStudentID');
+    const welcomeHeading = document.getElementById('welcomeHeading');
+    const personalizedWelcome = document.getElementById('personalizedWelcome');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const userAvatar = document.getElementById('userAvatar');
+
+    if(displayName) displayName.textContent = '';
+    if(displayLevel) displayLevel.textContent = '';
+    if(displayDept) displayDept.textContent = '';
+    if(displayStudentID) displayStudentID.textContent = '';
+    if(welcomeHeading) welcomeHeading.textContent = 'Welcome, Student';
+    if(personalizedWelcome) personalizedWelcome.textContent = 'WELCOME TO GH SCHOOLS COLLEGE';
+    if(welcomeMessage) welcomeMessage.textContent = "Please log in with your admission number to see your dashboard details.";
+    if(userAvatar) userAvatar.textContent = 'S';
+  }
+
+  function showStudentNotFound(admissionNumber){
+    try{
+      const el = document.getElementById('studentNotFoundBanner');
+      const msg = document.getElementById('studentNotFoundMessage');
+      if(msg) msg.textContent = `No student found for admission number: ${admissionNumber}. Please verify your admission number or contact admissions.`;
+      if(el) el.style.display = 'block';
+    }catch(e){ console.warn('Could not show student not found banner', e); }
+  }
+
+  function hideStudentNotFound(){
+    try{ const el = document.getElementById('studentNotFoundBanner'); if(el) el.style.display = 'none'; }catch(e){}
+  }
+  function updateStudentUI(student) {
+    // Update main display elements
+    const displayName = document.getElementById('displayName');
+    const displayLevel = document.getElementById('displayLevel');
+    const displayDept = document.getElementById('displayDept');
+    const displayStudentID = document.getElementById('displayStudentID');
+    const welcomeHeading = document.getElementById('welcomeHeading');
+    const personalizedWelcome = document.getElementById('personalizedWelcome');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const userAvatar = document.getElementById('userAvatar');
+    
+    if (displayName) displayName.textContent = `${student.firstname} ${student.lastname}`;
+    if (displayLevel) displayLevel.textContent = student.level;
+    if (displayDept) displayDept.textContent = student.department;
+    if (displayStudentID) displayStudentID.textContent = student.student_id;
+    
+    // Update avatar with first letter of first name
+    if (userAvatar) {
+      userAvatar.textContent = student.firstname.charAt(0).toUpperCase();
+      // Try to resolve and show the student's passport photo (async)
+      resolveStudentPhotoUrl(student.rawData).then(url => {
+        try {
+          if (url && userAvatar) {
+            userAvatar.style.backgroundImage = `url('${url}')`;
+            userAvatar.style.backgroundSize = 'cover';
+            userAvatar.style.backgroundPosition = 'center';
+            userAvatar.textContent = '';
+          } else if (userAvatar) {
+            // ensure no stray bg image
+            userAvatar.style.backgroundImage = '';
+          }
+        } catch (e) { console.warn('Could not set user avatar image', e); }
+      }).catch(e => { /* ignore */ });
+
+      // Also set the sidebar avatar (if present)
+      const sidebarAvatar = document.getElementById('sidebarAvatar');
+      if (sidebarAvatar) {
+        // default to initial
+        sidebarAvatar.textContent = student.firstname.charAt(0).toUpperCase();
+        resolveStudentPhotoUrl(student.rawData).then(url => {
+          try {
+            if (url) {
+              sidebarAvatar.textContent = '';
+              sidebarAvatar.style.backgroundImage = `url('${url}')`;
+              sidebarAvatar.style.backgroundSize = 'cover';
+              sidebarAvatar.style.backgroundPosition = 'center';
+            } else {
+              sidebarAvatar.style.backgroundImage = '';
+            }
+          } catch (e) { console.warn('Could not set sidebar avatar image', e); }
+        }).catch(e => { /* ignore */ });
+      }
+    }
+    
+    // Enhanced welcome message using student's first name
+    if (welcomeHeading) {
+      welcomeHeading.textContent = `Welcome, ${student.firstname}!`;
+    }
+    
+    // Update the personalized welcome in the welcome card
+    if (personalizedWelcome) {
+      personalizedWelcome.textContent = `WELCOME TO GH SCHOOLS COLLEGE, ${student.firstname.toUpperCase()}!`;
+    }
+
+    // Update welcome message with personalized text
+    if (welcomeMessage) {
+      welcomeMessage.innerHTML = `
+        We're excited to have you on board, <strong>${student.firstname}</strong>! As a Level 100 student in the 
+        <strong>${student.program}</strong> program, you are about to embark on an enriching journey of academic and personal growth. 
+        Use your dashboard to access your courses, pay fees, view your schedule, check results, and stay updated with the latest announcements.
+      `;
+    }
+
+    // Update additional info cards
+    updateInfoCards(student);
+    
+    // Create enhanced student welcome section
+    createEnhancedStudentWelcome(student);
+    
+    // Create quick action buttons
+    createQuickActions();
+  }
+
+  function updateInfoCards(student) {
+    // Update admission info card
+    const infoProgram = document.getElementById('infoProgram');
+    const infoDuration = document.getElementById('infoDuration');
+    const infoType = document.getElementById('infoType');
+
+    if (infoProgram) infoProgram.textContent = student.program;
+    if (infoDuration) infoDuration.textContent = student.program_duration;
+    if (infoType) infoType.textContent = student.program_type.charAt(0).toUpperCase() + student.program_type.slice(1);
+  }
+
+  /* ---------- STUDENT NOTIFICATIONS (Level 100) ---------- */
+  async function fetchStudentNotification() {
+    try {
+      if (!currentStudent || !currentStudent.student_id) return;
+      const { data, error } = await sb
+        .from('students')
+        .select('last_notification, notification_unread, last_notification_at')
+        .eq('student_id', currentStudent.student_id)
+        .maybeSingle();
+
+      if (error) {
+        // Table or column might not exist — silently ignore
+        window.level100LastNotification = '';
+        window.level100NotificationUnread = false;
+        window.level100LastNotificationAt = null;
+        return;
+      }
+
+      window.level100LastNotification = data?.last_notification || '';
+      window.level100NotificationUnread = !!data?.notification_unread;
+      window.level100LastNotificationAt = data?.last_notification_at || null;
+    } catch (err) {
+      console.error('fetchStudentNotification error:', err);
+      window.level100LastNotification = '';
+      window.level100NotificationUnread = false;
+      window.level100LastNotificationAt = null;
+    }
+  }
+
+  // Fetch notification history from `notifications` table for the current student
+  async function fetchStudentNotifications(limit = 50) {
+    try {
+      if (!currentStudent || !currentStudent.student_id) return [];
+      // Fetch notifications addressed to this student plus global announcements.
+      // Support multiple targeting styles used across admin tools:
+      // - explicit `student_id` (written by setStudentNotification)
+      // - `target = 'all'` for global broadcasts
+      // - `target = 'level100'` style for level-scoped announcements
+      // - `specific_list` containing a comma-separated list of student ids
+      // Sanitize student id and levelKey to avoid injecting characters that break
+      // the Supabase .or() filter syntax (commas, parentheses, percent signs, etc.)
+      const rawSid = String(currentStudent.student_id || '').trim();
+      const sid = rawSid.replace(/[^A-Za-z0-9_\-]/g, '');
+      const levelKey = (currentStudent.level || '').toString().toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9_\-]/g, ''); // e.g. 'level100'
+
+      // Build OR clauses. The Supabase client expects a comma-separated list for .or()
+      const ors = [];
+      ors.push(`student_id.eq.${sid}`);
+      ors.push(`target.eq.all`);
+      if (levelKey) ors.push(`target.eq.${levelKey}`);
+      // specific_list may contain comma-separated ids; use ilike to match substring
+      ors.push(`specific_list.ilike.%${sid}%`);
+
+      const orClause = ors.join(',');
+
+      // First attempt: server-side filtered query (efficient when schema contains student_id)
+      try {
+        const { data, error } = await sb
+          .from('notifications')
+          .select('*')
+          .or(orClause)
+          .order('created_at', { ascending: false })
+          .limit(limit);
+
+        if (!error && Array.isArray(data)) return data;
+        if (error) throw error;
+      } catch (primaryErr) {
+        // If the server complains about a missing column (common when schema differs),
+        // fall back to a broader fetch and perform client-side filtering.
+        const msg = String(primaryErr?.message || primaryErr || '');
+        if (msg.toLowerCase().includes('does not exist') || msg.includes('42703') || msg.toLowerCase().includes('column "notifications.student_id"')) {
+          try {
+            // Fetch a reasonable number of recent notifications and filter locally
+            const { data: broadData, error: broadError } = await sb
+              .from('notifications')
+              .select('*')
+              .order('created_at', { ascending: false })
+              .limit(Math.max(200, limit));
+
+            if (broadError || !Array.isArray(broadData)) return [];
+
+            const filtered = (broadData || []).filter(n => {
+              try {
+                if (!n) return false;
+                const sidMatch = String(n.student_id || n.recipient || n.recipient_id || '').trim() === sid;
+                const target = (n.target || '').toString().toLowerCase();
+                const levelMatch = target === levelKey;
+                const allMatch = target === 'all';
+                const specificList = (n.specific_list || n.specific_list?.toString?.() || '').toString();
+                const listMatch = specificList && specificList.includes(sid);
+                // Also check meta or message for embedded ids as a last resort
+                const metaStr = JSON.stringify(n.meta || {});
+                const metaMatch = metaStr.includes(sid);
+                return sidMatch || allMatch || levelMatch || listMatch || metaMatch;
+              } catch (e) { return false; }
+            }).slice(0, limit);
+
+            return filtered;
+          } catch (bErr) {
+            console.warn('Broad fetch fallback failed:', bErr);
+            return [];
+          }
+        }
+
+        console.warn('fetchStudentNotifications primary query error:', primaryErr);
+        return [];
+      }
+    } catch (err) {
+      console.error('fetchStudentNotifications error:', err);
+      return [];
+    }
+  }
+
+  // Render a list of notifications into the notification modal
+  async function renderStudentNotifications() {
+    try {
+      const area = document.getElementById('level100NotificationContent');
+      const tsEl = document.getElementById('level100NotificationTimestamp');
+      if (!area) return;
+
+      const notes = await fetchStudentNotifications(50);
+      if (!notes || notes.length === 0) {
+        area.innerHTML = `<p style="color:#666;margin:0;">No notifications</p>`;
+        if (tsEl) tsEl.textContent = '';
+        // update badge state
+        window.level100NotificationUnread = false;
+        updateLevel100Badge();
+        return;
+      }
+
+      // Build list
+      let html = '<div style="display:flex;flex-direction:column;gap:12px;">';
+      notes.forEach(n => {
+        const when = n.created_at ? new Date(n.created_at).toLocaleString() : '';
+        const readStyle = n.read ? 'opacity:0.6;' : 'font-weight:600;';
+        const rawId = n.id || n.notification_id || n.created_at || '';
+        const idForJs = JSON.stringify(String(rawId));
+        const cleanedMsg = stripDivTags(n.message || '');
+        html += `
+          <div style="padding:10px;border:1px solid #eee;border-radius:6px;display:flex;justify-content:space-between;align-items:flex-start;"> 
+            <div style="flex:1;">
+              <div style="${readStyle}">${escapeHtml(cleanedMsg)}</div>
+              <div style="font-size:0.85rem;color:#777;margin-top:6px;">${escapeHtml(n.type || n.title || 'message')} • ${when}</div>
+            </div>
+            <div style="margin-left:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+              ${n.read ? '<button class="btn btn-sm btn-secondary">Read</button>' : `<button class="btn btn-sm" onclick="markNotificationRead(${idForJs})">Mark Read</button>`}
+              <button class="btn btn-sm btn-danger" onclick="deleteNotification(${idForJs})">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      // update unread badge state
+      window.level100NotificationUnread = notes.some(n => !n.read);
+      // Ensure global badge helper exists and update
+      try { if (typeof updateLevel100Badge === 'function') updateLevel100Badge(); else window.updateLevel100Badge = function(){ try{ const b = document.getElementById('level100NotifBadge'); if(!b) return; if(window.level100NotificationUnread) { b.style.display = 'flex'; } else { b.style.display = 'none'; } }catch(e){} }; window.updateLevel100Badge(); } catch(e){}
+
+      area.innerHTML = html;
+      if (tsEl) tsEl.textContent = notes[0] ? new Date(notes[0].created_at).toLocaleString() : '';
+      // ensure modal scroll controls are attached (if present)
+      try { const body = document.querySelector('#level100NotificationModal .notif-body'); if (body) { /* controls added globally by enhanceModalUI */ } } catch(e){}
+    } catch (err) { console.error('renderStudentNotifications error:', err); }
+  }
+
+  // Mark a single notification as read
+  async function markNotificationRead(noteId) {
+    try {
+      if (!noteId || !currentStudent || !currentStudent.student_id) return;
+      // Prefer updating by the notification's unique id only to avoid schema-dependent columns
+      try {
+        const { error } = await sb.from('notifications').update({ read: true }).eq('id', noteId);
+        if (error) {
+          // try notification_id fallback
+          await sb.from('notifications').update({ read: true }).eq('notification_id', noteId);
+        }
+      } catch (e) {
+        console.warn('markNotificationRead update failed, trying alternate strategies', e);
+        try { await sb.from('notifications').update({ read: true }).eq('notification_id', noteId); } catch(_){}
+      }
+      // Refresh display and badge
+      await renderStudentNotifications();
+    } catch (err) { console.error('markNotificationRead error:', err); }
+  }
+
+  // Delete a notification (student can delete their notification/announcement copy)
+  async function deleteNotification(noteId) {
+    try {
+      if (!noteId || !currentStudent || !currentStudent.student_id) return;
+      const ok = await showConfirm('Delete this notification? This cannot be undone.', 'Confirm Delete');
+      if (!ok) return;
+      // Attempt delete by id only (avoid relying on student_id column)
+      try {
+        const { error } = await sb.from('notifications').delete().eq('id', noteId);
+        if (error) {
+          await sb.from('notifications').delete().eq('notification_id', noteId);
+        }
+      } catch (e) {
+        console.warn('deleteNotification failure, trying alternate strategies', e);
+        try { await sb.from('notifications').delete().eq('notification_id', noteId); } catch(_){ }
+      }
+      await renderStudentNotifications();
+      showModalMessage('Notification deleted');
+    } catch (err) { console.error('deleteNotification error:', err); showModalMessage('Could not delete notification. See console.'); }
+  }
+
+  // Scroll the notification body up/down
+  function scrollNotifications(direction) {
+    try {
+      const body = document.querySelector('#level100NotificationModal .notif-body');
+      if (!body) return;
+      const delta = Math.round(body.clientHeight * 0.7);
+      if (direction === 'up') body.scrollBy({ top: -delta, behavior: 'smooth' });
+      else body.scrollBy({ top: delta, behavior: 'smooth' });
+    } catch (e) { console.warn('scrollNotifications error', e); }
+  }
+
+  // Mark all notifications read for the current student
+  async function markAllNotificationsRead() {
+    try {
+      if (!currentStudent || !currentStudent.student_id) return;
+      // Fetch notifications visible to this student and mark each by id (schema-agnostic)
+      try {
+        const notes = await fetchStudentNotifications(500);
+        if (Array.isArray(notes) && notes.length > 0) {
+          for (const n of notes) {
+            try { if (n && (n.id || n.notification_id)) await sb.from('notifications').update({ read: true }).eq('id', n.id || n.notification_id); } catch(e){}
+          }
+        }
+      } catch(e){ console.warn('markAllNotificationsRead per-item update failed', e); }
+
+      await clearLevel100Notification();
+      await renderStudentNotifications();
+      updateLevel100Badge();
+    } catch (err) { console.error('markAllNotificationsRead error:', err); }
+  }
+
+  // Delete all notifications for the current student (bulk action)
+  async function deleteAllNotifications() {
+    try {
+      if (!currentStudent || !currentStudent.student_id) return;
+      const ok = await showConfirm('Delete ALL notifications? This cannot be undone.', 'Confirm Delete All');
+      if (!ok) return;
+      try {
+        // Fetch notifications visible to this student and delete individually (avoid schema-dependent filters)
+        const notes = await fetchStudentNotifications(1000);
+        if (Array.isArray(notes) && notes.length > 0) {
+          for (const n of notes) {
+            try { if (n && (n.id || n.notification_id)) await sb.from('notifications').delete().eq('id', n.id || n.notification_id); } catch(e){}
+          }
+        }
+      } catch (e) { console.warn('deleteAllNotifications failed during per-item deletes:', e); }
+
+      // Refresh UI and badge
+      await renderStudentNotifications();
+      await clearLevel100Notification();
+      showModalMessage('All notifications deleted');
+    } catch (err) { console.error('deleteAllNotifications error:', err); showModalMessage('Could not delete all notifications. See console.'); }
+  }
+
+  // Setup realtime listener so student sees admin notifications immediately
+  function setupRealtimeNotifications() {
+    if (!sb) return;
+    // Debounced refresh to avoid double-firing
+    const debounced = (function(){ let t; return function(fn, wait=400){ clearTimeout(t); t = setTimeout(fn, wait); }; })();
+
+    try{
+      // Prefer v2 channel API
+      if (typeof sb.channel === 'function'){
+        const chan = sb.channel(`realtime:students:${currentStudent?.student_id || 'anon'}`);
+        chan.on('postgres_changes', { event: '*', schema: 'public', table: 'students', filter: `student_id=eq.${currentStudent?.student_id || ''}` }, payload => {
+          debounced(async () => { try { await fetchStudentNotification(); renderLevel100Notification(); await renderStudentNotifications(); } catch(e){ console.warn('realtime notif handler failed', e); } });
+        }).subscribe();
+        return;
+      }
+    }catch(e){ /* fall through to fallback */ }
+
+    // Fallback to v1 .from() API
+    try{
+      if (sb && typeof sb.from === 'function'){
+        const chan = sb.from(`students:student_id=eq.${currentStudent?.student_id || ''}`);
+        if (typeof chan.on === 'function'){
+          try{ chan.on('UPDATE', payload => { debounced(async () => { try { await fetchStudentNotification(); renderLevel100Notification(); await renderStudentNotifications(); } catch(e){ console.warn('fallback notif failed', e); } }); }).subscribe(); }catch(e){ console.warn('subscribe fallback failed', e); }
+        }
+      }
+    }catch(e){ console.warn('setupRealtimeNotifications error', e); }
+  }
+
+  function renderLevel100Notification(){
+    try{
+      const existing = document.getElementById('level100NotificationBanner');
+      if(existing) existing.remove();
+
+      if(window.level100NotificationUnread && window.level100LastNotification){
+        const banner = document.createElement('div');
+        banner.id = 'level100NotificationBanner';
+        banner.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#e8f4ff;border:1px solid #b6e0fe;color:#084298;padding:12px 16px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,0.06);max-width:calc(min(920px, 100% - 32px));display:flex;align-items:center;gap:12px;';
+
+        const msg = document.createElement('div');
+        msg.style.flex = '1';
+        msg.innerHTML = escapeHtml(String(window.level100LastNotification || 'You have a new message from admin.'));
+
+        const actions = document.createElement('div');
+        const ack = document.createElement('button');
+        ack.id = 'ackLevel100NotificationBtn';
+        ack.textContent = 'Acknowledge';
+        ack.style.cssText = 'background:#084298;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;';
+        actions.appendChild(ack);
+
+        banner.appendChild(msg);
+        banner.appendChild(actions);
+        document.body.prepend(banner);
+
+        ack.addEventListener('click', async function(){
+          try{ await markAllNotificationsRead(); } catch(e){ console.error(e); }
+          banner.remove();
+        });
+      }
+    } catch(e){ console.error('renderLevel100Notification error:', e); }
+  }
+
+  async function clearLevel100Notification(){
+    try{
+      if (!currentStudent || !currentStudent.student_id) return;
+      const { data, error } = await sb
+        .from('students')
+        .update({ notification_unread: false })
+        .eq('student_id', currentStudent.student_id)
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        console.warn('Could not clear level100 notification:', error.message || error);
+        window.level100NotificationUnread = false;
+        return null;
+      }
+
+      // Also mark any entries in the notifications table as read for this student (best-effort)
+      try {
+        await sb.from('notifications').update({ read: true }).eq('student_id', currentStudent.student_id);
+      } catch (noteErr) {
+        const msg = noteErr?.message || String(noteErr || '');
+        if (msg && !msg.toLowerCase().includes('not found')) console.warn('Could not mark notifications read:', noteErr);
+      }
+
+      window.level100NotificationUnread = false;
+      return data;
+    } catch(err){ console.error('clearLevel100Notification error:', err); }
+  }
+
+  /* -------------- PAYMENT STATUS CHECKING -------------- */
+  async function loadPayments() {
+    if (!currentStudent) return [];
+    
+    try {
+      const { data, error } = await sb
+        .from('level100payments')
+        .select('*')
+        .eq('student_id', currentStudent.student_id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching payments:', error);
+        return [];
+      }
+
+      allPayments = data || [];
+      // Compute totals from fetched payments
+      try {
+        const approvedPayments = allPayments.filter(p => String(p.status || '').toLowerCase() === 'approved');
+        const totalPaid = approvedPayments.reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+        // Total payable is defined as the full set of fees (admission + tuition + other fixed dues)
+        const totalPayable = Number(ADMISSION_FEE || 0) + Number(TUITION || 0) + Number(SRC_DUES || 0) + Number(DEPT_DUES || 0) + Number(MED_DUES || 0);
+        const outstanding = Number((totalPayable - totalPaid).toFixed(2));
+
+        window.totalPaid = totalPaid;
+        window.totalPayable = totalPayable;
+        window.outstandingBalance = outstanding;
+        // Update UI immediately
+        // top-stats UI removed; no update needed here
+      } catch (e) { console.warn('Could not compute totals from payments', e); }
+
+      return allPayments;
+    } catch (error) {
+      console.error('Error loading payments:', error);
+      return [];
+    }
+  }
+
+  function hasPaidAdmission() { 
+    const admissionPayment = allPayments.find(p => {
+      const ft = String(p.fee_type || '').toLowerCase();
+      return ft.includes('admission') && p.status === 'approved';
+    });
+    return admissionPayment && Number(admissionPayment.amount_paid || admissionPayment.amount || 0) >= ADMISSION_FEE - 0.005;
+  }
+  
+  function tuitionStatus() {
+    const tuitionPayments = allPayments.filter(p => 
+      p.fee_type.includes('Tuition') && p.status === 'approved'
+    );
+    const paid = tuitionPayments.reduce((sum, p) => sum + (p.amount_paid || 0), 0);
+    const to80 = Math.max(0, TUITION_80 - paid);
+    const to100 = Math.max(0, TUITION - paid);
+    const met80 = paid >= TUITION_80 - 0.005;
+    const met100 = paid >= TUITION - 0.005;
+    return { paid, to80, to100, met80, met100 };
+  }
+  
+  function otherRemaining() {
+    const srcPaid = allPayments
+      .filter(p => String(p.fee_type || '').toLowerCase().includes('src') && p.status === 'approved')
+      .reduce((sum, p) => sum + Number(p.amount_paid || p.amount || 0), 0);
+
+    const deptPaid = allPayments
+      .filter(p => String(p.fee_type || '').toLowerCase().includes('department') && p.status === 'approved')
+      .reduce((sum, p) => sum + Number(p.amount_paid || p.amount || 0), 0);
+
+    const medPaid = allPayments
+      .filter(p => String(p.fee_type || '').toLowerCase().includes('medical') && p.status === 'approved')
+      .reduce((sum, p) => sum + Number(p.amount_paid || p.amount || 0), 0);
+
+    return { 
+      src: Math.max(0, SRC_DUES - srcPaid), 
+      dept: Math.max(0, DEPT_DUES - deptPaid), 
+      med: Math.max(0, MED_DUES - medPaid) 
+    };
+  }
+  
+  function remainingToUnlock() {
+    const admissionRem = hasPaidAdmission() ? 0 : ADMISSION_FEE;
+    const t = tuitionStatus();
+    const o = otherRemaining();
+    const tuitionRemFor80 = t.to80;
+    const total = admissionRem + tuitionRemFor80 + o.src + o.dept + o.med;
+    return { admissionRem, tuitionRemFor80, ...o, total };
+  }
+  
+  function eligibleForRegistration() { 
+    return remainingToUnlock().total <= 0; 
+  }
+
+  function hasPendingPayments() {
+    return allPayments.some(p => p.status === 'pending');
+  }
+
+  function getOverallPaymentStatus() {
+    if (eligibleForRegistration()) {
+      return 'approved';
+    } else if (hasPendingPayments()) {
+      return 'pending';
+    } else {
+      return 'incomplete';
+    }
+  }
+
+  /* -------------- PAYMENT STATUS DISPLAY -------------- */
+  function updatePaymentStatusDisplay() {
+    const status = getOverallPaymentStatus();
+    const banner = document.getElementById('paymentStatusBanner');
+    const bannerTitle = document.getElementById('bannerTitle');
+    const bannerMessage = document.getElementById('bannerMessage');
+    // Approval workflow removed: hide approval banners entirely
+    try { if (banner) banner.style.display = 'none'; } catch(e){}
+  }
+
+  /* -------------- MODALS -------------- */
+  function openModal(id) { 
+    const m = document.getElementById(id); 
+    if (m) { 
+      m.style.display = 'flex'; 
+      if (id === 'feeModal') renderFeeUI(); 
+      if (id === 'profileModal') {
+        renderProfileModal();
+        // Update scroll button states after a short delay to ensure DOM is ready
+        setTimeout(() => updateProfileScrollButtonStates(), 100);
+      }
+    } 
+  }
+  
+  function closeModal(id) { 
+    const m = document.getElementById(id); 
+    if (m) m.style.display = 'none'; 
+  }
+
+  function openResultsModal() { openModal('resultModal'); }
+  function closeResultsModal() { closeModal('resultModal'); }
+  function openAnnouncementModal() { openModal('announcementModal'); }
+  function closeAnnouncementModal() { closeModal('announcementModal'); }
+  function openProfileModal() { openModal('profileModal'); }
+  function openCalendarModal() { openModal('calendarModal'); }
+
+  // Profile modal scroll control functions
+  function scrollProfileModal(direction) {
+    const container = document.querySelector('#profileModal .modal-body');
+    if (!container) return;
+    
+    const scrollAmount = 200;
+    if (direction === 'up') {
+      container.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+    } else if (direction === 'down') {
+      container.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+    }
+    updateProfileScrollButtonStates();
+  }
+
+  // Update scroll button disabled states based on scroll position
+  function updateProfileScrollButtonStates() {
+    const container = document.querySelector('#profileModal .modal-body');
+    const btnUp = document.getElementById('profileScrollUp');
+    const btnDown = document.getElementById('profileScrollDown');
+    
+    if (!container || !btnUp || !btnDown) return;
+
+    const isAtTop = container.scrollTop === 0;
+    const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 1;
+
+    btnUp.disabled = isAtTop;
+    btnDown.disabled = isAtBottom;
+  }
+
+  // Approval workflow removed: no-op functions to preserve existing callers
+  function openApprovalPendingModal() { /* approvals disabled */ }
+  function openPaymentApprovedModal() { /* approvals disabled */ }
+
+  // Render profile modal content
+  function renderProfileModal() {
+    const profileContent = document.getElementById('profileContent');
+    if (!profileContent) return;
+    
+    profileContent.innerHTML = `
+      <div style="text-align: left;">
+        <p><strong>Loading profile information...</strong></p>
+      </div>
+    `;
+    
+    // Load actual student data
+    if (currentStudent) {
+      const status = getOverallPaymentStatus();
+      const statusText = status === 'approved' ? 'Approved' : 
+            status === 'pending' ? 'Pending' : 'Incomplete';
+      
+      profileContent.innerHTML = `
+        <div style="text-align: left; display:flex; gap:16px; align-items:flex-start;">
+          <div id="profileAvatar" style="width:160px;height:160px;border-radius:12px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:48px;color:#444;overflow:hidden;">
+            ${currentStudent.firstname.charAt(0).toUpperCase()}
+          </div>
+          <div style="flex:1;">
+            <p><strong>Full Name:</strong> ${currentStudent.firstname} ${currentStudent.lastname}</p>
+            <p><strong>Student ID:</strong> ${currentStudent.id}</p>
+            <p><strong>Level:</strong> ${currentStudent.level}</p>
+            <p><strong>Department:</strong> ${currentStudent.department}</p>
+            <p><strong>Program:</strong> ${currentStudent.program}</p>
+            <p><strong>Program Type:</strong> ${currentStudent.program_type.charAt(0).toUpperCase() + currentStudent.program_type.slice(1)}</p>
+            <p><strong>Program Duration:</strong> ${currentStudent.program_duration}</p>
+            <p><strong>Email:</strong> ${currentStudent.email}</p>
+            <p><strong>Phone:</strong> ${currentStudent.phone || 'Not provided'}</p>
+            <p><strong>School:</strong> ${currentStudent.school}</p>
+            <p><strong>Admission Date:</strong> ${currentStudent.admission_date}</p>
+            <hr>
+            <p><strong>Payment Status:</strong> <span class="payment-status ${status === 'approved' ? 'status-paid' : status === 'pending' ? 'status-pending' : 'status-pending'}">${statusText}</span></p>
+            <p><strong>Payment Details:</strong></p>
+            <ul>
+              <li>Admission Fee: <span class="payment-status ${hasPaidAdmission() ? 'status-paid' : 'status-pending'}">${hasPaidAdmission() ? 'Paid' : 'Pending'}</span></li>
+              <li>Tuition Fee: <span class="payment-status ${tuitionStatus().met80 ? 'status-paid' : 'status-pending'}">${tuitionStatus().met80 ? 'Paid (80%)' : 'Pending'}</span></li>
+              <li>SRC Dues: <span class="payment-status ${otherRemaining().src === 0 ? 'status-paid' : 'status-pending'}">${otherRemaining().src === 0 ? 'Paid' : 'Pending'}</span></li>
+              <li>Departmental Dues: <span class="payment-status ${otherRemaining().dept === 0 ? 'status-paid' : 'status-pending'}">${otherRemaining().dept === 0 ? 'Paid' : 'Pending'}</span></li>
+              <li>Medical Dues: <span class="payment-status ${otherRemaining().med === 0 ? 'status-paid' : 'status-pending'}">${otherRemaining().med === 0 ? 'Paid' : 'Pending'}</span></li>
+            </ul>
+            <div style="margin-top:12px; display:flex; gap:8px;">
+              <button class="btn btn-warning" onclick="openPasswordResetModal()">Change Password</button>
+              <button class="btn btn-secondary" onclick="closeModal('profileModal')">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Resolve profile avatar asynchronously and set image if available
+      resolveStudentPhotoUrl(currentStudent.rawData).then(url => {
+        try {
+          const avatarEl = document.getElementById('profileAvatar');
+          if (!avatarEl) return;
+          if (url) {
+            avatarEl.innerHTML = '';
+            avatarEl.style.backgroundImage = `url('${url}')`;
+            avatarEl.style.backgroundSize = 'cover';
+            avatarEl.style.backgroundPosition = 'center';
+          }
+        } catch (e) { console.warn('Could not load profile avatar', e); }
+      }).catch(e=>{});
+
+      // Wire scroll event listener to update button states
+      setTimeout(() => {
+        const container = document.querySelector('#profileModal .modal-body');
+        if (container && !container._scrollListenerAttached) {
+          container.addEventListener('scroll', updateProfileScrollButtonStates);
+          container._scrollListenerAttached = true;
+        }
+      }, 50);
+    }
+  }
+
+  // Password reset modal logic and helpers
+  function openPasswordResetModal() {
+    // pre-populate key if available
+    const m = document.getElementById('passwordResetModal');
+    if (!m) return;
+    const keyInput = document.getElementById('pr_key');
+    const emailInput = document.getElementById('pr_email');
+    const phoneInput = document.getElementById('pr_phone');
+    try {
+      if (currentStudent && currentStudent.student_id) keyInput.value = currentStudent.student_id;
+      if (currentStudent && currentStudent.email) emailInput.value = currentStudent.email;
+      if (currentStudent && currentStudent.phone) phoneInput.value = currentStudent.phone;
+    } catch (e) {}
+    m.style.display = 'flex';
+  }
+
+  async function requestPasswordReset() {
+    const key = document.getElementById('pr_key').value.trim();
+    const email = document.getElementById('pr_email').value.trim();
+    const phone = document.getElementById('pr_phone').value.trim();
+    const out = document.getElementById('pr_status');
+    out.textContent = 'Sending...';
+    const base = (window.PROXY_ENDPOINT || '');
+    try {
+      const resp = await fetch((base || '') + '/password-reset/request', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ student_id: key || undefined, email: email || undefined, phone: phone || undefined })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || JSON.stringify(data));
+      out.style.color = 'green';
+      out.textContent = 'Code sent (if phone configured). Check SMS or follow on-screen instructions.';
+      // show code entry area
+      document.getElementById('pr_code_section').style.display = 'block';
+    } catch (err) {
+      out.style.color = 'red';
+      out.textContent = 'Error: ' + String(err.message || err);
+    }
+  }
+
+  function validatePasswordStrength(pw) {
+    if (!pw || pw.length < 12) return { ok: false, msg: 'Password must be at least 12 characters' };
+    const upper = /[A-Z]/.test(pw);
+    const lower = /[a-z]/.test(pw);
+    const digit = /[0-9]/.test(pw);
+    const special = /[^A-Za-z0-9]/.test(pw);
+    const classes = [upper, lower, digit, special].filter(Boolean).length;
+    if (classes < 3) return { ok: false, msg: 'Include at least 3 of: uppercase, lowercase, digit, symbol' };
+    return { ok: true, msg: 'Strong password' };
+  }
+
+  async function confirmPasswordReset() {
+    const key = document.getElementById('pr_key').value.trim();
+    const code = document.getElementById('pr_code').value.trim();
+    const pw = document.getElementById('pr_new_password').value;
+    const pw2 = document.getElementById('pr_confirm_password').value;
+    const out = document.getElementById('pr_status');
+    out.style.color = 'black';
+    if (pw !== pw2) { out.style.color = 'red'; out.textContent = 'Passwords do not match'; return; }
+    const valid = validatePasswordStrength(pw);
+    if (!valid.ok) { out.style.color = 'red'; out.textContent = valid.msg; return; }
+
+    out.textContent = 'Submitting new password...';
+    const base = (window.PROXY_ENDPOINT || '');
+    try {
+      const resp = await fetch((base || '') + '/password-reset/confirm', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ key: key || undefined, code, new_password: pw, student_id: key || undefined })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || JSON.stringify(data));
+      out.style.color = 'green';
+      out.textContent = 'Password reset successful.';
+      // close modal after short delay
+      setTimeout(() => { document.getElementById('passwordResetModal').style.display = 'none'; }, 1200);
+    } catch (err) {
+      out.style.color = 'red';
+      out.textContent = 'Error: ' + String(err.message || err);
+    }
+  }
+
+  // Expose commonly used functions to the global window so inline onclick handlers work
+  // (Some environments load scripts as modules or run init later; making these globals avoids ReferenceError.)
+  try {
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.openResultsModal = openResultsModal;
+    window.closeResultsModal = closeResultsModal;
+    window.openAnnouncementModal = openAnnouncementModal;
+    window.closeAnnouncementModal = closeAnnouncementModal;
+    window.openProfileModal = openProfileModal;
+    window.openCalendarModal = openCalendarModal;
+    window.openApprovalPendingModal = openApprovalPendingModal;
+    window.openPaymentApprovedModal = openPaymentApprovedModal;
+    window.payAdmission = payAdmission;
+    window.payTuition = payTuition;
+    window.payOtherSelected = payOtherSelected;
+  } catch (e) { console.warn('Could not expose globals:', e); }
+
+  // Close by clicking outside / ESC
+  window.addEventListener('click', (e) => {
+    document.querySelectorAll('.modal').forEach(m => {
+      if (e.target === m) m.style.display = 'none';
+    });
+  });
+  window.addEventListener('keydown', (e) => { 
+    if (e.key === 'Escape') document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+  });
+
+  /* --- Animation & ripple setup: stagger cards, add ripple clicks --- */
+  document.addEventListener('DOMContentLoaded', function(){
+    // Stagger in dashboard cards
+    const cards = Array.from(document.querySelectorAll('.dashboard-card'));
+    cards.forEach((c, i) => {
+      c.style.opacity = 0;
+      c.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        c.classList.add('animate-in');
+        c.style.animationDelay = (i * 80) + 'ms';
+      }, 60);
+    });
+
+    // Add ripple effect to buttons and nav-items
+    function makeRipple(e){
+      const target = e.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const circle = document.createElement('span');
+      const size = Math.max(rect.width, rect.height);
+      circle.className = 'ripple';
+      circle.style.width = circle.style.height = size + 'px';
+      circle.style.left = (e.clientX - rect.left - size/2) + 'px';
+      circle.style.top = (e.clientY - rect.top - size/2) + 'px';
+      target.style.position = 'relative';
+      target.appendChild(circle);
+      setTimeout(()=> circle.remove(), 700);
+    }
+
+    document.querySelectorAll('.btn, .nav-item, .icon-btn, .menu-toggle').forEach(el => {
+      el.addEventListener('click', function(e){
+        try { makeRipple(e); } catch(err){ /* ignore */ }
+      });
+    });
+
+    // Show overlay when sidebar opens on mobile
+    const observer = new MutationObserver(() => {
+      const overlay = document.getElementById('sidebarOverlay');
+      const sb = document.getElementById('sidebar');
+      if (!overlay || !sb) return;
+      if (sb.classList.contains('open')) {
+        overlay.classList.add('show');
+        overlay.style.display = 'block';
+        setTimeout(()=> overlay.style.opacity = '1', 10);
+      } else {
+        overlay.style.opacity = '0';
+        setTimeout(()=> overlay.style.display = 'none', 220);
+        overlay.classList.remove('show');
+      }
+    });
+    const sbNode = document.getElementById('sidebar');
+    if (sbNode) observer.observe(sbNode, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  /* -------------- FEES UI -------------- */
+  function renderFeeUI() {
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const paymentStatusDisplay = document.getElementById('paymentStatusDisplay');
+    
+    if (!step1 || !step2 || !paymentStatusDisplay) return;
+
+    // Approval workflow removed: hide payment status area
+    try { if (paymentStatusDisplay) paymentStatusDisplay.style.display = 'none'; } catch(e){}
+
+    if (!hasPaidAdmission()) {
+      step1.style.display = 'block';
+      step2.style.display = 'none';
+      updateRegisterButtonState();
+      return;
+    }
+
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+    const t = tuitionStatus(), o = otherRemaining(), r = remainingToUnlock();
+
+    step2.innerHTML = `
+      <h3 class="step-title">Payments</h3>
+      <div id="remainingToUnlock" style="margin:8px 0 14px; font-weight:600;">
+        ${eligibleForRegistration()
+          ? '✅ All required payments complete. You can now register your courses.'
+          : `Remaining to unlock registration: <strong>${cedis(r.total)}</strong>`}
+      </div>
+
+      <div style="text-align:left">
+        <h4>Tuition</h4>
+        <div class="fee-item">
+          <span>Total Tuition:</span>
+          <span>${cedis(TUITION)}</span>
+        </div>
+        <div class="fee-item">
+          <span>Requirement (80%):</span>
+          <span>${cedis(TUITION_80)}</span>
+        </div>
+        <div class="fee-item">
+          <span>Paid so far:</span>
+          <span><strong>${cedis(t.paid)}</strong></span>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin:16px 0;">
+          <button class="btn" id="pay80Btn" onclick="payTuition(80)">
+            Pay 80% (${cedis(t.to80)})
+          </button>
+          <button class="btn" id="pay100Btn" onclick="payTuition(100)">
+            Pay 100% (${cedis(t.to100)})
+          </button>
+        </div>
+
+        <hr style="margin:16px 0;opacity:0.2">
+
+        <h4>Other Fees (select multiple and pay once)</h4>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="sel_src" onchange="updateSelectedOtherTotal()">
+            <label for="sel_src">SRC Dues — ${cedis(SRC_DUES)}</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="sel_dept" onchange="updateSelectedOtherTotal()">
+            <label for="sel_dept">Departmental Dues — ${cedis(DEPT_DUES)}</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="sel_med" onchange="updateSelectedOtherTotal()">
+            <label for="sel_med">Medical Dues — ${cedis(MED_DUES)}</label>
+          </div>
+        </div>
+
+        <div class="selected-total">
+          <strong>Selected total:</strong> <span id="otherSelectedTotal">${cedis(0)}</span>
+        </div>
+
+        <button class="btn" style="margin-top:16px;" onclick="payOtherSelected()">Pay Selected Now</button>
+      </div>
+    `;
+    updateSelectedOtherTotal();
+    updateRegisterButtonState();
+  }
+
+  function updateSelectedOtherTotal() {
+    const o = otherRemaining();
+    const pick = id => document.getElementById(id)?.checked;
+    const total = (pick('sel_src') ? o.src : 0) + (pick('sel_dept') ? o.dept : 0) + (pick('sel_med') ? o.med : 0);
+    const el = document.getElementById('otherSelectedTotal');
+    if (el) el.textContent = cedis(total);
+  }
+
+  /* -------------- SUPABASE: save payment rows -------------- */
+  async function savePaymentToSupabase(student, amount, feeType, transactionRef, paymentId) {
+    const payload = {
+      created_at: new Date().toISOString(),
+      student_id: String(student.id),
+      student_name: String(student.name || `${student.firstname} ${student.lastname}`),
+      student_email: String(student.email),
+      department: String(student.department || ''),
+      level: String(student.level || ''),
+      amount_paid: Number(amount),
+      fee_type: String(feeType),
+      transaction_ref: String(transactionRef),
+      payment_id: String(paymentId),
+      payment_date: new Date().toISOString().slice(0, 10),
+      status: 'approved' // Auto-approved: payments no longer require manual admin approval
+    };
+
+    console.log('Supabase insert payload:', payload);
+
+    try {
+      let { data, error } = await sb.from('level100payments').insert([payload]);
+
+      if (error) {
+        console.error('Supabase insert error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        return null;
+      } else {
+        console.log('Payment saved successfully:', data);
+
+        // Attempt to send immediate SMS confirmation to student
+        (async function(){
+          try {
+            // Refresh payments to compute outstanding balance
+            await loadPayments();
+            const r = remainingToUnlock();
+            const outstanding = r.total || 0;
+
+            // Determine phone
+            const rawPhone = student.phone || student.phone_number || student.mobile || null;
+            let phone = rawPhone;
+            if (!phone) {
+              try {
+                const { data: sdata, error: serr } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${student.id}`).limit(1).maybeSingle();
+                if (!serr && sdata) phone = sdata.phone || sdata.phone_number;
+              } catch (e) { /* ignore */ }
+            }
+
+            function normalize(p){ if(!p) return null; let d=String(p).replace(/\D/g,''); if(d.charAt(0)==='0') d='233'+d.slice(1); return d.length<9?null:d; }
+            const formatted = normalize(phone);
+            if (formatted) {
+              const msg = `Hello ${student.name || student.firstname || ''}, we received your payment of ${cedis(payload.amount_paid)} for ${payload.fee_type}. Outstanding balance: ${cedis(outstanding)}.`;
+              await sendViaProxy([formatted], msg, { student_id: student.id });
+            } else {
+              console.warn('No valid phone to send payment confirmation for', student.id);
+            }
+          } catch (e) { console.warn('Could not send payment SMS confirmation:', e); }
+        })();
+
+        return data;
+      }
+    } catch (err) {
+      console.error('Unexpected error saving payment:', err);
+      return null;
+    }
+  }
+
+  /* -------------- PAYMENTS (Paystack) -------------- */
+  function openPaystackCheckout({ email, amountGhs, reference, metadata = {}, onSuccess, onClose }) {
+    if (!window.PaystackPop) {
+      showModalMessage('Paystack script not loaded. Please check your internet connection and try again.');
+      if (onClose) onClose();
+      return;
+    }
+    
+    // Validate amount
+    if (amountGhs <= 0) {
+      showModalMessage('Payment amount must be greater than zero.');
+      if (onClose) onClose();
+      return;
+    }
+    
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_KEY,
+      email,
+      amount: Math.round(Number(amountGhs) * 100),
+      currency: 'GHS',
+      reference,
+      metadata,
+      callback: function(response) { 
+        console.log('Paystack callback:', response);
+        if (onSuccess) onSuccess(response); 
+      },
+      onClose: function() { 
+        console.log('Paystack payment closed');
+        if (onClose) onClose(); 
+      }
+    });
+    
+    try {
+      handler.openIframe();
+      } catch (error) {
+      console.error('Error opening Paystack:', error);
+      showModalMessage('Error initiating payment. Please try again.');
+      if (onClose) onClose();
+    }
+  }
+
+  // Show loading state for payment buttons
+  function setPaymentButtonLoading(buttonId, isLoading) {
+    const btn = document.getElementById(buttonId);
+    const text = document.getElementById(buttonId + 'Text');
+    const spinner = document.getElementById(buttonId + 'Spinner');
+    
+    if (btn && text && spinner) {
+      if (isLoading) {
+        btn.disabled = true;
+        text.style.display = 'none';
+        spinner.style.display = 'inline-block';
+      } else {
+        btn.disabled = false;
+        text.style.display = 'inline-block';
+        spinner.style.display = 'none';
+      }
+    }
+  }
+
+  async function payAdmission() {
+    if (hasPaidAdmission()) { 
+      showModalMessage('Admission fee already paid.'); 
+      return; 
+    }
+    
+    const student = currentStudent;
+    const reference = 'ADMISSION-' + uid();
+    
+    setPaymentButtonLoading('admissionPayBtn', true);
+    
+    openPaystackCheckout({
+      email: student.email,
+      amountGhs: ADMISSION_FEE,
+      reference,
+      metadata: { custom_fields: [{ display_name: 'Fee', variable_name: 'fee', value: 'Admission' }]},
+      onSuccess: async (resp) => {
+        setPaymentButtonLoading('admissionPayBtn', false);
+        const paymentId = 'PAY_' + uid();
+        await savePaymentToSupabase(student, ADMISSION_FEE, 'Admission Fee', resp.reference || reference, paymentId);
+        await generateReceipt(student, ADMISSION_FEE, 'Admission Fee', resp.reference || reference, paymentId);
+        
+        // Reload payments and update UI
+        await loadPayments();
+        renderFeeUI();
+        updatePaymentStatusDisplay();
+        updateRegisterButtonState();
+        
+        // Approval UI/flow removed: no modal shown even when payments complete
+      },
+      onClose: () => { 
+        setPaymentButtonLoading('admissionPayBtn', false);
+        console.log('Paystack closed (admission)'); 
+      }
+    });
+  }
+
+  async function payTuition(targetPercent) {
+    if (!hasPaidAdmission()) { 
+      showModalMessage('Please pay Admission Fee first.'); 
+      return; 
+    }
+    
+    const t = tuitionStatus();
+    const amount = targetPercent === 100 ? t.to100 : t.to80;
+    
+    if (amount <= 0) {
+      showModalMessage(targetPercent === 100 ? 'Tuition already fully paid.' : '80% requirement already met.');
+      return;
+    }
+    
+    const student = currentStudent;
+    const reference = `TUITION-${targetPercent}-${uid()}`;
+    
+    openPaystackCheckout({
+      email: student.email,
+      amountGhs: amount,
+      reference,
+      metadata: { custom_fields: [{ display_name: 'TuitionTarget', variable_name: 'tuition_target', value: `${targetPercent}%` }]},
+      onSuccess: async (resp) => {
+        const paymentId = 'PAY_' + uid();
+        await savePaymentToSupabase(student, amount, `Tuition (${targetPercent}%)`, resp.reference || reference, paymentId);
+        await generateReceipt(student, amount, `Tuition (${targetPercent}%)`, resp.reference || reference, paymentId);
+        
+        // Reload payments and update UI
+        await loadPayments();
+        renderFeeUI();
+        updatePaymentStatusDisplay();
+        updateRegisterButtonState();
+        
+        // Approval UI/flow removed: no modal shown even when payments complete
+      },
+      onClose: () => { console.log('Paystack closed (tuition)'); }
+    });
+  }
+
+  async function payOtherSelected() {
+    if (!hasPaidAdmission()) { 
+      showModalMessage('Please pay Admission Fee first.'); 
+      return; 
+    }
+    
+    const o = otherRemaining();
+    const selSrc = document.getElementById('sel_src')?.checked;
+    const selDept = document.getElementById('sel_dept')?.checked;
+    const selMed = document.getElementById('sel_med')?.checked;
+    const srcAmt = selSrc ? o.src : 0, deptAmt = selDept ? o.dept : 0, medAmt = selMed ? o.med : 0;
+    const total = srcAmt + deptAmt + medAmt;
+    
+    if (total <= 0) { 
+      showModalMessage('Select at least one fee to pay.'); 
+      return; 
+    }
+
+    const student = currentStudent;
+    const reference = `OTHER-${uid()}`;
+    const cart = [];
+    if (srcAmt) cart.push({ fee: 'SRC', amount: srcAmt });
+    if (deptAmt) cart.push({ fee: 'Departmental', amount: deptAmt });
+    if (medAmt) cart.push({ fee: 'Medical', amount: medAmt });
+
+    openPaystackCheckout({
+      email: student.email, 
+      amountGhs: total, 
+      reference, 
+      metadata: { cart },
+      onSuccess: async (resp) => {
+        const paymentIdBase = 'PAY_' + uid();
+        const saves = [];
+        let counter = 1;
+        if (srcAmt) saves.push(savePaymentToSupabase(student, srcAmt, 'SRC Dues', resp.reference || reference, `${paymentIdBase}_${counter++}`));
+        if (deptAmt) saves.push(savePaymentToSupabase(student, deptAmt, 'Departmental Dues', resp.reference || reference, `${paymentIdBase}_${counter++}`));
+        if (medAmt) saves.push(savePaymentToSupabase(student, medAmt, 'Medical Dues', resp.reference || reference, `${paymentIdBase}_${counter++}`));
+        await Promise.all(saves);
+
+        await generateReceipt(student, total, `Other Fees (${cart.map(c=>c.fee).join(' + ')})`, resp.reference || reference, paymentIdBase);
+        
+        // Reload payments and update UI
+        await loadPayments();
+        renderFeeUI();
+        updatePaymentStatusDisplay();
+        updateRegisterButtonState();
+        
+        // Approval UI/flow removed: no modal shown even when payments complete
+      },
+      onClose: () => { console.log('Paystack closed (other fees)'); }
+    });
+  }
+
+  /* -------------- RECEIPT (modal + PDF) -------------- */
+  async function generateReceipt(student, amountPaid, feeType, transactionRef, paymentId) {
+    const r = remainingToUnlock();
+
+    // 1. Fill receipt modal (styled HTML)
+    const html = `
+      <div id="receiptBox" style="font-family: Arial; color:#000;">
+        <h2 style="text-align:center; color:var(--primary); margin:0;">GH SCHOOLS</h2>
+        <p style="text-align:center; margin-top:-10px;">📞 +233 302 000 000 | ✉️ admissions@fgtech.edu.gh</p>
+        <hr>
+        <p><strong>Student:</strong> ${student.firstname} ${student.lastname}</p>
+        <p><strong>Student ID:</strong> ${student.id}</p>
+        <p><strong>Level:</strong> ${student.level}</p>
+        <p><strong>Department:</strong> ${student.department}</p>
+        <p><strong>Program:</strong> ${student.program}</p>
+        <p><strong>Email:</strong> ${student.email}</p>
+        <hr>
+        <p><strong>Fee Type:</strong> ${feeType}</p>
+        <p><strong>Amount Paid:</strong> ${cedis(amountPaid)}</p>
+        <p><strong>Transaction Ref:</strong> ${transactionRef}</p>
+        <p><strong>Payment ID:</strong> ${paymentId}</p>
+        <p><strong>Payment Status:</strong> <span class="payment-status status-pending">Payment Received</span></p>
+        <p><strong>Outstanding Balance:</strong> ${cedis(r.total)}</p>
+        <hr>
+      </div>
+    `;
+    const contentEl = document.getElementById('receiptContent');
+    if (contentEl) contentEl.innerHTML = html;
+
+    // 2. Show modal
+    const receiptModal = document.getElementById('receiptModal');
+    if (receiptModal) receiptModal.style.display = 'flex';
+
+    // 3. Auto-download same styled HTML as PDF
+    try {
+      const element = document.getElementById("receiptBox");
+      const safeLast = student.lastname || "Student";
+      const fileName = `${safeLast}_${student.id}_2025_Receipt.pdf`;
+
+      await html2pdf()
+        .from(element)
+        .set({
+          margin: [15, 10, 15, 10], // top, left, bottom, right
+          filename: fileName,
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }, // ensures no cut-offs
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, // sharp + stable
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" }
+        })
+        .save();
+    } catch (err) {
+      console.warn("PDF generation failed:", err);
+    }
+  }
+
+  /* -------------- REGISTRATION BUTTON (guard + state) -------------- */
+  function attachRegisterGuard() {
+    const btn = document.getElementById('registerBtn');
+    if (!btn) return;
+    // persistent guard: performs an authoritative server-side check before allowing registration
+    // store original label so we can restore it after async check
+    try { if (!btn.dataset.origLabel) btn.dataset.origLabel = btn.innerHTML; } catch(e) {}
+    btn.addEventListener('click', async function (e) {
+      try {
+        e.preventDefault();
+        // Ensure we have a student context
+        if (!currentStudent || !currentStudent.student_id) {
+          showModalMessage('No student ID found. Please log in again.');
+          return;
+        }
+
+        // show loading state
+        try {
+          btn.setAttribute('aria-busy', 'true');
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.7';
+          btn.innerHTML = '<span class="loading" style="width:16px;height:16px;border-width:3px;display:inline-block;vertical-align:middle;margin-right:8px;"></span>Checking...';
+        } catch(e) {}
+
+        // Prefer authoritative server-side check so we don't accidentally rely on stale local state
+        const allowed = await hasRegistrationAccessLevel100(currentStudent.student_id);
+        if (!allowed) {
+          const r = remainingToUnlock();
+          showModalMessage(
+            '❌ You need to complete your fees before registering.\n\n' +
+            'Remaining:\n' +
+            ` - Admission: ${cedis(r.admissionRem)}\n` +
+            ` - Tuition (to 80%): ${cedis(r.tuitionRemFor80)}\n` +
+            ` - SRC: ${cedis(r.src)}\n` +
+            ` - Departmental: ${cedis(r.dept)}\n` +
+            ` - Medical: ${cedis(r.med)}\n\n` +
+            `Total remaining: ${cedis(r.total)}`
+          );
+          // restore label
+          try { btn.innerHTML = btn.dataset.origLabel || '<i class="fas fa-pen"></i> Register Courses'; btn.removeAttribute('aria-busy'); btn.style.pointerEvents = ''; btn.style.opacity = ''; } catch(e) {}
+          return;
+        }
+
+        // allowed — open level100 registration modal (show loading screen then modal)
+        try {
+          // brief delay to ensure the "Checking..." state is visible
+          await new Promise(r => setTimeout(r, 400));
+          if (typeof openLevel100CourseRegisterModal === 'function') {
+            openLevel100CourseRegisterModal();
+            // restore label
+            try { btn.innerHTML = btn.dataset.origLabel || '<i class="fas fa-pen"></i> Register Courses'; } catch(e) {}
+            try { btn.removeAttribute('aria-busy'); btn.style.pointerEvents = ''; btn.style.opacity = ''; } catch(e) {}
+            return;
+          }
+        } catch (e) { console.warn('open level100 modal failed', e); }
+
+        // As a last resort, open the external portal
+        try { window.open(REGISTRATION_PORTAL_URL, '_blank', 'noopener'); } catch (err) { window.location.href = REGISTRATION_PORTAL_URL; }
+        try { btn.innerHTML = btn.dataset.origLabel || '<i class="fas fa-pen"></i> Register Courses'; } catch(e) {}
+        try { btn.removeAttribute('aria-busy'); btn.style.pointerEvents = ''; btn.style.opacity = ''; } catch(e) {}
+      } catch (err) {
+        console.error('Registration guard error:', err);
+        showModalMessage('Error checking registration eligibility. Please try again.');
+        try { btn.innerHTML = btn.dataset.origLabel || '<i class="fas fa-pen"></i> Register Courses'; btn.removeAttribute('aria-busy'); btn.style.pointerEvents = ''; btn.style.opacity = ''; } catch(e) {}
+      }
+    });
+  }
+
+  /* Authoritative check for registration eligibility (queries payments table) */
+  async function hasRegistrationAccessLevel100(studentIdParam) {
+    try {
+      if (!studentIdParam) return false;
+
+      // Required amounts for registration
+      const REQUIRED = {
+        admission: ADMISSION_FEE,
+        tuition80: TUITION_80,
+        src: SRC_DUES,
+        medical: MED_DUES,
+        departmental: DEPT_DUES
+      };
+
+      // Fetch payments saved for this student with approved status
+      const { data: payments, error } = await sb
+        .from('level100payments')
+        .select('*')
+        .eq('student_id', String(studentIdParam))
+        .in('status', ['approved'])
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('hasRegistrationAccessLevel100: fetch error', error);
+        return false;
+      }
+
+      const rows = payments || [];
+
+      // Compute totals
+      const tuitionPaid = rows.filter(r => String(r.fee_type || '').toLowerCase().includes('tuition')).reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+      const admissionPaid = rows.filter(r => String(r.fee_type || '').toLowerCase().includes('admission')).reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+      const srcPaid = rows.filter(r => String(r.fee_type || '').toLowerCase().includes('src')).reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+      const deptPaid = rows.filter(r => String(r.fee_type || '').toLowerCase().includes('department')).reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+      const medPaid = rows.filter(r => String(r.fee_type || '').toLowerCase().includes('medical')).reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+
+      const admissionOK = admissionPaid >= (REQUIRED.admission - 1e-6);
+      const tuitionOK = tuitionPaid >= (REQUIRED.tuition80 - 1e-6);
+      const srcOK = srcPaid >= (REQUIRED.src - 1e-6);
+      const medOK = medPaid >= (REQUIRED.medical - 1e-6);
+      const deptOK = deptPaid >= (REQUIRED.departmental - 1e-6);
+
+      return admissionOK && tuitionOK && srcOK && medOK && deptOK;
+    } catch (err) {
+      console.error('hasRegistrationAccessLevel100 error:', err);
+      return false;
+    }
+  }
+
+  /* --------- Course registration modal & helpers (Level 100) --------- */
+  const DASHBOARD_SCHOOL_DATA_LEVEL100 = {
+    "Media School": {
+      programs: {
+        "Journalism And Media Art": [
+          "TV PRESENTING / TV JOURNALISM",
+          "RADIO PRESENTING / RADIO JOURNALISM",
+          "RADIO, TV & FILM PRODUCTION",
+          "PROFESSIONAL ACTING",
+          "EVENT MANAGEMENT"
+        ],
+        "Journalism And Media Studies": [
+          "TV PRESENTING / TV JOURNALISM",
+          "RADIO PRESENTING / RADIO JOURNALISM",
+          "NEWSPAPER REPORTING / PRINT JOURNALISM",
+          "MEDIA LAW & ETHICS",
+          "MEDIA MARKETING"
+        ],
+        "TV & Film Production": [
+          "CAMERA OPERATION AND LIGHTING",
+          "DIGITAL VIDEO EDITING",
+          "SOUND PRODUCTION / ENGINEERING",
+          "DIRECTING AND SCRIPT WRITING",
+          "POST PRODUCTION DESIGN"
+        ],
+        "Multimedia Production": [
+          "DIGITAL VIDEO EDITING",
+          "MULTIMEDIA SOUND PRODUCTION",
+          "GRAPHIC DESIGNING",
+          "ANIMATIONS",
+          "POST PRODUCTION DESIGN"
+        ]
+      },
+      coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+    },
+    "Cosmetology School": {
+      courses: ["MAKE-UP ARTISTRY","NAIL TECHNOLOGY","BODY THERAPY","HAIR TECHNOLOGY","SALON AND SPA MANAGEMENT"],
+      coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+    },
+    "School of Fashion": {
+      courses: ["PATTERN DRAFTING","GARMENT CONSTRUCTION","CLOTHING AND TEXTILES","MILLINERY AND ACCESSORIES","FASHION DESIGN"],
+      coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+    },
+    "Catering School": {
+      courses: ["FOOD & BEVERAGE PRODUCTION","PASTRY, CAKE, AND SUGAR CRAFT","BALLOON, FLORAL DECORATION AND EVENT MANAGEMENT","CATERING SERVICE MANAGEMENT","HOTEL, TOURISM & HOSPITALITY MANAGEMENT"],
+      coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+    },
+    "School of Technology": {
+      courses: ["COMPUTER HARDWARE","COMPUTER SOFTWARE","COMPUTER NETWORKING","BROADCAST TECHNOLOGY","SECURITY SYSTEMS"],
+      coreCourses: ["COMMUNICATION SKILLS","AFRICAN STUDIES","ICT","ENTREPRENEURSHIP","PRODUCTION MANAGEMENT"]
+    }
+  };
+
+  function detectStudentSchoolAndProgramLevel100() {
+    const schoolVal = (currentStudent && (currentStudent.school || currentStudent.department || currentStudent.program) ) ? String(currentStudent.school || currentStudent.department || currentStudent.program).trim() : '';
+    const programVal = (currentStudent && (currentStudent.program || currentStudent.program_type)) ? String(currentStudent.program || currentStudent.program_type).trim() : '';
+    if (schoolVal && DASHBOARD_SCHOOL_DATA_LEVEL100[schoolVal]) return { school: schoolVal, program: programVal || null };
+    if (programVal) {
+      for (const [schoolName, info] of Object.entries(DASHBOARD_SCHOOL_DATA_LEVEL100)){
+        if (info.programs) {
+          for (const progKey of Object.keys(info.programs)){
+            if (progKey.toLowerCase() === programVal.toLowerCase() || progKey.toLowerCase().includes(programVal.toLowerCase())) return { school: schoolName, program: progKey };
+          }
+        }
+        if (info.courses && Array.isArray(info.courses)){
+          for(const c of info.courses){ if(String(c).toLowerCase() === programVal.toLowerCase()) return { school: schoolName, program: programVal }; }
+        }
+      }
+    }
+    // fallback to first defined school
+    const keys = Object.keys(DASHBOARD_SCHOOL_DATA_LEVEL100);
+    return { school: keys[0], program: programVal || null };
+  }
+
+  // Insert registration modal HTML into the DOM (if not already present)
+  (function ensureLevel100RegisterModal(){
+    if (document.getElementById('level100CourseRegisterModal')) return;
+    const div = document.createElement('div');
+    div.id = 'level100CourseRegisterModal';
+    div.className = 'modal';
+    div.style.display = 'none';
+    div.innerHTML = `
+      <div class="modal-content" style="max-width:820px; width:96%;">
+        <div class="modal-header">
+          <h3>Course Registration</h3>
+          <button class="close-btn" onclick="closeModal('level100CourseRegisterModal')">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+          <div id="level100RegStatus" style="margin-bottom:12px;color:#444;"></div>
+          <form id="level100RegForm">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+              <label style="flex:1;min-width:180px;">Phone (current)<br><input id="reg_phone" name="phone" type="tel" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;" /></label>
+              <label style="flex:1;min-width:180px;">WhatsApp Number<br><input id="reg_whatsapp" name="whatsapp" type="tel" required style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;" /></label>
+              <label style="flex:1;min-width:200px;">Email (optional)<br><input id="reg_email" name="email" type="email" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;" /></label>
+            </div>
+            <div id="level100CourseSelector" style="margin-bottom:12px;">Loading course options...</div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button type="button" class="btn-secondary" onclick="closeModal('level100CourseRegisterModal')">Cancel</button>
+              <button type="submit" class="btn" id="level100RegSubmit">Submit Registration</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(div);
+
+    // wire form submit
+    document.getElementById('level100RegForm').addEventListener('submit', async function(ev){
+      ev.preventDefault();
+      await submitLevel100CourseRegistration();
+    });
+  })();
+
+  async function openLevel100CourseRegisterModal(){
+    try{
+      const s = detectStudentSchoolAndProgramLevel100();
+      const school = s.school;
+      const program = s.program;
+      const sel = document.getElementById('level100CourseSelector');
+      const phoneEl = document.getElementById('reg_phone');
+      const waEl = document.getElementById('reg_whatsapp');
+      const emailEl = document.getElementById('reg_email');
+      const statusEl = document.getElementById('level100RegStatus');
+
+      // Prefill contact fields
+      try { if (currentStudent && currentStudent.phone) phoneEl.value = currentStudent.phone; } catch(e){}
+      try { if (currentStudent && currentStudent.whatsapp) waEl.value = currentStudent.whatsapp; else if (currentStudent && currentStudent.phone) waEl.value = currentStudent.phone; } catch(e){}
+      try { if (currentStudent && currentStudent.email) emailEl.value = currentStudent.email; } catch(e){}
+
+      // Build course options based on school data
+      const info = DASHBOARD_SCHOOL_DATA_LEVEL100[school] || {}; 
+      let html = `<div style="margin-bottom:8px;font-weight:700;color:#222;">Selected School: ${escapeHtml(school)} ${program ? ' / ' + escapeHtml(program) : ''}</div>`;
+      if (info.programs && program) {
+        const opts = info.programs[program] || [];
+        html += '<div style="margin-bottom:6px;color:#333;font-weight:600;">Choose elective courses:</div>';
+        html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+        for(const c of opts){ html += `<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> ${escapeHtml(c)}</label>`; }
+        html += '</div>';
+      } else if (info.courses) {
+        html += '<div style="margin-bottom:6px;color:#333;font-weight:600;">Choose elective courses:</div>';
+        html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+        for(const c of info.courses){ html += `<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> ${escapeHtml(c)}</label>`; }
+        html += '</div>';
+      } else if (info.programs) {
+        // show program selector
+        html += '<div style="margin-bottom:6px;color:#333;font-weight:600;">Choose program:</div>';
+        html += '<select id="level100ProgramSelect" style="padding:8px;border:1px solid #ddd;border-radius:6px;width:100%;margin-bottom:8px;">';
+        html += '<option value="">Select program</option>';
+        for(const p of Object.keys(info.programs)){ html += `<option value="${escapeHtml(p)}" ${program===p? 'selected':''}>${escapeHtml(p)}</option>`; }
+        html += '</select>';
+        html += '<div id="level100ProgramCourses">Choose program to see courses</div>';
+      } else {
+        html += '<div>No course data available for your school. Please contact the registrar.</div>';
+      }
+
+      // show core courses (compulsory) as checked & disabled checkboxes so they are auto-selected
+      if (info.coreCourses) {
+        html += '<hr style="margin:12px 0;">';
+        html += '<div style="font-weight:600;margin-bottom:6px;">Core Courses (compulsory - auto-selected)</div>';
+        html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">';
+        for(const cc of info.coreCourses){ html += `<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="course_option" value="${escapeHtml(cc)}" checked disabled> ${escapeHtml(cc)} <span style="font-size:0.85rem;color:#666;margin-left:8px;">(core)</span></label>`; }
+        html += '</div>';
+      }
+
+      sel.innerHTML = html;
+
+      // wire program select change
+      const progSel = document.getElementById('level100ProgramSelect');
+      if (progSel) {
+        progSel.addEventListener('change', function(){
+          const p = this.value;
+          const out = document.getElementById('level100ProgramCourses');
+          if (!p) { out.innerHTML = 'Choose a program to view courses'; return; }
+          const opts = info.programs[p] || [];
+          let ohtml = '<div style="display:flex;flex-direction:column;gap:6px;">';
+          for(const c of opts) ohtml += `<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> ${escapeHtml(c)}</label>`;
+          ohtml += '</div>';
+          // append core courses as checked & disabled so they remain selected
+          if (info.coreCourses && info.coreCourses.length) {
+            ohtml += '<hr style="margin:12px 0;">';
+            ohtml += '<div style="font-weight:600;margin-bottom:6px;">Core Courses (compulsory - auto-selected)</div>';
+            ohtml += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">';
+            for(const cc of info.coreCourses) { ohtml += `<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="course_option" value="${escapeHtml(cc)}" checked disabled> ${escapeHtml(cc)} <span style="font-size:0.85rem;color:#666;margin-left:8px;">(core)</span></label>`; }
+            ohtml += '</div>';
+          }
+          out.innerHTML = ohtml;
+        });
+      }
+
+      // show modal
+      statusEl.textContent = '';
+      openModal('level100CourseRegisterModal');
+    } catch (err) { console.error('openLevel100CourseRegisterModal error', err); showModalMessage('Could not open course registration.'); }
+  }
+
+  async function submitLevel100CourseRegistration(){
+    try{
+      const phone = (document.getElementById('reg_phone').value || '').trim();
+      const whatsapp = (document.getElementById('reg_whatsapp').value || '').trim();
+      const email = (document.getElementById('reg_email').value || '').trim();
+      const checked = Array.from(document.querySelectorAll('#level100CourseSelector input[name="course_option"]:checked')).map(i=>i.value);
+      if(!phone || !whatsapp) { showModalMessage('Please provide both phone and WhatsApp numbers.'); return; }
+      if(!Array.isArray(checked) || checked.length === 0) { showModalMessage('Please select at least one course.'); return; }
+
+      // Determine school/program
+      const sdet = detectStudentSchoolAndProgramLevel100();
+
+      const payload = {
+        student_id: currentStudent?.student_id || currentStudent?.id || null,
+        student_name: (currentStudent?.firstname ? currentStudent.firstname + ' ' + (currentStudent.lastname||'') : (currentStudent?.name || '')),
+        contact_phone: phone,
+        contact_whatsapp: whatsapp,
+        contact_email: email || null,
+        school: sdet.school,
+        program: sdet.program || null,
+        courses: checked,
+        created_at: new Date().toISOString()
+      };
+
+      // Provide UI feedback
+      const submitBtn = document.getElementById('level100RegSubmit');
+      const statusEl = document.getElementById('level100RegStatus');
+      submitBtn.disabled = true; submitBtn.style.opacity = '0.7';
+      statusEl.textContent = 'Submitting registration...';
+
+      // Persist registration to the canonical table `level100_registrations`
+      let saved = false; let lastErr = null;
+      try {
+        const toInsert = Object.assign({}, payload);
+        const { data, error } = await sb.from('level100_registrations').insert([toInsert]);
+        if (error) {
+          lastErr = error;
+          throw error;
+        }
+        saved = true;
+      } catch (e) {
+        lastErr = e;
+      }
+
+      if (!saved) {
+        console.warn('Could not save registration to level100_registrations', lastErr);
+        statusEl.textContent = 'Could not save registration to server. Try again later.';
+        submitBtn.disabled = false; submitBtn.style.opacity = '1';
+        return;
+      }
+
+      statusEl.style.color = 'green';
+      statusEl.textContent = 'Registration saved successfully.';
+      // optionally send a confirmation notification / SMS here (best-effort)
+      try { await fetch('/send-confirmation', { method: 'POST', body: JSON.stringify(payload), headers:{'Content-Type':'application/json'} }); } catch(e){}
+
+      setTimeout(()=>{ closeModal('level100CourseRegisterModal'); showModalMessage('Registration submitted successfully.'); }, 700);
+    } catch(err){ console.error('submitLevel100CourseRegistration error', err); showModalMessage('Registration failed. See console for details.'); try{ document.getElementById('level100RegSubmit').disabled = false; document.getElementById('level100RegSubmit').style.opacity = '1'; } catch(e){} }
+  }
+
+  function updateRegisterButtonState() {
+    const btn = document.getElementById('registerBtn');
+    const hint = document.getElementById('registerHint');
+    if (!btn) return;
+    
+    // If an async check is in progress, do not overwrite the button label
+    if (btn.getAttribute('aria-busy') === 'true') {
+      // keep visual enabled/disabled state but don't change label
+      if (eligibleForRegistration()) {
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.setAttribute('href', REGISTRATION_PORTAL_URL);
+        btn.setAttribute('target', '_blank');
+        btn.setAttribute('rel', 'noopener noreferrer');
+        btn.removeAttribute('aria-disabled');
+        if (hint) hint.style.display = 'none';
+      } else {
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.6';
+        btn.style.cursor = 'not-allowed';
+        btn.setAttribute('href', 'javascript:void(0)');
+        btn.removeAttribute('target');
+        btn.setAttribute('aria-disabled', 'true');
+        if (hint) { hint.style.display = 'block'; hint.textContent = 'Complete the required fees to unlock registration.'; }
+      }
+      return;
+    }
+
+    if (eligibleForRegistration()) {
+      // All required fees complete — enable registration (approval workflow removed)
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.setAttribute('href', REGISTRATION_PORTAL_URL);
+      btn.setAttribute('target', '_blank');
+      btn.setAttribute('rel', 'noopener noreferrer');
+      btn.removeAttribute('aria-disabled');
+      try { if (!btn.dataset.origLabel) btn.dataset.origLabel = '<i class="fas fa-pen"></i> Register Courses'; btn.innerHTML = btn.dataset.origLabel; } catch(e) { btn.innerHTML = '<i class="fas fa-pen"></i> Register Courses'; }
+      if (hint) hint.style.display = 'none';
+    } else {
+      // Incomplete payments
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.6';
+      btn.style.cursor = 'not-allowed';
+      btn.setAttribute('href', 'javascript:void(0)');
+      btn.removeAttribute('target');
+      btn.setAttribute('aria-disabled', 'true');
+      try { if (!btn.dataset.origLabel) btn.dataset.origLabel = '<i class="fas fa-pen"></i> Register Courses'; btn.innerHTML = btn.dataset.origLabel; } catch(e) { btn.innerHTML = '<i class="fas fa-pen"></i> Register Courses'; }
+      if (hint) hint.style.display = 'block';
+      hint.textContent = 'Complete the required fees to unlock registration.';
+    }
+  }
+
+  /* -------------- PAYMENT STATUS POLLING -------------- */
+  async function checkPaymentStatus() {
+    const previousStatus = getOverallPaymentStatus();
+    await loadPayments();
+    const currentStatus = getOverallPaymentStatus();
+    
+    // Approval UI removed: do not show approval modal on status changes
+    updatePaymentStatusDisplay();
+    updateRegisterButtonState();
+    renderFeeUI();
+    // Refresh notification state in case a notification was set
+    try { await fetchStudentNotification(); renderLevel100Notification(); setupRealtimeNotifications(); } catch(e){ }
+  }
+
+  function startPaymentStatusPolling() {
+    // Check every 30 seconds for status updates
+    paymentCheckInterval = setInterval(checkPaymentStatus, 30000);
+  }
+
+  /* -------------- PAYMENT STATUS MODAL (student) -------------- */
+  // Show a polished modal summarizing grouped payment status updates
+  // Approval UI removed - keep stub to avoid errors when called elsewhere
+  function showPaymentApprovedModal(notification) {
+    // approvals disabled: do nothing
+    console.debug('showPaymentApprovedModal called but approvals are disabled.');
+  }
+
+  /* ---------- Notification modal wiring (Level 100) ---------- */
+  (function(){
+    // Wire bell button
+    function updateLevel100Badge(){
+      try{
+        const b = document.getElementById('level100NotifBadge');
+        if(!b) return;
+        if(window.level100NotificationUnread) { b.style.display = 'flex'; }
+        else { b.style.display = 'none'; }
+      }catch(e){}
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const bell = document.getElementById('level100NotifBell');
+      const modalAck = document.getElementById('ackLevel100ModalBtn');
+      if(bell){
+        bell.addEventListener('click', async ()=>{
+          // Populate modal with notification history
+          try{ await renderStudentNotifications(); } catch(e){ console.warn('Could not render notifications', e); }
+          const _lvl100Modal = document.getElementById('level100NotificationModal');
+          if (_lvl100Modal) _lvl100Modal.style.display = 'flex';
+          updateLevel100Badge();
+        });
+      }
+
+      if(modalAck){
+        modalAck.addEventListener('click', async ()=>{
+          try{ await markAllNotificationsRead(); } catch(e){ console.error(e); }
+          const _lvl100Modal2 = document.getElementById('level100NotificationModal');
+          if (_lvl100Modal2) _lvl100Modal2.style.display = 'none';
+          updateLevel100Badge();
+        });
+      }
+
+      // initial badge state
+      updateLevel100Badge();
+    });
+  })();
+
+  /* -------------- INIT -------------- */
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      // show header loading indicator during auto-fetch
+      try { setDashboardLoading(true, 'Fetching student...'); } catch(e){}
+      // Try to quickly resolve a student_id from URL or localStorage and fetch DB row immediately
+      /* debug removed */
+      async function quickFetchByIdIfPresent(){
+        try{
+          const params = new URLSearchParams(window.location.search || '');
+          const urlKeys = ['studentId','student_id','id','admission_number','admissionNumber'];
+          for(const k of urlKeys){ const v = params.get(k); if(v && String(v).trim()) return String(v).trim(); }
+          const localKeys = ['student_id','studentId','admissionNumber','studentId','studentId'];
+          for(const k of localKeys){ try{ const v = localStorage.getItem(k); if(v && String(v).trim()) return String(v).trim(); }catch(_){}}
+          return null;
+        }catch(e){ return null; }
+      }
+
+      let student = null;
+      const quickId = await quickFetchByIdIfPresent();
+      /* debug removed */
+      if(quickId){
+        try{
+          const admRow = await fetchStudentFromSupabase(quickId);
+          if(admRow){
+            try{ localStorage.setItem(LS_KEYS.studentData, JSON.stringify(admRow)); }catch(_){}
+            student = formatStudentData(admRow);
+            currentStudent = student;
+            hideStudentNotFound();
+          }
+        }catch(e){ console.warn('Quick fetch by id failed', e); }
+        /* debug removed */
+      }
+
+      if(!student) student = await getStudentInfo();
+      /* debug removed */
+
+      // hide loading indicator after init
+      try { setDashboardLoading(false); } catch(e){}
+
+      // Create mobile bottom navigation on mobile
+      if (window.innerWidth <= 768) {
+        createMobileBottomNav();
+      }
+      
+      // Listen for window resize to show/hide bottom nav
+      window.addEventListener('resize', function() {
+        const bottomNav = document.querySelector('.mobile-bottom-nav');
+        if (window.innerWidth <= 768 && !bottomNav) {
+          createMobileBottomNav();
+        } else if (window.innerWidth > 768 && bottomNav) {
+          bottomNav.remove();
+        }
+      });
+
+      // Setup swipe gestures and pull-to-refresh for mobile
+      setupSwipeGestures();
+      setupPullToRefresh();
+
+      // If we found a student record, populate UI and load student-specific data.
+      if (student) {
+        updateStudentUI(student);
+
+        // Fetch and render any admin notifications for this student, then enable realtime updates
+        try { await fetchStudentNotification(); renderLevel100Notification(); setupRealtimeNotifications(); } catch(e){ console.warn('Notification init failed', e); }
+
+        // Load payments and update status
+        await loadPayments();
+        updatePaymentStatusDisplay();
+        updateRegisterButtonState();
+
+        // Start polling for payment status updates
+        startPaymentStatusPolling();
+
+        // expose functions that rely on student context
+        window.payAdmission = payAdmission;
+        window.payTuition = payTuition;
+        window.payOtherSelected = payOtherSelected;
+        window.updateSelectedOtherTotal = updateSelectedOtherTotal;
+
+        renderFeeUI();
+        attachRegisterGuard();
+        
+        // Add pulse animation to notification bell if there are unread notifications
+        setTimeout(() => {
+          if (window.level100NotificationUnread) {
+            const bell = document.getElementById('level100NotifBell');
+            if (bell) {
+              bell.classList.add('pulse');
+              // Add notification count badge
+              const badge = document.getElementById('level100NotifBadge');
+              if (badge) {
+                badge.textContent = '!';
+                badge.style.display = 'flex';
+                badge.style.animation = 'pulse-glow 1.5s infinite';
+              }
+            }
+          }
+        }, 1000);
+        
+        // Add touch feedback to all interactive elements
+        document.querySelectorAll('.btn, .nav-item, .dashboard-card, .touch-feedback, .quick-action-btn').forEach(el => {
+          el.classList.add('touch-feedback');
+        });
+        
+        // Add welcome animation
+        setTimeout(() => {
+          const welcomeText = document.getElementById('personalizedWelcome');
+          if (welcomeText) {
+            welcomeText.style.animation = 'fadeUp 1s ease forwards';
+          }
+        }, 500);
+      } else {
+        // No student found (student_id provided but no match) — clear student UI and skip student-specific loads
+        clearStudentUI();
+      }
+
+      // Expose other generic functions globally regardless of student presence
+      window.openModal = openModal;
+      window.closeModal = closeModal;
+      window.openResultsModal = openResultsModal;
+      window.closeResultsModal = closeResultsModal;
+      window.openAnnouncementModal = openAnnouncementModal;
+      window.closeAnnouncementModal = closeAnnouncementModal;
+      window.openProfileModal = openProfileModal;
+      window.openCalendarModal = openCalendarModal;
+      window.openApprovalPendingModal = openApprovalPendingModal;
+      window.openPaymentApprovedModal = openPaymentApprovedModal;
+      
+    } catch (err) {
+      console.error('Error initializing dashboard:', err);
+      try { setDashboardLoading(false); } catch(e){}
+    }
+  });
+  </script>
+
+<!-- Add this to your HTML body (before closing body tag) for skeleton loading -->
+<div id="skeletonLoader" style="display: none;">
+  <div class="student-welcome-card">
+    <div class="student-avatar-large skeleton-loading"></div>
+    <div style="flex: 1;">
+      <div class="skeleton-loading" style="height: 24px; width: 60%; margin-bottom: 12px;"></div>
+      <div class="skeleton-loading" style="height: 20px; width: 40%;"></div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fees Page</title>
+   <link rel="icon" type="image/png" href="images/favicon.png" />
+</head>
+<body style="margin:0; padding:20px; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f9f9f9; color:#333;">
+
+  <!-- Page Title -->
+  <div style="text-align:center; margin-bottom:30px;">
+    <h1 style="font-size:2.5rem; color:#cc0000;">Tuition & Fees</h1>
+
+
+    <!-- Currency Switcher -->
+    
+  </div>
+
+  <!-- Fee Sections with Collapsible Behavior -->
+  <div style="max-width:800px; margin:auto;">
+
+    <!-- Tuition Fees Section -->
+    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.972);">
+      <h2 style="margin:0; color:#cc0000;">Tuition Fees (Per Semester)</h2>
+      <div style="margin-top:15px; display:none;">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+          <thead>
+            <tr style="background:#cc0000; color:white;">
+              <th style="padding:10px;">Programme</th>
+              <th style="padding:10px;">Ghanaian Students</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:10px;">School of Media</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
+            <tr><td style="padding:10px;">School of Technology</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
+            <tr><td style="padding:10px;">School of Cosmetology</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
+            <tr><td style="padding:10px;">School of Catering</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
+            <tr><td style="padding:10px;">School of Fashion</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Admission & School Fee Policies -->
+    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.971);">
+      <h2 style="margin:0; color:#cc0000;">Admission & School Fees Policy</h2>
+      <div style="margin-top:15px; display:none;">
+        <p><strong>Admission Fee:</strong> All admitted students are required to pay a one-time, non-refundable admission fee of <strong>GHC 600</strong> within <strong>14 days</strong> of receiving their admission letter to secure their admission slot. Students will receive student numbers upon payment.</p>
+        <p><strong>School Fees:</strong> Students must pay <strong>50%</strong> of tuition before registration, <strong>70%</strong> before mid-semester to receive a 70% Fees Card, and <strong>100%</strong> before semester end to get a Full Fees Card required for end-of-semester exams. No card = No exam.</p>
+        <p><strong>Flexible Payment:</strong> Students with genuine challenges may request to be placed on the <em>Flex-Digital-Accounts</em> installment plan by contacting the finance office.</p>
+      </div>
+    </div>
+
+    <!-- Fee Breakdown Table -->
+    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.968);">
+      <h2 style="margin:0; color:#cc0000;">GH Media School Items & Fees</h2>
+      <div style="margin-top:15px; display:none;">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+          <thead>
+            <tr style="background:#cc0000; color:white;">
+              <th style="padding:10px;">S/N</th>
+              <th style="padding:10px;">Item</th>
+              <th style="padding:10px;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:10px;">1</td><td>Admission Form</td><td>GHC 100</td></tr>
+            <tr><td style="padding:10px;">2</td><td>Admission Fees</td><td>GHC 600</td></tr>
+            <tr><td style="padding:10px;">3</td><td>School Fees (Per Semester)</td><td>GHC 2,250</td></tr>
+            <tr><td style="padding:10px;">4</td><td>SRC Dues (Per Semester)</td><td>GHC 50</td></tr>
+            <tr><td style="padding:10px;">5</td><td>Hostel Facility (Optional)</td><td>GHC 1,500</td></tr>
+            <tr><td style="padding:10px;">6</td><td>School Lacoste / Branded Apron</td><td>Free</td></tr>
+            <tr><td style="padding:10px;">7</td><td>Matriculation Fee</td><td>Free</td></tr>
+            <tr><td style="padding:10px;">8</td><td>School Practical Lab Coat</td><td>Free</td></tr>
+            <tr><td style="padding:10px;">9</td><td>Start-up Kits</td><td>Free</td></tr>
+            <tr><td style="padding:10px;">10</td><td>School ID Card</td><td>Free</td></tr>
+            <tr><td style="padding:10px;">11</td><td>Textbook(s)/Pamphlet</td><td>Varied</td></tr>
+            <tr><td style="padding:10px;">12</td><td>School Uniform</td><td>GHC 120</td></tr>
+            <tr><td style="padding:10px;">13</td><td>Practical Items</td><td>Purchased by Students</td></tr>
+            <tr><td style="padding:10px;">14</td><td>External GES Exams</td><td>To be Paid by Students</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Back to Home Button -->
+  <a href="index.html" style="position:fixed; bottom:20px; left:20px; z-index:1000; text-decoration:none;">
+    <button style="padding:12px 20px; font-size:1rem; background-color:#cc0000; color:#fff; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0, 0, 0, 0.972);">
+      ← Back to Home
+    </button>
+  </a>
+
+  <!-- WhatsApp Icon -->
+  <div style="position:fixed; bottom:20px; right:20px; z-index:100;">
+    <a href="https://wa.me/233539816189" target="_blank">
+      <img src="your-image-path/whatsapp-icon.png" alt="WhatsApp (+233539816189)" style="width:60px; height:60px;">
+    </a>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleSection(el) {
+      const content = el.querySelector('div');
+      const allSections = document.querySelectorAll('div[onclick]');
+      allSections.forEach(section => {
+        const inner = section.querySelector('div');
+        if (section !== el) inner.style.display = 'none';
+      });
+      content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function switchCurrency(currency) {
+      const ghcElements = document.querySelectorAll('.ghc');
+      const usdElements = document.querySelectorAll('.usd');
+
+      ghcElements.forEach(el => el.style.display = currency === 'GHC' ? 'inline' : 'none');
+      usdElements.forEach(el => el.style.display = currency === 'USD' ? 'inline' : 'none');
+    }
+  </script>
+
+</body>
+
+
+
+<footer style="background-color: #222; color: #ddd; padding: 40px 20px 30px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; line-height: 1.6; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; max-width: 1200px; margin: 0 auto;">
+  
+  <!-- Logo and Contact -->
+  <div style="flex: 1 1 300px; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <img src="images/GH Schools.png" alt="GH Schools Logo" style="width: 75px; height: auto; object-fit: contain;" />
+      <div>
+        <h2 style="font-size: 22px; margin-bottom: 5px; color: #f1c40f; letter-spacing: 1.2px;">GH SCHOOLS</h2>
+        <p style="font-size: 13px; color: #bbb;">GH SCHOOLS COLLEGE, Accra</p>
+        <p style="font-size: 13px; color: #bbb;">Scholarship with Professionalism</p>
+      </div>
+    </div>
+
+    <div>
+      <p style="margin-bottom: 8px;"><i class="fas fa-phone" style="color: #f1c40f; margin-right: 8px;"></i> +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909</p>
+    </div>
+
+    <div style="margin-top: 10px;">
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-twitter"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-instagram"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+
+  <!-- Column 1 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">University</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">About GH SCHOOLS</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Our History</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Governance</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Leadership</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Policies & Regulations</a></li>
+    </ul>
+  </div>
+
+ 
+
+  <!-- Column 3 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Academics</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Affairs</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Schools & Faculties</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Fees Schedule</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Calendar</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Centres of Excellence</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation List</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 4 -->
+  <div style="flex: 1 1 150px; min-width: 140px;">
+    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Student</h4>
+    <ul style="list-style: none; padding-left: 0;">
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Students Portal</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Student Services</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Freshmen Guidelines</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">The SRC</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Hostels</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Sports & Recreation</a></li>
+      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Counseling Unit</a></li>
+ 
+    </ul>
+  </div>
+
+</footer>
+
+
+
+</html>

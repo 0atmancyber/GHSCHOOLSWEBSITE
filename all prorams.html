@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GH SCHOOLS COLLEGE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+   <link rel="icon" type="image/png" href="images/favicon.png" />
+
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #222; /* FIXED */
+      --card-bg: #fff;
+      --nav-bg: #ffffff;
+    }
+
+    body.dark {
+      --bg-color: #111;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
+      --nav-bg: #000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+header {
+  background-color: var(--nav-bg);
+  color: var(--text-color);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: red;
+}
+
+.nav-links {
+    margin-left: 130px;
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+.nav-links a {
+    text-decoration: none;
+    color: rgb(255, 0, 0);
+    font-size: 20px;
+    font-weight: 800;
+    
+    padding: 8px;
+
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.toggle-dark {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* MOBILE STYLES */
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    display: none;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .toggle-dark {
+    order: 3;
+    margin-top: 1rem;
+  }
+}
+
+   
+    .hero {
+      text-align: center;
+      padding: 5rem 1rem;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/building.webp') center/cover no-repeat;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+    }
+
+    .schools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .school-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .school-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .school-card img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    .school-card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .school-card p {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .school-card a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #000;
+      color: #fff;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      background: var(--nav-bg);
+      color: var(--text-color);
+      padding: 1rem;
+      margin-top: 3rem;
+    }
+
+    button.toggle-dark {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+  <div class="header-left">
+    <h1>GH SCHOOLS COLLEGE</h1>
+  </div>
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="all prorams.html">Schools</a>
+    <a href="admission.HTML">Apply</a>
+  </nav>
+  <button class="toggle-dark" onclick="toggleDarkMode()">🌙</button>
+</header>
+
+
+  <section class="hero">
+    <h1>Explore Our Five Professional Schools</h1>
+    <p>Empowering your future through skill-focused education</p>
+  </section>
+
+  <section class="schools">
+    <div class="school-card" data-aos="fade-up">
+      <img src="images/caterig.png" alt="School of Catering Logo"/>
+      <h2>School of Catering</h2>
+      <p>Master culinary arts, hospitality, and professional food service.</p>
+      <a href="catering.html">Learn More</a>
+    </div>
+
+    <div class="school-card" data-aos="fade-up" data-aos-delay="100">
+      <img src="images/cosme.png" alt="School of Cosmetology Logo"/>
+      <h2>School of Cosmetology</h2>
+      <p>Learn beauty, skincare, and wellness from industry professionals.</p>
+      <a href="cosme.html">Learn More</a>
+    </div>
+
+    <div class="school-card" data-aos="fade-up" data-aos-delay="200">
+      <img src="images/fashiom.png" alt="School of Fashion Logo"/>
+      <h2>School of Fashion</h2>
+      <p>Design, sew, and build your career in the vibrant fashion world.</p>
+      <a href="fashion.html">Learn More</a>
+    </div>
+
+    <div class="school-card" data-aos="fade-up" data-aos-delay="300">
+      <img src="images/Gh Media School.png" alt="School of Media Logo"/>
+      <h2>School of Media</h2>
+      <p>Train in broadcasting, journalism, video, and media production.</p>
+      <a href="media.html">Learn More</a>
+    </div>
+
+   
+  </section>
+
+  <footer>
+    &copy; 2025 GH SCHOOLS. All rights reserved.
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    function toggleMenu() {
+      document.querySelector('.nav-links').classList.toggle('active');
+    }
+
+    AOS.init();
+  </script>
+</body>
+</html>

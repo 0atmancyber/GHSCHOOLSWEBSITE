@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login - GH SCHOOLS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2575fc;
+      --primary-dark: #1a6be0;
+      --secondary: #f19d01;
+      --secondary-dark: #d88a00;
+      --accent: #6a11cb;
+      --light: #f7f9fc;
+      --dark: #2c3e50;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --gray: #7f8c8d;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23ffffff" opacity="0.05"><polygon points="50,0 100,50 50,100 0,50"/></svg>');
+      background-size: 80px;
+      z-index: -1;
+    }
+    
+    .container {
+      max-width: 500px;
+      width: 95%;
+      margin: 20px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transform: translateY(0);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    
+    .container:hover {
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+    }
+    
+    .school-logo {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .school-logo:hover {
+      transform: scale(1.02);
+    }
+    
+    .school-logo img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 15px;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+      transition: var(--transition);
+    }
+    
+    .school-logo:hover img {
+      transform: scale(1.05);
+      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.15));
+    }
+    
+    .school-logo h2 {
+      font-size: clamp(18px, 4vw, 24px);
+      margin: 0;
+      color: var(--dark);
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .school-logo p {
+      margin: 5px 0 0 0;
+      font-size: 15px;
+      color: var(--gray);
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--dark);
+      font-size: clamp(20px, 4vw, 28px);
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      border-radius: 10px;
+    }
+    
+    .login-form {
+      margin-top: 30px;
+    }
+    
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    
+    .input-group {
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .input-group:hover {
+      transform: translateY(-2px);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 15px;
+      margin-top: 5px;
+      border: 2px solid #e1e5ee;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
+      outline: none;
+      transform: scale(1.02);
+    }
+    
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    
+    .input-group:hover .input-icon {
+      color: var(--primary);
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      margin: 5px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      width: 100%;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+      position: relative;
+      overflow: hidden;
+      margin-top: 25px;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    button:active::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background: var(--gray);
+      box-shadow: 0 4px 15px rgba(127, 140, 141, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: #6c757d;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    /* Auto-fill notification */
+    .auto-fill-notification {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f8ff;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .auto-fill-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
+    }
+    
+    .auto-fill-text h3 {
+      color: var(--dark);
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+    
+    .auto-fill-text p {
+      color: var(--gray);
+      font-size: 13px;
+      margin: 0;
+    }
+    
+    /* Student Info Display */
+    .student-info {
+      display: none;
+      margin-top: 30px;
+      background: #f0f8ff;
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .student-info.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .info-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #d1e3ff;
+    }
+    
+    .info-icon {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      margin-right: 15px;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
+    }
+    
+    .info-title h3 {
+      color: var(--dark);
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+    
+    .info-title p {
+      color: var(--gray);
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .info-item {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+    
+    .info-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .info-label {
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .info-value {
+      font-size: 15px;
+      color: var(--dark);
+      font-weight: 600;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .actions button {
+      margin: 0;
+      flex: 1;
+    }
+    
+    /* Toast Notification */
+    #toast {
+      visibility: hidden;
+      min-width: 300px;
+      background: var(--success);
+      color: white;
+      text-align: center;
+      border-radius: 12px;
+      padding: 18px;
+      position: fixed;
+      z-index: 1000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 16px;
+      transform: translateX(-50%);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    #toast.error {
+      background: var(--danger);
+    }
+    
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .floating {
+      animation: float 5s ease-in-out infinite;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        margin: 10px auto;
+        padding: 20px 15px;
+        width: 100%;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px 10px;
+      }
+      
+      .info-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .info-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      
+      .auto-fill-notification {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating particles for background effect -->
+  <div class="particles" id="particles"></div>
+  
+  <div class="container">
+    <div class="school-logo floating">
+      <img src="images/favicon.png" alt="School Logo">
+      <h2>GH SCHOOLS COLLEGE</h2>
+      <p><strong>Student Login Portal</strong></p>
+    </div>
+
+    <h1>Student Login</h1>
+    
+    <div class="login-form">
+      <form id="loginForm">
+        <label for="admissionNumber"><i class="fas fa-id-card"></i> Student ID</label>
+        <div class="input-group">
+          <input type="text" id="admissionNumber" required placeholder="Enter your Student ID" class="clickable">
+          <span class="input-icon"><i class="fas fa-key"></i></span>
+        </div>
+        
+        <button type="submit" class="interactive">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+      
+      <!-- Auto-fill Notification -->
+      <div class="auto-fill-notification" id="autoFillNotification" style="display: none;">
+        <div class="auto-fill-icon">
+          <i class="fas fa-magic"></i>
+        </div>
+        <div class="auto-fill-text">
+          <h3>Auto-filled Student ID</h3>
+          <p>Your Student ID has been automatically filled. Just click the Login button.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Student Information Display -->
+    <div class="student-info" id="studentInfo">
+      <div class="info-header">
+        <div class="info-icon">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="info-title">
+          <h3>Student Information</h3>
+          <p>Your admission details</p>
+        </div>
+      </div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Full Name</div>
+          <div class="info-value" id="infoName">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Email Address</div>
+          <div class="info-value" id="infoEmail">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Phone Number</div>
+          <div class="info-value" id="infoPhone">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Student ID</div>
+          <div class="info-value" id="infoAdmissionNo">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Program of Study</div>
+          <div class="info-value" id="infoProgram">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">School</div>
+          <div class="info-value" id="infoSchool">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Program Duration</div>
+          <div class="info-value" id="infoDuration">—</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Course Type</div>
+          <div class="info-value" id="infoCourseType">—</div>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button type="button" class="btn-success" id="proceedToPortal">
+          <i class="fas fa-tachometer-alt"></i> Proceed to Student Portal
+        </button>
+        <button type="button" id="viewAdmissionLetter">
+          <i class="fas fa-file-alt"></i> View Admission Letter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span>Login successful!</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    // Supabase setup
+    const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+    const { createClient } = supabase;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // School display names mapping
+    const SCHOOL_DISPLAY_NAMES = {
+      'MEDIA': 'GH MEDIA SCHOOL',
+      'FASHION': 'GH FASHION SCHOOL', 
+      'CATERING': 'GH CATERING SCHOOL',
+      'COSMETOLOGY': 'GH COSMETOLOGY SCHOOL',
+      'TECHNOLOGY': 'GH TECHNOLOGY SCHOOL'
+    };
+
+    // Create floating particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 15;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        const size = Math.random() * 10 + 5;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const duration = Math.random() * 20 + 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Show toast notification
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.innerHTML = isError 
+        ? `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`
+        : `<i class="fas fa-check-circle"></i><span>${message}</span>`;
+      
+      toast.className = isError ? 'error' : '';
+      toast.style.visibility = "visible";
+      
+      setTimeout(() => {
+        toast.style.visibility = "hidden";
+      }, 4000);
+    }
+
+    // Fetch a list of recent student IDs from newstudents
+    async function fetchAllStudentIds() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('newstudents')
+          .select('student_id, first_name, last_name')
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (error) {
+          console.error("Error fetching student ids:", error);
+          return [];
+        }
+
+        return data || [];
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        return [];
+      }
+    }
+
+    // Auto-fill the student id
+    // Try to read a student id from localStorage using common keys
+    function readStudentIdFromLocalStorage() {
+      const keys = ['studentId', 'student_id', 'admission_number', 'studentId_local', 'studentIdCached'];
+      for (const k of keys) {
+        try {
+          const v = localStorage.getItem(k);
+          if (v && String(v).trim()) return String(v).trim();
+        } catch (e) {
+          // ignore storage errors
+        }
+      }
+      // If a full student object is stored, try to extract
+      try {
+        const raw = localStorage.getItem('student_data') || localStorage.getItem('studentData');
+        if (raw) {
+          const obj = JSON.parse(raw);
+          if (obj) return (obj.student_id || obj.studentId || obj.admission_number || '').toString();
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+      return null;
+    }
+
+    async function autoFillAdmissionNumber() {
+      try {
+        // 0) Try URL query parameters first (e.g. ?student_id=GHMS00126)
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromUrlId = urlParams.get('student_id') || urlParams.get('admission_number') || urlParams.get('id');
+        if (fromUrlId) {
+          document.getElementById('admissionNumber').value = String(fromUrlId).trim();
+          document.getElementById('autoFillNotification').style.display = 'flex';
+          document.querySelector('button[type="submit"]').focus();
+          showToast('Student ID auto-filled from URL. Click Login to continue.');
+          return;
+        }
+
+        // 0.5) If the referrer is the admission letter page, prefer localStorage key 'student_id'
+        try {
+          const ref = document.referrer || '';
+          if (ref && ref.toLowerCase().includes('admissionletter')) {
+            const cached = localStorage.getItem('student_id') || localStorage.getItem('studentId') || localStorage.getItem('admission_number');
+            if (cached) {
+              document.getElementById('admissionNumber').value = String(cached).trim();
+              document.getElementById('autoFillNotification').style.display = 'flex';
+              document.querySelector('button[type="submit"]').focus();
+              showToast('Student ID auto-filled from your admission letter. Click Login to continue.');
+              return;
+            }
+          }
+        } catch (e) { /* ignore referrer read errors */ }
+        // 1) Prefer localStorage quick-fill (works offline / after form submission)
+        const localId = readStudentIdFromLocalStorage();
+        if (localId) {
+          document.getElementById('admissionNumber').value = localId;
+          document.getElementById('autoFillNotification').style.display = 'flex';
+          document.querySelector('button[type="submit"]').focus();
+          showToast('Student ID auto-filled from local cache. Click Login to continue.');
+          return;
+        }
+
+        // 2) Fallback: query Supabase for the most recent student id(s)
+        const admissions = await fetchAllStudentIds();
+        if (admissions && admissions.length > 0) {
+          const firstId = admissions[0] && (admissions[0].student_id || admissions[0].studentId);
+          if (firstId) {
+            document.getElementById('admissionNumber').value = firstId;
+            document.getElementById('autoFillNotification').style.display = 'flex';
+            document.querySelector('button[type="submit"]').focus();
+            showToast('Student ID auto-filled. Click Login to continue.');
+            return;
+          }
+        }
+
+        // Nothing found
+        // Do not show error toast repeatedly; keep silent but useful console info
+        console.info('No cached or recent student id found for auto-fill.');
+      } catch (error) {
+        console.error('Error auto-filling student id:', error);
+        // Try to fallback silently — user can enter manually
+      }
+    }
+
+    // Fetch student data by student_id
+    async function fetchStudentData(admissionNumber) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('newstudents')
+          .select('*')
+          .eq('student_id', admissionNumber)
+          .single();
+
+        if (error) {
+          console.error("Error fetching student data:", error);
+          return null;
+        }
+
+        return data;
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        return null;
+      }
+    }
+
+    // Fetch student row from the authoritative `students` table (sequential safe queries)
+    async function fetchStudentFromStudents(admissionNumber) {
+      if (!admissionNumber) return null;
+      try {
+        // Try matching student_id first
+        let { data: row, error } = await supabaseClient
+          .from('students')
+          .select('*')
+          .eq('student_id', admissionNumber)
+          .maybeSingle();
+
+        if (!row) {
+          // Try matching admission_number
+          const res = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('admission_number', admissionNumber)
+            .maybeSingle();
+          row = res.data || null;
+          error = res.error || error;
+        }
+
+        if (error) {
+          console.warn('Error checking students table:', error);
+          return null;
+        }
+
+        return row || null;
+      } catch (e) {
+        console.error('fetchStudentFromStudents error:', e);
+        return null;
+      }
+    }
+
+    // Display student information
+    function displayStudentInfo(studentData) {
+      // Compute a display full name using available fields
+      const computedFullName = (studentData.full_name && String(studentData.full_name).trim().length>0)
+        ? studentData.full_name.trim()
+        : ((studentData.first_name || studentData.firstname || '') + ' ' + (studentData.last_name || studentData.lastname || '')).trim();
+
+      // Update the info display elements
+      document.getElementById('infoName').textContent = computedFullName || '—';
+      document.getElementById('infoEmail').textContent = studentData.email || '—';
+      document.getElementById('infoPhone').textContent = studentData.phone_number || '—';
+      document.getElementById('infoAdmissionNo').textContent = studentData.student_id || '—';
+      document.getElementById('infoProgram').textContent = studentData.program_applying_for || '—';
+      document.getElementById('infoSchool').textContent = SCHOOL_DISPLAY_NAMES[studentData.school_selected] || '—';
+      document.getElementById('infoDuration').textContent = studentData.program_duration || '—';
+      document.getElementById('infoCourseType').textContent = studentData.course_type || '—';
+      
+      // Store student data in localStorage for the admission letter
+      localStorage.setItem("admitted_full_name", computedFullName || '');
+      localStorage.setItem("student_id", studentData.student_id);
+      localStorage.setItem("admitted_program", studentData.program_applying_for);
+      localStorage.setItem("selected_school", studentData.school_selected);
+      localStorage.setItem("school_name", SCHOOL_DISPLAY_NAMES[studentData.school_selected]);
+      localStorage.setItem("program_duration", studentData.program_duration);
+      localStorage.setItem("course_type", studentData.course_type);
+      localStorage.setItem("student_gender", studentData.gender);
+      localStorage.setItem("intake_label", "February 2025");
+      localStorage.setItem("admissions_phone", "0274622250");
+      // Persist the full student object and common lookup keys so the dashboard can reuse it
+      try {
+        localStorage.setItem('student_data', JSON.stringify(studentData));
+      } catch (e) { console.warn('Could not store full student_data in localStorage', e); }
+      // Store student's contact and id so dashboard fallbacks and fetches can use them
+      if (studentData.phone_number) localStorage.setItem('student_phone', studentData.phone_number);
+      if (studentData.phone) localStorage.setItem('student_phone', studentData.phone);
+      if (studentData.email) localStorage.setItem('studentEmail', studentData.email);
+      if (studentData.student_id) localStorage.setItem('studentId', studentData.student_id);
+      // For backward compatibility, also set admission_number if present
+      if (studentData.admission_number) localStorage.setItem('admission_number', studentData.admission_number);
+      
+      // Store WASSCE grades if available
+      if (studentData.english_grade) localStorage.setItem("english_grade", studentData.english_grade);
+      if (studentData.mathematics_grade) localStorage.setItem("mathematics_grade", studentData.mathematics_grade);
+      if (studentData.social_studies_grade) localStorage.setItem("social_studies_grade", studentData.social_studies_grade);
+      if (studentData.integrated_science_grade) localStorage.setItem("integrated_science_grade", studentData.integrated_science_grade);
+      
+      // Show the student info section
+      document.getElementById('studentInfo').classList.add('active');
+      
+      // Hide the login form
+      document.getElementById('loginForm').style.display = 'none';
+      
+      // Hide the auto-fill notification
+      document.getElementById('autoFillNotification').style.display = 'none';
+    }
+
+    // Handle form submission
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const admissionNumber = document.getElementById('admissionNumber').value.trim();
+      
+      if (!admissionNumber) {
+        showToast("Please enter your Student ID", true);
+        return;
+      }
+      
+      // Show loading state
+      const submitButton = document.querySelector('button[type="submit"]');
+      const originalText = submitButton.innerHTML;
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+      submitButton.disabled = true;
+      
+      try {
+        const studentData = await fetchStudentData(admissionNumber);
+        
+        if (studentData) {
+          showToast("Student found — details shown.");
+          displayStudentInfo(studentData);
+        } else {
+          showToast("Student ID not found. Please check and try again.", true);
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        showToast("An error occurred. Please try again.", true);
+      } finally {
+        // Restore button state
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', async function() {
+      createParticles();
+      
+      // Auto-fill the student ID
+      await autoFillAdmissionNumber();
+      
+      // Add event listeners
+      document.getElementById('loginForm').addEventListener('submit', handleLogin);
+      
+      document.getElementById('proceedToPortal').addEventListener('click', function() {
+        window.location.href = "100dashboard.html";
+      });
+      
+      document.getElementById('viewAdmissionLetter').addEventListener('click', function() {
+        window.location.href = "admissionletter1.html";
+      });
+      
+      // Add clickable class to all interactive elements
+      document.querySelectorAll('input, button').forEach(el => {
+        el.classList.add('clickable');
+      });
+    });
+  </script>
+</body>
+</html>

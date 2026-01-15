@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GH Schools Academic Calendar</title>
+  <link rel="icon" href="images/favicon.png" type="image/png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+
+<style>
+  /* Apply to all cards inside the calendar grid */
+  #calendar .grid > div {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.963);
+    transition: box-shadow 0.5s ease;
+  }
+  #calendar .grid > div:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.967);
+  }
+</style>
+
+
+
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- Navbar -->
+  <header class="bg-red-600 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
+      <div class="flex items-center gap-3">
+        <img src="images/favicon.png" alt="GH Logo" class="h-10 w-10" />
+        <h1 class="text-xl font-bold">GH Schools</h1>
+      </div>
+      <nav class="hidden md:flex space-x-6">
+        <a href="#calendar" class="hover:underline">Calendar</a>
+        <a href="index.html" class="hover:underline">Home</a>
+      </nav>
+      <button id="menu-btn" class="md:hidden text-2xl"><i class="ph-list"></i></button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden flex-col space-y-2 px-4 pb-4 md:hidden bg-red-700">
+      <a href="#calendar" class="block py-2 hover:underline">Calendar</a>
+      <a href="index.html" class="block py-2 hover:underline">Home</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="text-center py-12 bg-gradient-to-r from-red-50 to-red-0">
+    <h2 class="text-4xl font-extrabold text-red-700">Academic Calendar</h2>
+    <p class="text-lg mt-2 text-gray-700">June – December 2025</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">
+      <button onclick="window.print()" class="bg-red-600 text-white px-6 py-2 rounded-lg shadow hover:bg-red-700 transition">
+        <i class="ph-printer mr-2"></i> Print Calendar
+      </button>
+    </div>
+  </section>
+
+  <!-- Calendar Grid -->
+  <section id="calendar" class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- June -->
+      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
+        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+          <i class="ph-calendar-check"></i> June
+        </h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li><i class="ph-user-plus"></i> 29 May: 1st Interview</li>
+          <li><i class="ph-handshake"></i> 30 May: Donation & Assessment</li>
+          <li><i class="ph-flask"></i> 2–6: Practical Exams</li>
+          <li><i class="ph-pen"></i> 9–25: Written Exams</li>
+          <li><i class="ph-users"></i> 13: 2nd Interview</li>
+          <li><i class="ph-star"></i> 16–20: Runway Events</li>
+          <li><i class="ph-cooking-pot"></i> 21: Culinary Arts Festival</li>
+          <li><i class="ph-calendar-x"></i> 25: Vacation</li>
+          <li><i class="ph-movie"></i> 26–29: Attachments & Movie Prep</li>
+          <li><i class="ph-graduation-cap"></i> 28: Graduation</li>
+          <li><i class="ph-tools"></i> 30: Equipment Allocation</li>
+        </ul>
+      </div>
+
+      <!-- July -->
+      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
+        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+          <i class="ph-calendar-check"></i> July
+        </h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li><i class="ph-beach"></i> 1–31: Admin Leave</li>
+          <li><i class="ph-video-camera"></i> 2–13: Movie Shooting</li>
+          <li><i class="ph-handshake"></i> 14: Post-Shoot Conference</li>
+          <li><i class="ph-user-plus"></i> 25: 4th Interview</li>
+        </ul>
+      </div>
+
+      <!-- August -->
+      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
+        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+          <i class="ph-calendar-check"></i> August
+        </h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li><i class="ph-calendar-check"></i> 4: Admin Resumes</li>
+          <li><i class="ph-user-plus"></i> 6 & 8: 5th Interview</li>
+          <li><i class="ph-users"></i> 8: Students Resume</li>
+          <li><i class="ph-lightbulb"></i> 18–22: Freshers Orientation</li>
+          <li><i class="ph-repeat"></i> 19–20: Re-Orientation</li>
+          <li><i class="ph-user-plus"></i> 20: 6th Interview</li>
+          <li><i class="ph-chalkboard-teacher"></i> 22: Faculty Training</li>
+          <li><i class="ph-list"></i> 25–29: Registration</li>
+          <li><i class="ph-church"></i> 27: Church Service</li>
+          <li><i class="ph-user-plus"></i> 29: 7th Interview</li>
+        </ul>
+      </div>
+
+      <!-- Sept–Dec -->
+      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
+        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+          <i class="ph-calendar-check"></i> Sept–Dec
+        </h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li><i class="ph-book-open"></i> 1 Sept: Lectures Begin</li>
+          <li><i class="ph-fire"></i> 3 Sept: Spiritual Take-Off</li>
+          <li><i class="ph-users"></i> 5 Sept: Final Admissions</li>
+          <li><i class="ph-video"></i> 15–19 Sept: Movie Premier</li>
+          <li><i class="ph-party-popper"></i> 22–26 Sept: Akwaaba Week</li>
+          <li><i class="ph-check-circle"></i> 26 Sept: Matriculation</li>
+          <li><i class="ph-moon"></i> 3 Oct: All Night</li>
+          <li><i class="ph-users-three"></i> 13–17 Oct: SRC Week</li>
+          <li><i class="ph-notebook"></i> 27–31 Oct: Mid-Sem Exams</li>
+          <li><i class="ph-star"></i> 24–29 Nov: Emphasis Week</li>
+          <li><i class="ph-pen"></i> 1–19 Dec: Exams</li>
+          <li><i class="ph-champagne"></i> 20 Dec: Festival & Vacation</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="bg-red-600 text-white text-center py-4">
+    &copy; 2025 GH Schools. All Rights Reserved.
+  </footer>
+
+  <!-- Mobile Menu Toggle Script -->
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GH Media School - Admissions</title>
+   <link rel="icon" type="image/png" href="images/favicon.png" />
+
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <!-- Use FA 6 (includes fa-balloon) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<!-- Or use FA 5 (if balloon doesn't work) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    .top-bar {
+  background: #000;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 14px;
+  flex-wrap: nowrap;
+  position: relative;
+  user-select: none;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.donate-link a {
+  color: #f1f1f0;
+  background-color: #222;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+.donate-link a:hover {
+  background-color: #f1c40f;
+  color: #000;
+}
+
+.hamburger {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 13px;
+  flex-wrap: nowrap;
+}
+
+.social-icons a {
+  color: white;
+  font-size: 18px;
+  margin-right: 12px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-icons a:hover {
+  color: #f1c40f;
+}
+
+.contact-info {
+  display: flex;
+  gap: 15px;
+  white-space: nowrap;
+}
+
+.lang-select {
+  background: #222;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+.top-login {
+  color: #000;
+  background: #f1c40f;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+.top-login:hover {
+  background-color: #d6b600;
+  color: #000;
+}
+
+.search-bar input {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 160px;
+  transition: width 0.3s ease;
+}
+.search-bar input:focus {
+  width: 220px;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .top-bar {
+    flex-wrap: wrap;
+    padding: 12px 15px;
+  }
+
+  .hamburger {
+    display: block;
+    margin-left: 10px;
+  }
+
+  .top-right {
+    display: none;
+    flex-direction: column;
+    background: #111;
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 100%;
+    padding: 15px 20px;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+    border-radius: 0 0 6px 6px;
+    gap: 15px;
+    z-index: 1000;
+  }
+
+  .top-right.show {
+    display: flex;
+  }
+
+  .social-icons {
+    justify-content: flex-start;
+  }
+
+  .social-icons a {
+    font-size: 22px;
+    margin-right: 20px;
+  }
+
+  .contact-info {
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+  }
+
+  .lang-select {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .top-login {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 6px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    font-size: 16px;
+  }
+}
+
+    
+  header {
+  background: #f7f5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-wrap: nowrap; /* Prevent wrap */
+  gap: 40px;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      height: 80px;
+      width: 75px;
+    }
+
+    .logo-text {
+      display: flex;
+      color: #000;
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+ 
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 15px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-links > .nav-item > a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.nav-links > .nav-item > a::after {
+  content: '\25BE';
+  font-size: 0.5em;
+  margin-left: 4px;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 999;
+  width: 200px;
+}
+
+.dropdown a {
+  display: block;
+  padding: 12px 16px;
+  color: #050101;
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 14px;
+  background: white;
+}
+
+.dropdown a:hover {
+  background-color: #800000;
+  color: #fff;
+}
+
+.nav-item:hover .dropdown {
+  display: block;
+}
+
+.apply-button {
+  background: #d60000;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Responsive Styles */
+@media (max-width: 860px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding: 20px 0;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    z-index: 999;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  .nav-links > .nav-item > a {
+    color: #000;
+    width: 100%;
+    display: block;
+    padding: 12px 20px;
+  }
+
+  .dropdown {
+    position: static;
+    border: none;
+    box-shadow: none;
+    background: #f9f9f9;
+    margin-left: 20px;
+    width: auto;
+  }
+
+  .dropdown a {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .hamburger {
+    display: block;
+    font-size: 26px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  @media (max-width: 860px) {
+  .dropdown a:hover {
+    background-color: #d60000 !important;
+    color: #fff !important;
+  }
+}
+
+}
+
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      background: #f0f0f0;
+      padding: 40px 20px;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .hero-left, .hero-right {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+   .hero-left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+}
+
+.hero-left img:hover {
+  transform: scale(1.05) rotate(-1deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+    .hero-left img {
+  transition: transform 0.9s ease;
+}
+
+.hero-left img:hover {
+  transform: scale(1.05);
+}
+
+
+    .hero-right {
+      background: #ebf70b;
+      padding: 40px;
+      color: rgb(9, 1, 1);
+      border-radius: 20px;
+      margin-left: 20px;
+      text-align: center;
+    }
+
+    .hero-right h2 {
+      font-size: 28px;
+      background: rgb(0, 0, 0);
+      color: #f3f1f7;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .hero-right ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .hero-right ul li {
+      background: #050407;
+       color: #f3f1f7;
+      margin: 10px 0;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: transform 0.3s ease, background 0.3s ease;
+      cursor: pointer;
+      animation: fadeInUp 0.6s ease forwards;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-right ul li:hover {
+      transform: scale(1.05);
+      background: #a08e5b37;
+    }
+
+    .hero-right ul li i {
+      margin-right: 12px;
+      font-size: 18px;
+      animation: pulse 1.5s infinite;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #fff;
+      color: #000;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: none;
+      white-space: nowrap;
+    }
+
+    .hero-right ul li:hover .tooltip {
+      display: block;
+    }
+
+    .apply-button-secondary {
+      margin-top: 20px;
+      background: #050504;
+      color: #f7f7f8;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    .apply-button-secondary:hover {
+      background: #e9d204;
+    }
+
+    .contact-box {
+  background: #fff;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  color: #222;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  line-height: 1.8;
+ 
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.contact-box strong {
+  font-size: 16px;
+  color: #040404;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.contact-box p {
+  margin: 6px 0;
+   text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 20px 10px;
+    align-items: center;
+  }
+
+  .hero-left,
+  .hero-right {
+    width: 100%;
+    min-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero-left img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .hero-right {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .hero-right h2 {
+    font-size: 22px;
+    padding: 10px;
+  }
+
+  .hero-right ul {
+    padding-left: 0;
+  }
+
+  .hero-right ul li {
+    font-size: 15px;
+    padding: 12px;
+    margin: 8px 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .apply-button-secondary {
+    font-size: 14px;
+    padding: 10px 20px;
+    margin-top: 15px;
+  }
+
+  .contact-box {
+    font-size: 14px;
+    padding: 15px;
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+
+  .contact-box p {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e294f;
+      color: #cbd5e1;
+    }
+
+    .footer {
+      background-color: #080808;
+      padding: 50px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 30px;
+      color: #cbd5e1;
+    }
+
+    .footer-logo-section {
+      flex: 1 1 250px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+      width: 60px;
+    }
+
+    .footer-logo-text h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    .footer-logo-text p {
+      margin: 4px 0;
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+
+    .footer-contact {
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    .footer-contact p {
+      margin: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-contact i {
+      color: #ffc107;
+      width: 18px;
+    }
+
+    .footer-social {
+      margin-top: 20px;
+    }
+
+    .footer-social a {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      color: #cbd5e1;
+      transition: color 0.3s;
+    }
+
+    .footer-social a:hover {
+      color: white;
+    }
+
+    .footer-column {
+      flex: 1 1 180px;
+    }
+
+    .footer-column h4 {
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .footer-column ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-column li {
+      margin-bottom: 10px;
+    }
+
+    .footer-column a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .footer-column a:hover {
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .footer {
+        flex-direction: column;
+        padding: 30px 15px;
+      }
+
+      .footer-column,
+      .footer-logo-section {
+        flex: 1 1 100%;
+      }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+
+    @keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.hero-left img {
+  animation: float 4s ease-in-out infinite;
+}
+
+
+    .contact-box {
+      background: white;
+      margin-top: 20px;
+      padding: 15px;
+      color: #000;
+      font-size: 14px;
+      border-radius: 10px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 992px) {
+      .hero {
+        flex-direction: column;
+      }
+
+      .hero-right {
+        margin-left: 0;
+        margin-top: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+ <div class="top-bar">
+  <div class="top-left">
+    <div class="donate-link"><a href="donate.html">Donate to GH</a></div>
+    <div class="hamburger" aria-label="Toggle menu" onclick="document.querySelector('.top-right').classList.toggle('show')">☰</div>
+  </div>
+  <div class="top-right">
+    <div class="social-icons">
+      <a href="https://www.facebook.com/ghschoolsofficial"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+    <div class="contact-info">
+      <span>Email: info@central.edu.gh</span>
+      <span>Phone: +233 30 123 4567</span>
+    </div>
+    <select class="lang-select" aria-label="Select Language">
+      <option>EN</option>
+      <option>FR</option>
+    </select>
+    <a class="top-login" href="results portal.html">Student Portal</a>
+    <div class="search-bar">
+      <input type="text" placeholder="Search..." aria-label="Search" />
+    </div>
+  </div>
+</div>
+
+  <header>
+    <div class="logo">
+      <a href="index.html"><img src="images/GH Schools.png" alt="Logo"></a>
+      <div class="logo-text">
+        <strong>GH TECHNICAL UNIVERSITY</strong>
+        <small>TRAIN • PRACTICE • ACHIEVE</small>
+      </div>
+    </div>
+
+   <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</div>
+
+<nav class="nav-container">
+  <div class="nav-links">
+    <div class="nav-item">
+      <a href="about.html">ABOUT GH</a>
+      <div class="dropdown">
+        <a href="about.html">Mission</a>
+        <a href="about.html">Vision</a>
+        <a href="about.html">Leadership</a>
+        <a href="about.html">History</a>
+        <a href="e-resource.html">Accreditation</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="admission.HTML">ADMISSIONS</a>
+      <div class="dropdown">
+        <a href="admission.HTML">Apply</a>
+        <a href="reqirement.html">Requirements</a>
+        <a href="fees.html">Fees</a>
+        <a href="schorlarship.html">Scholarships</a>
+        <a href="faq.html">FAQ</a>
+      </div>
+    </div>
+
+     <div class="nav-item">
+      <a href="results portal.html">STUDENT RESOURCES</a>
+      <div class="dropdown">
+        <a href="results portal.html">Calendar</a>
+        <a href="">Results</a>
+        <a href="">Timetable</a>
+        <a href="library.html">Library</a>
+        <a href="">Student Support</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="#">SCHOOLS</a>
+      <div class="dropdown">
+        <a href="media.html">Media</a>
+        <a href="fashion.html">Fashion</a>
+        <a href="catering.html">Catering</a>
+        <a href="cosme.html">Cosmetology</a>
+        <a href="tech.html">Technology</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="">PROJECTS</a>
+      <div class="dropdown">
+        <a href="student projects.html">Students projects</a>
+          <a href="school productions.html">School productions</a>
+        
+      </div>
+    </div>
+
+    <a class="apply-button" href="signup.html">PAY FEES</a>
+  </div>
+</nav>
+
+  </header>
+<!-- Hamburger Button -->
+
+
+
+  <section class="hero">
+   <div class="hero-left" data-aos="fade-right">
+  <img src="images/GH Catering.jpg" alt="Student">
+</div>
+<div class="hero-right" data-aos="fade-left">
+
+    <div class="hero-right">
+      <h2>OUR COURSES</h2>
+ <ul>
+  <li><i class="fas fa-utensils"></i> Food & Beverage Production</li>
+  <li><i class="fas fa-birthday-cake"></i> Pastry, Cake & Sugar Craft</li>
+  <li><i class="fas fa-balloon"></i> Decoration & Event Management</li>
+  <li><i class="fas fa-concierge-bell"></i> Catering Service Management</li>
+  <li><i class="fas fa-hotel"></i> Hospitality Management</li>
+</ul>
+
+
+ <button class="apply-button-secondary" onclick="document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' })"><a href="admission.HTML" style="color: #cbd5e1; text-decoration:none">Apply Now</a></button>
+
+ 
+
+    </div>
+  </section>
+
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+
+</body>
+<footer class="footer">
+  <!-- Logo and Contact -->
+  <div class="footer-logo-section">
+    <div class="footer-logo">
+      <img src="images/GH Schools.png" alt="UPSA Logo" />
+      <div class="footer-logo-text">
+        <h2>GH SCHOLS</h2>
+        <p>GH TECHNICAL UNIVERSITY COLLEGE, Accra</p>
+        <p>Scholarship with Professionalism</p>
+      </div>
+    </div>
+
+    <div class="footer-contact">
+      <p><i class="fas fa-phone"></i> +233 303 958 571</p>
+      <p><i class="fas fa-phone"></i> +233 303 937 542</p>
+      <p><i class="fas fa-phone"></i> +233 208 381 583</p>
+     
+    </div>
+
+    <div class="footer-social">
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+
+  <!-- Column 1 -->
+  <div class="footer-column">
+    <h4>University</h4>
+    <ul>
+      <li><a href="#">About GH SCHOOLS</a></li>
+      <li><a href="#">Our History</a></li>
+      <li><a href="#">Governance</a></li>
+      <li><a href="#">Leadership</a></li>
+      <li><a href="#">Policies & Regulations</a></li>
+      
+    </ul>
+  </div>
+
+  
+
+  <!-- Column 3 -->
+  <div class="footer-column">
+    <h4>Academics</h4>
+    <ul>
+      <li><a href="#">Academic Affairs</a></li>
+      <li><a href="#">Schools & Faculties</a></li>
+      <li><a href="#">Fees Schedule</a></li>
+      <li><a href="#">Academic Calendar</a></li>
+      <li><a href="#">Centres of Excellence</a></li>
+      <li><a href="#">Graduation</a></li>
+      <li><a href="#">Graduation List</a></li>
+    </ul>
+  </div>
+
+  <!-- Column 4 -->
+  <div class="footer-column">
+    <h4>Student</h4>
+    <ul>
+      <li><a href="#">Students Portal</a></li>
+      <li><a href="#">Student Services</a></li>
+      <li><a href="#">Freshmen Guidelines</a></li>
+      <li><a href="#">The SRC</a></li>
+      <li><a href="#">Hostels</a></li>
+      <li><a href="#">Sports & Recreation</a></li>
+      <li><a href="#">Counseling Unit</a></li>
+  
+    </ul>
+  </div>
+</footer>
+
+</html>

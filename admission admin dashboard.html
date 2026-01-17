@@ -1713,6 +1713,9 @@
           <button class="btn btn-success" onclick="exportPaymentData('excel')">
             <i class="fas fa-file-excel"></i> Export Excel
           </button>
+          <button class="btn btn-danger" onclick="downloadPaymentPDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF
+          </button>
         </div>
 
         <!-- Filters -->
@@ -1882,18 +1885,17 @@
             <thead>
               <tr>
                 <th>Student ID</th>
-                <th>Name</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Surname</th>
                 <th>Email</th>
-                <th>Phone</th>
+                <th>Phone 1</th>
+                <th>Phone 2</th>
+                <th>WhatsApp</th>
                 <th>School</th>
+                <th>Pathway</th>
                 <th>Program</th>
-                <th>Course Type</th>
-                <th>Admission Fees</th>
-                <th>Tuition Fees</th>
-                <th>Medical Dues</th>
-                <th>SRC Dues</th>
-                <th>Dept Dues</th>
-                <th>Total Owing</th>
+                <th>Level</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2546,6 +2548,9 @@
         return;
       }
       
+      // Fetch student info from both newstudents and students tables
+      fetchAndDisplayStudentInfo(studentId);
+      
       // Filter payment records to show only this student's payments
       filteredStudentPayments = allStudentPayments.filter(payment => 
         String(payment.student_id || '').toLowerCase() === studentId.toLowerCase()
@@ -2560,6 +2565,47 @@
       currentPaymentPage = 1;
       renderStudentPaymentsTable();
       updatePaymentPagination();
+    }
+
+    // Fetch student info from both newstudents and students tables
+    async function fetchAndDisplayStudentInfo(studentId) {
+      try {
+        // Fetch from both tables
+        const { data: newStudentData, error: newStudentError } = await window.__sb
+          .from('newstudents')
+          .select('*')
+          .eq('student_id', studentId)
+          .maybeSingle();
+
+        const { data: studentData, error: studentError } = await window.__sb
+          .from('students')
+          .select('*')
+          .eq('student_id', studentId)
+          .maybeSingle();
+
+        // Use whichever has data (prefer students table if both exist)
+        const student = studentData || newStudentData;
+
+        if (!student) {
+          console.warn('Student not found in either newstudents or students table');
+          return;
+        }
+
+        // Display student info in console for debugging
+        console.log('Student info fetched:', {
+          source: studentData ? 'students' : 'newstudents',
+          student_id: student.student_id,
+          name: `${student.first_name || student.firstname || ''} ${student.last_name || student.lastname || ''}`.trim(),
+          email: student.email,
+          phone: student.phone,
+          level: student.level,
+          school: student.school || student.department,
+          program: student.program || student.course_type
+        });
+
+      } catch (error) {
+        console.error('Error fetching student info:', error);
+      }
     }
     
     // Clear the student search and reload all payment records
@@ -2652,11 +2698,12 @@
         const status = 'approved';
         const statusText = 'Approved';
         
-        // Determine eligibility based on amount owing
-        const isEligible = amountOwing <= 0;
+        // Determine eligibility: 80% or more paid
+        const percentagePaid = requiredAmount > 0 ? (amountPaid / requiredAmount) * 100 : 0;
+        const isEligible = percentagePaid >= 80;
         const eligibilityBadge = isEligible 
           ? '<span class="status-badge status-approved">✓ Eligible</span>'
-          : `<span class="status-badge status-pending">✗ Owing GHS ${amountOwing.toFixed(2)}</span>`;
+          : `<span class="status-badge status-pending">✗ ${percentagePaid.toFixed(1)}% Paid</span>`;
         
         row.innerHTML = `
           <td>${payment.student_id || 'N/A'}</td>
@@ -2701,42 +2748,60 @@
     // View detailed student payment information
     async function viewDetailedStudentPayment(paymentId) {
       try {
-        // paymentId can be in format: "student_id|index" or just a string
-        // First, try to find the payment in already-loaded data
-        let payment = allStudentPayments.find(p => 
-          (p.id && p.id.toString() === paymentId) || 
-          (p.student_id && `${p.student_id}|${allStudentPayments.indexOf(p)}` === paymentId)
-        );
+        // paymentId is the student_id
+        let studentId = paymentId;
         
-        if (!payment && paymentId.includes('|')) {
-          // Parse composite key
-          const [studentId, index] = paymentId.split('|');
-          payment = allStudentPayments.find(p => p.student_id === studentId);
+        // If it's a composite key, extract student_id
+        if (paymentId.includes('|')) {
+          const [id] = paymentId.split('|');
+          studentId = id;
         }
-        
-        if (!payment) {
-          showToast('Payment record not found', 'error');
+
+        if (!studentId) {
+          showToast('Invalid student ID', 'error');
           return;
         }
 
-        const studentId = payment.student_id;
-        const fullName = `${payment.first_name || ''} ${payment.last_name || ''}`.trim() || 'N/A';
+        // Fetch student info from multiple sources
+        const [masterRes, studentsRes, newstudentsRes] = await Promise.all([
+          window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('students').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle()
+        ]);
 
-        // Fetch ALL payment records for this student
-        const { data: allPayments, error: allPaymentsErr } = await window.__sb
+        let studentInfo = masterRes.data || studentsRes.data || newstudentsRes.data;
+        let fullName = 'N/A';
+        
+        if (studentInfo) {
+          fullName = `${studentInfo.first_name || ''} ${studentInfo.middle_name || ''} ${studentInfo.last_name || studentInfo.surname || ''}`.trim();
+        }
+
+        // Fetch ALL payment records for this student from both tables
+        const { data: level100Payments, error: level100Error } = await window.__sb
           .from('level100payments')
           .select('*')
           .eq('student_id', studentId);
 
-        if (allPaymentsErr) {
-          console.error('Error fetching all payments:', allPaymentsErr);
+        const { data: regularPayments, error: regularError } = await window.__sb
+          .from('payments')
+          .select('*')
+          .eq('student_id', studentId);
+
+        if (level100Error && regularError) {
+          console.error('Error fetching payments:', level100Error, regularError);
           showToast('Error loading payment details', 'error');
           return;
         }
 
+        // Combine both payment sources
+        const allPayments = [
+          ...(level100Payments || []),
+          ...(regularPayments || [])
+        ];
+
         // Group payments by payment type and calculate totals
         const paymentsByType = {};
-        const paymentTypes = ['tuition_fees', 'src_dues', 'medical_dues', 'departmental_dues', 'admission_fees'];
+        const paymentTypes = ['tuition_fees', 'src_dues', 'medical_dues', 'departmental_dues'];
         
         // Initialize all payment types
         paymentTypes.forEach(type => {
@@ -2778,12 +2843,13 @@
           totalOwing += data.amountOwing;
         });
 
-        const isFullyPaid = totalOwing === 0;
-        const paymentPercentage = totalRequired > 0 ? Math.round((totalPaid / totalRequired) * 100) : 0;
+        // Eligibility: 80% or more of total required amount is paid
+        const percentagePaid = totalRequired > 0 ? Math.round((totalPaid / totalRequired) * 100) : 0;
+        const isFullyPaid = percentagePaid >= 80;
         
         const eligibilityStatus = isFullyPaid
           ? '<span style="color: var(--success); font-weight: 600;">✓ ELIGIBLE TO REGISTER</span>'
-          : '<span style="color: var(--danger); font-weight: 600;">✗ NOT ELIGIBLE - AMOUNT OWING</span>';
+          : `<span style="color: var(--danger); font-weight: 600;">✗ NOT ELIGIBLE - ${percentagePaid}% PAID (80% REQUIRED)</span>`;
 
         const html = `
           <div style="display:flex; flex-direction:column; gap:20px;">
@@ -2817,10 +2883,10 @@
             <div style="background: #f0f0f0; border-radius: 8px; padding: 15px;">
               <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span style="font-weight: 600;">Overall Payment Progress</span>
-                <span style="font-weight: 600; color: var(--primary);">${paymentPercentage}%</span>
+                <span style="font-weight: 600; color: var(--primary);">${percentagePaid}% (80% Required)</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill" style="width: ${paymentPercentage}%;"></div>
+                <div class="progress-fill" style="width: ${percentagePaid}%;"></div>
               </div>
             </div>
 
@@ -2830,8 +2896,8 @@
               <div style="margin-bottom: 10px; font-weight: 600;">Registration Eligibility</div>
               <div style="margin-bottom: 10px;">${eligibilityStatus}</div>
               ${isFullyPaid 
-                ? '<p style="margin: 0; font-size: 14px; color: #155724;">This student has completed all payments and is eligible to register for courses.</p>'
-                : `<p style="margin: 0; font-size: 14px; color: #721c24;">This student owes <strong>GHS ${totalOwing.toFixed(2)}</strong> in total across payment types and cannot register until settled.</p>`
+                ? '<p style="margin: 0; font-size: 14px; color: #155724;">This student has paid 80% or more and is eligible to register for courses.</p>'
+                : `<p style="margin: 0; font-size: 14px; color: #721c24;">This student has paid <strong>${percentagePaid}%</strong> (GHS ${totalPaid.toFixed(2)} of GHS ${totalRequired.toFixed(2)}). <strong>80% payment is required to register.</strong></p>`
               }
             </div>
 
@@ -2873,15 +2939,15 @@
               <div class="info-grid">
                 <div class="info-item">
                   <div class="info-label">Student Level</div>
-                  <div class="info-value">${payment.level || 'N/A'}</div>
+                  <div class="info-value">${(studentInfo && (studentInfo.level || studentInfo.year)) || 'N/A'}</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">School/Department</div>
-                  <div class="info-value">${payment.school || payment.department || 'N/A'}</div>
+                  <div class="info-value">${(studentInfo && (studentInfo.school || studentInfo.department)) || 'N/A'}</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">Program</div>
-                  <div class="info-value">${payment.program || 'N/A'}</div>
+                  <div class="info-value">${(studentInfo && (studentInfo.program || studentInfo.programme)) || 'N/A'}</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">Total Payment Records</div>
@@ -2889,7 +2955,7 @@
                 </div>
                 <div class="info-item">
                   <div class="info-label">Last Payment Date</div>
-                  <div class="info-value">${payment.created_at ? formatDate(payment.created_at) : 'N/A'}</div>
+                  <div class="info-value">${(studentInfo && studentInfo.created_at) ? formatDate(studentInfo.created_at) : 'N/A'}</div>
                 </div>
               </div>
             </div>
@@ -2936,6 +3002,73 @@
         exportToCSV(data);
       } else if (format === 'excel') {
         exportToExcel(data);
+      }
+    }
+
+    // Download payment data as PDF report
+    function downloadPaymentPDF() {
+      try {
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF || !window.jspdf) {
+          showToast('PDF library not loaded', 'error');
+          return;
+        }
+
+        const doc = new jsPDF('l', 'pt', 'a4');
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        
+        // Header
+        doc.setFontSize(16);
+        doc.text('GH SCHOOLS - PAYMENT REPORT', pageWidth / 2, 30, { align: 'center' });
+        
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, 50, { align: 'center' });
+        
+        // Prepare data for table
+        const tableData = filteredStudentPayments.map(payment => [
+          payment.student_id || 'N/A',
+          `${payment.first_name || ''} ${payment.last_name || ''}`.trim() || 'N/A',
+          (payment.payment_type || '').replace(/_/g, ' ').toUpperCase(),
+          `GHS ${(payment.amount || 0).toLocaleString('en-GH', {minimumFractionDigits: 2})}`,
+          (payment.payment_status || 'pending').toUpperCase(),
+          formatDate(payment.payment_date || payment.created_at),
+          payment.receipt_number || payment.transaction_id || '',
+          payment.payment_method || ''
+        ]);
+
+        // Add table
+        doc.autoTable({
+          head: [['Student ID', 'Name', 'Payment Type', 'Amount', 'Status', 'Date', 'Receipt No.', 'Method']],
+          body: tableData,
+          startY: 70,
+          styles: {
+            fontSize: 9,
+            cellPadding: 5,
+            overflow: 'linebreak'
+          },
+          headStyles: {
+            fillColor: [0, 102, 204],
+            textColor: 255,
+            fontStyle: 'bold'
+          },
+          alternateRowStyles: {
+            fillColor: [240, 240, 240]
+          },
+          margin: { top: 70, right: 10, bottom: 20, left: 10 }
+        });
+
+        // Footer with summary
+        const summary = `Total Records: ${filteredStudentPayments.length}`;
+        doc.setFontSize(10);
+        doc.text(summary, 10, pageHeight - 20);
+
+        // Save PDF
+        doc.save(`Payment_Report_${new Date().getTime()}.pdf`);
+        showToast('PDF downloaded successfully', 'success');
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        showToast('Error generating PDF report', 'error');
       }
     }
 
@@ -3025,20 +3158,28 @@
         document.getElementById('allStudentsTable').style.display = 'none';
 
         const q = String(studentId).trim();
-        const { data, error } = await window.__sb.from('student_master_db').select('*').eq('student_id', q).maybeSingle();
+        
+        // Fetch from multiple sources: student_master_db, students, and newstudents
+        const { data: masterData, error: masterError } = await window.__sb.from('student_master_db').select('*').eq('student_id', q).maybeSingle();
+        const { data: studentData, error: studentError } = await window.__sb.from('students').select('*').eq('student_id', q).maybeSingle();
+        const { data: newStudentData, error: newStudentError } = await window.__sb.from('newstudents').select('*').eq('student_id', q).maybeSingle();
+        
         document.getElementById('allStudentsLoading').style.display = 'none';
         const tbody = document.getElementById('allStudentsTableBody');
         tbody.innerHTML = '';
-        if (error) {
-          console.error('Search error:', error);
-          showToast('Error searching student', 'error');
-          return;
-        }
+        
+        // Use whichever source has data (prefer student_master_db, then students, then newstudents)
+        const data = masterData || studentData || newStudentData;
+        
         if (!data) {
-          showToast('Student not found', 'info');
+          showToast('Student not found in any table', 'info');
           document.getElementById('allStudentsTable').style.display = 'none';
           return;
         }
+
+        // Log which table the data came from
+        const source = masterData ? 'student_master_db' : (studentData ? 'students' : 'newstudents');
+        console.log(`Student fetched from: ${source}`, data);
 
         // Build payment summary fields similar to loadAllStudents mapping
         const student = data;
@@ -3062,26 +3203,37 @@
           totalOwing += owing;
         });
 
-        // Render single row
+        // Render single row with proper column alignment
         const row = document.createElement('tr');
-        const fullName = (student.first_name || student.firstName || '') + ' ' + (student.last_name || student.lastName || '');
-        const admissionFees = paymentsByType['Admission Fees']?.owing || 0;
-        const tuitionFees = paymentsByType['Tuition Fees']?.owing || 0;
-        const medicalDues = paymentsByType['Medical Dues']?.owing || 0;
-        const srcDues = paymentsByType['SRC Dues']?.owing || 0;
-        const deptDues = paymentsByType['Departmental Dues']?.owing || 0;
+        
+        // Extract fields directly from database columns
+        const student_id = student.student_id || student.id || 'N/A';
+        const first_name = student.first_name || '';
+        const middle_name = student.middle_name || '';
+        const surname = student.surname || student.last_name || student.lastname || '';
+        const email = student.email || '';
+        const phone_number_1 = student.phone_number_1 || student.phone || '';
+        const phone_number_2 = student.phone_number_2 || '';
+        const whatsapp = student.whatsapp || '';
+        const school = student.school || '';
+        const pathway = student.pathway || '';
+        const program = student.program || '';
+        const level = student.level || '';
 
         row.innerHTML = `
-          <td class="text-center">${student.student_id || student.id || 'N/A'}</td>
-          <td>${fullName || 'N/A'}</td>
-          <td>${(student.program || student.program_name) || 'N/A'}</td>
-          <td></td>
-          <td class="text-center">₵${getRequiredAmount((student.payment_type || '')).toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${(student.amount_paid || 0).toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${totalOwing.toLocaleString('en-NG')}</td>
-          <td class="text-center">${totalOwing > 0 ? 'Owing' : 'Paid'}</td>
-          <td class="text-center">${totalOwing <= 0 ? 'Eligible' : 'Not Eligible'}</td>
-          <td class="text-center"><button class="action-btn view-btn" onclick="viewStudentDetail('${student.student_id || student.id}')"><i class="fas fa-eye"></i></button></td>
+          <td class="text-center">${student_id}</td>
+          <td>${first_name || 'N/A'}</td>
+          <td>${middle_name || 'N/A'}</td>
+          <td>${surname || 'N/A'}</td>
+          <td>${email || 'N/A'}</td>
+          <td>${phone_number_1 || 'N/A'}</td>
+          <td>${phone_number_2 || 'N/A'}</td>
+          <td>${whatsapp || 'N/A'}</td>
+          <td>${school || 'N/A'}</td>
+          <td>${pathway || 'N/A'}</td>
+          <td>${program || 'N/A'}</td>
+          <td>${level || 'N/A'}</td>
+          <td class="text-center"><button class="action-btn view-btn" onclick="viewStudentDetail('${student_id}')" title="View Details"><i class="fas fa-eye"></i></button></td>
         `;
         tbody.appendChild(row);
         document.getElementById('allStudentsTable').style.display = 'table';
@@ -3135,40 +3287,35 @@
       pageData.forEach(student => {
         const row = document.createElement('tr');
         
-        // Extract fields with fallbacks
-        const firstName = getField(student, ['first_name', 'firstname', 'fname']);
-        const lastName = getField(student, ['last_name', 'lastname', 'lname']);
-        const email = getField(student, ['email', 'email_address', 'emailAddress']);
-        const phone = getField(student, ['phone', 'phone_number', 'mobile', 'contact', 'contact_phone']);
-        const school = getField(student, ['school', 'school_name', 'department', 'faculty']) || getSchoolFromStudentId(student.student_id || student.id);
-        const program = getField(student, ['program', 'programme', 'course', 'course_name']);
-        const courseType = getField(student, ['course_type', 'course_name', 'level', 'year']);
-        
-        const fullName = (firstName || '') + (lastName ? ' ' + lastName : '');
-        
-        // Calculate payment type totals
-        const admissionFees = student.paymentsByType['Admission Fees']?.owing || 0;
-        const tuitionFees = student.paymentsByType['Tuition Fees']?.owing || 0;
-        const medicalDues = student.paymentsByType['Medical Dues']?.owing || 0;
-        const srcDues = student.paymentsByType['SRC Dues']?.owing || 0;
-        const deptDues = student.paymentsByType['Dept Dues']?.owing || 0;
+        // Extract fields directly from the database columns
+        const student_id = student.student_id || student.id || 'N/A';
+        const first_name = student.first_name || '';
+        const middle_name = student.middle_name || '';
+        const surname = student.surname || student.last_name || student.lastname || '';
+        const email = student.email || '';
+        const phone_number_1 = student.phone_number_1 || student.phone || '';
+        const phone_number_2 = student.phone_number_2 || '';
+        const whatsapp = student.whatsapp || '';
+        const school = student.school || '';
+        const pathway = student.pathway || '';
+        const program = student.program || '';
+        const level = student.level || '';
 
         row.innerHTML = `
-          <td class="text-center">${student.student_id || student.id || 'N/A'}</td>
-          <td>${fullName || 'N/A'}</td>
+          <td class="text-center">${student_id}</td>
+          <td>${first_name || 'N/A'}</td>
+          <td>${middle_name || 'N/A'}</td>
+          <td>${surname || 'N/A'}</td>
           <td>${email || 'N/A'}</td>
-          <td>${phone || 'N/A'}</td>
+          <td>${phone_number_1 || 'N/A'}</td>
+          <td>${phone_number_2 || 'N/A'}</td>
+          <td>${whatsapp || 'N/A'}</td>
           <td>${school || 'N/A'}</td>
+          <td>${pathway || 'N/A'}</td>
           <td>${program || 'N/A'}</td>
-          <td>${courseType || 'N/A'}</td>
-          <td class="text-center">₵${admissionFees.toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${tuitionFees.toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${medicalDues.toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${srcDues.toLocaleString('en-NG')}</td>
-          <td class="text-center">₵${deptDues.toLocaleString('en-NG')}</td>
-          <td class="text-center"><strong>₵${student.totalOwing.toLocaleString('en-NG')}</strong></td>
+          <td>${level || 'N/A'}</td>
           <td class="text-center">
-            <button class="action-btn view-btn" onclick="viewStudentDetail('${student.student_id || student.id}')" title="View Details">
+            <button class="action-btn view-btn" onclick="viewStudentDetail('${student_id}')" title="View Details">
               <i class="fas fa-eye"></i>
             </button>
           </td>
@@ -3180,60 +3327,138 @@
     // View detailed student information (fetch fresh from DB and show all fields)
     async function viewStudentDetail(studentId) {
       try {
-        // Try to fetch the most up-to-date student record from the DB by student_id first, then by id
+        // Fetch student from multiple sources in parallel
         let studentRecord = null;
-        let { data, error } = await window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle();
-        if (error) {
-          console.error('Error fetching student by student_id:', error);
+        
+        const [masterRes, studentsRes, newstudentsRes] = await Promise.all([
+          window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('students').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle()
+        ]);
+
+        // Prefer master_db > students > newstudents
+        if (masterRes.data) {
+          studentRecord = masterRes.data;
+          console.log('Student found in student_master_db');
+        } else if (studentsRes.data) {
+          studentRecord = studentsRes.data;
+          console.log('Student found in students table');
+        } else if (newstudentsRes.data) {
+          studentRecord = newstudentsRes.data;
+          console.log('Student found in newstudents table');
         }
-        if (data) studentRecord = data;
 
         if (!studentRecord) {
-          const res = await window.__sb.from('newstudents').select('*').eq('id', studentId).maybeSingle();
-          if (res.error) console.error('Error fetching student by id:', res.error);
-          studentRecord = res.data || null;
-        }
-
-        if (!studentRecord) {
+          console.log('Student not found in any table:', studentId);
           showToast('Student not found', 'error');
           return;
         }
 
-        // Fetch payments for this student
+        // Fetch payments for this student from BOTH tables
         const sid = studentRecord.student_id || studentRecord.id;
-        const { data: paymentsData, error: paymentsError } = await window.__sb.from('level100payments').select('*').eq('student_id', sid);
-        if (paymentsError) {
-          console.error('Error loading payments for student:', paymentsError);
+        const { data: level100Payments, error: error1 } = await window.__sb.from('level100payments').select('*').eq('student_id', sid);
+        const { data: regularPayments, error: error2 } = await window.__sb.from('payments').select('*').eq('student_id', sid);
+        
+        if (error1) {
+          console.error('Error loading level100payments:', error1);
+        }
+        if (error2) {
+          console.error('Error loading payments:', error2);
         }
 
-        const studentPayments = paymentsData || [];
+        // Combine payments from both sources
+        const allPayments = [
+          ...(level100Payments || []),
+          ...(regularPayments || [])
+        ];
 
-        // Aggregate payments by type and totals
+        // Aggregate payments by type
         const paymentsByType = {};
-        let totalOwing = 0;
-        studentPayments.forEach(p => {
-          const type = p.payment_type || 'other';
-          if (!paymentsByType[type]) paymentsByType[type] = { required: 0, paid: 0, owing: 0, status: p.payment_status || 'pending' };
-          paymentsByType[type].required = p.required_amount || paymentsByType[type].required;
-          paymentsByType[type].paid = (paymentsByType[type].paid || 0) + (p.amount_paid || 0);
-          paymentsByType[type].owing = (paymentsByType[type].owing || 0) + (p.amount_owing || 0);
-          paymentsByType[type].status = p.payment_status || paymentsByType[type].status;
-          totalOwing += p.amount_owing || 0;
+        const paymentTypes = ['tuition_fees', 'src_dues', 'medical_dues', 'departmental_dues'];
+        
+        paymentTypes.forEach(type => {
+          paymentsByType[type] = {
+            requiredAmount: getRequiredAmount(type),
+            amountPaid: 0,
+            amountOwing: 0,
+            paymentRecords: []
+          };
         });
 
-        const isEligible = totalOwing <= 0;
+        // Populate with actual payment data
+        allPayments.forEach(p => {
+          const rawFeeType = p.payment_type || p.fee_type || 'Other';
+          const normalizedType = String(rawFeeType).toLowerCase().replace(/\s+/g, '_');
+          
+          const matchingType = paymentTypes.find(t => 
+            normalizedType.includes(t.replace(/_/g, '')) || 
+            t.includes(normalizedType.replace(/_/g, ''))
+          ) || normalizedType;
 
-        // Build payment rows HTML
-        const paymentRows = studentPayments.map(p => `
-          <tr>
-            <td>${p.payment_type || 'Other'}</td>
-            <td>₵${(p.required_amount || 0).toLocaleString('en-NG')}</td>
-            <td>₵${(p.amount_paid || 0).toLocaleString('en-NG')}</td>
-            <td>₵${(p.amount_owing || 0).toLocaleString('en-NG')}</td>
-            <td><span class="status-badge ${(p.payment_status || 'pending').toLowerCase()}">${(p.payment_status || 'pending').toUpperCase()}</span></td>
-            <td>${formatDate(p.payment_date || p.created_at)}</td>
-          </tr>
-        `).join('');
+          if (paymentsByType[matchingType]) {
+            paymentsByType[matchingType].amountPaid += Number(p.amount) || 0;
+            paymentsByType[matchingType].paymentRecords.push(p);
+          }
+        });
+
+        // Calculate totals
+        let totalRequired = 0;
+        let totalPaid = 0;
+        let totalOwing = 0;
+        
+        Object.keys(paymentsByType).forEach(type => {
+          const data = paymentsByType[type];
+          data.amountOwing = Math.max(0, data.requiredAmount - data.amountPaid);
+          totalRequired += data.requiredAmount;
+          totalPaid += data.amountPaid;
+          totalOwing += data.amountOwing;
+        });
+
+        // Eligibility: 80% or more of total required amount is paid
+        const percentagePaid = totalRequired > 0 ? (totalPaid / totalRequired) * 100 : 0;
+        const isEligible = percentagePaid >= 80;
+
+        // Build detailed payment breakdown
+        const paymentBreakdownHTML = Object.keys(paymentsByType).map(type => {
+          const data = paymentsByType[type];
+          const typeDisplay = type.replace(/_/g, ' ').toUpperCase();
+          const isPaid = data.amountOwing === 0;
+          
+          return `
+            <div style="margin-bottom: 15px; padding: 12px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid ${isPaid ? '#28a745' : '#dc3545'};">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <strong style="font-size: 14px;">${typeDisplay}</strong>
+                <span class="status-badge status-${isPaid ? 'approved' : 'pending'}" style="font-size: 12px;">${isPaid ? '✓ PAID' : '✗ OWING'}</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Required</div>
+                  <div style="font-weight: 600; color: #0066cc;">GHS ${data.requiredAmount.toFixed(2)}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Paid</div>
+                  <div style="font-weight: 600; color: #28a745;">GHS ${data.amountPaid.toFixed(2)}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Owing</div>
+                  <div style="font-weight: 600; color: ${data.amountOwing > 0 ? '#dc3545' : '#28a745'};">GHS ${data.amountOwing.toFixed(2)}</div>
+                </div>
+              </div>
+              ${data.paymentRecords.length > 0 ? `
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 12px;">
+                  <strong>Payment Records:</strong>
+                  <div style="max-height: 200px; overflow-y: auto;">
+                    ${data.paymentRecords.map(p => `
+                      <div style="margin-top: 5px; padding: 8px; background: white; border-radius: 4px;">
+                        Amount: GHS ${(p.amount || 0).toFixed(2)} | Status: ${(p.status || 'pending').toUpperCase()} | Date: ${formatDate(p.created_at || p.payment_date)}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
 
         // Helper to format arbitrary field values
         function formatFieldValue(v) {
@@ -3242,11 +3467,6 @@
           if (typeof v === 'object') return JSON.stringify(v);
           return String(v);
         }
-
-        // Render all student fields (key: value)
-        const allFieldsRows = Object.keys(studentRecord).map(k => `
-          <tr><td class="field-key">${k}</td><td class="field-value">${formatFieldValue(studentRecord[k])}</td></tr>
-        `).join('');
 
         // Helper to try multiple possible field names (fallbacks)
         function getField(obj, keys) {
@@ -3257,86 +3477,104 @@
         }
 
         const firstName = getField(studentRecord, ['first_name','firstname','fname','given_name']);
-        const lastName = getField(studentRecord, ['last_name','lastname','lname','family_name']);
+        const middleName = getField(studentRecord, ['middle_name','middlename','mname']);
+        const lastName = getField(studentRecord, ['last_name','lastname','lname','surname','family_name']);
         const emailVal = getField(studentRecord, ['email','email_address','emailAddress']);
-        const phoneVal = getField(studentRecord, ['phone','phone_number','mobile','contact','contact_phone','telephone']);
+        const phone1 = getField(studentRecord, ['phone_number_1','phone','phone_number','mobile','contact_phone']);
+        const phone2 = getField(studentRecord, ['phone_number_2','alternate_phone']);
+        const whatsapp = getField(studentRecord, ['whatsapp']);
         const schoolVal = getField(studentRecord, ['school','school_name','department','faculty','campus']);
+        const pathwayVal = getField(studentRecord, ['pathway','pathway_name']);
         const programVal = getField(studentRecord, ['program','programme','course','course_name']);
+        const levelVal = getField(studentRecord, ['level','year']);
 
         const detailsHTML = `
-          <div class="student-detail-view">
-            <div class="info-grid">
-              <h4>Summary</h4>
-              <div class="info-item">
-                <div class="info-label">Student ID</div>
-                <div class="info-value">${studentRecord.student_id || studentRecord.id || 'N/A'}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Full Name</div>
-                <div class="info-value">${(firstName || '') + ' ' + (lastName || '')}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Email</div>
-                <div class="info-value">${emailVal || formatFieldValue(studentRecord.email) || 'N/A'}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Phone</div>
-                <div class="info-value">${phoneVal || formatFieldValue(studentRecord.phone) || 'N/A'}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">School</div>
-                <div class="info-value">${schoolVal || formatFieldValue(studentRecord.school) || 'N/A'}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Program</div>
-                <div class="info-value">${programVal || formatFieldValue(studentRecord.program) || 'N/A'}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Total Owing</div>
-                <div class="info-value">₵${totalOwing.toLocaleString('en-NG')}</div>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Header with Student ID and Name -->
+            <div style="padding: 15px; background: linear-gradient(135deg, #0066cc 0%, #004499 100%); border-radius: 8px; color: white;">
+              <h3 style="margin: 0 0 10px 0; font-size: 20px;">${(firstName || '') + (middleName ? ' ' + middleName : '') + (lastName ? ' ' + lastName : '')} </h3>
+              <p style="margin: 5px 0; font-size: 14px;">Student ID: <strong>${studentRecord.student_id || studentRecord.id || 'N/A'}</strong></p>
+            </div>
+
+            <!-- Student Information Section -->
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+              <h4 style="margin: 0 0 15px 0; border-bottom: 2px solid #0066cc; padding-bottom: 10px;">Student Information</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Email</div>
+                  <div style="font-weight: 500;">${emailVal || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Phone 1</div>
+                  <div style="font-weight: 500;">${phone1 || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Phone 2</div>
+                  <div style="font-weight: 500;">${phone2 || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">WhatsApp</div>
+                  <div style="font-weight: 500;">${whatsapp || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">School</div>
+                  <div style="font-weight: 500;">${schoolVal || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Pathway</div>
+                  <div style="font-weight: 500;">${pathwayVal || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Program</div>
+                  <div style="font-weight: 500;">${programVal || 'N/A'}</div>
+                </div>
+                <div>
+                  <div style="color: #666; margin-bottom: 3px;">Level</div>
+                  <div style="font-weight: 500;">${levelVal || 'N/A'}</div>
+                </div>
               </div>
             </div>
 
-            <div class="info-grid">
-              <h4>All Stored Fields</h4>
-              <div class="table-container">
-                <table class="all-fields-table">
-                  <thead><tr><th>Field</th><th>Value</th></tr></thead>
-                  <tbody>
-                    ${allFieldsRows}
-                  </tbody>
-                </table>
+            <!-- Overall Payment Summary -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+              <div style="padding: 12px; background: white; border-radius: 6px; border: 2px solid #0066cc;">
+                <div style="color: #666; font-size: 12px; margin-bottom: 5px;">Total Required</div>
+                <div style="font-size: 18px; font-weight: 700; color: #0066cc;">GHS ${totalRequired.toFixed(2)}</div>
+              </div>
+              <div style="padding: 12px; background: white; border-radius: 6px; border: 2px solid #28a745;">
+                <div style="color: #666; font-size: 12px; margin-bottom: 5px;">Total Paid</div>
+                <div style="font-size: 18px; font-weight: 700; color: #28a745;">GHS ${totalPaid.toFixed(2)}</div>
+              </div>
+              <div style="padding: 12px; background: white; border-radius: 6px; border: 2px solid ${totalOwing > 0 ? '#dc3545' : '#28a745'};">
+                <div style="color: #666; font-size: 12px; margin-bottom: 5px;">Total Owing</div>
+                <div style="font-size: 18px; font-weight: 700; color: ${totalOwing > 0 ? '#dc3545' : '#28a745'};">GHS ${totalOwing.toFixed(2)}</div>
+              </div>
+              <div style="padding: 12px; background: ${isEligible ? '#d4edda' : '#f8d7da'}; border-radius: 6px; border: 2px solid ${isEligible ? '#28a745' : '#dc3545'};">
+                <div style="color: #666; font-size: 12px; margin-bottom: 5px;">Status</div>
+                <div style="font-size: 16px; font-weight: 700; color: ${isEligible ? '#28a745' : '#dc3545'};">${isEligible ? '✓ ELIGIBLE' : `${percentagePaid.toFixed(1)}% PAID`}</div>
               </div>
             </div>
 
-            <div class="info-grid">
-              <h4>Fee Payment Breakdown</h4>
-              <div class="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Fee Type</th>
-                      <th>Required</th>
-                      <th>Paid</th>
-                      <th>Owing</th>
-                      <th>Status</th>
-                      <th>Payment Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${paymentRows || '<tr><td colspan="6" class="text-center">No payment records</td></tr>'}
-                  </tbody>
-                </table>
+            <!-- Payment Breakdown by Type -->
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+              <h4 style="margin: 0 0 15px 0; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">Payment Breakdown by Type</h4>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                ${paymentBreakdownHTML}
               </div>
             </div>
 
-            <div class="info-grid">
-              <h4>Registration Status</h4>
-              <div class="status-summary ${isEligible ? 'eligible' : 'not-eligible'}">
-                <div class="status-icon">${isEligible ? '✓' : '✗'}</div>
-                <div class="status-text">${isEligible ? 'ELIGIBLE' : 'OWING FEES'}</div>
-                <div class="status-amount">Total Owing: ₵${totalOwing.toLocaleString('en-NG')}</div>
+            <!-- Registration Eligibility Status -->
+            <div style="padding: 15px; background: ${isEligible ? '#d4edda' : '#f8d7da'}; border-radius: 8px; border-left: 4px solid ${isEligible ? '#28a745' : '#dc3545'};">
+              <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; margin-bottom: 8px;">
+                <span style="font-size: 24px;">${isEligible ? '✓' : '✗'}</span>
+                <span style="color: ${isEligible ? '#155724' : '#721c24'};">Registration Eligibility: ${isEligible ? 'ELIGIBLE TO REGISTER' : `NOT ELIGIBLE - ${percentagePaid.toFixed(1)}% PAID (80% REQUIRED)`}</span>
               </div>
+              <p style="margin: 0; font-size: 14px; color: ${isEligible ? '#155724' : '#721c24'};">
+                ${isEligible 
+                  ? 'This student has paid 80% or more and is eligible to register for courses.'
+                  : `This student has paid ${percentagePaid.toFixed(1)}% (GHS ${totalPaid.toFixed(2)} of GHS ${totalRequired.toFixed(2)}). 80% payment is required to register.`
+                }
+              </p>
             </div>
           </div>
         `;

@@ -489,21 +489,19 @@
     /* Modal styles */
     .modal { 
       position: fixed; 
-      top: 0; 
-      left: 0; 
+      inset: 0;
       width: 100%; 
       height: 100%; 
       background: rgba(0, 0, 0, 0.7); 
       display: none; 
       justify-content: center; 
       align-items: center; 
-      z-index: 2000; 
-      animation: fadeIn 0.3s ease-in-out; 
+      z-index: 2000;
+      backdrop-filter: blur(2px);
     }
     
     .modal.show { 
       display: flex; 
-      animation: fadeIn 0.6s ease-out forwards; 
     }
     
     .modal-content { 
@@ -517,6 +515,8 @@
       position: relative; 
       text-align: left; 
       border-top: 4px solid #dc3545;
+      opacity: 1;
+      visibility: visible;
     }
 
     /* Make modal content scrollable when content is tall (useful for long forms) */
@@ -540,6 +540,11 @@
     @keyframes scaleUp { 
       0% { transform: scale(0.9); opacity: 0; } 
       100% { transform: scale(1); opacity: 1; } 
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
     }
     
     .modal h3 { 
@@ -1950,10 +1955,14 @@
     <div class="modal-content">
       <button class="close-btn" onclick="toggleModal('tuitionModal')">&times;</button>
       <h3>Pay Tuition Fee</h3>
-      <p>The full tuition fee for the semester is <strong style="color: #dc3545;">GHS 2,550.00</strong>.
-      <br>You can pay either the full amount or at least <strong style="color: #dc3545;">80%</strong> (GHS 2,040.00) to begin your registration.</p>
-      <div class="fee-option"><label><input type="radio" name="tuitionAmount" value="2040"> Pay 80% - GHS 2,040.00</label></div>
-      <div class="fee-option"><label><input type="radio" name="tuitionAmount" value="2550"> Pay 100% - GHS 2,550.00</label></div>
+      <div id="tuitionInfoSection" style="margin-bottom:20px;">
+        <p>The full tuition fee for the semester is <strong style="color: #dc3545;">GHS 2,550.00</strong>.</p>
+        <div id="tuitionPaidInfo" style="padding:12px; background:#f0f0f0; border-radius:8px; margin-bottom:12px; display:none;">
+          <strong>Amount Already Paid:</strong> <span id="tuitionPaidAmount">GHS 0.00</span><br>
+          <strong>Remaining Balance:</strong> <span id="tuitionBalance">GHS 2,550.00</span>
+        </div>
+      </div>
+      <div id="tuitionOptionsContainer"></div>
       <button class="confirm-btn" onclick="payTuition()">Proceed to Pay</button>
     </div>
   </div>
@@ -1998,6 +2007,57 @@
       <button class="confirm-btn" onclick="toggleModal('restrictionModal')">Close</button>
     </div>
   </div>
+
+  <!-- Congratulations Registration Modal -->
+  <!-- Loading Screen for Course Registration -->
+  <div id="loadingModal" class="modal" style="pointer-events: auto;">
+    <div class="modal-content" style="text-align:center; max-width:300px; border-top: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+      <div style="margin:40px 0;">
+        <div style="font-size:50px; animation: spin 1s linear infinite; margin-bottom:20px;">
+          <i class="fas fa-spinner"></i>
+        </div>
+      </div>
+      <h3 style="color:#333; margin:20px 0; font-size:18px;">Registering Your Courses</h3>
+      <p style="font-size:14px; color:#666; margin:10px 0;">Please wait while we process your registration...</p>
+    </div>
+  </div>
+
+  <div id="congratsModal" class="modal" onclick="closeIfBackdrop(event)">
+    <div class="modal-content" style="text-align:center; max-width:500px;">
+      <button class="close-btn" onclick="toggleModal('congratsModal')">&times;</button>
+      <div style="margin:20px 0;">
+        <div class="student-icon-animated" style="font-size:80px; margin-bottom:15px;">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+      </div>
+      <h2 style="color:#28a745; margin:15px 0; font-size:28px;">Congratulations!</h2>
+      <p style="font-size:16px; color:#333; margin:15px 0; line-height:1.6;">
+        Your course registration has been <strong>successfully submitted!</strong>
+      </p>
+      <div style="padding:15px; background:#e8f5e9; border-radius:8px; margin:15px 0; color:#2e7d32; border-left:4px solid #28a745;">
+        <strong>What's Next?</strong><br>
+        Check your <strong>My Courses</strong> section to view your registered courses and track your progress.
+      </div>
+      <button class="confirm-btn" onclick="toggleModal('congratsModal')" style="margin-top:20px;">Continue to Dashboard</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes bounce-graduate {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    @keyframes glow-success {
+      0%, 100% { text-shadow: 0 0 10px rgba(40, 167, 69, 0.3); }
+      50% { text-shadow: 0 0 20px rgba(40, 167, 69, 0.7); }
+    }
+    
+    .student-icon-animated {
+      animation: bounce-graduate 0.6s ease-in-out 3 forwards, glow-success 1.5s ease-in-out 3 forwards;
+      color: #28a745;
+    }
+  </style>
 
   <!-- Receipt Modal (content populated by receipt.js) -->
   <div id="receiptModal" class="modal">
@@ -2503,15 +2563,15 @@ async function fetchPaymentsSummary(studentIdParam){
     let payments;
     const { data: paymentsData, error } = await supabase
       .from('payments')
-      .select('amount, fee_type, status')
+      .select('*')
       .eq('student_id', studentIdParam)
-      .in('status', ['paid','success','approved']);
+      .in('status', ['paid','success','approved','completed']);
 
     if(error){
       console.error('fetchPaymentsSummary failed (initial select):', error);
       // Try a more permissive fallback to select all columns if the initial select failed (schema mismatch)
       try{
-        const { data: altPayments, error: altError } = await supabase.from('payments').select('*').eq('student_id', studentIdParam).in('status', ['paid','success','approved']);
+        const { data: altPayments, error: altError } = await supabase.from('payments').select('*').eq('student_id', studentIdParam).in('status', ['paid','success','approved','completed']);
         if(altError){
           console.error('fetchPaymentsSummary fallback also failed:', altError);
           return { totalPaid: 0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
@@ -2532,11 +2592,11 @@ async function fetchPaymentsSummary(studentIdParam){
       const amt = Number(p.amount) || 0;
       total += amt;
       const type = ((p.fee_type || '')).toString().toLowerCase();
-      console.log('[fetchPaymentsSummary] Processing payment:', { amount: p.amount, parsedAmt: amt, fee_type: p.fee_type, type });
+      console.log('[fetchPaymentsSummary] Processing payment:', { amount: p.amount, parsedAmt: amt, fee_type: p.fee_type, type, status: p.status });
       if(type.includes('tuition')) tuitionPaid += amt;
       else if(type.includes('src')) srcPaid += amt;
       else if(type.includes('medical')) medPaid += amt;
-      else if(type.includes('department')) deptPaid += amt;
+      else if(type.includes('departmental') || type.includes('department')) deptPaid += amt;
     });
 
     return { totalPaid: total, tuitionPaid, srcPaid, medPaid, deptPaid, rows: payments || [] };
@@ -2781,12 +2841,7 @@ try{ window.showModalMessage = showModalMessage; }catch(e){}
   const s = document.createElement('style');
   s.id = 'globalModalStyles';
   s.textContent = `
-    /* Modal backdrop and animation tweaks for improved UX */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);z-index:9999;backdrop-filter: blur(2px);}
-    .modal.show{display:flex}
-    .modal-content{background:#fff;border-radius:8px;max-width:720px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,0.35);overflow:hidden;transform:translateY(8px);opacity:0;transition:transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms ease}
-    .modal.show .modal-content{transform:translateY(0);opacity:1}
-    /* (topStatsBar moved to 100dashboard.html) */
+    /* Modal sub-components styling only - visibility controlled by .modal and .modal.show */
     .modal-header{padding:12px 16px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
     .modal-body{padding:16px}
     .modal-footer{padding:12px 16px;border-top:1px solid #eee;text-align:right}
@@ -2846,6 +2901,8 @@ function getValidEmail(){
   return isValidEmail(t) ? t : null;
 }
 function gh(amount){ return Number(amount || 0).toFixed(2); }
+// Expose globally for use in dynamic templates
+window.gh = gh;
 
 // Friendly currency formatter (used by SMS messages and some UI bits)
 function cedis(n){ return `GHS ${Number(n || 0).toFixed(2)}`; }
@@ -2944,6 +3001,8 @@ function showToast(message, type = 'success', duration = 5000) {
     }
   } catch(e) { console.error('showToast error', e); }
 }
+// Expose globally
+window.showToast = showToast;
 
 // Small top-right ephemeral modal used to confirm received data
 function showCornerModal(message, duration = 6000) {
@@ -3031,7 +3090,7 @@ async function fetchStudentProfile(){
   try {
     const { data, error } = await supabase
       .from('students')
-      .select('firstname, lastname, email, department, level, phone, school, course_type, notification_unread, last_notification_at')
+      .select('*')
       .eq('student_id', studentId.trim())
       .maybeSingle();
 
@@ -4039,7 +4098,7 @@ async function renderHistoryTable(filter = '', { useCacheFirst = true } = {}, st
       .from('payments')
       .select('*')
       .eq('student_id', sid)
-        .in('status', ['paid','success','approved'])
+        .in('status', ['paid','success','approved','completed'])
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -4111,7 +4170,7 @@ async function hasRegistrationAccess(studentIdParam){
     .from('payments')
     .select('*')
     .eq('student_id', studentIdParam)
-      .in('status', ['paid','success','approved']);
+      .in('status', ['paid','success','approved','completed']);
 
   if(error){ console.error('Fetch payments failed:', error); return false; }
 
@@ -4148,12 +4207,14 @@ window.registerCourses = async ()=>{
     // 2) Normal eligibility rule
     const allowed = await hasRegistrationAccess(studentId);
     if(!allowed){ toggleModal('restrictionModal'); return; }
-    // 3) Proceed — open course registration modal in-dashboard
+    // 3) Show loading modal and proceed to open course registration
+    toggleModal('loadingModal');
     try{ if(window.openCourseRegister) { window.openCourseRegister(); return; } }catch(e){}
     // fallback: redirect to registration page
     window.location.href = 'register.html';
   }catch(err){
     console.error(err);
+    toggleModal('loadingModal');
     showModalMessage('Error checking registration eligibility.');
   }
 };
@@ -4290,7 +4351,62 @@ window.addEventListener('beforeunload', async ()=>{
   }catch(e){}
 });
 
-window.openTuitionModal = ()=>toggleModal('tuitionModal');
+window.openTuitionModal = async ()=>{
+  try{
+    const studentId = localStorage.getItem('studentId') || localStorage.getItem('student_id');
+    if(!studentId) { toggleModal('tuitionModal'); return; }
+    
+    // Fetch current tuition payment status
+    const summary = await fetchPaymentsSummary(studentId);
+    const tuitionPaid = summary.tuitionPaid || 0;
+    const fullTuition = 2550;
+    const eightyPercent = 2040;
+    const balance = Math.max(0, fullTuition - tuitionPaid);
+    const isPaid80 = tuitionPaid >= eightyPercent;
+    const isPaid100 = tuitionPaid >= fullTuition;
+    
+    // Update info display
+    document.getElementById('tuitionPaidAmount').textContent = `GHS ${window.gh(tuitionPaid)}`;
+    document.getElementById('tuitionBalance').textContent = `GHS ${window.gh(balance)}`;
+    document.getElementById('tuitionPaidInfo').style.display = tuitionPaid > 0 ? 'block' : 'none';
+    
+    // Build payment options
+    let optionsHTML = '';
+    let optionsCount = 0;
+    
+    // Option 1: Pay 80% (only if less than 80% paid)
+    if(!isPaid80){
+      const amount80 = Math.min(eightyPercent - tuitionPaid, eightyPercent);
+      optionsHTML += `<div class="fee-option"><label><input type="radio" name="tuitionAmount" value="${amount80}"> Pay to reach 80% - GHS ${window.gh(amount80)}</label></div>`;
+      optionsCount++;
+    }
+    
+    // Option 2: Pay 100% (only if less than 100% paid)
+    if(!isPaid100){
+      const amount100 = fullTuition - tuitionPaid;
+      optionsHTML += `<div class="fee-option"><label><input type="radio" name="tuitionAmount" value="${amount100}"> Pay Remaining Balance - GHS ${window.gh(amount100)}</label></div>`;
+      optionsCount++;
+    }
+    
+    // If already fully paid
+    if(isPaid100){
+      optionsHTML = '<div style="padding:15px; background:#d4edda; border:1px solid #c3e6cb; border-radius:8px; color:#155724;"><strong>✓ Tuition fully paid!</strong> No additional payment needed.</div>';
+    } else if(optionsCount === 0){
+      optionsHTML = '<div style="padding:15px; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; color:#856404;"><strong>No valid payment options available.</strong></div>';
+    }
+    
+    document.getElementById('tuitionOptionsContainer').innerHTML = optionsHTML;
+    
+    // Auto-select first available option
+    const firstRadio = document.querySelector('#tuitionModal input[type="radio"]');
+    if(firstRadio) firstRadio.checked = true;
+    
+    toggleModal('tuitionModal');
+  }catch(e){
+    console.error('openTuitionModal error:', e);
+    toggleModal('tuitionModal');
+  }
+};
 window.openOtherFeesModal = ()=>toggleModal('otherFeesModal');
 
 
@@ -4933,6 +5049,22 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openCourseRegister = async function(){
       try{
         if(!studentId){ showModalMessage('No student ID found'); return; }
+        
+        // Check if student has already registered
+        try{
+          const { data: existingReg, error: regErr } = await window.supabase
+            .from('registrations')
+            .select('*')
+            .eq('student_id', studentId)
+            .maybeSingle();
+          
+          if(!regErr && existingReg){
+            // Student has already registered
+            showModalMessage('You have already registered for courses. Each student can register only once. If you need to make changes, please contact the administration office.');
+            return;
+          }
+        }catch(e){ console.warn('Could not check existing registration', e); }
+        
             // Ensure latest profile + eligibility info (do not block modal display)
             try {
               if (typeof window.fetchStudentProfile === 'function') {
@@ -4945,7 +5077,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   if (studentId) {
                     const { data: sdata, error: serr } = await supabase
                       .from('students')
-                      .select('firstname, lastname, email, department, level, phone, school, course_type, othername')
+                      .select('*')
                       .eq('student_id', studentId)
                       .maybeSingle();
                     if (!serr && sdata) {
@@ -5090,7 +5222,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const programSelect = document.getElementById('crProgramSelect');
         if(programSelect){ programSelect.addEventListener('change', function(){ openCourseRegister(); }); }
 
-        // show the modal
+        // Hide loading modal and show the registration modal
+        toggleModal('loadingModal');
         toggleModal('courseRegisterModal');
 
         // wire confirm/cancel
@@ -5132,13 +5265,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if(!norm(phone) || norm(phone).length < 6){ showModalMessage('Please provide a valid phone number'); return; }
             if(!norm(whatsapp) || norm(whatsapp).length < 6){ showModalMessage('Please provide a valid WhatsApp number'); return; }
 
+            // Show loading modal
+            toggleModal('loadingModal');
+            
             // Save registration row
             await saveRegistrationFromDashboard(payload, selected, selectedCore, { phone, whatsapp, email });
-            toggleModal('courseRegisterModal');
-          }catch(e){ console.error('confirm registration failed', e); showModalMessage('Failed to register courses'); }
+          }catch(e){ console.error('confirm registration failed', e); toggleModal('loadingModal'); showModalMessage('Failed to register courses'); }
         });
 
-      }catch(e){ console.error('openCourseRegister failed', e); showModalMessage('Could not open registration modal'); }
+      }catch(e){ console.error('openCourseRegister failed', e); toggleModal('loadingModal'); showModalMessage('Could not open registration modal'); }
     };
 
     // Save registration into Supabase (simple insert similar to register.html saveRegistration)
@@ -5148,31 +5283,49 @@ document.addEventListener('DOMContentLoaded', function() {
         if(!window.supabase) {
           // fallback: store locally
           const row = { student_id: studentId, level: payload.level, school: payload.school, program: payload.program, courses: selectedCourses, core_courses: selectedCore, contacts: contacts || {}, status: 'pending', created_at: new Date().toISOString() };
-          try{ localStorage.setItem('lastRegistrationDraft', JSON.stringify(row)); showToast('Saved registration locally (offline)', 'success'); return; }catch(e){ showToast('Could not save registration locally', 'error'); return; }
+          try{ localStorage.setItem('lastRegistrationDraft', JSON.stringify(row)); toggleModal('loadingModal'); showToast('Saved registration locally (offline)', 'success'); return; }catch(e){ toggleModal('loadingModal'); showToast('Could not save registration locally', 'error'); return; }
         }
 
-        // Best-effort: update student's contact fields in the students table
-        try{
-          const upd = {};
-          if(contacts.phone) upd.phone = contacts.phone;
-          if(contacts.whatsapp) upd.whatsapp = contacts.whatsapp;
-          if(contacts.email) upd.email = contacts.email;
-          if(Object.keys(upd).length){
-            const { error: updErr } = await window.supabase.from('students').update(upd).eq('student_id', studentId);
-            if(updErr) console.debug('Could not update students contacts (non-blocking):', updErr);
-          }
-        }catch(e){ console.debug('students update failed', e); }
+        // Collect all student information
+        const insertRow = {
+          student_id: studentId || null,
+          student_firstname: window.studentFirstName || null,
+          student_othername: window.studentOtherName || null,
+          student_lastname: window.studentLastName || null,
+          student_full_name: window.studentName || null,
+          student_email: window.studentEmail || null,
+          student_phone: window.studentPhone || null,
+          student_whatsapp: window.studentWhatsApp || null,
+          student_department: window.studentDepartment || null,
+          student_level: window.studentLevel || null,
+          student_admission_number: window.studentAdmissionNumber || null,
+          level: payload.level || null,
+          school: payload.school || null,
+          program: payload.program || null,
+          courses: selectedCourses || [],
+          core_courses: selectedCore || [],
+          contact_phone: contacts.phone || null,
+          contact_whatsapp: contacts.whatsapp || null,
+          contact_email: contacts.email || null,
+          status: 'pending',
+          notes: null,
+          source_payload: payload || {}
+        };
 
-        const insertRow = { student_id: studentId, level: payload.level, school: payload.school, program: payload.program || null, courses: selectedCourses || [], core_courses: selectedCore || [], contact_phone: contacts.phone || null, contact_whatsapp: contacts.whatsapp || null, contact_email: contacts.email || null, status: 'pending', created_at: new Date().toISOString() };
         const { data, error } = await window.supabase.from('registrations').insert(insertRow).select();
-        if(error){ console.error('Registration save error', error); showToast('Could not save registration (server error)', 'error'); return; }
-        showToast('Registration submitted — check My Courses for status', 'success');
+        if(error){ console.error('Registration save error', error); toggleModal('loadingModal'); showToast('Could not save registration (server error)', 'error'); return; }
+        
+        // Close loading modal and course register modal, then show congratulations
+        toggleModal('loadingModal');
+        toggleModal('courseRegisterModal');
+        setTimeout(()=>{ toggleModal('congratsModal'); }, 300);
+        
         // cache last selected courses for My Courses fallback
         try{ localStorage.setItem('lastSelectedCourses', JSON.stringify([...new Set([...(selectedCore||[]), ...(selectedCourses||[])]) ])); }catch(e){}
         // attempt to refresh history/hints
         try{ renderHistoryTable('', { useCacheFirst: false }, studentId); }catch(e){}
         return data;
-      }catch(e){ console.error(e); showToast('Failed to save registration', 'error'); }
+      }catch(e){ console.error(e); toggleModal('loadingModal'); showToast('Failed to save registration', 'error'); }
     }
 
     /* ===== Password Change Feature ===== */

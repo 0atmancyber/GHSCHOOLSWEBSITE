@@ -577,6 +577,25 @@
     .fee-option input { 
       transform: scale(1.2); 
     }
+
+    .fee-status {
+      font-weight: bold;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .fee-option input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .fee-option:has(input:disabled) {
+      opacity: 0.7;
+      background: #e8f5e9;
+      border-left-color: #28a745;
+    }
     
     .confirm-btn { 
       margin-top: 20px;
@@ -4407,7 +4426,77 @@ window.openTuitionModal = async ()=>{
     toggleModal('tuitionModal');
   }
 };
-window.openOtherFeesModal = ()=>toggleModal('otherFeesModal');
+window.openOtherFeesModal = async ()=>{
+  // Fetch payment summary to show which fees are paid
+  try {
+    const summary = await fetchPaymentsSummary(studentId);
+    
+    // Update each fee checkbox container with payment status
+    const srcContainer = document.querySelector('label:has(input[value*="SRC Dues"])');
+    const medContainer = document.querySelector('label:has(input[value*="Medical Dues"])');
+    const deptContainer = document.querySelector('label:has(input[value*="Departmental Dues"])');
+    
+    // Update SRC Dues status
+    if(srcContainer) {
+      const statusSpan = srcContainer.querySelector('.fee-status') || document.createElement('span');
+      statusSpan.className = 'fee-status';
+      statusSpan.style.cssText = 'margin-left:10px;font-weight:bold;';
+      if(summary.srcPaid > 0) {
+        statusSpan.textContent = '✓ Paid';
+        statusSpan.style.color = '#28a745';
+        srcContainer.querySelector('input').disabled = true;
+      } else {
+        statusSpan.textContent = '✗ Not Paid';
+        statusSpan.style.color = '#dc3545';
+        srcContainer.querySelector('input').disabled = false;
+      }
+      if(!srcContainer.querySelector('.fee-status')) {
+        srcContainer.appendChild(statusSpan);
+      }
+    }
+    
+    // Update Medical Dues status
+    if(medContainer) {
+      const statusSpan = medContainer.querySelector('.fee-status') || document.createElement('span');
+      statusSpan.className = 'fee-status';
+      statusSpan.style.cssText = 'margin-left:10px;font-weight:bold;';
+      if(summary.medPaid > 0) {
+        statusSpan.textContent = '✓ Paid';
+        statusSpan.style.color = '#28a745';
+        medContainer.querySelector('input').disabled = true;
+      } else {
+        statusSpan.textContent = '✗ Not Paid';
+        statusSpan.style.color = '#dc3545';
+        medContainer.querySelector('input').disabled = false;
+      }
+      if(!medContainer.querySelector('.fee-status')) {
+        medContainer.appendChild(statusSpan);
+      }
+    }
+    
+    // Update Departmental Dues status
+    if(deptContainer) {
+      const statusSpan = deptContainer.querySelector('.fee-status') || document.createElement('span');
+      statusSpan.className = 'fee-status';
+      statusSpan.style.cssText = 'margin-left:10px;font-weight:bold;';
+      if(summary.deptPaid > 0) {
+        statusSpan.textContent = '✓ Paid';
+        statusSpan.style.color = '#28a745';
+        deptContainer.querySelector('input').disabled = true;
+      } else {
+        statusSpan.textContent = '✗ Not Paid';
+        statusSpan.style.color = '#dc3545';
+        deptContainer.querySelector('input').disabled = false;
+      }
+      if(!deptContainer.querySelector('.fee-status')) {
+        deptContainer.appendChild(statusSpan);
+      }
+    }
+  } catch(e) {
+    console.error('Error fetching payment summary:', e);
+  }
+  toggleModal('otherFeesModal');
+};
 
 
 
@@ -5012,33 +5101,67 @@ document.addEventListener('DOMContentLoaded', function() {
       // Prefer fields populated by fetchStudentProfile
       const schoolVal = (window.studentSchool || window.studentDept || window.studentDepartment || '').toString().trim();
       const programVal = (window.studentProgram || window.studentCourseType || window.studentDept || '').toString().trim();
-      // exact school match
-      if(schoolVal && DASHBOARD_SCHOOL_DATA[schoolVal]) return { school: schoolVal, program: programVal || null };
+      
+      console.log('[detectStudentSchoolAndProgram] schoolVal:', schoolVal, 'programVal:', programVal);
+      
+      // 1) Try exact school match first
+      if(schoolVal && DASHBOARD_SCHOOL_DATA[schoolVal]) {
+        console.log('[detectStudentSchoolAndProgram] Found exact school match:', schoolVal);
+        return { school: schoolVal, program: programVal || null };
+      }
 
-      // Try to match the programVal to any program key in schools (case-insensitive)
+      // 2) Try case-insensitive school match
+      const keys = Object.keys(DASHBOARD_SCHOOL_DATA);
+      for(const k of keys) {
+        if(k.toLowerCase() === schoolVal.toLowerCase()) {
+          console.log('[detectStudentSchoolAndProgram] Found case-insensitive school match:', k);
+          return { school: k, program: programVal || null };
+        }
+      }
+
+      // 3) Try partial school match (if "Fashion" is in schoolVal, match "School of Fashion")
+      for(const k of keys) {
+        const schoolName = k.toLowerCase();
+        if(schoolVal.toLowerCase().includes(schoolName.split(' ')[0]) || schoolName.includes(schoolVal.toLowerCase())) {
+          console.log('[detectStudentSchoolAndProgram] Found partial school match:', k);
+          return { school: k, program: programVal || null };
+        }
+      }
+
+      // 4) Try to match programVal to any program key in schools (case-insensitive)
       if(programVal){
         for(const [schoolName, info] of Object.entries(DASHBOARD_SCHOOL_DATA)){
           if(info.programs){
             for(const progKey of Object.keys(info.programs)){
               if(progKey.toLowerCase() === programVal.toLowerCase() || progKey.toLowerCase().indexOf(programVal.toLowerCase()) !== -1){
+                console.log('[detectStudentSchoolAndProgram] Found program match in school:', schoolName);
                 return { school: schoolName, program: progKey };
               }
-              // also try matching by programVal contained in studentDept
             }
           }
           // if programs were stored as an array under courses, try simple matches
           if(info.courses && Array.isArray(info.courses)){
-            for(const c of info.courses){ if(String(c).toLowerCase() === programVal.toLowerCase()) return { school: schoolName, program: programVal }; }
+            for(const c of info.courses){ 
+              if(String(c).toLowerCase() === programVal.toLowerCase()) {
+                console.log('[detectStudentSchoolAndProgram] Found course match in school:', schoolName);
+                return { school: schoolName, program: programVal };
+              }
+            }
           }
         }
       }
 
-      // Try to find a school whose key appears inside any of the profile strings
-      const keys = Object.keys(DASHBOARD_SCHOOL_DATA);
+      // 5) Try to find a school whose key appears inside any of the profile strings
       const hay = (schoolVal + ' ' + programVal + ' ' + (window.studentDept||'') + ' ' + (window.studentName||'')).toLowerCase();
-      for(const k of keys){ if(hay.indexOf(k.toLowerCase().split(' ')[0]) !== -1) return { school: k, program: programVal||null }; }
+      for(const k of keys){ 
+        if(hay.indexOf(k.toLowerCase().split(' ')[0]) !== -1) {
+          console.log('[detectStudentSchoolAndProgram] Found keyword match for school:', k);
+          return { school: k, program: programVal||null };
+        }
+      }
 
-      // fallback to first school
+      // 6) Fallback to first school
+      console.log('[detectStudentSchoolAndProgram] No match found, using fallback school:', keys[0]);
       return { school: keys[0], program: programVal||null };
     }
 
@@ -5065,42 +5188,47 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }catch(e){ console.warn('Could not check existing registration', e); }
         
-            // Ensure latest profile + eligibility info (do not block modal display)
+        // IMPORTANT: Fetch the latest student profile to get school/department info
+        try {
+          console.log('[openCourseRegister] Fetching latest student profile...');
+          if (typeof window.fetchStudentProfile === 'function') {
+            await window.fetchStudentProfile();
+          } else if (typeof fetchStudentProfile === 'function') {
+            await fetchStudentProfile();
+          } else {
+            // Fallback: attempt a minimal direct fetch from Supabase
             try {
-              if (typeof window.fetchStudentProfile === 'function') {
-                await window.fetchStudentProfile();
-              } else if (typeof fetchStudentProfile === 'function') {
-                await fetchStudentProfile();
-              } else {
-                // Fallback: attempt a minimal direct fetch from Supabase
-                try {
-                  if (studentId) {
-                    const { data: sdata, error: serr } = await supabase
-                      .from('students')
-                      .select('*')
-                      .eq('student_id', studentId)
-                      .maybeSingle();
-                    if (!serr && sdata) {
-                      window.studentFirstName = sdata.firstname || '';
-                      window.studentLastName = sdata.lastname || '';
-                      window.studentName = `${sdata.firstname || ''}${sdata.othername ? ' ' + sdata.othername : ''} ${sdata.lastname || ''}`.trim();
-                      window.studentEmail = sdata.email || '';
-                      window.studentDept = sdata.department || '';
-                      window.studentLevel = sdata.level || '';
-                      window.studentPhone = sdata.phone || '';
-                      window.studentSchool = sdata.school || '';
-                      window.studentCourseType = sdata.course_type || '';
-                      try{
-                        localStorage.setItem('studentName', window.studentName);
-                        localStorage.setItem('studentEmail', window.studentEmail);
-                        localStorage.setItem('studentDepartment', window.studentDept);
-                        localStorage.setItem('studentLevel', window.studentLevel);
-                      }catch(e){}
-                    }
-                  }
-                } catch (e) { console.warn('fallback fetchStudentProfile failed', e); }
+              if (studentId) {
+                const { data: sdata, error: serr } = await supabase
+                  .from('students')
+                  .select('*')
+                  .eq('student_id', studentId)
+                  .maybeSingle();
+                if (!serr && sdata) {
+                  window.studentFirstName = sdata.firstname || '';
+                  window.studentLastName = sdata.lastname || '';
+                  window.studentName = `${sdata.firstname || ''}${sdata.othername ? ' ' + sdata.othername : ''} ${sdata.lastname || ''}`.trim();
+                  window.studentEmail = sdata.email || '';
+                  window.studentDept = sdata.department || '';
+                  window.studentLevel = sdata.level || '';
+                  window.studentPhone = sdata.phone || '';
+                  window.studentSchool = sdata.school || '';
+                  window.studentCourseType = sdata.course_type || '';
+                  console.log('[openCourseRegister] Fallback profile fetch complete. School:', window.studentSchool, 'Dept:', window.studentDept);
+                  try{
+                    localStorage.setItem('studentName', window.studentName);
+                    localStorage.setItem('studentEmail', window.studentEmail);
+                    localStorage.setItem('studentDepartment', window.studentDept);
+                    localStorage.setItem('studentLevel', window.studentLevel);
+                    localStorage.setItem('studentSchool', window.studentSchool);
+                    localStorage.setItem('studentCourseType', window.studentCourseType);
+                  }catch(e){}
+                }
               }
-            } catch (e) { console.warn('fetchStudentProfile failed', e); }
+            } catch (e) { console.warn('fallback fetchStudentProfile failed', e); }
+          }
+        } catch (e) { console.warn('fetchStudentProfile failed', e); }
+        
         const allowed = await hasRegistrationAccess(studentId);
         // Fetch detailed payment summary to show what is missing (if any)
         let paymentSummary = { tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, totalPaid:0 };
@@ -5110,6 +5238,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const school = info.school;
         const program = info.program;
         const data = DASHBOARD_SCHOOL_DATA[school] || {};
+
+        console.log('[openCourseRegister] Detected school:', school, 'program:', program);
 
         const body = document.getElementById('courseRegisterBody');
         if(!body) return;

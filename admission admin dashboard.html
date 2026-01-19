@@ -3327,22 +3327,22 @@
     // View detailed student information (fetch fresh from DB and show all fields)
     async function viewStudentDetail(studentId) {
       try {
-        // Fetch student from multiple sources in parallel
+        // Fetch student from multiple sources in parallel - prioritize students table with new schema
         let studentRecord = null;
         
-        const [masterRes, studentsRes, newstudentsRes] = await Promise.all([
-          window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
+        const [studentsRes, masterRes, newstudentsRes] = await Promise.all([
           window.__sb.from('students').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
           window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle()
         ]);
 
-        // Prefer master_db > students > newstudents
-        if (masterRes.data) {
-          studentRecord = masterRes.data;
-          console.log('Student found in student_master_db');
-        } else if (studentsRes.data) {
+        // Prefer students > master_db > newstudents
+        if (studentsRes.data) {
           studentRecord = studentsRes.data;
           console.log('Student found in students table');
+        } else if (masterRes.data) {
+          studentRecord = masterRes.data;
+          console.log('Student found in student_master_db');
         } else if (newstudentsRes.data) {
           studentRecord = newstudentsRes.data;
           console.log('Student found in newstudents table');
@@ -3477,16 +3477,16 @@
         }
 
         const firstName = getField(studentRecord, ['first_name','firstname','fname','given_name']);
-        const middleName = getField(studentRecord, ['middle_name','middlename','mname']);
-        const lastName = getField(studentRecord, ['last_name','lastname','lname','surname','family_name']);
+        const middleName = getField(studentRecord, ['middle_name','middlename','mname','othername']);
+        const lastName = getField(studentRecord, ['surname','last_name','lastname','lname','family_name']);
         const emailVal = getField(studentRecord, ['email','email_address','emailAddress']);
-        const phone1 = getField(studentRecord, ['phone_number_1','phone','phone_number','mobile','contact_phone']);
-        const phone2 = getField(studentRecord, ['phone_number_2','alternate_phone']);
-        const whatsapp = getField(studentRecord, ['whatsapp']);
+        const phone1 = getField(studentRecord, ['phone_number','phone_number_1','phone','mobile','contact_phone']);
+        const phone2 = getField(studentRecord, ['whatsapp_number','phone_number_2','alternate_phone']);
+        const whatsapp = getField(studentRecord, ['whatsapp_number','whatsapp']);
         const schoolVal = getField(studentRecord, ['school','school_name','department','faculty','campus']);
         const pathwayVal = getField(studentRecord, ['pathway','pathway_name']);
         const programVal = getField(studentRecord, ['program','programme','course','course_name']);
-        const levelVal = getField(studentRecord, ['level','year']);
+        const levelVal = getField(studentRecord, ['current_level','level','year']);
 
         const detailsHTML = `
           <div style="display: flex; flex-direction: column; gap: 20px;">

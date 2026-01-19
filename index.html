@@ -2254,7 +2254,7 @@
     <div class="logo">
       <img src="images/GH Schools.png" alt="Logo">
       <div class="logo-text">
-        <strong>GH  <br> SCHOOLS</ strong>
+        <strong>GH  <br> SCHOOLS </strong>
         <small>TRAIN • PRACTICE • ACHIEVE</small>
       </div>
     </div>
@@ -2456,11 +2456,20 @@
     modal.setAttribute('aria-hidden','true');
   }
 
-  // close when clicking outside the panel
+  // close when clicking outside the panel (but not on links)
   document.addEventListener('click', function(e){
     const modal = document.getElementById('mobileNavModal');
     if(!modal) return;
     if(modal.classList.contains('show')){
+      // Don't close if clicking on a link inside the modal or the hamburger
+      if(e.target.closest('a')) {
+        // If link is inside the modal, let it navigate and close after a brief delay
+        if(e.target.closest('.mobile-nav-modal')) {
+          setTimeout(closeMobileNav, 300);
+        }
+        return;
+      }
+      // Close if clicking outside the panel and not on hamburger
       if(!e.target.closest('.modal-panel') && !e.target.closest('.hamburger')){
         closeMobileNav();
       }

@@ -411,6 +411,15 @@
       </div>
 
       <div class="form-group">
+        <label for="courseType">Course Type <span style="color: var(--primary);">*</span></label>
+        <select id="courseType" name="courseType" required>
+          <option value="">Select Course Type</option>
+          <option value="ICC">ICC</option>
+          <option value="Diploma">Diploma</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" placeholder="student@example.com">
       </div>
@@ -421,7 +430,7 @@
       </div>
 
       <div class="form-group">
-        <label for="whatsappNumber">WhatsApp Number <span style="color: var(--primary);">*</span></label>
+        <label for="whatsappNumber">WhatsApp Number <span style="color: var(--primary);"></span></label>
         <input type="tel" id="whatsappNumber" name="whatsappNumber" placeholder="+233 XXX XXX XXX" required>
       </div>
 
@@ -458,6 +467,7 @@
           surname: document.getElementById('surname').value,
           level: document.getElementById('currentLevel').value,
           department: document.getElementById('school').value,
+          course_type: document.getElementById('courseType').value,
           email: document.getElementById('email').value || null,
           phone_number: document.getElementById('phoneNumber').value,
           whatsapp_number: document.getElementById('whatsappNumber').value

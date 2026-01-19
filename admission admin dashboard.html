@@ -3078,46 +3078,31 @@
         document.getElementById('allStudentsLoading').style.display = 'flex';
         document.getElementById('allStudentsTable').style.display = 'none';
 
-        // Fetch all students from student_master_db table
-        const { data: studentsData, error: studentsError } = await window.__sb.from('student_master_db').select('*').order('created_at', { ascending: false });
+        // Fetch all students from students table with new schema
+        const { data: studentsData, error: studentsError } = await window.__sb.from('students').select('id, student_id, first_name, middle_name, surname, email, phone_number, whatsapp_number, department, level').order('created_at', { ascending: false });
 
         if (studentsError) {
-          console.error('Error loading students from student_master_db:', studentsError);
+          console.error('Error loading students from students table:', studentsError);
           showToast('Error loading students', 'error');
           return;
         }
 
-        // Process student data with payment information already included in the master table
+        // Map the data to match the display format
         allStudents = (studentsData || []).map(student => {
-          // Extract payment type totals from student record (assumed to be pre-calculated or included)
-          const paymentsByType = {};
-          
-          // Common payment types
-          const paymentFields = {
-            'admission_fees': 'Admission Fees',
-            'tuition_fees': 'Tuition Fees',
-            'medical_dues': 'Medical Dues',
-            'src_dues': 'SRC Dues',
-            'departmental_dues': 'Departmental Dues'
-          };
-          
-          let totalOwing = 0;
-          Object.keys(paymentFields).forEach(field => {
-            const owing = student[`${field}_owing`] || student[`${field}`] || 0;
-            paymentsByType[paymentFields[field]] = {
-              required: student[`${field}_required`] || 0,
-              paid: student[`${field}_paid`] || 0,
-              owing: owing,
-              status: owing > 0 ? 'pending' : 'paid'
-            };
-            totalOwing += owing;
-          });
-
           return {
-            ...student,
-            paymentsByType,
-            totalOwing,
-            isEligible: totalOwing <= 0
+            id: student.id,
+            student_id: student.student_id,
+            first_name: student.first_name,
+            middle_name: student.middle_name,
+            surname: student.surname,
+            email: student.email,
+            phone_number_1: student.phone_number,
+            phone_number_2: '',  // Not in database schema
+            whatsapp: student.whatsapp_number,
+            school: student.department,
+            pathway: '',  // Not in database schema
+            program: '',  // Not in database schema
+            level: student.level
           };
         });
 
@@ -3129,7 +3114,7 @@
         document.getElementById('allStudentsLoading').style.display = 'none';
         document.getElementById('allStudentsTable').style.display = 'table';
 
-        console.log('Loaded', allStudents.length, 'students from student_master_db');
+        console.log('Loaded', allStudents.length, 'students from students table');
       } catch (error) {
         console.error('Error in loadAllStudents:', error);
         showToast('Error loading students', 'error');
@@ -3261,39 +3246,16 @@
       const end = start + allStudentsItemsPerPage;
       const pageData = filteredAllStudents.slice(start, end);
 
-      // Helper to get field with fallbacks
-      function getField(obj, keys) {
-        for (const k of keys) {
-          if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
-        }
-        return null;
-      }
-
-      // Helper to derive school from student_id prefix
-      function getSchoolFromStudentId(studentId) {
-        if (!studentId) return '';
-        const prefix = studentId.substring(2, 4).toUpperCase();
-        const schoolMap = {
-          'CT': 'Cosmetology',
-          'MS': 'Media',
-          'CM': 'Catering',
-          'FH': 'Fashion',
-          'TC': 'Technology',
-          'TK': 'Technology'
-        };
-        return schoolMap[prefix] || '';
-      }
-
       pageData.forEach(student => {
         const row = document.createElement('tr');
         
-        // Extract fields directly from the database columns
+        // Extract fields from the mapped data
         const student_id = student.student_id || student.id || 'N/A';
         const first_name = student.first_name || '';
         const middle_name = student.middle_name || '';
-        const surname = student.surname || student.last_name || student.lastname || '';
+        const surname = student.surname || '';
         const email = student.email || '';
-        const phone_number_1 = student.phone_number_1 || student.phone || '';
+        const phone_number_1 = student.phone_number_1 || '';
         const phone_number_2 = student.phone_number_2 || '';
         const whatsapp = student.whatsapp || '';
         const school = student.school || '';
@@ -3483,10 +3445,10 @@
         const phone1 = getField(studentRecord, ['phone_number','phone_number_1','phone','mobile','contact_phone']);
         const phone2 = getField(studentRecord, ['whatsapp_number','phone_number_2','alternate_phone']);
         const whatsapp = getField(studentRecord, ['whatsapp_number','whatsapp']);
-        const schoolVal = getField(studentRecord, ['school','school_name','department','faculty','campus']);
+        const schoolVal = getField(studentRecord, ['department','school','school_name','faculty','campus']);
         const pathwayVal = getField(studentRecord, ['pathway','pathway_name']);
         const programVal = getField(studentRecord, ['program','programme','course','course_name']);
-        const levelVal = getField(studentRecord, ['current_level','level','year']);
+        const levelVal = getField(studentRecord, ['level','current_level','year']);
 
         const detailsHTML = `
           <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -3865,6 +3827,8 @@
         loadNotifications();
       } else if (modalId === 'studentPaymentsModal') {
         loadStudentPayments();
+      } else if (modalId === 'allStudentsModal') {
+        loadAllStudents();
       }
     }
 

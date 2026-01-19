@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS students (
   school VARCHAR(100) NOT NULL,
   email VARCHAR(100),
   phone_number VARCHAR(20) NOT NULL,
-  whatsapp_number VARCHAR(20) NOT NULL,
+  whatsapp_number VARCHAR(20),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

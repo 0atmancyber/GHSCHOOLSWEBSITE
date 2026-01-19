@@ -3123,10 +3123,10 @@ async function fetchStudentProfile(){
     window.studentMiddleName = data.middle_name || data.othername || '';
     window.studentName      = `${data.first_name || data.firstname || ''}${(data.middle_name || data.othername) ? ' ' + (data.middle_name || data.othername) : ''} ${data.surname || data.lastname || ''}`.trim();
     window.studentEmail     = data.email || '';
-    window.studentDept      = data.school || data.department || '';
-    window.studentLevel     = data.current_level || data.level || '';
+    window.studentDept      = data.department || data.school || data.department || '';
+    window.studentLevel     = data.level || data.current_level || '';
     window.studentPhone     = data.phone_number || data.phone || '';
-    window.studentSchool    = data.school || '';
+    window.studentSchool    = data.department || data.school || '';
     window.studentCourseType = data.course_type || '';
     window.studentOtherName = data.middle_name || data.othername || '';
     // Notification fields (may be absent on some schemas)
@@ -3172,13 +3172,13 @@ async function checkStudentProfileComplete() {
     if (studentId && String(studentId).trim() !== '') {
       const { data, error } = await supabase
         .from('students')
-        .select('student_id, first_name, middle_name, surname, school, current_level, phone_number, whatsapp_number, email')
+        .select('student_id, first_name, middle_name, surname, department, level, phone_number, whatsapp_number, email')
         .eq('student_id', studentId.trim())
         .maybeSingle();
 
       if (data && !error) {
         // If a row exists for this studentId, treat as complete when required fields are present
-        return !!(data.first_name && data.surname && data.school && data.current_level && data.phone_number && data.email);
+        return !!(data.first_name && data.surname && data.department && data.level && data.phone_number && data.email);
       }
     }
 
@@ -3189,14 +3189,14 @@ async function checkStudentProfileComplete() {
     if (email) {
       const { data: byEmail, error: emailErr } = await supabase
         .from('students')
-        .select('student_id, first_name, middle_name, surname, school, current_level, phone_number, whatsapp_number, email')
+        .select('student_id, first_name, middle_name, surname, department, level, phone_number, whatsapp_number, email')
         .ilike('email', email)
         .maybeSingle();
 
       if (byEmail && !emailErr) {
         // If we found a row by email, ensure runtime studentId matches for later operations
         try{ if(!studentId) { studentId = byEmail.student_id || studentId; window.studentId = studentId; localStorage.setItem('studentId', studentId || ''); } }catch(e){}
-        return !!(byEmail.first_name && byEmail.surname && byEmail.school && byEmail.current_level && byEmail.phone_number && byEmail.email);
+        return !!(byEmail.first_name && byEmail.surname && byEmail.department && byEmail.level && byEmail.phone_number && byEmail.email);
       }
     }
 
@@ -3243,8 +3243,8 @@ async function saveStudentProfile(profileData) {
       first_name: profileData.first_name || profileData.firstname || '',
       middle_name: profileData.middle_name || profileData.othername || '',
       surname: profileData.surname || profileData.lastname || '',
-      school: profileData.school || profileData.department || '',
-      current_level: profileData.current_level || profileData.level || '',
+      department: profileData.department || profileData.school || '',
+      level: profileData.level || profileData.current_level || '',
       phone_number: profileData.phone_number || profileData.phone || '',
       whatsapp_number: profileData.whatsapp_number || profileData.phone || '',
       email: profileData.email || '',

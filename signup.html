@@ -933,10 +933,10 @@
           </div>
           
           <div class="form-group">
-            <label for="gen-phone" class="form-label">Password / Phone Number</label>
+            <label for="gen-phone" class="form-label">Password </label>
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" id="gen-phone" placeholder="Enter your password or phone number" required autocomplete="off">
+              <input type="password" id="gen-phone" placeholder="Enter your  phone number" required autocomplete="off">
             </div>
           </div>
           
@@ -1042,6 +1042,43 @@
       const digest = await crypto.subtle.digest('SHA-256', data);
       const arr = Array.from(new Uint8Array(digest));
       return arr.map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // Auto-fill phone number when student ID is entered
+    const studentIdInput = document.getElementById('gen-studentid');
+    if (studentIdInput) {
+      studentIdInput.addEventListener('blur', async function() {
+        const studentId = this.value.trim();
+        if (!studentId) return;
+
+        // Wait for Supabase client
+        const waitForSupabase = async () => {
+          if(window.supabaseClient) return window.supabaseClient;
+          let waited = 0;
+          while(!window.supabaseClient && waited < 3000){ await new Promise(r=>setTimeout(r,200)); waited += 200; }
+          return window.supabaseClient || null;
+        };
+
+        const client = await waitForSupabase();
+        if (!client) return;
+
+        try {
+          // Search in students table
+          const { data: studentData, error } = await client
+            .from('students')
+            .select('phone_number')
+            .eq('student_id', studentId)
+            .maybeSingle();
+
+          if (!error && studentData && studentData.phone_number) {
+            // Auto-fill the password field with the phone number
+            document.getElementById('gen-phone').value = studentData.phone_number;
+            console.log('Phone number auto-filled from students table');
+          }
+        } catch (err) {
+          console.warn('Error auto-filling phone number:', err);
+        }
+      });
     }
 
     // Password generator form handler

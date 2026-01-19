@@ -3118,16 +3118,17 @@ async function fetchStudentProfile(){
       return;
     }
 
-    window.studentFirstName = data.firstname || '';
-    window.studentLastName  = data.lastname  || '';
-    window.studentName      = `${data.firstname || ''}${data.othername ? ' ' + data.othername : ''} ${data.lastname || ''}`.trim();
+    window.studentFirstName = data.first_name || data.firstname || '';
+    window.studentLastName  = data.surname || data.lastname || '';
+    window.studentMiddleName = data.middle_name || data.othername || '';
+    window.studentName      = `${data.first_name || data.firstname || ''}${(data.middle_name || data.othername) ? ' ' + (data.middle_name || data.othername) : ''} ${data.surname || data.lastname || ''}`.trim();
     window.studentEmail     = data.email || '';
-    window.studentDept      = data.department || '';
-    window.studentLevel     = data.level || '';
-    window.studentPhone     = data.phone || '';
+    window.studentDept      = data.school || data.department || '';
+    window.studentLevel     = data.current_level || data.level || '';
+    window.studentPhone     = data.phone_number || data.phone || '';
     window.studentSchool    = data.school || '';
     window.studentCourseType = data.course_type || '';
-    window.studentOtherName = data.othername || '';
+    window.studentOtherName = data.middle_name || data.othername || '';
     // Notification fields (may be absent on some schemas)
     try {
       window.studentLastNotification = data.last_notification || '';
@@ -3171,13 +3172,13 @@ async function checkStudentProfileComplete() {
     if (studentId && String(studentId).trim() !== '') {
       const { data, error } = await supabase
         .from('students')
-        .select('student_id, firstname, lastname, department, level, phone, school, course_type')
+        .select('student_id, first_name, middle_name, surname, school, current_level, phone_number, whatsapp_number, email')
         .eq('student_id', studentId.trim())
         .maybeSingle();
 
       if (data && !error) {
-        // If a row exists for this studentId, treat as complete only when required fields are present
-        return !!(data.firstname && data.lastname && data.department && data.level && data.phone && data.school && data.course_type);
+        // If a row exists for this studentId, treat as complete when required fields are present
+        return !!(data.first_name && data.surname && data.school && data.current_level && data.phone_number && data.email);
       }
     }
 
@@ -3188,14 +3189,14 @@ async function checkStudentProfileComplete() {
     if (email) {
       const { data: byEmail, error: emailErr } = await supabase
         .from('students')
-        .select('student_id, firstname, lastname, department, level, phone, school, course_type')
+        .select('student_id, first_name, middle_name, surname, school, current_level, phone_number, whatsapp_number, email')
         .ilike('email', email)
         .maybeSingle();
 
       if (byEmail && !emailErr) {
         // If we found a row by email, ensure runtime studentId matches for later operations
         try{ if(!studentId) { studentId = byEmail.student_id || studentId; window.studentId = studentId; localStorage.setItem('studentId', studentId || ''); } }catch(e){}
-        return !!(byEmail.firstname && byEmail.lastname && byEmail.department && byEmail.level && byEmail.phone && byEmail.school && byEmail.course_type);
+        return !!(byEmail.first_name && byEmail.surname && byEmail.school && byEmail.current_level && byEmail.phone_number && byEmail.email);
       }
     }
 
@@ -3239,18 +3240,15 @@ async function saveStudentProfile(profileData) {
 
     const payload = {
       student_id: studentId,
-      firstname: profileData.firstname || '',
-      lastname: profileData.lastname || '',
-      department: profileData.department || '',
-      level: profileData.level || '',
-      phone: profileData.phone || '',
-      school: profileData.school || '',
+      first_name: profileData.first_name || profileData.firstname || '',
+      middle_name: profileData.middle_name || profileData.othername || '',
+      surname: profileData.surname || profileData.lastname || '',
+      school: profileData.school || profileData.department || '',
+      current_level: profileData.current_level || profileData.level || '',
+      phone_number: profileData.phone_number || profileData.phone || '',
+      whatsapp_number: profileData.whatsapp_number || profileData.phone || '',
       email: profileData.email || '',
-      course_type: profileData.course_type || '',
-      program: profileData.program || profileData.department || null,
-      program_duration: profileData.program_duration || null,
-      admission_number: profileData.admission_number || profileData.student_id || studentId || null,
-      othername: profileData.othername || null
+      created_at: new Date().toISOString()
     };
 
     // Use upsert so the row is created if missing, or updated if present.
@@ -3267,8 +3265,8 @@ async function saveStudentProfile(profileData) {
     // Persist studentId and name locally in case DB replication or policies prevent immediate visibility
     try {
       localStorage.setItem('studentId', studentId);
-      localStorage.setItem('studentName', `${payload.firstname || ''} ${payload.lastname || ''}`.trim());
-      localStorage.setItem('studentOtherName', payload.othername || '');
+      localStorage.setItem('studentName', `${payload.first_name || ''} ${payload.middle_name ? payload.middle_name + ' ' : ''} ${payload.surname || ''}`.trim());
+      localStorage.setItem('studentMiddleName', payload.middle_name || '');
     } catch (e) {}
 
     console.log('Student profile upserted:', data);

@@ -1661,6 +1661,18 @@
           if(key === 'settings'){ toggleModal('settingsModal'); return; }
           // Open registration modal instead of generic info when Register is clicked
           if(key === 'register'){ try{ if(window.openCourseRegister) { window.openCourseRegister(); return; } }catch(e){} }
+          // Special-case: Show results not available message
+          if(key === 'results'){ 
+            showModalMessage(
+              '<div style="text-align:center;padding:20px;">' +
+              '<div style="font-size:48px;margin-bottom:15px;">📋</div>' +
+              '<h3 style="color:#333;margin:0 0 10px 0;">Results Not Yet Available</h3>' +
+              '<p style="color:#666;margin:0 0 15px 0;">The results have not been uploaded to the system yet. Our management team is working hard to process and upload all results.</p>' +
+              '<p style="color:#666;margin:0;"><strong>You will be notified as soon as your results are available.</strong></p>' +
+              '</div>'
+            );
+            return;
+          }
 
           const entry = INFO_MAP[key] || { title: key || 'Info', desc: 'No additional information available.' };
           if(infoTitle) infoTitle.textContent = entry.title;
@@ -1743,7 +1755,28 @@
               if(!a) return;
               ev.preventDefault();
               const key = a.getAttribute('data-info') || (a.textContent || '').trim().toLowerCase().split(/\s+/)[0];
-              try{ showInfo(key); }catch(e){ try{ toggleModal('infoModal'); }catch(_){ /* ignore */ } }
+              
+              // Check if on mobile view and show loading screen
+              const isMobile = window.innerWidth <= 860 || document.body.classList.contains('mobile');
+              if(isMobile) {
+                // Show loading modal for a brief moment before showing content
+                toggleModal('loadingModal');
+                // Update loading text
+                const loadingTitle = document.querySelector('#loadingModal h3');
+                if(loadingTitle) loadingTitle.textContent = 'Loading...';
+                const loadingText = document.querySelector('#loadingModal p');
+                if(loadingText) loadingText.textContent = 'Please wait...';
+                
+                // Close loading after 500ms and show actual content
+                setTimeout(() => {
+                  toggleModal('loadingModal');
+                  try{ showInfo(key); }catch(e){ try{ toggleModal('infoModal'); }catch(_){ /* ignore */ } }
+                }, 500);
+              } else {
+                // Desktop - show directly without loading screen
+                try{ showInfo(key); }catch(e){ try{ toggleModal('infoModal'); }catch(_){ /* ignore */ } }
+              }
+              
               // If mobile menu is open, close it after selection
               try{ if(sidebarEl.classList.contains('mobile')) sidebarEl.classList.remove('mobile'); }catch(e){}
             };
@@ -2829,7 +2862,7 @@ function closeIfBackdrop(event){
 window.closeIfBackdrop = closeIfBackdrop;
 
 // Global modal helper to replace alert()
-function showModalMessage(message, title = 'Notice'){
+function showModalMessage(message, title = 'Notice', isHtml = false){
   try{
     let titleEl = document.getElementById('globalMessageTitle');
     let bodyEl = document.getElementById('globalMessageBody');
@@ -2839,7 +2872,7 @@ function showModalMessage(message, title = 'Notice'){
         <div id="globalMessageModal" class="modal">
           <div class="modal-content">
             <div class="modal-header"><h2 id="globalMessageTitle">${escapeHtml(title)}</h2><button class="close-btn" onclick="toggleModal('globalMessageModal')">&times;</button></div>
-            <div class="modal-body"><div id="globalMessageBody" style="white-space:pre-wrap;">${escapeHtml(String(message))}</div></div>
+            <div class="modal-body"><div id="globalMessageBody" style="white-space:pre-wrap;"></div></div>
             <div class="modal-footer"><button class="btn" onclick="toggleModal('globalMessageModal')">OK</button></div>
           </div>
         </div>`;
@@ -2847,7 +2880,14 @@ function showModalMessage(message, title = 'Notice'){
       titleEl = document.getElementById('globalMessageTitle'); bodyEl = document.getElementById('globalMessageBody');
     }
     if(titleEl) titleEl.textContent = title;
-    if(bodyEl) bodyEl.textContent = typeof message === 'string' ? message : JSON.stringify(message);
+    if(bodyEl) {
+      // Check if message contains HTML tags or if isHtml flag is true
+      if(isHtml || (typeof message === 'string' && message.includes('<'))){
+        bodyEl.innerHTML = message;
+      } else {
+        bodyEl.textContent = typeof message === 'string' ? message : JSON.stringify(message);
+      }
+    }
     toggleModal('globalMessageModal');
   }catch(e){ try{ console.warn('Modal unavailable — message:', message); }catch(_){ /* nothing */ } }
 }

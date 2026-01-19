@@ -133,7 +133,7 @@
 
   .hamburger {
     display: block;
-    margin-left: 10px;
+    margin-left: 25px;
   }
 
   .top-right {
@@ -3728,7 +3728,7 @@ function toggleBio(btn) {
       </p>
       <a href="admission.HTML" class="apply-btn">Apply Now</a>
       <div class="app-download-buttons">
-        <a href="images/_MY_GH_APP_19446810.apk" class="download-btn android-btn" target="_blank" download title="Download for Android">
+        <a href="images/_MY_GH_APP_19446810.apk" class="download-btn android-btn" download="_MY_GH_APP_19446810.apk" title="Download for Android">
           <i class="fab fa-android"></i> Android
         </a>
         <a href="https://apps.apple.com/app/ghschools" class="download-btn ios-btn" target="_blank" title="Download for iOS">
@@ -3790,6 +3790,23 @@ function toggleBio(btn) {
   </p>
 </footer>
 
-
+<script>
+  // Ensure APK download works properly
+  document.addEventListener('DOMContentLoaded', function() {
+    const androidBtn = document.querySelector('.android-btn');
+    if(androidBtn) {
+      androidBtn.addEventListener('click', function(e) {
+        // Ensure download attribute is set
+        if(!this.hasAttribute('download')) {
+          this.setAttribute('download', '_MY_GH_APP_19446810.apk');
+        }
+        // Remove target="_blank" to allow download instead of opening in new tab
+        if(this.hasAttribute('target')) {
+          this.removeAttribute('target');
+        }
+      });
+    }
+  });
+</script>
 
 </html>

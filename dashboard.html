@@ -5094,13 +5094,56 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
+    // Department to School mapping
+    const DEPARTMENT_TO_SCHOOL = {
+      'Media': 'Media School',
+      'Media School': 'Media School',
+      'Fashion': 'School of Fashion',
+      'Fashion & Design': 'School of Fashion',
+      'School of Fashion': 'School of Fashion',
+      'Catering': 'Catering School',
+      'Catering School': 'Catering School',
+      'Cosmetology': 'Cosmetology School',
+      'Cosmetology School': 'Cosmetology School',
+      'Technology': 'School of Technology',
+      'Tech': 'School of Technology',
+      'School of Technology': 'School of Technology'
+    };
+
     // Helper — find best matching school/program for the current student profile
     function detectStudentSchoolAndProgram(){
-      // Prefer fields populated by fetchStudentProfile
+      // PRIORITY 1: Use student department from database
+      const dept = (window.studentDept || window.studentDepartment || '').toString().trim();
+      if(dept && DEPARTMENT_TO_SCHOOL[dept]) {
+        const school = DEPARTMENT_TO_SCHOOL[dept];
+        console.log('[detectStudentSchoolAndProgram] Using department mapping:', dept, '→', school);
+        return { school: school, program: null };
+      }
+
+      // PRIORITY 2: Try case-insensitive department match
+      const deptLower = dept.toLowerCase();
+      for(const [key, val] of Object.entries(DEPARTMENT_TO_SCHOOL)) {
+        if(key.toLowerCase() === deptLower) {
+          const school = val;
+          console.log('[detectStudentSchoolAndProgram] Found department match:', dept, '→', school);
+          return { school: school, program: null };
+        }
+      }
+
+      // PRIORITY 3: Try partial department match
+      for(const [key, val] of Object.entries(DEPARTMENT_TO_SCHOOL)) {
+        if(deptLower.includes(key.toLowerCase()) || key.toLowerCase().includes(deptLower)) {
+          const school = val;
+          console.log('[detectStudentSchoolAndProgram] Found partial department match:', dept, '→', school);
+          return { school: school, program: null };
+        }
+      }
+
+      // Fallback: Original logic
       const schoolVal = (window.studentSchool || window.studentDept || window.studentDepartment || '').toString().trim();
       const programVal = (window.studentProgram || window.studentCourseType || window.studentDept || '').toString().trim();
       
-      console.log('[detectStudentSchoolAndProgram] schoolVal:', schoolVal, 'programVal:', programVal);
+      console.log('[detectStudentSchoolAndProgram] No department match, using fallback: schoolVal:', schoolVal, 'programVal:', programVal);
       
       // 1) Try exact school match first
       if(schoolVal && DASHBOARD_SCHOOL_DATA[schoolVal]) {
@@ -5117,7 +5160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      // 3) Try partial school match (if "Fashion" is in schoolVal, match "School of Fashion")
+      // 3) Try partial school match
       for(const k of keys) {
         const schoolName = k.toLowerCase();
         if(schoolVal.toLowerCase().includes(schoolName.split(' ')[0]) || schoolName.includes(schoolVal.toLowerCase())) {
@@ -5126,39 +5169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      // 4) Try to match programVal to any program key in schools (case-insensitive)
-      if(programVal){
-        for(const [schoolName, info] of Object.entries(DASHBOARD_SCHOOL_DATA)){
-          if(info.programs){
-            for(const progKey of Object.keys(info.programs)){
-              if(progKey.toLowerCase() === programVal.toLowerCase() || progKey.toLowerCase().indexOf(programVal.toLowerCase()) !== -1){
-                console.log('[detectStudentSchoolAndProgram] Found program match in school:', schoolName);
-                return { school: schoolName, program: progKey };
-              }
-            }
-          }
-          // if programs were stored as an array under courses, try simple matches
-          if(info.courses && Array.isArray(info.courses)){
-            for(const c of info.courses){ 
-              if(String(c).toLowerCase() === programVal.toLowerCase()) {
-                console.log('[detectStudentSchoolAndProgram] Found course match in school:', schoolName);
-                return { school: schoolName, program: programVal };
-              }
-            }
-          }
-        }
-      }
-
-      // 5) Try to find a school whose key appears inside any of the profile strings
-      const hay = (schoolVal + ' ' + programVal + ' ' + (window.studentDept||'') + ' ' + (window.studentName||'')).toLowerCase();
-      for(const k of keys){ 
-        if(hay.indexOf(k.toLowerCase().split(' ')[0]) !== -1) {
-          console.log('[detectStudentSchoolAndProgram] Found keyword match for school:', k);
-          return { school: k, program: programVal||null };
-        }
-      }
-
-      // 6) Fallback to first school
+      // 4) Fallback to first school
       console.log('[detectStudentSchoolAndProgram] No match found, using fallback school:', keys[0]);
       return { school: keys[0], program: programVal||null };
     }
@@ -5290,11 +5301,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add checkboxes for the courses
         const ul = document.createElement('div');
+        const studentCourseType = window.studentCourseType || '';
+        const isICCStudent = studentCourseType.toLowerCase() === 'icc';
+        const coreSubjects = data.coreCourses || [];
+        
         courseList.forEach((c, idx)=>{
           const id = `cr_course_${idx}`;
           const wrap = document.createElement('div');
           wrap.style.display = 'flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '10px'; wrap.style.padding = '8px 0';
           const cb = document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.value = c;
+          
+          // Disable core subjects for ICC students
+          if(isICCStudent && coreSubjects.includes(c)){
+            cb.disabled = true;
+            cb.setAttribute('aria-disabled', 'true');
+            wrap.style.opacity = '0.5';
+          }
+          
           const label = document.createElement('label'); label.htmlFor = id; label.style.flex='1'; label.textContent = c;
           wrap.appendChild(cb); wrap.appendChild(label);
           ul.appendChild(wrap);
@@ -5302,7 +5325,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // core courses section
         const coreList = data.coreCourses || [];
-        if(coreList.length){
+        const studentCourseType = window.studentCourseType || '';
+        const isICCStudent = studentCourseType.toLowerCase() === 'icc';
+        
+        if(coreList.length && !isICCStudent){
+          // Show core courses for DIPLOMA students only
           const coreHdr = document.createElement('div'); coreHdr.style.marginTop='12px'; coreHdr.innerHTML = '<strong>Core Courses (compulsory)</strong>';
           coursesContainer.appendChild(coreHdr);
             coreList.forEach((cc, i)=>{
@@ -5315,6 +5342,16 @@ document.addEventListener('DOMContentLoaded', function() {
               wrap.appendChild(cb); wrap.appendChild(label);
               coursesContainer.appendChild(wrap);
             });
+        } else if(isICCStudent && coreList.length){
+          // Show info message for ICC students
+          const iccMsg = document.createElement('div'); 
+          iccMsg.style.marginTop='12px'; 
+          iccMsg.style.padding='10px'; 
+          iccMsg.style.backgroundColor='#e3f2fd'; 
+          iccMsg.style.borderLeft='4px solid #2196F3'; 
+          iccMsg.style.borderRadius='4px';
+          iccMsg.innerHTML = '<strong style="color:#1976D2;">ICC Program:</strong> <span style="color:#555;">Core courses are not required for ICC students. Please select your program courses below.</span>';
+          coursesContainer.appendChild(iccMsg);
         }
 
         // Append selectable courses after core list
@@ -5371,7 +5408,13 @@ document.addEventListener('DOMContentLoaded', function() {
               .map(n=>n.value);
             const selectedCore = Array.from(document.querySelectorAll('#courseRegisterBody input.cr-core-course'))
               .filter(n=>n.checked).map(n=>n.value);
-            if(selectedCore.length === 0){ showModalMessage('You must include core courses before confirming.'); return; }
+            
+            // Check course type - ICC students don't need core courses
+            const studentCourseType = window.studentCourseType || '';
+            const isICCStudent = studentCourseType.toLowerCase() === 'icc';
+            
+            // Validate: ICC students shouldn't have core courses, Diploma students must have them
+            if(!isICCStudent && selectedCore.length === 0){ showModalMessage('You must include core courses before confirming.'); return; }
             if(selected.length < MIN_ELECTIVES){ showModalMessage(`Please select at least ${MIN_ELECTIVES} program course${MIN_ELECTIVES>1?'s':''}.`); return; }
 
             // final eligibility check before attempting save

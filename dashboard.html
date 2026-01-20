@@ -2075,7 +2075,7 @@
   </div>
 
   <div id="congratsModal" class="modal" onclick="closeIfBackdrop(event)">
-    <div class="modal-content" style="text-align:center; max-width:500px;">
+    <div class="modal-content" style="text-align:center; max-width:600px;">
       <button class="close-btn" onclick="toggleModal('congratsModal')">&times;</button>
       <div style="margin:20px 0;">
         <div class="student-icon-animated" style="font-size:80px; margin-bottom:15px;">
@@ -2084,13 +2084,24 @@
       </div>
       <h2 style="color:#28a745; margin:15px 0; font-size:28px;">Congratulations!</h2>
       <p style="font-size:16px; color:#333; margin:15px 0; line-height:1.6;">
-        Your course registration has been <strong>successfully submitted!</strong>
+        You are registered successfully with <strong>GH SCHOOLS E-REGISTRATION</strong>!
       </p>
-      <div style="padding:15px; background:#e8f5e9; border-radius:8px; margin:15px 0; color:#2e7d32; border-left:4px solid #28a745;">
-        <strong>What's Next?</strong><br>
-        Check your <strong>My Courses</strong> section to view your registered courses and track your progress.
+      
+      <div style="padding:20px; background:#e8f5e9; border-radius:8px; margin:20px 0; color:#2e7d32; border-left:4px solid #28a745; text-align:left;">
+        <h4 style="margin-top:0; color:#1b5e20;">📋 Important Information:</h4>
+        <ul style="margin:10px 0; padding-left:20px; font-size:14px;">
+          <li style="margin:8px 0;"><strong>Your access cards will be given to you.</strong></li>
+          <li style="margin:8px 0;">Your courses have been confirmed and saved in your account.</li>
+          <li style="margin:8px 0;"><strong>Please wait patiently</strong> for further instructions from the administration.</li>
+          <li style="margin:8px 0;">Check your registered courses in the <strong>My Courses</strong> section anytime.</li>
+        </ul>
       </div>
-      <button class="confirm-btn" onclick="toggleModal('congratsModal')" style="margin-top:20px;">Continue to Dashboard</button>
+      
+      <div style="padding:12px; background:#fff3cd; border-radius:8px; margin:15px 0; color:#856404; font-size:13px; border-left:4px solid #ffc107;">
+        <i class="fas fa-info-circle"></i> A confirmation email has been sent to your registered email address.
+      </div>
+      
+      <button class="confirm-btn" onclick="toggleModal('congratsModal')" style="margin-top:20px; padding:12px 30px; font-size:14px;">Continue to Dashboard</button>
     </div>
   </div>
 
@@ -4264,11 +4275,12 @@ window.registerCourses = async ()=>{
     // 2) Normal eligibility rule
     const allowed = await hasRegistrationAccess(studentId);
     if(!allowed){ toggleModal('restrictionModal'); return; }
-    // 3) Show loading modal and proceed to open course registration
+    // 3) Show loading modal and proceed to open course registration modal
     toggleModal('loadingModal');
-    try{ if(window.openCourseRegister) { window.openCourseRegister(); return; } }catch(e){}
-    // fallback: redirect to registration page
-    window.location.href = 'register.html';
+    try{ if(window.openCourseRegister) { window.openCourseRegister(); return; } }catch(e){ console.error('Error opening course registration:', e); }
+    // If openCourseRegister fails, hide loading and show error
+    toggleModal('loadingModal');
+    showModalMessage('Could not open course registration. Please try again.');
   }catch(err){
     console.error(err);
     toggleModal('loadingModal');
@@ -5365,8 +5377,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // core courses section
         const coreList = data.coreCourses || [];
-        const studentCourseType = window.studentCourseType || '';
-        const isICCStudent = studentCourseType.toLowerCase() === 'icc';
         
         if(coreList.length && !isICCStudent){
           // Show core courses for DIPLOMA students only

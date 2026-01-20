@@ -951,6 +951,10 @@
         <i class="fas fa-user-graduate"></i>
         <span class="nav-text">Students</span>
       </div>
+      <div class="nav-item" data-page="registrations" onclick="showModal('registrationsModal')">
+        <i class="fas fa-book"></i>
+        <span class="nav-text">Registrations</span>
+      </div>
     </div>
   </div>
 
@@ -1909,6 +1913,142 @@
             </button>
             <span id="allStudentsPageInfo">Page 1 of 1</span>
             <button class="page-btn" onclick="changeAllStudentsPage(1)">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Registrations Modal -->
+  <div class="modal" id="registrationsModal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 class="modal-title">Course Registrations</h3>
+        <button class="action-btn view-btn" onclick="closeModal('registrationsModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="quick-actions">
+          <input id="registrationSearchInput" placeholder="Search by Student ID, Name or Email" style="padding:8px; margin-right:8px; width:280px;" />
+          <button class="btn btn-primary" onclick="searchRegistration()">
+            <i class="fas fa-search"></i> Search
+          </button>
+          <button class="btn btn-outline" onclick="clearRegistrationResults()" style="margin-left:8px;">
+            <i class="fas fa-sync-alt"></i> Clear
+          </button>
+          <button class="btn btn-success" onclick="exportRegistrationData('csv')">
+            <i class="fas fa-file-csv"></i> Export CSV
+          </button>
+          <button class="btn btn-success" onclick="exportRegistrationData('excel')">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <div class="filter-item">
+              <label>School</label>
+              <select id="regSchoolFilter" onchange="filterRegistrations()">
+                <option value="">All Schools</option>
+                <option value="Media School">Media School</option>
+                <option value="School of Fashion">School of Fashion</option>
+                <option value="School of Catering">School of Catering</option>
+                <option value="School of Cosmetology">School of Cosmetology</option>
+                <option value="School of Technology">School of Technology</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>Level</label>
+              <select id="regLevelFilter" onchange="filterRegistrations()">
+                <option value="">All Levels</option>
+                <option value="Level 100">Level 100</option>
+                <option value="Level 200">Level 200</option>
+                <option value="Level 300">Level 300</option>
+                <option value="Level 400">Level 400</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>Course Type</label>
+              <select id="regCourseTypeFilter" onchange="filterRegistrations()">
+                <option value="">All Types</option>
+                <option value="Diploma">Diploma</option>
+                <option value="ICC">ICC</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>Status</label>
+              <select id="regStatusFilter" onchange="filterRegistrations()">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+            <div class="filter-item" style="margin-top: auto;">
+              <button class="btn btn-secondary" onclick="resetRegistrationFilters()" title="Reset all filters">
+                <i class="fas fa-redo"></i> Reset Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0;">
+          <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196F3;">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Registrations</div>
+            <div style="font-size: 24px; font-weight: 700; color: #2196F3;" id="totalRegistrations">0</div>
+          </div>
+          <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #9C27B0;">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Unique Students</div>
+            <div style="font-size: 24px; font-weight: 700; color: #9C27B0;" id="totalUniqueStudents">0</div>
+          </div>
+          <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800;">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Pending</div>
+            <div style="font-size: 24px; font-weight: 700; color: #FF9800;" id="pendingCount">0</div>
+          </div>
+          <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Completed</div>
+            <div style="font-size: 24px; font-weight: 700; color: #4CAF50;" id="completedCount">0</div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="loading" id="registrationsLoading">
+            <div class="spinner"></div>
+          </div>
+          <table id="registrationsTable" style="display: none;">
+            <thead>
+              <tr>
+                <th>Reg ID</th>
+                <th>Student ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Department</th>
+                <th>Level</th>
+                <th>School</th>
+                <th>Course Type</th>
+                <th># Courses</th>
+                <th># Core</th>
+                <th>Status</th>
+                <th>Registered Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="registrationsTableBody"></tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="pagination" id="registrationsPagination" style="display: none;">
+            <button class="page-btn" onclick="changeRegistrationsPage(-1)">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span id="registrationsPageInfo">Page 1 of 1</span>
+            <button class="page-btn" onclick="changeRegistrationsPage(1)">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
@@ -7001,6 +7141,361 @@ await window.__sb
     })();
 
     // Modal scroll controls removed — no left/right scroll arrows
+
+    // ========== COURSE REGISTRATIONS FUNCTIONS ==========
+    let allRegistrations = [];
+    let filteredRegistrations = [];
+    let regPage = 1;
+    const regPageSize = 20;
+
+    async function loadRegistrations() {
+      try {
+        document.getElementById('registrationsLoading').style.display = 'flex';
+        document.getElementById('registrationsTable').style.display = 'none';
+
+        const { data, error } = await window.__sb
+          .from('registrations')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        allRegistrations = data || [];
+        
+        // Enrich registrations with student info from students table for missing fields
+        for (let reg of allRegistrations) {
+          if ((!reg.student_full_name || reg.student_full_name === 'null' || reg.student_full_name === '') && reg.student_id) {
+            try {
+              const { data: studentData } = await window.__sb
+                .from('students')
+                .select('first_name, middle_name, surname, department')
+                .eq('student_id', reg.student_id)
+                .single();
+              
+              if (studentData) {
+                if (!reg.student_full_name || reg.student_full_name === 'null' || reg.student_full_name === '') {
+                  reg.student_full_name = `${studentData.first_name || ''} ${studentData.middle_name || ''} ${studentData.surname || ''}`.trim();
+                }
+                if (!reg.student_department || reg.student_department === 'null' || reg.student_department === '') {
+                  reg.student_department = studentData.department;
+                }
+              }
+            } catch (e) {
+              console.warn('Could not fetch student data for enrichment:', e);
+            }
+          }
+        }
+        
+        filteredRegistrations = [...allRegistrations];
+        
+        updateRegistrationStats();
+        renderRegistrationsTable();
+
+        document.getElementById('registrationsLoading').style.display = 'none';
+        document.getElementById('registrationsTable').style.display = 'table';
+      } catch (error) {
+        console.error('Error loading registrations:', error);
+        showToast('Error loading registrations', 'error');
+        document.getElementById('registrationsLoading').style.display = 'none';
+      }
+    }
+
+    function updateRegistrationStats() {
+      const total = allRegistrations.length;
+      const unique = new Set(allRegistrations.map(r => r.student_id)).size;
+      const pending = allRegistrations.filter(r => r.status === 'pending').length;
+      const completed = allRegistrations.filter(r => r.status === 'completed').length;
+
+      document.getElementById('totalRegistrations').textContent = total;
+      document.getElementById('totalUniqueStudents').textContent = unique;
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('completedCount').textContent = completed;
+    }
+
+    function renderRegistrationsTable() {
+      const tbody = document.getElementById('registrationsTableBody');
+      tbody.innerHTML = '';
+
+      const start = (regPage - 1) * regPageSize;
+      const end = start + regPageSize;
+      const pageData = filteredRegistrations.slice(start, end);
+
+      pageData.forEach(reg => {
+        const row = document.createElement('tr');
+        const numCourses = Array.isArray(reg.courses) ? reg.courses.length : 0;
+        const numCore = Array.isArray(reg.core_courses) ? reg.core_courses.length : 0;
+        const createdDate = new Date(reg.created_at).toLocaleDateString();
+        
+        // Reconstruct full name from parts if main field is empty
+        let fullName = reg.student_full_name || '';
+        if (!fullName || fullName === 'null' || fullName === '') {
+          fullName = [reg.student_firstname, reg.student_othername, reg.student_lastname]
+            .filter(n => n && n !== 'null')
+            .join(' ')
+            .trim();
+        }
+        
+        // Use department from record or fallback
+        let department = reg.student_department || '';
+        if (!department || department === 'null') {
+          department = reg.school || 'N/A';
+        }
+
+        row.innerHTML = `
+          <td>${reg.id || 'N/A'}</td>
+          <td><strong>${reg.student_id || 'N/A'}</strong></td>
+          <td>${fullName || 'N/A'}</td>
+          <td>${reg.student_email || 'N/A'}</td>
+          <td>${reg.contact_phone || reg.student_phone || 'N/A'}</td>
+          <td>${department || 'N/A'}</td>
+          <td>${reg.student_level || 'N/A'}</td>
+          <td>${reg.school || 'N/A'}</td>
+          <td>
+            <span style="padding: 4px 8px; background: ${reg.source_payload?.course_type === 'Diploma' ? '#e3f2fd' : '#f3e5f5'}; border-radius: 4px; font-size: 12px;">
+              ${(reg.source_payload?.course_type || 'ICC') || 'N/A'}
+            </span>
+          </td>
+          <td style="text-align: center;"><strong>${numCourses}</strong></td>
+          <td style="text-align: center;"><strong>${numCore}</strong></td>
+          <td>
+            <span style="padding: 4px 8px; background: ${
+              reg.status === 'completed' ? '#c8e6c9' : 
+              reg.status === 'approved' ? '#b3e5fc' : 
+              '#fff9c4'
+            }; border-radius: 4px; font-size: 12px; text-transform: capitalize;">
+              ${reg.status || 'N/A'}
+            </span>
+          </td>
+          <td>${createdDate}</td>
+          <td>
+            <button class="action-btn view-btn" onclick="viewRegistrationDetails(${reg.id})" title="View Details">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      updateRegistrationsPagination();
+    }
+
+    function updateRegistrationsPagination() {
+      const totalPages = Math.ceil(filteredRegistrations.length / regPageSize);
+      const pageInfo = document.getElementById('registrationsPageInfo');
+      const pagination = document.getElementById('registrationsPagination');
+
+      if (filteredRegistrations.length === 0) {
+        pagination.style.display = 'none';
+        return;
+      }
+
+      pageInfo.textContent = `Page ${regPage} of ${totalPages}`;
+      pagination.style.display = 'flex';
+    }
+
+    function changeRegistrationsPage(direction) {
+      const totalPages = Math.ceil(filteredRegistrations.length / regPageSize);
+      const newPage = regPage + direction;
+      if (newPage >= 1 && newPage <= totalPages) {
+        regPage = newPage;
+        renderRegistrationsTable();
+      }
+    }
+
+    function filterRegistrations() {
+      const schoolFilter = document.getElementById('regSchoolFilter').value;
+      const levelFilter = document.getElementById('regLevelFilter').value;
+      const courseTypeFilter = document.getElementById('regCourseTypeFilter').value;
+      const statusFilter = document.getElementById('regStatusFilter').value;
+
+      filteredRegistrations = allRegistrations.filter(reg => {
+        const schoolMatch = !schoolFilter || reg.school === schoolFilter;
+        const levelMatch = !levelFilter || reg.student_level === levelFilter;
+        const courseTypeMatch = !courseTypeFilter || (reg.student_othername === courseTypeFilter || reg.source_payload?.course_type === courseTypeFilter);
+        const statusMatch = !statusFilter || reg.status === statusFilter;
+        
+        return schoolMatch && levelMatch && courseTypeMatch && statusMatch;
+      });
+
+      regPage = 1;
+      renderRegistrationsTable();
+    }
+
+    function resetRegistrationFilters() {
+      document.getElementById('regSchoolFilter').value = '';
+      document.getElementById('regLevelFilter').value = '';
+      document.getElementById('regCourseTypeFilter').value = '';
+      document.getElementById('regStatusFilter').value = '';
+      filteredRegistrations = [...allRegistrations];
+      regPage = 1;
+      renderRegistrationsTable();
+    }
+
+    function searchRegistration() {
+      const searchTerm = document.getElementById('registrationSearchInput').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        filteredRegistrations = [...allRegistrations];
+      } else {
+        filteredRegistrations = allRegistrations.filter(reg => 
+          (reg.student_id && reg.student_id.toLowerCase().includes(searchTerm)) ||
+          (reg.student_full_name && reg.student_full_name.toLowerCase().includes(searchTerm)) ||
+          (reg.student_email && reg.student_email.toLowerCase().includes(searchTerm)) ||
+          (reg.student_firstname && reg.student_firstname.toLowerCase().includes(searchTerm)) ||
+          (reg.student_lastname && reg.student_lastname.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      regPage = 1;
+      renderRegistrationsTable();
+    }
+
+    function clearRegistrationResults() {
+      document.getElementById('registrationSearchInput').value = '';
+      filteredRegistrations = [...allRegistrations];
+      regPage = 1;
+      renderRegistrationsTable();
+    }
+
+    function viewRegistrationDetails(regId) {
+      const registration = allRegistrations.find(r => r.id === regId);
+      if (!registration) {
+        showToast('Registration not found', 'error');
+        return;
+      }
+
+      // Reconstruct full name from parts if main field is empty
+      let fullName = registration.student_full_name || '';
+      if (!fullName || fullName === 'null' || fullName === '') {
+        fullName = [registration.student_firstname, registration.student_othername, registration.student_lastname]
+          .filter(n => n && n !== 'null')
+          .join(' ')
+          .trim();
+      }
+      
+      // Use department from record or fallback
+      let department = registration.student_department || '';
+      if (!department || department === 'null') {
+        department = registration.school || 'N/A';
+      }
+
+      const coursesHtml = Array.isArray(registration.courses) 
+        ? registration.courses.map(c => `<li>${c}</li>`).join('')
+        : '<li>None</li>';
+
+      const coreCourseHtml = Array.isArray(registration.core_courses)
+        ? registration.core_courses.map(c => `<li>${c}</li>`).join('')
+        : '<li>None</li>';
+
+      const detailsHtml = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <h4 style="color: #333; margin-bottom: 10px;">Student Information</h4>
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; font-size: 13px;">
+              <p><strong>Student ID:</strong> ${registration.student_id || 'N/A'}</p>
+              <p><strong>Full Name:</strong> ${fullName || 'N/A'}</p>
+              <p><strong>Email:</strong> ${registration.student_email || 'N/A'}</p>
+              <p><strong>Phone:</strong> ${registration.contact_phone || registration.student_phone || 'N/A'}</p>
+              <p><strong>WhatsApp:</strong> ${registration.contact_whatsapp || registration.student_whatsapp || 'N/A'}</p>
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #333; margin-bottom: 10px;">Academic Information</h4>
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; font-size: 13px;">
+              <p><strong>Department:</strong> ${department || 'N/A'}</p>
+              <p><strong>Level:</strong> ${registration.student_level || 'N/A'}</p>
+              <p><strong>School:</strong> ${registration.school || 'N/A'}</p>
+              <p><strong>Program:</strong> ${registration.program || 'N/A'}</p>
+              <p><strong>Course Type:</strong> ${registration.source_payload?.course_type || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4 style="color: #333; margin-bottom: 10px;">Selected Program Courses</h4>
+          <ul style="background: #e8f5e9; padding: 12px 12px 12px 30px; border-radius: 6px; font-size: 13px; list-style: disc;">
+            ${coursesHtml}
+          </ul>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <h4 style="color: #333; margin-bottom: 10px;">Core Courses</h4>
+          <ul style="background: #e3f2fd; padding: 12px 12px 12px 30px; border-radius: 6px; font-size: 13px; list-style: disc;">
+            ${coreCourseHtml}
+          </ul>
+        </div>
+
+        <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div>
+            <h4 style="color: #333; margin-bottom: 8px;">Registration Status</h4>
+            <p style="padding: 8px; background: ${
+              registration.status === 'completed' ? '#c8e6c9' : 
+              registration.status === 'approved' ? '#b3e5fc' : 
+              '#fff9c4'
+            }; border-radius: 4px; text-transform: capitalize;">
+              <strong>${registration.status || 'pending'}</strong>
+            </p>
+          </div>
+          <div>
+            <h4 style="color: #333; margin-bottom: 8px;">Registered Date</h4>
+            <p style="padding: 8px; background: #f5f5f5; border-radius: 4px;">
+              ${new Date(registration.created_at).toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4 style="color: #333; margin-bottom: 10px;">Notes</h4>
+          <p style="background: #f5f5f5; padding: 12px; border-radius: 6px; font-size: 13px;">
+            ${registration.notes || 'No notes'}
+          </p>
+        </div>
+      `;
+
+      showInfoModal(detailsHtml, `Registration #${regId} - ${registration.student_full_name}`);
+    }
+
+    function exportRegistrationData(format) {
+      if (filteredRegistrations.length === 0) {
+        showToast('No registrations to export', 'warning');
+        return;
+      }
+
+      const data = filteredRegistrations.map(reg => ({
+        'Registration ID': reg.id,
+        'Student ID': reg.student_id,
+        'Full Name': reg.student_full_name,
+        'Email': reg.student_email,
+        'Phone': reg.contact_phone || reg.student_phone,
+        'WhatsApp': reg.contact_whatsapp,
+        'Department': reg.student_department,
+        'Level': reg.student_level,
+        'School': reg.school,
+        'Program': reg.program,
+        'Courses': Array.isArray(reg.courses) ? reg.courses.join('; ') : 'N/A',
+        'Core Courses': Array.isArray(reg.core_courses) ? reg.core_courses.join('; ') : 'N/A',
+        'Status': reg.status,
+        'Registered Date': new Date(reg.created_at).toLocaleString()
+      }));
+
+      if (format === 'csv') {
+        exportToCSV(data, 'course_registrations');
+      } else if (format === 'excel') {
+        exportToExcel(data, 'Course Registrations', 'registrations');
+      }
+    }
+
+    // Auto-load registrations when modal opens
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('active');
+        if (modalId === 'registrationsModal') {
+          setTimeout(() => loadRegistrations(), 100);
+        }
+      }
+    }
+
   </script>
 </body>
 </html>

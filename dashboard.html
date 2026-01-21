@@ -1617,6 +1617,21 @@
         <p>Ready to Register?</p>
         <button id="registerCoursesBtn" onclick="registerCourses()">Register Courses</button>
       </div>
+
+      <!-- My Courses Section -->
+      <div id="myCoursesSection" style="margin-top: 30px; display: none;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #28a745;">
+          <h3 style="margin-top: 0; color: #333; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-book" style="color: #28a745;"></i> My Registered Courses
+          </h3>
+          
+          <div id="myCoursesContent" style="margin-top: 15px;">
+            <div style="text-align: center; color: #666; padding: 20px;">
+              <p>No courses registered yet. Click "Register Courses" to get started!</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2097,11 +2112,25 @@
         </ul>
       </div>
       
+      <div style="padding:15px; background:#e3f2fd; border-radius:8px; margin:20px 0; color:#1565c0; border-left:4px solid #2196F3; text-align:left;">
+        <h4 style="margin-top:0; color:#0d47a1; font-size:16px;">🎓 Study Hard & Succeed!</h4>
+        <p style="margin:10px 0; font-size:13px; line-height:1.6;">
+          You are now officially registered for this semester. Make the most of your time, study hard, and strive for excellence. Your education is an investment in your future. We wish you all the best in your academic journey!
+        </p>
+      </div>
+      
       <div style="padding:12px; background:#fff3cd; border-radius:8px; margin:15px 0; color:#856404; font-size:13px; border-left:4px solid #ffc107;">
         <i class="fas fa-info-circle"></i> A confirmation email has been sent to your registered email address.
       </div>
       
-      <button class="confirm-btn" onclick="toggleModal('congratsModal')" style="margin-top:20px; padding:12px 30px; font-size:14px;">Continue to Dashboard</button>
+      <div style="display: flex; gap: 12px; margin-top:25px; justify-content: center;">
+        <button class="confirm-btn" onclick="showCourseDetails()" style="padding:12px 25px; font-size:14px; flex:1; max-width:280px;">
+          <i class="fas fa-book"></i> See Course Details
+        </button>
+        <button class="confirm-btn" onclick="toggleModal('congratsModal')" style="padding:12px 25px; font-size:14px; background:#6c757d; flex:1; max-width:280px;">
+          <i class="fas fa-home"></i> Go to Dashboard
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2220,7 +2249,7 @@ async function uploadProfileAvatar(file){
     const ext = (file.name || '').split('.').pop();
     const filename = `avatars/${sid}-${Date.now()}.${ext}`;
     // Upload file to storage bucket
-    const { error: uploadError } = await supabase.storage.from(AVATAR_BUCKET).upload(filename, file, { upsert: true });
+    const { error: uploadError } = await window.__sb.storage.from(AVATAR_BUCKET).upload(filename, file, { upsert: true });
     if(uploadError){ console.warn('Avatar upload failed', uploadError); return null; }
     // Get public URL
     const { data: publicData } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(filename);
@@ -2228,7 +2257,7 @@ async function uploadProfileAvatar(file){
     // Persist to students table if possible (best-effort)
     if(window.studentId){
       try{
-        const { error: updErr } = await supabase.from('students').update({ avatar_url: publicUrl }).eq('id', window.studentId);
+        const { error: updErr } = await window.__sb.from('students').update({ avatar_url: publicUrl }).eq('id', window.studentId);
         if(updErr) console.debug('Could not update students.avatar_url (maybe column missing or RLS):', updErr);
       }catch(e){ console.debug('students update failed', e); }
     }
@@ -2277,7 +2306,7 @@ try{ if(document.readyState === 'complete' || document.readyState === 'interacti
 // ---------- Announcements (student) ----------
 async function fetchLatestAnnouncement(){
   try{
-    const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(1);
+    const { data, error } = await window.__sb.from('notifications').select('*').order('created_at', { ascending: false }).limit(1);
     const contentEl = document.getElementById('notificationContent');
     const tsEl = document.getElementById('notificationTimestamp');
     const badge = document.getElementById('notifBadge');
@@ -2299,7 +2328,7 @@ async function fetchLatestAnnouncement(){
 // Fetch full list of notifications (used for the bell list). Stores in window.notifications
 async function fetchNotifications({ limit = 50 } = {}){
   try{
-    const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(limit);
+    const { data, error } = await window.__sb.from('notifications').select('*').order('created_at', { ascending: false }).limit(limit);
     if(error){ console.warn('Error loading notifications', error); return []; }
     window.notifications = data || [];
     renderNotificationsList(window.notifications);
@@ -2440,7 +2469,7 @@ async function deleteNotification(id){
     if(!id) return; const ok = await showConfirm('Delete this notification? This cannot be undone.'); if(!ok) return;
     // Try to delete from Supabase (best-effort). If no permission, fall back to removing from client list.
     try{
-      const { error } = await supabase.from('notifications').delete().eq('id', id);
+      const { error } = await window.__sb.from('notifications').delete().eq('id', id);
       if(error) throw error;
       showToast('Notification deleted', 'success', 3000);
     }catch(err){ console.warn('Could not delete on server, removing locally:', err); showToast('Could not delete server-side; removed locally', 'error', 4000); }
@@ -2528,7 +2557,7 @@ async function sendViaProxy(phoneNumbers, message, meta) {
       // Record an intent / summary row. If desired, server-side logging will
       // record per-phone details; this is a best-effort client-side record.
       try {
-        await supabase.from('sms_messages').insert([{
+        await window.__sb.from('sms_messages').insert([{
           student_id: (meta && meta.student_id) || null,
           phone: phones.length === 1 ? phones[0] : null,
           recipient_count: phones.length,
@@ -2560,11 +2589,11 @@ async function sendViaProxy(phoneNumbers, message, meta) {
       try { text = await resp.text(); } catch(e) { text = String(resp.status || 'no response'); }
 
       try {
-        await supabase.from('sms_messages').insert([{ student_id: (meta && meta.student_id) || null, phone: to, message, created_at: new Date().toISOString(), status: resp.ok ? 'sent' : 'failed', gateway_response: text }]);
+        await window.__sb.from('sms_messages').insert([{ student_id: (meta && meta.student_id) || null, phone: to, message, created_at: new Date().toISOString(), status: resp.ok ? 'sent' : 'failed', gateway_response: text }]);
       } catch (e) { /* non-blocking */ }
     } catch (e) {
       console.warn('Failed sending SMS to', to, e);
-      try { await supabase.from('sms_messages').insert([{ student_id: (meta && meta.student_id) || null, phone: to, message, created_at: new Date().toISOString(), status: 'failed', gateway_response: String(e) }]); } catch(_){ }
+      try { await window.__sb.from('sms_messages').insert([{ student_id: (meta && meta.student_id) || null, phone: to, message, created_at: new Date().toISOString(), status: 'failed', gateway_response: String(e) }]); } catch(_){ }
     }
     await new Promise(res => setTimeout(res, 250));
   }
@@ -2624,7 +2653,7 @@ async function fetchPaymentsSummary(studentIdParam){
   if(!studentIdParam) return { totalPaid: 0, tuitionPaid: 0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
   try{
     let payments;
-    const { data: paymentsData, error } = await supabase
+    const { data: paymentsData, error } = await window.__sb
       .from('payments')
       .select('*')
       .eq('student_id', studentIdParam)
@@ -2634,7 +2663,7 @@ async function fetchPaymentsSummary(studentIdParam){
       console.error('fetchPaymentsSummary failed (initial select):', error);
       // Try a more permissive fallback to select all columns if the initial select failed (schema mismatch)
       try{
-        const { data: altPayments, error: altError } = await supabase.from('payments').select('*').eq('student_id', studentIdParam).in('status', ['paid','success','approved','completed']);
+        const { data: altPayments, error: altError } = await window.__sb.from('payments').select('*').eq('student_id', studentIdParam).in('status', ['paid','success','approved','completed']);
         if(altError){
           console.error('fetchPaymentsSummary fallback also failed:', altError);
           return { totalPaid: 0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
@@ -3262,7 +3291,7 @@ async function checkStudentProfileComplete() {
 async function fetchStudentRow(studentIdParam){
   if(!studentIdParam) return null;
   try{
-    const { data, error } = await supabase
+    const { data, error } = await window.__sb
       .from('students')
       .select('*')
       .eq('student_id', studentIdParam.trim())
@@ -3424,7 +3453,7 @@ async function saveReceiptToSupabase(receipt) {
 
     // Attempt initial insert
     console.log('[saveReceiptToSupabase] Inserting payload:', { student_id: payload.student_id, amount: payload.amount, fee_type: payload.fee_type });
-    let { data, error } = await supabase.from('payments').insert([payload]).select();
+    let { data, error } = await window.__sb.from('payments').insert([payload]).select();
 
     if (error) {
       console.error('Supabase insert error:', error);
@@ -3434,11 +3463,11 @@ async function saveReceiptToSupabase(receipt) {
       try {
         if (error && (error.code === '23505' || (error.details || '').includes('payments_pkey'))) {
           console.warn('Detected duplicate primary key error; attempting to recover by computing max(id) and retrying');
-          const { data: maxRow, error: maxErr } = await supabase.from('payments').select('id').order('id', { ascending: false }).limit(1).maybeSingle();
+          const { data: maxRow, error: maxErr } = await window.__sb.from('payments').select('id').order('id', { ascending: false }).limit(1).maybeSingle();
           if (!maxErr && maxRow && typeof maxRow.id !== 'undefined' && maxRow.id !== null) {
             const nextId = Number(maxRow.id) + 1;
             const retryPayload = Object.assign({}, payload, { id: nextId });
-            const { data: retryData, error: retryErr } = await supabase.from('payments').insert([retryPayload]).select();
+            const { data: retryData, error: retryErr } = await window.__sb.from('payments').insert([retryPayload]).select();
             if (!retryErr) {
               console.log('Retry insert successful using id', nextId);
               return retryData;
@@ -3810,7 +3839,7 @@ async function savePaymentWithReceipt(feeType, amount, reference, feeBreakdown='
           let phone = window.studentPhone || window.student_phone || window.studentMobile || null;
           if (!phone) {
             try {
-              const { data: sdata, error: serr } = await supabase.from('students').select('phone,phone_number').eq('student_id', receipt.student_id).limit(1).maybeSingle();
+              const { data: sdata, error: serr } = await window.__sb.from('students').select('phone,phone_number').eq('student_id', receipt.student_id).limit(1).maybeSingle();
               if (!serr && sdata) phone = sdata.phone || sdata.phone_number;
             } catch (e) { /* ignore */ }
           }
@@ -3958,6 +3987,73 @@ function updateStudentInfoUI() {
   // Update welcome message
   if (window.studentName) {
     document.getElementById('welcome-message').textContent = `Hello ${window.studentName}, welcome back to school! Enjoy your semester`;
+  }
+  
+  // Load my courses
+  loadMyCourses();
+}
+
+// Load and display student's registered courses
+async function loadMyCourses() {
+  try {
+    const studentId = localStorage.getItem('studentId') || localStorage.getItem('student_id');
+    if (!studentId) return;
+
+    const { data: registrations, error } = await window.__sb
+      .from('registrations')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Error loading registered courses:', error);
+      return;
+    }
+
+    const section = document.getElementById('myCoursesSection');
+    const content = document.getElementById('myCoursesContent');
+    
+    if (!registrations || registrations.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    const latestReg = registrations[0]; // Get most recent registration
+
+    const coursesList = (latestReg.courses || []).concat(latestReg.core_courses || []);
+    if (coursesList.length === 0) {
+      content.innerHTML = '<p style="text-align: center; color: #666;">No courses in your registration.</p>';
+      return;
+    }
+
+    const coursesHtml = coursesList
+      .map((course, idx) => `
+        <div style="padding: 12px; background: #fff; border-radius: 6px; margin: 8px 0; border-left: 4px solid ${idx < (latestReg.core_courses || []).length ? '#2196F3' : '#28a745'}; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 600; color: #333;">${course}</div>
+            <div style="font-size: 12px; color: #999;">
+              ${idx < (latestReg.core_courses || []).length ? '<span style="background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 3px;">Core Course</span>' : '<span style="background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 3px;">Program Course</span>'}
+            </div>
+          </div>
+        </div>
+      `)
+      .join('');
+
+    content.innerHTML = `
+      <div style="margin-bottom: 15px; padding: 12px; background: #e8f5e9; border-radius: 6px; border-left: 4px solid #28a745;">
+        <strong style="color: #2e7d32;">✓ Registration Status:</strong> <span style="color: #28a745;">${latestReg.status || 'Pending'}</span>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <div style="font-size: 14px; color: #666; margin-bottom: 10px;"><strong>Total Courses: ${coursesList.length}</strong></div>
+        ${coursesHtml}
+      </div>
+      <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ffc107; font-size: 13px; color: #856404;">
+        <i class="fas fa-lightbulb"></i> <strong>Study Tip:</strong> Ensure you attend all classes and complete your coursework on time for success!
+      </div>
+    `;
+  } catch (error) {
+    console.error('loadMyCourses error:', error);
   }
 }
 
@@ -4162,7 +4258,7 @@ async function renderHistoryTable(filter = '', { useCacheFirst = true } = {}, st
 
   // 2) Fresh fetch (order by 'created_at')
   try {
-    const { data: payments, error } = await supabase
+    const { data: payments, error } = await window.__sb
       .from('payments')
       .select('*')
       .eq('student_id', sid)
@@ -5533,7 +5629,7 @@ document.addEventListener('DOMContentLoaded', function() {
           source_payload: payload || {}
         };
 
-        const { data, error } = await window.supabase.from('registrations').insert(insertRow).select();
+        const { data, error } = await window.__sb.from('registrations').insert(insertRow).select();
         if(error){ console.error('Registration save error', error); toggleModal('loadingModal'); showToast('Could not save registration (server error)', 'error'); return; }
         
         // Close loading modal and course register modal, then show congratulations
@@ -5547,6 +5643,65 @@ document.addEventListener('DOMContentLoaded', function() {
         try{ renderHistoryTable('', { useCacheFirst: false }, studentId); }catch(e){}
         return data;
       }catch(e){ console.error(e); toggleModal('loadingModal'); showToast('Failed to save registration', 'error'); }
+    }
+
+    // Show registered courses in a details modal after successful registration
+    function showCourseDetails() {
+      try {
+        // Get last registered courses from localStorage cache
+        const lastCourses = localStorage.getItem('lastSelectedCourses');
+        const selectedCourses = lastCourses ? JSON.parse(lastCourses) : [];
+
+        if (!selectedCourses || selectedCourses.length === 0) {
+          showModalMessage('No courses found. Please check My Courses section.', 'Course Details');
+          return;
+        }
+
+        // Build HTML for course list
+        const coursesList = selectedCourses
+          .map((course, index) => `<li style="padding: 8px 0; font-size: 14px;">${index + 1}. <strong>${course}</strong></li>`)
+          .join('');
+
+        const detailsHtml = `
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 16px; color: #28a745; margin-bottom: 10px;">
+              <i class="fas fa-check-circle" style="font-size: 24px;"></i>
+            </div>
+            <h3 style="color: #333; margin: 0;">Your Registered Courses</h3>
+          </div>
+
+          <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745;">
+            <h4 style="color: #333; margin-top: 0; margin-bottom: 12px;">Total Courses: <span style="color: #28a745; font-size: 20px;">${selectedCourses.length}</span></h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${coursesList}
+            </ul>
+          </div>
+
+          <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3; text-align: left;">
+            <h4 style="color: #1565c0; margin-top: 0;">💡 Tips for Success:</h4>
+            <ul style="margin: 10px 0; padding-left: 20px; font-size: 13px; color: #555;">
+              <li style="margin: 8px 0;">Attend all classes regularly and be punctual</li>
+              <li style="margin: 8px 0;">Participate actively in classroom discussions</li>
+              <li style="margin: 8px 0;">Complete assignments on time</li>
+              <li style="margin: 8px 0;">Study consistently and don't wait until exams</li>
+              <li style="margin: 8px 0;">Ask your instructors for help when needed</li>
+            </ul>
+          </div>
+
+          <div style="background: #fff3e0; padding: 12px; border-radius: 8px; margin: 15px 0; color: #e65100; font-size: 12px; border-left: 4px solid #ff9800; text-align: left;">
+            <strong>📌 Remember:</strong> Your success depends on your dedication and hard work. Make the most of this semester and achieve your academic goals!
+          </div>
+
+          <button class="confirm-btn" onclick="toggleModal('globalMessageModal')" style="margin-top: 20px; padding: 12px 30px; font-size: 14px;">
+            <i class="fas fa-arrow-right"></i> Go to Dashboard
+          </button>
+        `;
+
+        showModalMessage(detailsHtml, 'Course Registration Summary', true);
+      } catch (error) {
+        console.error('Error showing course details:', error);
+        showToast('Could not display course details', 'error');
+      }
     }
 
     /* ===== Password Change Feature ===== */

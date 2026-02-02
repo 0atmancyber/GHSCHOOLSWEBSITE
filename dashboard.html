@@ -2107,6 +2107,74 @@
       </div>
     </div>
 
+    <!-- Student Profile Modal -->
+    <div class="modal" id="studentInfoModal" onclick="closeIfBackdrop(event)">
+      <div class="modal-content" style="max-width:720px;">
+        <button class="close-btn" onclick="toggleModal('studentInfoModal')" aria-label="Close">&times;</button>
+        <h3 style="margin-top:0; color:#0066cc;"><i class="fas fa-user-edit"></i> Update Profile</h3>
+        <form id="studentInfoForm" onsubmit="handleSaveStudentInfo(event)" style="display:grid; gap:12px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-weight:600;">Student ID</label>
+              <input type="text" id="editStudentId" readonly style="width:100%; padding:8px; background:#fff; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+            <div>
+              <label style="display:block; font-weight:600;">Level</label>
+              <input type="text" id="editLevel" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-weight:600;">First Name</label>
+              <input type="text" id="editFirstName" required style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+            <div>
+              <label style="display:block; font-weight:600;">Middle Name</label>
+              <input type="text" id="editMiddleName" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-weight:600;">Surname</label>
+            <input type="text" id="editSurname" required style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-weight:600;">Email</label>
+              <input type="email" id="editEmail" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+            <div>
+              <label style="display:block; font-weight:600;">Department</label>
+              <input type="text" id="editDepartment" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-weight:600;">Phone (primary)</label>
+              <input type="text" id="editPhone1" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+            <div>
+              <label style="display:block; font-weight:600;">Phone (alt)</label>
+              <input type="text" id="editPhone2" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-weight:600;">WhatsApp</label>
+            <input type="text" id="editWhatsapp" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" />
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+            <button type="button" class="btn-secondary" onclick="toggleModal('studentInfoModal')">Cancel</button>
+            <button type="submit" class="confirm-btn">Save Profile</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Notification Modal -->
     <div class="modal" id="notificationModal">
       <div class="modal-content">
@@ -2982,10 +3050,17 @@ function toggleModal(id){
       }catch(e){ console.warn('[modal] diagnostics inner failed', e); }
     }, 360);
   }catch(e){ console.warn('[modal] diagnostics setup failed', e); }
-  // If the Student Info modal is opened, ensure it's read-only when profile exists on server/local
+  // If the Student Info modal is opened, ensure it's read-only when profile exists on server/local,
+  // unless an interactive edit was explicitly requested (via window._allowProfileEdit).
   if(isShown && id === 'studentInfoModal'){
     (async ()=>{
       try{
+        // Temporary override for interactive edit flow
+        if(window._allowProfileEdit){
+          try{ setStudentFormReadOnly(false); }catch(e){}
+          try{ delete window._allowProfileEdit; }catch(e){}
+          return;
+        }
         // If we have a local saved flag, prefer that (fast)
         const localComplete = (localStorage.getItem('studentInfoSaved') === '1') || (!!localStorage.getItem('studentId') && !!localStorage.getItem('studentName'));
         if(localComplete){ setStudentFormReadOnly(true); return; }
@@ -3132,7 +3207,11 @@ function getValidEmail(){
   if(isValidEmail(window.studentEmail)) return window.studentEmail;
   if(isValidEmail(_localEmail)) return _localEmail;
   const t = (document.getElementById('student-email')?.textContent || '').trim();
-  return isValidEmail(t) ? t : null;
+  if(isValidEmail(t)) return t;
+  // Fallback demo email (ensures Paystack can proceed even if no real email)
+  // Uses studentId when available to make the fallback deterministic/traceable
+  const sid = window.studentId || localStorage.getItem('studentId') || 'anon';
+  return `noemail+${sid}@example.com`;
 }
 function gh(amount){ return Number(amount || 0).toFixed(2); }
 // Expose globally for use in dynamic templates
@@ -4266,6 +4345,90 @@ function setStudentFormReadOnly(readOnly){
     try{ el.disabled = !!readOnly; }catch(e){}
   });
 }
+
+// Open editable profile modal and populate with latest data
+async function openStudentProfileModal(){
+  try{
+    const sid = localStorage.getItem('studentId') || window.studentId || null;
+    const setEmpty = id => { const el = document.getElementById(id); if(el) el.value = ''; };
+    ['editFirstName','editMiddleName','editSurname','editEmail','editPhone1','editPhone2','editWhatsapp','editDepartment','editLevel'].forEach(setEmpty);
+    document.getElementById('editStudentId').value = sid || '';
+
+    if(sid){
+      // Load latest profile from server
+      try{
+        toggleModal('loadingModal');
+        const { data, error } = await window.__sb.from('student_master_db')
+          .select('student_id, first_name, middle_name, surname, email, phone_number_1, phone_number_2, whatsapp, department, level')
+          .eq('student_id', sid)
+          .maybeSingle();
+        if(error) throw error;
+        if(data){
+          document.getElementById('editFirstName').value = data.first_name || '';
+          document.getElementById('editMiddleName').value = data.middle_name || '';
+          document.getElementById('editSurname').value = data.surname || '';
+          document.getElementById('editEmail').value = data.email || '';
+          document.getElementById('editPhone1').value = data.phone_number_1 || '';
+          document.getElementById('editPhone2').value = data.phone_number_2 || '';
+          document.getElementById('editWhatsapp').value = data.whatsapp || '';
+          document.getElementById('editDepartment').value = data.department || '';
+          document.getElementById('editLevel').value = data.level || '';
+        }
+      }catch(e){
+        console.warn('Could not load profile for editing:', e);
+        showToast('Could not load profile', 'error');
+      }finally{ try{ toggleModal('loadingModal'); }catch(e){} }
+    }
+
+    // Mark as interactive edit to force form editable state
+    try{ window._allowProfileEdit = true; }catch(e){}
+    toggleModal('studentInfoModal');
+  }catch(e){ console.error('openStudentProfileModal error', e); showToast('Could not open profile editor', 'error'); }
+}
+
+// Handle save profile form submit
+async function handleSaveStudentInfo(e){
+  try{
+    e.preventDefault();
+    const sid = document.getElementById('editStudentId').value || localStorage.getItem('studentId') || window.studentId;
+    if(!sid){ showToast('Missing Student ID. Please login to update profile.', 'error'); return; }
+
+    const payload = {
+      first_name: (document.getElementById('editFirstName').value || '').trim(),
+      middle_name: (document.getElementById('editMiddleName').value || '').trim() || null,
+      surname: (document.getElementById('editSurname').value || '').trim(),
+      email: (document.getElementById('editEmail').value || '').trim() || null,
+      phone_number_1: (document.getElementById('editPhone1').value || '').trim() || null,
+      phone_number_2: (document.getElementById('editPhone2').value || '').trim() || null,
+      whatsapp: (document.getElementById('editWhatsapp').value || '').trim() || null,
+      department: (document.getElementById('editDepartment').value || '').trim() || null,
+      level: (document.getElementById('editLevel').value || '').trim() || null,
+      updated_at: new Date().toISOString()
+    };
+
+    if(!payload.first_name || !payload.surname){ showToast('First name and surname are required.', 'error'); return; }
+
+    // Save to server
+    try{
+      toggleModal('loadingModal');
+      const { data, error } = await window.__sb.from('student_master_db').update(payload).eq('student_id', sid).select();
+      toggleModal('loadingModal');
+      if(error){ console.error('Save profile error', error); showToast('Could not save profile', 'error'); return; }
+
+      // Update local vars / UI
+      window.studentName = `${payload.first_name} ${payload.surname}`;
+      window.studentEmail = payload.email;
+      window.studentLevel = payload.level;
+      window.studentDept = payload.department;
+      updateStudentInfoUI();
+      showToast('Profile updated successfully', 'success');
+      toggleModal('studentInfoModal');
+    }catch(e){ console.error('handleSaveStudentInfo', e); toggleModal('loadingModal'); showToast('Could not save profile', 'error'); }
+  }catch(e){ console.error('handleSaveStudentInfo top', e); showToast('Could not save profile', 'error'); }
+}
+
+// Wire profile button and avatar to open the edit modal
+try{ const _p = document.getElementById('profileBtn'); if(_p) _p.addEventListener('click', openStudentProfileModal); const _pic = document.getElementById('profilePic'); if(_pic) { _pic.style.cursor = 'pointer'; _pic.addEventListener('click', openStudentProfileModal); } }catch(e){}
 
 /* ---------- Student notification rendering (dismissible) ---------- */
 function renderStudentNotification(){

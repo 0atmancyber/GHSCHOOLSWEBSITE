@@ -2225,7 +2225,7 @@
     }catch(e){ console.warn('Could not persist student_id', e); }
   };
 
-  // Debug helper: run both lookups (students table and newstudents) for a term
+  // Debug helper: run both lookups (student_master_db table and newstudents) for a term
   window.debugStudentLookup = async function(term){
     try{
       console.groupCollapsed('debugStudentLookup: ' + String(term));
@@ -2374,7 +2374,7 @@
       return null;
     }
 
-    // Fallback: if a generic studentId is stored, try the canonical students table
+    // Fallback: if a generic studentId is stored, try the canonical student_master_db table
     const storedStudentId = localStorage.getItem('studentId') || localStorage.getItem('student_id');
     if (storedStudentId) {
       console.log('Attempting to fetch student by stored studentId:', storedStudentId);
@@ -2459,7 +2459,7 @@
       /* debug removed */
       if (!term) return null;
       const { data, error } = await sb
-        .from('students')
+        .from('student_master_db')
         .select('*')
         .or(`student_id.eq.${term},email.ilike.%${term}%`)
         .limit(1);
@@ -2755,7 +2755,7 @@
     try {
       if (!currentStudent || !currentStudent.student_id) return;
       const { data, error } = await sb
-        .from('students')
+        .from('student_master_db')
         .select('last_notification, notification_unread, last_notification_at')
         .eq('student_id', currentStudent.student_id)
         .maybeSingle();
@@ -3019,8 +3019,8 @@
     try{
       // Prefer v2 channel API
       if (typeof sb.channel === 'function'){
-        const chan = sb.channel(`realtime:students:${currentStudent?.student_id || 'anon'}`);
-        chan.on('postgres_changes', { event: '*', schema: 'public', table: 'students', filter: `student_id=eq.${currentStudent?.student_id || ''}` }, payload => {
+        const chan = sb.channel(`realtime:student_master_db:${currentStudent?.student_id || 'anon'}`);
+        chan.on('postgres_changes', { event: '*', schema: 'public', table: 'student_master_db', filter: `student_id=eq.${currentStudent?.student_id || ''}` }, payload => {
           debounced(async () => { try { await fetchStudentNotification(); renderLevel100Notification(); await renderStudentNotifications(); } catch(e){ console.warn('realtime notif handler failed', e); } });
         }).subscribe();
         return;
@@ -3030,7 +3030,7 @@
     // Fallback to v1 .from() API
     try{
       if (sb && typeof sb.from === 'function'){
-        const chan = sb.from(`students:student_id=eq.${currentStudent?.student_id || ''}`);
+        const chan = sb.from(`student_master_db:student_id=eq.${currentStudent?.student_id || ''}`);
         if (typeof chan.on === 'function'){
           try{ chan.on('UPDATE', payload => { debounced(async () => { try { await fetchStudentNotification(); renderLevel100Notification(); await renderStudentNotifications(); } catch(e){ console.warn('fallback notif failed', e); } }); }).subscribe(); }catch(e){ console.warn('subscribe fallback failed', e); }
         }
@@ -3075,7 +3075,7 @@
     try{
       if (!currentStudent || !currentStudent.student_id) return;
       const { data, error } = await sb
-        .from('students')
+        .from('student_master_db')
         .update({ notification_unread: false })
         .eq('student_id', currentStudent.student_id)
         .select()
@@ -3650,8 +3650,8 @@
             let phone = rawPhone;
             if (!phone) {
               try {
-                const { data: sdata, error: serr } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${student.id}`).limit(1).maybeSingle();
-                if (!serr && sdata) phone = sdata.phone || sdata.phone_number;
+                const { data: sdata, error: serr } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${student.id}`).limit(1).maybeSingle();
+                if (!serr && sdata) phone = sdata.phone_number_1 || sdata.phone || sdata.phone_number; 
               } catch (e) { /* ignore */ }
             }
 

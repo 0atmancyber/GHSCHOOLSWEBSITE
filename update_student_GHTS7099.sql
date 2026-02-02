@@ -1,5 +1,5 @@
 -- Update student GHTS7099 with correct names
-UPDATE students
+UPDATE student_master_db
 SET 
   first_name = 'ALEX',
   middle_name = 'TWUM',
@@ -16,5 +16,5 @@ SELECT
   email,
   current_level,
   school
-FROM students
+FROM student_master_db
 WHERE student_id = 'GHTS7099';

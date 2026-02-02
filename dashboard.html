@@ -14,8 +14,28 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: #fef7f7; padding: 20px; animation: fadeIn 1s ease-in; }
+    body {
+      background-image: url('images/building.webp');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-color: #fef7f7;
+      padding: 20px;
+      animation: fadeIn 1s ease-in;
+    }
+    /* subtle overlay so text and cards remain readable */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 1, 1, 0.454);
+      pointer-events: none;
+      z-index: 0;
+    }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* ensure main container sits above the overlay */
+    .container { position: relative; z-index: 1; }
     
     .container { 
       background: white; 
@@ -324,33 +344,43 @@
     }
     
     .payment-section { 
-      margin-top: 10px;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
     }
     
     .payment-section h3 { 
       margin-bottom: 15px; 
       color: #dc3545;
       font-size: 20px;
+      text-align: center;
     }
     
-    .payment-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 20px; 
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+      gap: 24px;
+      justify-content: center; /* center the grid when there are fewer items */
+      align-items: start;
     }
-    
-    .payment-card { 
-      background: white; 
-      color: #495057; 
-      padding: 25px; 
-      border-radius: 15px; 
-      text-align: center; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between; 
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.997); 
+
+    .payment-card {
+      background: white;
+      color: #495057;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.999);
       border: 1px solid #ffeeba;
       transition: all 0.3s ease;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
     }
     
     .payment-card:hover {
@@ -381,6 +411,9 @@
       cursor: pointer; 
       transition: background 0.3s; 
       font-size: 14px;
+      width: 100%;
+      display: inline-block;
+      text-align: center;
     }
     
     .payment-card button:hover { 
@@ -465,6 +498,9 @@
       transform: scale(1.1); 
       background: #c82333;
     }
+
+    /* Mobile-bottom nav hidden by default on desktop */
+    .mobile-bottom-nav { display: none; }
     
     footer { 
       margin-top: 40px; 
@@ -498,6 +534,7 @@
       align-items: center; 
       z-index: 2000;
       backdrop-filter: blur(2px);
+       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.999); 
     }
     
     .modal.show { 
@@ -803,7 +840,7 @@
       color: #fff;
       padding: 12px 16px;
       border-radius: 10px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.996);
       display: flex;
       gap: 10px;
       align-items: center;
@@ -944,7 +981,7 @@
         height: 100%;
         z-index: 2200;
         padding: 80px 20px 30px 20px; /* leave space for the toggle button */
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.993);
         background: linear-gradient(180deg, #d63384, #dc3545);
         align-items: center;
         justify-content: flex-start;
@@ -1018,6 +1055,13 @@
         display: block; 
         z-index: 1000;
       }
+
+      /* Ensure payment card matches other cards on mobile */
+      .payment-grid { grid-template-columns: 1fr; gap: 16px; }
+      .payment-card, .stat-card, .register-card { width: 100%; max-width: none; margin: 0; padding: 18px; box-sizing: border-box; min-height: 120px; }
+      .payment-card button { width: 100%; }
+      .payment-section { align-items: stretch; }
+
       
       .stats-grid {
         grid-template-columns: 1fr;
@@ -1027,6 +1071,75 @@
         width: 100%;
         margin-top: 15px;
       }
+
+      /* Ensure content can scroll past the bottom nav so register button is visible */
+      .main { padding-bottom: 160px; }
+      .register-card { margin-bottom: 78px; }
+
+      /* Hide red support/help button on small screens */
+      .support-btn { display: none !important; }
+
+      /* Hide header title, search bar, and student profile on small screens to declutter UI */
+      .header-title,
+      .search-bar,
+      .student-profile {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Provide a small centered app title in the header */
+      .mobile-app-bar-title { display:block; font-weight:700; color:#dc3545; font-size:16px; text-align:center; flex:1; }
+
+      /* By default hide the top-menu icon on larger screens; show it on mobile */
+      .menu-top { display: none; }
+      @media (max-width: 900px) {
+        .menu-top { display: inline-flex !important; }
+        .mobile-bottom-nav .nav-menu { display: none !important; }
+      }
+
+      /* Ensure header controls align correctly when title is hidden and make it an app bar */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1400;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        border-bottom: 1px solid #eee;
+        transition: transform 260ms cubic-bezier(.2,.8,.2,1), box-shadow 260ms;
+        will-change: transform;
+        transform: translateY(0);
+      }
+      /* Hidden state slides header up by its measured height and removes shadow */
+      .header.header-hidden {
+        transform: translateY(calc(-1 * var(--app-header-height)));
+        box-shadow: none;
+      }
+
+      /* Keep a CSS variable in sync with header height and ensure top scroll works cleanly */
+      :root { --app-header-height: 70px; }
+      html { scroll-padding-top: var(--app-header-height); }
+
+      /* Give main content a bit more breathing space and avoid overlap with fixed header */
+      .main { padding-top: calc(var(--app-header-height) + 8px); }
+
+      /* Show mobile bottom nav as app-style footer */
+      .mobile-bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; height: 64px; background: #fff; display: flex !important; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1500; box-shadow: 0 -6px 18px rgba(0,0,0,0.06); }
+      .mobile-bottom-nav button { background: transparent; border: none; color: #495057; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 8px; }
+      .mobile-bottom-nav button i { font-size: 18px; }
+      .mobile-bottom-nav button.active { color: #dc3545; }
+      .mobile-bottom-nav .nav-menu { position: absolute; right: 12px; top: -20px; width: 52px; height: 52px; border-radius: 50%; background: #dc3545; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,0.16); }
+      .mobile-bottom-nav .nav-menu i { font-size: 18px; }
+      .main { padding-bottom: 104px; }
     }
     
     @media (max-width: 600px) {
@@ -1073,6 +1186,27 @@
       }
     }
 
+    /* Ultra-wide desktop adjustments */
+    @media (min-width: 1400px) {
+      /* Allow the container to expand on large screens */
+      .container { max-width: 1600px; grid-template-columns: 320px 1fr; }
+
+      /* Slightly larger payment cards with a centered grid */
+      .payment-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 360px)); gap: 32px; }
+      .payment-card { max-width: 360px; padding: 30px; }
+
+      /* Larger stat cards and an extra column where space allows */
+      .stat-card { padding: 30px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    }
+
+    @media (min-width: 1800px) {
+      .container { max-width: 2000px; grid-template-columns: 360px 1fr; }
+      .payment-grid { grid-template-columns: repeat(3, 1fr); gap: 36px; }
+      .payment-card { max-width: 400px; padding: 34px; }
+      .stat-card { padding: 36px; font-size: 18px; }
+      .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 36px; }
+    }
 
     /* Add to your CSS */
 .btn-login {
@@ -1503,8 +1637,7 @@
 <body>
   <div class="container">
     <!-- Profile onboarding removed: blocker omitted -->
-    <button type="button" class="menu-toggle" onclick="(typeof openMobileNav==='function'?openMobileNav():document.querySelector('.sidebar').classList.toggle('mobile'))" aria-label="Open menu">☰</button>
-    
+
     <div class="sidebar" role="navigation" aria-label="Primary navigation">
       <div class="scroll-indicator top" aria-hidden="true"></div>
       <div style="padding: 0 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); width: 100%; position:relative;">
@@ -1551,6 +1684,10 @@
           <!-- optional avatar or profile quick actions -->
             <button id="profileBtn" class="icon-button" title="Profile" aria-label="Profile">
               <i class="fas fa-user-circle"></i>
+            </button>
+            <!-- Mobile menu button (shown only on small screens) -->
+            <button id="mobileMenuTopBtn" class="icon-button menu-top" title="Menu" aria-label="Open menu" aria-haspopup="true">
+              <i class="fas fa-ellipsis-v"></i>
             </button>
         </div>
       </div>
@@ -1602,11 +1739,6 @@
             <i class="fas fa-graduation-cap"></i>
             <p>Tuition Fee</p>
             <button id="payTuitionBtn" onclick="openTuitionModal()">Pay Tuition</button>
-          </div>
-          <div class="payment-card">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <p>Other Fees</p>
-            <button id="showOtherFeesBtn" onclick="openOtherFeesModal()">Other Fees</button>
           </div>
         </div>
         
@@ -1796,7 +1928,7 @@
               try{ if(sidebarEl.classList.contains('mobile')) sidebarEl.classList.remove('mobile'); }catch(e){}
             };
             sidebarEl.addEventListener('click', sidebarClickHandler);
-            sidebarEl.addEventListener('touchstart', sidebarClickHandler, { passive: false });
+            // touchstart listener removed to avoid duplicate events and preventDefault conflicts on some mobile browsers
           }
 
           // Wire settings modal buttons
@@ -2040,23 +2172,24 @@
       <button class="close-btn" onclick="toggleModal('otherFeesModal')">&times;</button>
       <h3>Select Other Fees to Pay</h3>
       <p>In addition to tuition, the following fees complete your registration:</p>
+      <p style="color:#6c757d;font-size:13px;">Note: If you have not paid 80% of tuition yet, you will be prompted to combine tuition (80%) and the selected other fees into a single payment.</p>
       <div class="fee-option">
         <label>
-          <input type="checkbox" name="otherFee" value="SRC Dues|.1">
+          <input type="checkbox" name="otherFee" value="SRC Dues|50">
           <strong>SRC Dues</strong> – GHS 50.00
           <br><small style="color: #6c757d;">Supports student union and welfare activities.</small>
         </label>
       </div>
       <div class="fee-option">
         <label>
-          <input type="checkbox" name="otherFee" value="Medical Dues|.10">
+          <input type="checkbox" name="otherFee" value="Medical Dues|80">
           <strong>Medical Dues</strong> – GHS 80.00
           <br><small style="color: #6c757d;">Covers basic healthcare and first aid services.</small>
         </label>
       </div>
       <div class="fee-option">
         <label>
-          <input type="checkbox" name="otherFee" value="Departmental Dues|.1">
+          <input type="checkbox" name="otherFee" value="Departmental Dues|50">
           <strong>Departmental Dues</strong> – GHS 50.00
           <br><small style="color: #6c757d;">For departmental resources and academic materials.</small>
         </label>
@@ -2254,12 +2387,12 @@ async function uploadProfileAvatar(file){
     // Get public URL
     const { data: publicData } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(filename);
     const publicUrl = publicData && publicData.publicUrl;
-    // Persist to students table if possible (best-effort)
+    // Persist to student_master_db table if possible (best-effort)
     if(window.studentId){
       try{
-        const { error: updErr } = await window.__sb.from('students').update({ avatar_url: publicUrl }).eq('id', window.studentId);
-        if(updErr) console.debug('Could not update students.avatar_url (maybe column missing or RLS):', updErr);
-      }catch(e){ console.debug('students update failed', e); }
+        const { error: updErr } = await window.__sb.from('student_master_db').update({ avatar_url: publicUrl }).eq('id', window.studentId);
+        if(updErr) console.debug('Could not update student_master_db.avatar_url (maybe column missing or RLS):', updErr);
+      }catch(e){ console.debug('student_master_db update failed', e); }
     }
     try{ localStorage.setItem('studentAvatar', publicUrl); }catch(e){}
     const img = document.getElementById('profilePic'); if(img) img.src = publicUrl;
@@ -2705,6 +2838,8 @@ async function refreshTotalsFromDB(studentIdParam){
     if(!sid){ console.warn('[refreshTotalsFromDB] no studentId available'); return; }
     try{ showTotalsSpinner(true); }catch(e){}
     const sum = await fetchPaymentsSummary(sid);
+    // cache latest summary for UI helpers
+    window._lastPaymentSummary = sum || {};
     totalPaid = Number(sum.totalPaid) || 0;
     outstandingBalance = Math.max(0, totalPayable - totalPaid);
     saveTotalsToStorage();
@@ -3188,7 +3323,7 @@ async function fetchStudentProfile(){
   if(!studentId) return;
   try {
     const { data, error } = await supabase
-      .from('students')
+      .from('student_master_db')
       .select('*')
       .eq('student_id', studentId.trim())
       .maybeSingle();
@@ -3205,8 +3340,8 @@ async function fetchStudentProfile(){
     window.studentEmail     = data.email || '';
     window.studentDept      = data.department || data.school || data.department || '';
     window.studentLevel     = data.level || data.current_level || '';
-    window.studentPhone     = data.phone_number || data.phone || '';
-    window.studentSchool    = data.department || data.school || '';
+    window.studentPhone     = data.phone_number_1 || data.phone_number || data.phone || '';
+    window.studentSchool    = data.department || data.school || ''; 
     window.studentCourseType = data.course_type || '';
     window.studentOtherName = data.middle_name || data.othername || '';
     // Notification fields (may be absent on some schemas)
@@ -3251,9 +3386,7 @@ async function checkStudentProfileComplete() {
   try {
     if (studentId && String(studentId).trim() !== '') {
       const { data, error } = await supabase
-        .from('students')
-        .select('student_id, first_name, middle_name, surname, department, level, phone_number, whatsapp_number, email')
-        .eq('student_id', studentId.trim())
+        .from('student_master_db')
         .maybeSingle();
 
       if (data && !error) {
@@ -3268,16 +3401,16 @@ async function checkStudentProfileComplete() {
     const email = (window.studentEmail || localStorage.getItem('studentEmail') || '').toString().trim();
     if (email) {
       const { data: byEmail, error: emailErr } = await supabase
-        .from('students')
-        .select('student_id, first_name, middle_name, surname, department, level, phone_number, whatsapp_number, email')
+        .from('student_master_db')
+        .select('student_id, first_name, middle_name, surname, department, level, phone_number_1, phone_number, whatsapp_number, email')
         .ilike('email', email)
         .maybeSingle();
 
       if (byEmail && !emailErr) {
         // If we found a row by email, ensure runtime studentId matches for later operations
         try{ if(!studentId) { studentId = byEmail.student_id || studentId; window.studentId = studentId; localStorage.setItem('studentId', studentId || ''); } }catch(e){}
-        return !!(byEmail.first_name && byEmail.surname && byEmail.department && byEmail.level && byEmail.phone_number && byEmail.email);
-      }
+        return !!(byEmail.first_name && byEmail.surname && byEmail.department && byEmail.level && (byEmail.phone_number_1 || byEmail.phone_number) && byEmail.email);
+      } 
     }
 
     return false;
@@ -3292,7 +3425,7 @@ async function fetchStudentRow(studentIdParam){
   if(!studentIdParam) return null;
   try{
     const { data, error } = await window.__sb
-      .from('students')
+      .from('student_master_db')
       .select('*')
       .eq('student_id', studentIdParam.trim())
       .maybeSingle();
@@ -3325,20 +3458,20 @@ async function saveStudentProfile(profileData) {
       surname: profileData.surname || profileData.lastname || '',
       department: profileData.department || profileData.school || '',
       level: profileData.level || profileData.current_level || '',
-      phone_number: profileData.phone_number || profileData.phone || '',
-      whatsapp_number: profileData.whatsapp_number || profileData.phone || '',
+      phone_number: profileData.phone_number_1 || profileData.phone_number || profileData.phone || '',
+      whatsapp_number: profileData.whatsapp_number || profileData.phone || '', 
       email: profileData.email || '',
       created_at: new Date().toISOString()
     };
 
     // Use upsert so the row is created if missing, or updated if present.
     const { data, error } = await supabase
-      .from('students')
+      .from('student_master_db')
       .upsert([payload], { onConflict: 'student_id' })
       .select();
 
     if (error) {
-      console.error('Supabase upsert error for students:', error);
+      console.error('Supabase upsert error for student_master_db:', error);
       throw error;
     }
 
@@ -3428,9 +3561,21 @@ async function saveReceiptToSupabase(receipt) {
       /* Determine payment coverage for tuition payments and record percentage */
       payment_coverage: (function(){
         try{
-          const tt = (receipt.fee_breakdown || '').toString().toLowerCase();
-          if (tt.includes('tuition')){
-            const pct = Math.round((Number(receipt.amount || 0) / (typeof TUITION !== 'undefined' ? TUITION : 2550)) * 100);
+          const tt = (receipt.fee_breakdown || '').toString();
+          // Try to extract tuition amount from the breakdown if available (e.g. 'Tuition: GHS 2040')
+          const tuitionMatch = tt.match(/tuition[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i) || tt.match(/tuition[^0-9\n\r]*ghs[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i);
+          const tuitionAmt = tuitionMatch ? Number(tuitionMatch[1]) : null;
+          const tuitionBase = (typeof TUITION !== 'undefined' ? TUITION : 2550);
+          if (tuitionMatch && Number.isFinite(tuitionAmt)){
+            const pct = Math.round((tuitionAmt / tuitionBase) * 100);
+            if (pct >= 100) return 'full';
+            if (pct >= 80) return 'partial_80';
+            if (pct >= 50) return 'partial_50';
+            return 'partial';
+          }
+          // If we couldn't parse tuition-specific amount, but fee_breakdown mentions tuition, fall back to a heuristic based on total amount
+          if (tt.toLowerCase().includes('tuition')){
+            const pct = Math.round((Number(receipt.amount || 0) / tuitionBase) * 100);
             if (pct >= 100) return 'full';
             if (pct >= 80) return 'partial_80';
             if (pct >= 50) return 'partial_50';
@@ -3440,7 +3585,7 @@ async function saveReceiptToSupabase(receipt) {
           return 'full';
         }catch(e){ return null; }
       })(),
-      coverage_percent: (function(){ try{ const tt=(receipt.fee_breakdown||'').toString().toLowerCase(); if(tt.includes('tuition')) return Math.round((Number(receipt.amount||0)/(typeof TUITION!=='undefined'?TUITION:2550))*100); return 100;}catch(e){return null;} })(),
+      coverage_percent: (function(){ try{ const tt=(receipt.fee_breakdown||'').toString(); const tuitionMatch = tt.match(/tuition[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i) || tt.match(/tuition[^0-9\n\r]*ghs[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i); if(tuitionMatch) return Math.round(Number(tuitionMatch[1])/(typeof TUITION!=='undefined'?TUITION:2550)*100); if(tt.toLowerCase().includes('tuition')) return Math.round((Number(receipt.amount||0)/(typeof TUITION!=='undefined'?TUITION:2550))*100); return 100;}catch(e){return null;} })(),
       transaction_ref: receipt.reference,
       receipt_number: receipt.receipt_number || genRcptNo(),
       payment_date: receipt.date_iso || new Date().toISOString(),
@@ -3839,8 +3984,8 @@ async function savePaymentWithReceipt(feeType, amount, reference, feeBreakdown='
           let phone = window.studentPhone || window.student_phone || window.studentMobile || null;
           if (!phone) {
             try {
-              const { data: sdata, error: serr } = await window.__sb.from('students').select('phone,phone_number').eq('student_id', receipt.student_id).limit(1).maybeSingle();
-              if (!serr && sdata) phone = sdata.phone || sdata.phone_number;
+              const { data: sdata, error: serr } = await window.__sb.from('student_master_db').select('phone,phone_number_1,phone_number').eq('student_id', receipt.student_id).limit(1).maybeSingle();
+              if (!serr && sdata) phone = sdata.phone_number_1 || sdata.phone || sdata.phone_number; 
             } catch (e) { /* ignore */ }
           }
 
@@ -3937,39 +4082,87 @@ function payWithPaystack(feeType, amount, feeBreakdown=''){
 
 /* ---------- UI helper payment functions ---------- */
 window.payTuition = ()=>{
+  // Compute selected tuition option and any selected other fees inside the tuition modal
   const selected = document.querySelector('#tuitionModal input[name="tuitionAmount"]:checked');
-  if(!selected) { showModalMessage('Select 50% or 100%'); return; }
-  const amount = parseFloat(selected.value);
-  payWithPaystack('Tuition Fee', amount);
+  if(!selected) { showModalMessage('Select a tuition option'); return; }
+  const tuitionAmt = parseFloat(selected.value) || 0;
+
+  // Sum any other fees selected inside the tuition modal (name: otherFeeInTuition)
+  const feeCheckboxes = document.querySelectorAll('#tuitionModal input[name="otherFeeInTuition"]:checked');
+  let otherTotal = 0; let feeTypes = [];
+  feeCheckboxes.forEach(cb=>{
+    const [name, price] = (cb.value || '').split('|');
+    const amt = Number(price);
+    if(Number.isFinite(amt) && amt > 0){
+      otherTotal += amt;
+      feeTypes.push(name.trim());
+    }
+  });
+
+  const total = Number((tuitionAmt + otherTotal).toFixed(2));
+  if(total <= 0){ showModalMessage('Invalid payment amount'); return; }
+
+  const breakdownParts = [];
+  if(tuitionAmt > 0) breakdownParts.push(`Tuition: GHS ${gh(tuitionAmt)}`);
+  if(feeTypes.length>0) breakdownParts.push(feeTypes.join(', '));
+  const feeBreakdown = breakdownParts.join(' + ');
+  const feeTypeToPass = feeTypes.length > 0 ? `Tuition + ${feeTypes.join(', ')}` : 'Tuition Fee';
+
+  // Notify user about remaining 20% of tuition if they only paid 80%
+  try{
+    const fullTuition = typeof TUITION !== 'undefined' ? TUITION : 2550;
+    const currentSummary = window._lastPaymentSummary || { tuitionPaid: 0 };
+    const tuitionPaidBefore = Number(currentSummary.tuitionPaid || 0);
+    const paidTowardsTuition = (tuitionPaidBefore + tuitionAmt);
+    if(paidTowardsTuition < fullTuition){
+      const remainingTwenty = Math.max(0, fullTuition - paidTowardsTuition);
+      // Add a note to the confirmation modal (showModalMessage) after payment saved via savePaymentWithReceipt
+      // Proceed with payment now
+    }
+  }catch(e){ /* ignore */ }
+
+  payWithPaystack(feeTypeToPass, total, feeBreakdown);
   toggleModal('tuitionModal');
 };
 
 window.payOtherFees = ()=>{
-  const checkboxes = document.querySelectorAll('#otherFeesModal input[name="otherFee"]:checked');
-  if(checkboxes.length===0) { showModalMessage('Select at least one fee'); return; }
-  let total=0, feeTypes=[];
-  checkboxes.forEach(cb=>{
-    const [name, price] = (cb.value || '').split('|');
-    const amt = Number(price);
-    if(Number.isFinite(amt) && amt > 0){
-      total += amt;
-      // Determine the fee type based on the name
-      const lowerName = (name || '').toLowerCase();
-      if(lowerName.includes('src')) {
-        if(!feeTypes.includes('SRC Dues')) feeTypes.push('SRC Dues');
-      } else if(lowerName.includes('medical')) {
-        if(!feeTypes.includes('Medical Dues')) feeTypes.push('Medical Dues');
-      } else if(lowerName.includes('department')) {
-        if(!feeTypes.includes('Departmental Dues')) feeTypes.push('Departmental Dues');
+  // Prevent paying other fees alone if student has not paid required 80% of tuition
+  (async ()=>{
+    try{
+      // Ensure at least one other fee is selected
+      const checkboxes = document.querySelectorAll('#otherFeesModal input[name="otherFee"]:checked');
+      if(checkboxes.length===0) { showModalMessage('Select at least one fee'); return; }
+
+      const summary = await fetchPaymentsSummary(studentId);
+      const tuitionPaid = Number(summary.tuitionPaid || 0);
+      const eightyPercent = Math.round((typeof TUITION !== 'undefined' ? TUITION : 2550) * 0.8);
+      if(tuitionPaid < eightyPercent){
+        const ok = await showConfirm('Your account has not paid the required 80% of tuition. GH policy requires paying 80% of tuition and other fees together. Would you like to combine the selected other fees with the tuition payment now?');
+        if(!ok) return;
+        // Save selected fees temporarily and open tuition modal with them pre-selected
+        const selections = [];
+        checkboxes.forEach(cb=>{ const [name, price]= (cb.value||'').split('|'); if(name) selections.push(cb.value); });
+        window.pendingOtherFeesSelection = selections; // e.g. ['SRC Dues|50','Medical Dues|80']
+        toggleModal('otherFeesModal');
+        // Open tuition modal and it will pick up pendingOtherFeesSelection
+        setTimeout(()=>{ try{ openTuitionModal(); }catch(e){ toggleModal('tuitionModal'); } }, 80);
+        return;
       }
-    }
-  });
-  
-  // Determine the fee type to pass - use the specific types if available, otherwise "Other Fees"
-  let feeTypeToPass = feeTypes.length > 0 ? feeTypes.join(', ') : 'Other Fees';
-  
-  payWithPaystack(feeTypeToPass, total, feeTypeToPass);
-  toggleModal('otherFeesModal');
+      // If tuition >=80% allow paying other fees alone
+      let total=0, feeTypes=[];
+      checkboxes.forEach(cb=>{
+        const [name, price] = (cb.value || '').split('|');
+        const amt = Number(price);
+        if(Number.isFinite(amt) && amt > 0){
+          total += amt;
+          feeTypes.push(name.trim());
+        }
+      });
+      const feeTypeToPass = feeTypes.length > 0 ? feeTypes.join(', ') : 'Other Fees';
+      payWithPaystack(feeTypeToPass, total, feeTypeToPass);
+      toggleModal('otherFeesModal');
+    }catch(e){ console.error('payOtherFees error', e); showModalMessage('Could not process selected fees'); }
+  })();
 };
 
 /* Student account setup removed from dashboard: form handler omitted */
@@ -4115,7 +4308,7 @@ async function clearStudentNotification(){
   if(!studentId) return;
   try{
     const { data, error } = await supabase
-      .from('students')
+      .from('student_master_db')
       .update({ notification_unread: false })
       .eq('student_id', studentId.trim())
       .select()
@@ -4387,9 +4580,9 @@ window.registerCourses = async ()=>{
 /* ---------- Debug Function: Check Supabase Connection ---------- */
 async function checkSupabaseConnection() {
   try {
-    // Try a lightweight select on the students table to verify connectivity and permissions
+    // Try a lightweight select on the student_master_db table to verify connectivity and permissions
     const { data, error } = await supabase
-      .from('students')
+      .from('student_master_db')
       .select('student_id')
       .limit(1);
 
@@ -4473,10 +4666,65 @@ async function initDashboard(){
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDashboard);
+  document.addEventListener('DOMContentLoaded', function(){ initDashboard(); syncHeaderHeight(); });
 } else {
-  initDashboard();
+  initDashboard(); syncHeaderHeight();
 }
+
+// Keep CSS variable --app-header-height in sync with actual header size
+function syncHeaderHeight(){
+  try{
+    const header = document.querySelector('.header');
+    if(!header) return;
+    const h = header.offsetHeight || 70;
+    document.documentElement.style.setProperty('--app-header-height', h + 'px');
+  }catch(e){ console.warn('syncHeaderHeight failed', e); }
+}
+window.addEventListener('resize', syncHeaderHeight);
+// ensure it's run shortly after load in case layout shifts
+setTimeout(syncHeaderHeight, 50);
+
+// Auto-hide header on scroll (mobile-friendly). Hides when user scrolls down and shows on scroll up.
+function enableHeaderAutoHide(){
+  try{
+    const header = document.querySelector('.header');
+    if(!header) return;
+    let lastY = window.scrollY || 0;
+    let ticking = false;
+    let hidden = false;
+    const threshold = 12;
+
+    function update(){
+      const currentY = window.scrollY || 0;
+      // If mobile menu is open, keep header visible
+      if(document.querySelector('.sidebar.mobile')){
+        if(hidden){ header.classList.remove('header-hidden'); hidden = false; }
+        lastY = currentY; ticking = false; return;
+      }
+      const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--app-header-height')) || 70;
+      if(currentY > lastY + threshold && currentY > headerHeight){
+        if(!hidden){ header.classList.add('header-hidden'); hidden = true; }
+      }else if(currentY < lastY - threshold || currentY <= 20){
+        if(hidden){ header.classList.remove('header-hidden'); hidden = false; }
+      }
+      lastY = currentY;
+      ticking = false;
+    }
+
+    function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+
+    // Clean up an existing listener if present
+    if(window._headerAutoHideCleanup) try{ window._headerAutoHideCleanup(); }catch(e){}
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window._headerAutoHideCleanup = ()=>{ try{ window.removeEventListener('scroll', onScroll); header.classList.remove('header-hidden'); }catch(e){} };
+
+    // ensure header visible initially
+    header.classList.remove('header-hidden');
+  }catch(e){ console.warn('enableHeaderAutoHide failed', e); }
+}
+// Re-initialize auto-hide on resize (keeps behavior responsive)
+window.addEventListener('resize', ()=>{ try{ if(window._headerAutoHideCleanup) window._headerAutoHideCleanup(); enableHeaderAutoHide(); syncHeaderHeight(); }catch(e){} });
 
 // Setup a realtime listener for payments so the stat cards update immediately
 async function setupRealtimePaymentsSubscription(){
@@ -4560,12 +4808,60 @@ window.openTuitionModal = async ()=>{
       optionsHTML = '<div style="padding:15px; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; color:#856404;"><strong>No valid payment options available.</strong></div>';
     }
     
-    document.getElementById('tuitionOptionsContainer').innerHTML = optionsHTML;
-    
+    // Build the combined UI: tuition options + other-fees checkboxes and a combined total
+    const otherFees = [
+      { name: 'SRC Dues', amount: (typeof FEE_SRC !== 'undefined' ? FEE_SRC : 50) },
+      { name: 'Medical Dues', amount: (typeof FEE_MEDICAL !== 'undefined' ? FEE_MEDICAL : 80) },
+      { name: 'Departmental Dues', amount: (typeof FEE_DEPT !== 'undefined' ? FEE_DEPT : 50) }
+    ];
+
+    let otherHTML = '<div style="margin-top:14px;border-top:1px dashed #eee;padding-top:12px;">';
+    otherHTML += '<h4 style="margin:0 0 8px 0;">Other Fees (select to include in this payment)</h4>';
+    otherFees.forEach(f => {
+      const disabled = (f.name.toLowerCase().includes('src') && (summary.srcPaid > 0)) || (f.name.toLowerCase().includes('medical') && (summary.medPaid > 0)) || (f.name.toLowerCase().includes('department') && (summary.deptPaid > 0));
+      otherHTML += `<div class="fee-option"><label><input type="checkbox" name="otherFeeInTuition" value="${f.name}|${f.amount}" ${disabled? 'disabled':''}> <strong>${f.name}</strong> – GHS ${gh(f.amount)} <span class="fee-status" style="margin-left:8px;">${disabled ? '✓ Paid' : '✗ Not Paid'}</span></label></div>`;
+    });
+    otherHTML += '<div style="margin-top:10px;"><strong>Combined total:</strong> <span id="combinedTotalDisplay">GHS 0.00</span></div>';
+    otherHTML += '<div style="margin-top:8px;color:#666;"><small id="tuitionRemainingAfter">Remaining tuition after this payment: GHS 0.00</small></div>';
+    otherHTML += '</div>';
+
+    document.getElementById('tuitionOptionsContainer').innerHTML = optionsHTML + otherHTML;
+
     // Auto-select first available option
     const firstRadio = document.querySelector('#tuitionModal input[type="radio"]');
     if(firstRadio) firstRadio.checked = true;
-    
+
+    // Pre-select any pending other fees (if user came from the other-fees modal)
+    try{
+      const pending = window.pendingOtherFeesSelection || [];
+      pending.forEach(val => {
+        const el = document.querySelector(`#tuitionModal input[name="otherFeeInTuition"][value="${val}"]`);
+        if(el && !el.disabled) el.checked = true;
+      });
+      delete window.pendingOtherFeesSelection;
+    }catch(e){}
+
+    // Update combined total when options change
+    function updateCombinedTotal(){
+      const tuitionSel = document.querySelector('#tuitionModal input[name="tuitionAmount"]:checked');
+      const tuitionVal = tuitionSel ? Number(tuitionSel.value || 0) : 0;
+      let otherSum = 0;
+      document.querySelectorAll('#tuitionModal input[name="otherFeeInTuition"]:checked').forEach(cb=>{ const parts=(cb.value||'').split('|'); otherSum += Number(parts[1]||0); });
+      const combined = (tuitionVal + otherSum) || 0;
+      const el = document.getElementById('combinedTotalDisplay'); if(el) el.textContent = `GHS ${gh(combined)}`;
+      try{
+        const fullTuitionLocal = typeof fullTuition !== 'undefined' ? fullTuition : (typeof TUITION !== 'undefined' ? TUITION : 2550);
+        const beforePaid = Number(tuitionPaid || 0);
+        const remainingAfter = Math.max(0, fullTuitionLocal - (beforePaid + tuitionVal));
+        const remEl = document.getElementById('tuitionRemainingAfter'); if(remEl) remEl.textContent = `Remaining tuition after this payment: GHS ${gh(remainingAfter)}`;
+      }catch(e){ }
+      return combined;
+    }
+
+    document.querySelectorAll('#tuitionModal input[name="tuitionAmount"]').forEach(i=>i.addEventListener('change', updateCombinedTotal));
+    document.querySelectorAll('#tuitionModal input[name="otherFeeInTuition"]').forEach(i=>i.addEventListener('change', updateCombinedTotal));
+    setTimeout(updateCombinedTotal, 40);
+
     toggleModal('tuitionModal');
   }catch(e){
     console.error('openTuitionModal error:', e);
@@ -5030,11 +5326,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Close menu when a nav link is clicked (mobile)
       document.addEventListener('click', function(e){
-        const target = e.target;
-        if(!target) return;
-        if(target.closest && target.closest('.sidebar') && target.tagName === 'A'){
+        const a = (e.target && e.target.closest && e.target.closest('a')) || null;
+        if(!a) return;
+        if(a.closest && a.closest('.sidebar')){
           const s = document.querySelector('.sidebar');
-          if(s && s.classList.contains('mobile')) s.classList.remove('mobile');
+          if(s && s.classList.contains('mobile')) closeMobileNav();
         }
       });
       
@@ -5357,7 +5653,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               if (studentId) {
                 const { data: sdata, error: serr } = await supabase
-                  .from('students')
+                  .from('student_master_db')
                   .select('*')
                   .eq('student_id', studentId)
                   .maybeSingle();
@@ -5833,21 +6129,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update password in Supabase
         let passwordUpdated = false;
         
-        // Try updating 'students' table first
+        // Try updating 'student_master_db' table first
         try{
           const { error } = await supabase
-            .from('students')
+            .from('student_master_db')
             .update({ password: newPassword })
             .eq('student_id', studentId);
           
           if(!error){
             passwordUpdated = true;
-            console.log('Password updated in students table');
+            console.log('Password updated in student_master_db table');
           } else {
-            console.debug('Could not update students table:', error);
+            console.debug('Could not update student_master_db table:', error);
           }
         }catch(err){
-          console.debug('students table update failed:', err);
+          console.debug('student_master_db table update failed:', err);
         }
         
         // Try updating 'newstudents' table if students update didn't work
@@ -5896,6 +6192,44 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   </script>
+  <!-- Mobile app bottom nav -->
+  <div class="mobile-bottom-nav" aria-hidden="false">
+    <button id="navHomeBtn" aria-label="Home"><i class="fas fa-home"></i><span>Home</span></button>
+    <button id="navPaymentsBtn" aria-label="Payments"><i class="fas fa-credit-card"></i><span>Pay</span></button>
+    <button id="navHistoryBtn" aria-label="History"><i class="fas fa-history"></i><span>History</span></button>
+    <button id="navSupportBtn" aria-label="Support"><i class="fas fa-headset"></i><span>Help</span></button>
+    <!-- Floating menu button on far right corner -->
+    <button id="navMenuBtn" class="nav-menu" aria-label="Menu" title="Menu" aria-haspopup="true" aria-controls="mobileMenu"><i class="fas fa-ellipsis-v"></i></button>
+  </div>
+
+  <script>
+    (function(){
+      document.addEventListener('DOMContentLoaded', function(){
+        try{
+          const navHome = document.getElementById('navHomeBtn');
+          const navPayments = document.getElementById('navPaymentsBtn');
+          const navHistory = document.getElementById('navHistoryBtn');
+          const navSupport = document.getElementById('navSupportBtn');
+
+          if(navHome) navHome.addEventListener('click', ()=>{ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+          if(navPayments) navPayments.addEventListener('click', ()=>{ try{ openTuitionModal(); }catch(e){ toggleModal('tuitionModal'); } });
+
+          if(navHistory) navHistory.addEventListener('click', ()=>{ document.getElementById('openHistoryBtn')?.click(); });
+
+          if(navSupport) navSupport.addEventListener('click', ()=>{ document.getElementById('supportBtn')?.click(); });
+
+          const navMenu = document.getElementById('navMenuBtn');
+          if(navMenu) navMenu.addEventListener('click', ()=>{ try{ openMobileNav(); }catch(e){ console.warn('openMobileNav failed', e); } });
+
+          const mobileTopMenuBtn = document.getElementById('mobileMenuTopBtn');
+          if(mobileTopMenuBtn) mobileTopMenuBtn.addEventListener('click', ()=>{ try{ openMobileNav(); }catch(e){ console.warn('openMobileNav failed', e); } });
+
+        }catch(e){ console.warn('mobile nav init failed', e); }
+      });
+    })();
+  </script>
+
   <!-- Password reset UX removed -->
 </body>
 </html>

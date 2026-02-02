@@ -1,14 +1,14 @@
--- Update payments table to respect the new students table structure
+-- Update payments table to respect the new student_master_db table structure
 -- This migration keeps historical data but aligns foreign key references
 
 -- Step 1: Add updated_at column if it doesn't exist
 ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();
 
--- Step 2: Add foreign key constraint to students table (if not exists)
+-- Step 2: Add foreign key constraint to student_master_db table (if not exists)
 ALTER TABLE payments 
 ADD CONSTRAINT fk_payments_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE RESTRICT 
 ON UPDATE CASCADE;
 
@@ -31,8 +31,8 @@ SELECT
   s.middle_name,
   s.surname,
   s.email,
-  s.phone_number,
-  s.whatsapp_number,
+  s.phone_number_1,
+  s.whatsapp,
   s.department,
   s.level,
   p.amount,
@@ -48,7 +48,7 @@ SELECT
   p.updated_at,
   p.reference_code
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 ORDER BY p.payment_date DESC;
 
 -- Step 7: Create a view for payments summary by student
@@ -64,7 +64,7 @@ SELECT
   COUNT(CASE WHEN p.status = 'completed' THEN 1 END) as completed_payments,
   COUNT(CASE WHEN p.status = 'pending' THEN 1 END) as pending_payments,
   MAX(p.payment_date) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
 GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.department, s.level;
 
@@ -76,8 +76,8 @@ GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.
 -- ORDER BY ordinal_position;
 
 -- Notes:
--- - The payments table now respects the students table with proper FK relationships
+-- - The payments table now respects the student_master_db table with proper FK relationships
 -- - Use the payments_with_student_info view to get complete student data with payments
 -- - Historical data in student_name, student_email, department, level columns is preserved
--- - New queries should fetch from students table rather than storing in payments table
+-- - New queries should fetch from student_master_db table rather than storing in payments table
 -- - This reduces data redundancy and ensures data consistency

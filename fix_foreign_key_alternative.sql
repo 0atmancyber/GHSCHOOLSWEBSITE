@@ -11,7 +11,7 @@ DROP CONSTRAINT IF EXISTS fk_payments_students CASCADE;
 ALTER TABLE payments
 ADD CONSTRAINT fk_payments_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE SET NULL 
 ON UPDATE CASCADE;
 

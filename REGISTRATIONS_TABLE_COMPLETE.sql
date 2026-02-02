@@ -58,7 +58,7 @@ CREATE INDEX IF NOT EXISTS idx_registrations_school ON registrations(school);
 CREATE INDEX IF NOT EXISTS idx_registrations_program ON registrations(program);
 CREATE INDEX IF NOT EXISTS idx_registrations_created_at ON registrations(created_at);
 
--- SECTION 3: Add foreign key constraint to students table
+-- SECTION 3: Add foreign key constraint to student_master_db table
 -- ========================================================================
 ALTER TABLE IF EXISTS registrations
 DROP CONSTRAINT IF EXISTS fk_registrations_students CASCADE;
@@ -66,7 +66,7 @@ DROP CONSTRAINT IF EXISTS fk_registrations_students CASCADE;
 ALTER TABLE registrations
 ADD CONSTRAINT fk_registrations_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE CASCADE 
 ON UPDATE CASCADE;
 
@@ -97,8 +97,8 @@ SELECT
   s.level,
   s.course_type
 FROM registrations r
-LEFT JOIN students s ON r.student_id = s.student_id
-ORDER BY r.created_at DESC;
+LEFT JOIN student_master_db s ON r.student_id = s.student_id
+ORDER BY r.created_at DESC; 
 
 -- View 2: Registration summary by status
 DROP VIEW IF EXISTS registrations_by_status;
@@ -138,7 +138,7 @@ SELECT DISTINCT
   r.created_at,
   s.course_type
 FROM registrations r
-LEFT JOIN students s ON r.student_id = s.student_id
+LEFT JOIN student_master_db s ON r.student_id = s.student_id
 ORDER BY r.created_at DESC;
 
 -- SECTION 5: Database documentation
@@ -146,7 +146,7 @@ ORDER BY r.created_at DESC;
 COMMENT ON TABLE registrations IS 'Stores course registration records for students including selected courses, personal information snapshot at time of registration, and registration status';
 
 COMMENT ON COLUMN registrations.id IS 'Auto-incrementing primary key';
-COMMENT ON COLUMN registrations.student_id IS 'Student ID (references students table)';
+COMMENT ON COLUMN registrations.student_id IS 'Student ID (references student_master_db table)';
 COMMENT ON COLUMN registrations.student_firstname IS 'Student first name at time of registration';
 COMMENT ON COLUMN registrations.student_othername IS 'Student other/middle name at time of registration';
 COMMENT ON COLUMN registrations.student_lastname IS 'Student last name at time of registration';
@@ -171,7 +171,7 @@ COMMENT ON COLUMN registrations.source_payload IS 'Complete source data JSON pay
 COMMENT ON COLUMN registrations.created_at IS 'Timestamp when registration was created';
 COMMENT ON COLUMN registrations.updated_at IS 'Timestamp when registration was last updated';
 
-COMMENT ON VIEW registrations_with_student_info IS 'View showing registrations with current student information joined from students table';
+COMMENT ON VIEW registrations_with_student_info IS 'View showing registrations with current student information joined from student_master_db table';
 COMMENT ON VIEW registrations_by_status IS 'View showing count of registrations grouped by status';
 COMMENT ON VIEW registrations_by_department IS 'View showing registration statistics by department';
 COMMENT ON VIEW students_registered IS 'View showing all unique students who have registered with their latest registration info';
@@ -185,7 +185,7 @@ COMMENT ON VIEW students_registered IS 'View showing all unique students who hav
 -- ✓ Course selection arrays (courses + core courses)
 -- ✓ Contact information at registration time
 -- ✓ Status tracking (pending, completed, etc)
--- ✓ Foreign key linking to students table with CASCADE delete
+-- ✓ Foreign key linking to student_master_db table with CASCADE delete
 -- ✓ Performance indexes on frequently queried columns
 -- ✓ 4 useful views for reporting and analysis
 -- ✓ Complete documentation

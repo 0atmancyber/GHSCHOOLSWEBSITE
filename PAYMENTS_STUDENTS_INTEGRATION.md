@@ -1,9 +1,9 @@
-# Payments Table Update - Respecting New Students Table
+# Payments Table Update - Respecting New student_master_db Table
 
 ## Your Payments Table Structure
 ```
 id (int8) - Primary key
-student_id (text) - Foreign key to students table
+student_id (text) - Foreign key to student_master_db table
 student_name (text) - Stored for historical reference
 student_email (text) - Stored for historical reference  
 department (text) - Stored for historical reference
@@ -23,7 +23,7 @@ reference_code (text) - Reference code
 phone (varchar) - Phone number
 ```
 
-## Your Students Table Structure
+## Your student_master_db Table Structure
 ```
 id (int8) - Primary key
 student_id (varchar) - Student ID
@@ -56,9 +56,9 @@ updated_at (timestamp) - Update timestamp
    - This maintains historical accuracy
 
 4. **Fetch fresh data** - When you need current student info:
-   - Join payments with students table
+   - Join payments with student_master_db table
    - Use the `payments_with_student_info` view
-   - Always prioritize students table as source of truth
+   - Always prioritize student_master_db table as source of truth
 
 ## Example Queries
 
@@ -78,14 +78,14 @@ WHERE department = 'Technology';
 ### Check for data discrepancies
 ```sql
 SELECT * FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 WHERE p.student_name != (s.first_name || ' ' || s.surname);
 ```
 
 ## What Changed
 
 ✅ **Added:**
-- Foreign key relationship to students table
+- Foreign key relationship to student_master_db table
 - Indexes for performance
 - Views for consistent data retrieval
 - updated_at timestamp
@@ -97,7 +97,7 @@ WHERE p.student_name != (s.first_name || ' ' || s.surname);
 
 ✅ **Best Practices:**
 - Payment records store snapshot of student data
-- Students table is source of truth for current info
+- student_master_db table is source of truth for current info
 - Views ensure consistency when joining data
 
 ## No Application Code Changes Required
@@ -105,4 +105,4 @@ WHERE p.student_name != (s.first_name || ' ' || s.surname);
 The dashboard code will continue to work as-is because:
 - Payment insertion still stores all the fields
 - Payment queries still work the same
-- Student info lookup uses new students table for fresh data
+- Student info lookup uses new student_master_db table for fresh data

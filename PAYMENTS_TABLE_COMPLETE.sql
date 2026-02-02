@@ -30,7 +30,7 @@
 --   reference_code text,
 --   phone varchar,
 --   updated_at timestamptz DEFAULT now(),
---   CONSTRAINT fk_payments_students FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE RESTRICT ON UPDATE CASCADE
+--   CONSTRAINT fk_payments_student_master_db FOREIGN KEY (student_id) REFERENCES student_master_db(student_id) ON DELETE RESTRICT ON UPDATE CASCADE
 -- );
 
 -- ============================================================================
@@ -43,11 +43,11 @@ ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now
 -- Step 2: Drop existing foreign key if it exists (to avoid conflicts)
 ALTER TABLE payments DROP CONSTRAINT IF EXISTS fk_payments_students CASCADE;
 
--- Step 3: Add foreign key constraint to link with students table
+-- Step 3: Add foreign key constraint to link with student_master_db table
 ALTER TABLE payments 
 ADD CONSTRAINT fk_payments_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE RESTRICT 
 ON UPDATE CASCADE;
 
@@ -74,8 +74,9 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
-  s.whatsapp_number,
+  s.whatsapp,
   s.department,
   s.level,
   p.amount,
@@ -91,8 +92,8 @@ SELECT
   p.updated_at,
   p.reference_code
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
-ORDER BY p.payment_date DESC;
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
+ORDER BY p.payment_date DESC; 
 
 -- Step 7: Create view - payment summary by student
 CREATE OR REPLACE VIEW payments_summary_by_student AS
@@ -103,6 +104,7 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
   s.department,
   s.level,
@@ -112,9 +114,9 @@ SELECT
   COUNT(CASE WHEN p.status = 'failed' THEN 1 END) as failed_payments,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_amount_paid,
   COALESCE(MAX(p.payment_date), NULL) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.department, s.level; 
 
 -- Step 8: Create view - student payment eligibility
 CREATE OR REPLACE VIEW student_payment_eligibility AS
@@ -122,15 +124,16 @@ SELECT
   s.student_id,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
   s.department,
   s.level,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_paid,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) >= 5000 as is_eligible_80_percent,
   COALESCE(MAX(p.payment_date), s.created_at) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level, s.created_at;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.phone_number, s.department, s.level, s.created_at; 
 
 -- Step 9: Update existing payment records with current timestamp
 UPDATE payments SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL;
@@ -207,11 +210,11 @@ UPDATE payments SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL;
 -- Run this to find payments with invalid student_id
 -- SELECT DISTINCT p.student_id 
 -- FROM payments p 
--- WHERE NOT EXISTS (SELECT 1 FROM students s WHERE s.student_id = p.student_id);
+-- WHERE NOT EXISTS (SELECT 1 FROM student_master_db s WHERE s.student_id = p.student_id);
 
 -- To delete orphaned payment records:
 -- DELETE FROM payments 
--- WHERE student_id NOT IN (SELECT student_id FROM students);
+-- WHERE student_id NOT IN (SELECT student_id FROM student_master_db);
 
 -- ============================================================================
 -- TABLE STRUCTURE SUMMARY
@@ -219,7 +222,7 @@ UPDATE payments SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL;
 
 -- PAYMENTS TABLE COLUMNS:
 -- - id: bigserial PRIMARY KEY
--- - student_id: varchar(50) - Foreign key to students table
+-- - student_id: varchar(50) - Foreign key to student_master_db table
 -- - student_name: text - Stored for audit trail
 -- - student_email: text - Stored for audit trail
 -- - department: text - Stored for audit trail

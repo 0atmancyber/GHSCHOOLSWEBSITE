@@ -1906,12 +1906,12 @@
                             // Prefer student_id (string) lookup first to avoid PostgREST filtering issues
                             let dbRow = null;
                             try{
-                                const { data: d1, error: e1 } = await supabaseClient.from('students').select('*').eq('student_id', String(sid)).maybeSingle();
+                                const { data: d1, error: e1 } = await supabaseClient.from('student_master_db').select('*').eq('student_id', String(sid)).maybeSingle();
                                 if(!e1 && d1) dbRow = d1;
                             }catch(e){ /* ignore */ }
                             if(!dbRow){
                                 try{
-                                    const { data: d2, error: e2 } = await supabaseClient.from('students').select('*').eq('id', String(sid)).maybeSingle();
+                                    const { data: d2, error: e2 } = await supabaseClient.from('student_master_db').select('*').eq('id', String(sid)).maybeSingle();
                                     if(!e2 && d2) dbRow = d2;
                                 }catch(e){ /* ignore */ }
                             }
@@ -2177,12 +2177,12 @@
                             const sid = st.id || st.student_id || st.studentId;
                             let dbRow = null;
                             try{
-                                const { data: d1, error: e1 } = await supabaseClient.from('students').select('*').eq('student_id', String(sid)).maybeSingle();
+                                const { data: d1, error: e1 } = await supabaseClient.from('student_master_db').select('*').eq('student_id', String(sid)).maybeSingle();
                                 if(!e1 && d1) dbRow = d1;
                             }catch(e1){ /* ignore */ }
                             if(!dbRow){
                                 try{
-                                    const { data: d2, error: e2 } = await supabaseClient.from('students').select('*').eq('id', String(sid)).maybeSingle();
+                                    const { data: d2, error: e2 } = await supabaseClient.from('student_master_db').select('*').eq('id', String(sid)).maybeSingle();
                                     if(!e2 && d2) dbRow = d2;
                                 }catch(e2){ /* ignore */ }
                             }

@@ -32,11 +32,11 @@ CREATE TABLE IF NOT EXISTS payments (
   required_amount numeric DEFAULT 0
 );
 
--- Add foreign key constraint to students table
+-- Add foreign key constraint to student_master_db table
 ALTER TABLE payments 
 ADD CONSTRAINT fk_payments_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE RESTRICT 
 ON UPDATE CASCADE;
 
@@ -96,8 +96,8 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
-  s.phone_number,
-  s.whatsapp_number,
+  s.phone_number_1,
+  s.whatsapp,
   s.department,
   s.level,
   p.amount,
@@ -113,7 +113,7 @@ SELECT
   p.updated_at,
   p.reference_code
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 ORDER BY p.payment_date DESC;
 
 -- View 2: Student Payment Eligibility (respects required amounts)
@@ -186,9 +186,9 @@ SELECT
     ELSE '✗ NOT ELIGIBLE - MORE PAYMENT REQUIRED'
   END as eligibility_status,
   COALESCE(MAX(p.payment_date), s.created_at) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level, s.created_at;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.department, s.level, s.created_at;
 
 -- View 3: Detailed payment breakdown by student
 CREATE OR REPLACE VIEW student_payment_details AS
@@ -227,7 +227,7 @@ SELECT
     WHEN s.level = 'Level 400' THEN 3500
     ELSE 2500
   END) * 0.80, 2) - COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'successful') THEN p.amount ELSE 0 END), 0)) as amount_still_owing_for_eligibility
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
 GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.department, s.level;
 

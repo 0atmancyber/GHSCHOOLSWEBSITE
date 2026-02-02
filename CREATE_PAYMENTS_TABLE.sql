@@ -28,11 +28,11 @@ CREATE TABLE IF NOT EXISTS payments (
   updated_at timestamptz DEFAULT now()
 );
 
--- Step 2: Add foreign key constraint to students table
+-- Step 2: Add foreign key constraint to student_master_db table
 ALTER TABLE payments 
-ADD CONSTRAINT fk_payments_students 
+ADD CONSTRAINT fk_payments_student_master_db 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE RESTRICT 
 ON UPDATE CASCADE;
 
@@ -54,6 +54,7 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
   s.whatsapp_number,
   s.department,
@@ -71,7 +72,7 @@ SELECT
   p.updated_at,
   p.reference_code
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 ORDER BY p.payment_date DESC;
 
 -- Step 5: Create view - payment summary by student
@@ -83,6 +84,7 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
   s.department,
   s.level,
@@ -92,9 +94,9 @@ SELECT
   COUNT(CASE WHEN p.status = 'failed' THEN 1 END) as failed_payments,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_amount_paid,
   COALESCE(MAX(p.payment_date), NULL) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.phone_number, s.department, s.level; 
 
 -- Step 6: Create view - student payment eligibility
 CREATE OR REPLACE VIEW student_payment_eligibility AS
@@ -102,15 +104,16 @@ SELECT
   s.student_id,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
+  s.phone_number_1,
   s.phone_number,
   s.department,
   s.level,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_paid,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) >= 5000 as is_eligible_80_percent,
   COALESCE(MAX(p.payment_date), s.created_at) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level, s.created_at;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.phone_number, s.department, s.level, s.created_at; 
 
 -- Done! The payments table is now created and ready to use.
 
@@ -140,7 +143,7 @@ GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.
 
 -- PAYMENTS TABLE:
 -- ├── id: bigserial (Primary Key)
--- ├── student_id: varchar(50) - Foreign Key to students table
+-- ├── student_id: varchar(50) - Foreign Key to student_master_db table
 -- ├── student_name: text - Student name snapshot
 -- ├── student_email: text - Email snapshot
 -- ├── department: text - Department snapshot

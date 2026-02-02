@@ -2718,16 +2718,16 @@
           .maybeSingle();
 
         const { data: studentData, error: studentError } = await window.__sb
-          .from('students')
+          .from('student_master_db')
           .select('*')
           .eq('student_id', studentId)
           .maybeSingle();
 
-        // Use whichever has data (prefer students table if both exist)
+        // Use whichever has data (prefer student_master_db if both exist)
         const student = studentData || newStudentData;
 
         if (!student) {
-          console.warn('Student not found in either newstudents or students table');
+          console.warn('Student not found in either newstudents or student_master_db table');
           return;
         }
 
@@ -2903,9 +2903,9 @@
         }
 
         // Fetch student info from multiple sources
-        const [masterRes, studentsRes, newstudentsRes] = await Promise.all([
+        const [studentsRes, masterRes, newstudentsRes] = await Promise.all([
           window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
-          window.__sb.from('students').select('*').eq('student_id', studentId).maybeSingle(),
+          window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
           window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle()
         ]);
 
@@ -3218,11 +3218,11 @@
         document.getElementById('allStudentsLoading').style.display = 'flex';
         document.getElementById('allStudentsTable').style.display = 'none';
 
-        // Fetch all students from students table with new schema
-        const { data: studentsData, error: studentsError } = await window.__sb.from('students').select('id, student_id, first_name, middle_name, surname, email, phone_number, whatsapp_number, department, level').order('created_at', { ascending: false });
+        // Fetch all students from student_master_db table with new schema
+        const { data: studentsData, error: studentsError } = await window.__sb.from('student_master_db').select('id, student_id, first_name, middle_name, surname, email, phone_number, whatsapp_number, department, level').order('created_at', { ascending: false });
 
         if (studentsError) {
-          console.error('Error loading students from students table:', studentsError);
+          console.error('Error loading students from student_master_db table:', studentsError);
           showToast('Error loading students', 'error');
           return;
         }
@@ -3254,7 +3254,7 @@
         document.getElementById('allStudentsLoading').style.display = 'none';
         document.getElementById('allStudentsTable').style.display = 'table';
 
-        console.log('Loaded', allStudents.length, 'students from students table');
+        console.log('Loaded', allStudents.length, 'students from student_master_db table');
       } catch (error) {
         console.error('Error in loadAllStudents:', error);
         showToast('Error loading students', 'error');
@@ -3284,17 +3284,16 @@
 
         const q = String(studentId).trim();
         
-        // Fetch from multiple sources: student_master_db, students, and newstudents
-        const { data: masterData, error: masterError } = await window.__sb.from('student_master_db').select('*').eq('student_id', q).maybeSingle();
-        const { data: studentData, error: studentError } = await window.__sb.from('students').select('*').eq('student_id', q).maybeSingle();
+        // Fetch from multiple sources: students and newstudents
+        const { data: studentData, error: studentError } = await window.__sb.from('student_master_db').select('*').eq('student_id', q).maybeSingle();
         const { data: newStudentData, error: newStudentError } = await window.__sb.from('newstudents').select('*').eq('student_id', q).maybeSingle();
         
         document.getElementById('allStudentsLoading').style.display = 'none';
         const tbody = document.getElementById('allStudentsTableBody');
         tbody.innerHTML = '';
         
-        // Use whichever source has data (prefer student_master_db, then students, then newstudents)
-        const data = masterData || studentData || newStudentData;
+        // Use whichever source has data (prefer students, then newstudents)
+        const data = studentData || newStudentData;
         
         if (!data) {
           showToast('Student not found in any table', 'info');
@@ -3303,7 +3302,7 @@
         }
 
         // Log which table the data came from
-        const source = masterData ? 'student_master_db' : (studentData ? 'students' : 'newstudents');
+        const source = studentData ? 'students' : 'newstudents';
         console.log(`Student fetched from: ${source}`, data);
 
         // Build payment summary fields similar to loadAllStudents mapping
@@ -3377,7 +3376,7 @@
       searchAccountById(v.trim());
     }
 
-    // Render all students table
+    // Render all student_master_db table
     function renderAllStudentsTable() {
       const tbody = document.getElementById('allStudentsTableBody');
       tbody.innerHTML = '';
@@ -3429,22 +3428,18 @@
     // View detailed student information (fetch fresh from DB and show all fields)
     async function viewStudentDetail(studentId) {
       try {
-        // Fetch student from multiple sources in parallel - prioritize students table with new schema
+        // Fetch student from student_master_db and newstudents in parallel
         let studentRecord = null;
         
-        const [studentsRes, masterRes, newstudentsRes] = await Promise.all([
-          window.__sb.from('students').select('*').eq('student_id', studentId).maybeSingle(),
+        const [studentsRes, newstudentsRes] = await Promise.all([
           window.__sb.from('student_master_db').select('*').eq('student_id', studentId).maybeSingle(),
           window.__sb.from('newstudents').select('*').eq('student_id', studentId).maybeSingle()
         ]);
 
-        // Prefer students > master_db > newstudents
+        // Prefer students > newstudents
         if (studentsRes.data) {
           studentRecord = studentsRes.data;
-          console.log('Student found in students table');
-        } else if (masterRes.data) {
-          studentRecord = masterRes.data;
-          console.log('Student found in student_master_db');
+          console.log('Student found in student_master_db table');
         } else if (newstudentsRes.data) {
           studentRecord = newstudentsRes.data;
           console.log('Student found in newstudents table');
@@ -5375,7 +5370,7 @@ const { data: payment, error } = await window.__sb
 
         if (error) throw error;
 
-        // Also delete from students table
+        // Also delete from student_master_db table
 await window.__sb
 
         showToast('Applicant deleted successfully');
@@ -7162,12 +7157,12 @@ await window.__sb
 
         allRegistrations = data || [];
         
-        // Enrich registrations with student info from students table for missing fields
+        // Enrich registrations with student info from student_master_db table for missing fields
         for (let reg of allRegistrations) {
           if ((!reg.student_full_name || reg.student_full_name === 'null' || reg.student_full_name === '') && reg.student_id) {
             try {
               const { data: studentData } = await window.__sb
-                .from('students')
+                .from('student_master_db')
                 .select('first_name, middle_name, surname, department')
                 .eq('student_id', reg.student_id)
                 .single();

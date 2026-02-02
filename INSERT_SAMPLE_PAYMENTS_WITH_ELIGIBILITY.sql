@@ -42,7 +42,7 @@ SELECT
   s.student_id,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
-  s.phone_number,
+  s.phone_number_1,
   s.department,
   s.level,
   -- Required amount for this level (based on level)
@@ -98,9 +98,9 @@ SELECT
     ELSE '✗ NOT ELIGIBLE - MORE PAYMENT REQUIRED'
   END as eligibility_status,
   COALESCE(MAX(p.payment_date), s.created_at) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level, s.created_at;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.department, s.level, s.created_at;
 
 -- Step 5: Create view for detailed payment tracking by student
 DROP VIEW IF EXISTS student_payment_details CASCADE;
@@ -150,7 +150,7 @@ SELECT
     WHEN s.level = 'Level 400' THEN 3500
     ELSE 2500
   END) * 0.80, 2) - COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'successful') THEN p.amount ELSE 0 END), 0)) as amount_still_owing_for_eligibility
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
 GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.department, s.level;
 

@@ -1961,7 +1961,7 @@
         if (errNew) console.warn('Could not query newstudents for id generation', errNew);
 
         const { data: recentStudents, error: errStudents } = await supabaseClient
-          .from('students')
+          .from('student_master_db')
           .select('student_id,created_at')
           .ilike('student_id', `${prefix}%`)
           .order('created_at', { ascending: false })
@@ -2390,11 +2390,11 @@
 
           // Use email as the conflict key so repeated submissions update the same student row.
           const { data: studentData, error: studentError } = await supabaseClient
-            .from('students')
+            .from('student_master_db')
             .upsert([studentPayload], { onConflict: 'email' });
 
           if (studentError) {
-            console.warn('Could not upsert students table:', studentError);
+            console.warn('Could not upsert student_master_db table:', studentError);
           } else {
             console.log('Upserted student record:', studentData);
           }

@@ -1,0 +1,8 @@
+This file documents the mobile nav markup inserted into dashboard.html:
+
+<div class="mobile-bottom-nav" aria-hidden="false">
+  <button id="navHomeBtn" aria-label="Home"><i class="fas fa-home"></i><span>Home</span></button>
+  <button id="navPaymentsBtn" aria-label="Payments"><i class="fas fa-credit-card"></i><span>Pay</span></button>
+  <button id="navHistoryBtn" aria-label="History"><i class="fas fa-history"></i><span>History</span></button>
+  <button id="navSupportBtn" aria-label="Support"><i class="fas fa-headset"></i><span>Help</span></button>
+</div>

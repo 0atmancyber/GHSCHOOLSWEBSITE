@@ -9,8 +9,8 @@ SELECT
   s.middle_name,
   s.surname,
   s.email,
-  s.phone_number,
-  s.whatsapp_number,
+  s.phone_number_1,
+  s.whatsapp,
   s.department,
   s.level,
   p.amount,
@@ -18,7 +18,7 @@ SELECT
   p.payment_date,
   p.status
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 WHERE p.status IN ('completed', 'approved', 'success')
 ORDER BY p.payment_date DESC;
 
@@ -36,7 +36,7 @@ SELECT
   COUNT(p.id) as payment_count,
   SUM(CASE WHEN p.status IN ('completed', 'approved', 'success') THEN p.amount ELSE 0 END) as total_paid,
   MAX(p.payment_date) as last_payment
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
 GROUP BY s.student_id, s.first_name, s.middle_name, s.surname, s.department, s.level;
 
@@ -53,7 +53,7 @@ SELECT
   p.level,
   s.level AS current_level
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 WHERE 
   (p.student_name IS DISTINCT FROM (s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname))
   OR p.student_email IS DISTINCT FROM s.email

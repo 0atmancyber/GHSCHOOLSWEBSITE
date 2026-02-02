@@ -1,8 +1,8 @@
 -- Rename current_level column to level
-ALTER TABLE students RENAME COLUMN current_level TO level;
+ALTER TABLE student_master_db RENAME COLUMN current_level TO level;
 
 -- Rename school column to department
-ALTER TABLE students RENAME COLUMN school TO department;
+ALTER TABLE student_master_db RENAME COLUMN school TO department;
 
 -- Update the view for students by department
 CREATE OR REPLACE VIEW students_by_department AS
@@ -13,7 +13,7 @@ SELECT
   COUNT(CASE WHEN level = 'Level 200' THEN 1 END) as level_200,
   COUNT(CASE WHEN level = 'Level 300' THEN 1 END) as level_300,
   COUNT(CASE WHEN level = 'Level 400' THEN 1 END) as level_400
-FROM students
+FROM student_master_db
 GROUP BY department;
 
 -- Update the view for students by level
@@ -21,7 +21,7 @@ CREATE OR REPLACE VIEW students_by_level AS
 SELECT 
   level,
   COUNT(*) as total_students
-FROM students
+FROM student_master_db
 GROUP BY level
 ORDER BY level;
 

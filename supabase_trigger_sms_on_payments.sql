@@ -9,7 +9,7 @@ begin
   -- Only enqueue on INSERT or when status transitions to a paid/approved state
   if (tg_op = 'INSERT') then
     if (new.status is not null and lower(new.status) in ('paid','approved')) then
-      -- try to pick phone from payment row first, then from students table
+      -- try to pick phone from payment row first, then from student_master_db table
       declare
         _phone text := null;
         _student_phone text := null;
@@ -17,7 +17,7 @@ begin
         _phone := coalesce(new.phone, new.student_phone, new.phone_number, null);
         if _phone is null and new.student_id is not null then
           begin
-            select coalesce(phone, phone_number, mobile, '') into _student_phone from public.students where student_id = new.student_id limit 1;
+            select coalesce(phone, phone_number, mobile, '') into _student_phone from public.student_master_db where student_id = new.student_id limit 1;
             if _student_phone = '' then _student_phone := null; end if;
           exception when others then
             _student_phone := null;
@@ -44,7 +44,7 @@ begin
         _phone := coalesce(new.phone, new.student_phone, new.phone_number, null);
         if _phone is null and new.student_id is not null then
           begin
-            select coalesce(phone, phone_number, mobile, '') into _student_phone from public.students where student_id = new.student_id limit 1;
+            select coalesce(phone, phone_number, mobile, '') into _student_phone from public.student_master_db where student_id = new.student_id limit 1;
             if _student_phone = '' then _student_phone := null; end if;
           exception when others then
             _student_phone := null;

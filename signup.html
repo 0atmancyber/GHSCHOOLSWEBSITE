@@ -151,8 +151,6 @@
       max-width: 100%;
       margin-top: 300px;
       margin-bottom: 60px;
-      position: relative;
-      overflow: hidden;
     }
     
     @media (max-width: 480px) {
@@ -160,6 +158,9 @@
         flex: 0 0 100%;
         padding: 32px 20px;
       }
+    }
+      position: relative;
+      overflow: hidden;
     }
 
     .login-card::before {
@@ -1063,17 +1064,17 @@
         if (!client) return;
 
         try {
-          // Search in students table
+          // Search in student_master_db table
           const { data: studentData, error } = await client
-            .from('students')
-            .select('phone_number')
+            .from('student_master_db')
+            .select('phone_number_1')
             .eq('student_id', studentId)
             .maybeSingle();
 
-          if (!error && studentData && studentData.phone_number) {
-            // Auto-fill the password field with the phone number
-            document.getElementById('gen-phone').value = studentData.phone_number;
-            console.log('Phone number auto-filled from students table');
+          if (!error && studentData && studentData.phone_number_1) {
+            // Auto-fill the password field with the phone number (phone_number_1 column)
+            document.getElementById('gen-phone').value = studentData.phone_number_1;
+            console.log('Phone number auto-filled from student_master_db (phone_number_1)');
           }
         } catch (err) {
           console.warn('Error auto-filling phone number:', err);
@@ -1132,7 +1133,7 @@
         if(client){
           try{
             const [sRes, nRes] = await Promise.allSettled([
-              client.from('students').select('*').eq('student_id', sid).maybeSingle(),
+              client.from('student_master_db').select('*').eq('student_id', sid).maybeSingle(),
               client.from('newstudents').select('*').eq('student_id', sid).maybeSingle()
             ]);
             if(sRes.status === 'fulfilled' && sRes.value && sRes.value.data) studentRow = sRes.value.data;
@@ -1161,9 +1162,9 @@
         // - Else: show 'not found' modal.
 
         if (studentRow) {
-          // Case 1: Student found in students table
-          const storedPhone = studentRow.phone || studentRow.phone_number || '';
-          const storedPassword = studentRow.password || '';
+          // Case 1: Student found in student_master_db table
+          const storedPhone = studentRow.phone_number_1 || studentRow.phone || studentRow.phone_number || '';
+          const storedPassword = studentRow.password || ''; 
           
           // Normalize phone numbers for comparison (remove spaces, dashes, etc.)
           const normalizePhone = (p) => (p || '').replace(/[\s\-\(\)]/g, '');
@@ -1214,7 +1215,7 @@
                     localStorage.setItem('student_id', s.student_id);
                   }
                   if (s.email) localStorage.setItem('studentEmail', s.email);
-                  if (s.phone) localStorage.setItem('studentPhone', s.phone);
+                  if (s.phone_number_1 || s.phone || s.phone_number) localStorage.setItem('studentPhone', s.phone_number_1 || s.phone || s.phone_number);
                   localStorage.setItem('studentName', fullName);
                   localStorage.setItem('studentFirstName', s.firstname || s.first_name || '');
                   localStorage.setItem('studentLastName', s.lastname || s.last_name || '');
@@ -1253,7 +1254,7 @@
               localStorage.setItem('student_id', normalized.student_id);
             }
             if(normalized.email) localStorage.setItem('studentEmail', normalized.email);
-            if(normalized.phone) localStorage.setItem('studentPhone', normalized.phone);
+            if(normalized.phone_number_1 || normalized.phone || normalized.phone_number) localStorage.setItem('studentPhone', normalized.phone_number_1 || normalized.phone || normalized.phone_number);
             localStorage.setItem('studentName', fullName);
             localStorage.setItem('studentFirstName', normalized.firstname || '');
             localStorage.setItem('studentLastName', normalized.lastname || '');

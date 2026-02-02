@@ -66,14 +66,14 @@
       try {
         const now = new Date().toISOString();
         // Try update by student_id first
-        let upd = await sb.from('students').update({ deleted_at: now }).eq('student_id', studentId).select();
+        let upd = await sb.from('student_master_db').update({ deleted_at: now }).eq('student_id', studentId).select();
         if (upd.error || !upd.data || upd.data.length === 0) {
           // Try other possible columns
-          try { upd = await sb.from('students').update({ deleted_at: now }).eq('admission_number', studentId).select(); } catch(e){}
+          try { upd = await sb.from('student_master_db').update({ deleted_at: now }).eq('admission_number', studentId).select(); } catch(e){}
         }
         if (upd.error || !upd.data || upd.data.length === 0) {
           // Try by numeric id
-          try { upd = await sb.from('students').update({ deleted_at: now }).eq('id', studentId).select(); } catch(e){}
+          try { upd = await sb.from('student_master_db').update({ deleted_at: now }).eq('id', studentId).select(); } catch(e){}
         }
 
         // If still nothing updated, try newstudents table (in case student is there)
@@ -2826,18 +2826,18 @@
           if (!found) {
             // try DB lookup by student_id or email
             try {
-              const { data: sdata } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${idOrEmail},email.eq.${idOrEmail}`).limit(1).maybeSingle();
+              const { data: sdata } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${idOrEmail},email.eq.${idOrEmail}`).limit(1).maybeSingle();
               if (sdata) found = sdata;
             } catch(e){}
           }
-          const raw = found ? (found.phone || found.phone_number) : null;
+          const raw = found ? (found.phone_number_1 || found.phone || found.phone_number) : null;
           const normalized = normalizePhone(raw);
           if (normalized) phones.push(normalized);
         }
       } else if (payload.target && payload.target.startsWith('level')) {
         // broadcast to students matching level in cache
         const level = payload.target; // e.g., level100
-        (allStudents || []).forEach(s => { if ((s.level || '').toString().toLowerCase() === level.toLowerCase() || (s.level || '').toString().includes(level.replace('level',''))) { const p = normalizePhone(s.phone||s.phone_number); if (p) phones.push(p); } });
+        (allStudents || []).forEach(s => { if ((s.level || '').toString().toLowerCase() === level.toLowerCase() || (s.level || '').toString().includes(level.replace('level',''))) { const p = normalizePhone(s.phone_number_1 || s.phone || s.phone_number); if (p) phones.push(p); } }); 
       } else if (payload.target === 'all') {
         (allStudents || []).forEach(s => { const p = normalizePhone(s.phone||s.phone_number); if (p) phones.push(p); });
       }
@@ -3379,7 +3379,7 @@
       const program = student.program || student.program_applying_for || 'Not assigned';
       const department = student.department || 'Not assigned';
       const email = student.email || 'N/A';
-      const phone = student.phone || student.phone_number || 'N/A';
+      const phone = student.phone_number_1 || student.phone || student.phone_number || 'N/A';
 
       document.getElementById('studentInfoContent').innerHTML = `
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
@@ -3542,11 +3542,11 @@
               // Resolve phone from cache or DB
               let studentRecord = allStudents.find(s => (s.student_id || s.admission_number || '').toString() === (studentKey || '').toString());
               if (!studentRecord) { allStudents = await fetchAllStudents(); studentRecord = allStudents.find(s => (s.student_id || s.admission_number || '').toString() === (studentKey || '').toString()); }
-              let rawPhone = studentRecord?.phone || studentRecord?.phone_number || group[0].student_phone || group[0].phone;
+              let rawPhone = studentRecord?.phone_number_1 || studentRecord?.phone || studentRecord?.phone_number || group[0].student_phone || group[0].phone;
               if (!rawPhone) {
                 try {
-                  const { data: sdata, error: serr } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${studentKey},admission_number.eq.${studentKey}`).limit(1).maybeSingle();
-                  if (!serr && sdata) rawPhone = sdata.phone || sdata.phone_number;
+                  const { data: sdata, error: serr } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${studentKey},admission_number.eq.${studentKey}`).limit(1).maybeSingle();
+                  if (!serr && sdata) rawPhone = sdata.phone_number_1 || sdata.phone || sdata.phone_number;
                 } catch (e) { /* ignore */ }
               }
               function normalizePhoneLocal(phone){ if(!phone) return null; let d=String(phone).replace(/\D/g,''); if(d.charAt(0)==='0') d='233'+d.slice(1); return d.length<9?null:d; }
@@ -3603,11 +3603,11 @@
               allStudents = await fetchAllStudents();
               student = allStudents.find(s => s.student_id === studentId || s.admission_number === studentId);
             }
-            let rawPhone = student?.phone || student?.phone_number || p?.student_phone || p?.phone;
+            let rawPhone = student?.phone_number_1 || student?.phone || student?.phone_number || p?.student_phone || p?.phone;
             if (!rawPhone) {
               try {
-                const { data: sdata, error: serr } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${studentId},admission_number.eq.${studentId}`).limit(1).maybeSingle();
-                if (!serr && sdata) rawPhone = sdata.phone || sdata.phone_number;
+                const { data: sdata, error: serr } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${studentId},admission_number.eq.${studentId}`).limit(1).maybeSingle();
+                if (!serr && sdata) rawPhone = sdata.phone_number_1 || sdata.phone || sdata.phone_number;
               } catch (e) { /* ignore */ }
             }
 
@@ -3671,12 +3671,12 @@
         const message = `Dear ${getFullName(student) || 'Student'}, our records show outstanding fees: ${summary}. Please settle the balance to complete registration.`;
 
         // Try to find/format phone
-        let rawPhone = student?.phone || student?.phone_number || payment?.student_phone || payment?.phone;
+        let rawPhone = student?.phone_number_1 || student?.phone || student?.phone_number || payment?.student_phone || payment?.phone;
         if (!rawPhone) {
           // Try read from DB directly
           try {
-            const { data, error } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${studentId},admission_number.eq.${studentId}`).limit(1).maybeSingle();
-            if (!error && data) rawPhone = data.phone || data.phone_number;
+            const { data, error } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${studentId},admission_number.eq.${studentId}`).limit(1).maybeSingle();
+            if (!error && data) rawPhone = data.phone_number_1 || data.phone || data.phone_number;
           } catch (e) { /* ignore */ }
         }
 
@@ -3765,7 +3765,7 @@
             if (!studentRecord) { allStudents = await fetchAllStudents(); studentRecord = allStudents.find(s => String(s.student_id || s.admission_number || s.id) === sid); }
             let rawPhone = studentRecord?.phone || studentRecord?.phone_number || '';
             if (!rawPhone) {
-              try { const { data: sdata } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${sid},admission_number.eq.${sid}`).limit(1).maybeSingle(); if (sdata) rawPhone = sdata.phone || sdata.phone_number; } catch(_) {}
+              try { const { data: sdata } = await sb.from('student_master_db').select('phone,phone_number_1,phone_number').or(`student_id.eq.${sid},admission_number.eq.${sid}`).limit(1).maybeSingle(); if (sdata) rawPhone = sdata.phone_number_1 || sdata.phone || sdata.phone_number; } catch(_) {}
             }
             function normalizePhoneLocal(phone){ if(!phone) return null; let d=String(phone).replace(/\D/g,''); if(d.charAt(0)==='0') d='233'+d.slice(1); return d.length<9?null:d; }
             const formatted = normalizePhoneLocal(rawPhone);
@@ -3964,7 +3964,7 @@
             // find phone
             let studentRec = allStudents.find(s => s.student_id === studentIdKey || s.admission_number === studentIdKey || String(s.id) === String(studentIdKey));
             if (!studentRec) {
-              try { const { data: sdata } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${studentIdKey},admission_number.eq.${studentIdKey}`).limit(1).maybeSingle(); if (sdata) studentRec = sdata; } catch(_){ }
+              try { const { data: sdata } = await sb.from('student_master_db').select('phone,phone_number').or(`student_id.eq.${studentIdKey},admission_number.eq.${studentIdKey}`).limit(1).maybeSingle(); if (sdata) studentRec = sdata; } catch(_){ }
             }
             const rawPhone = studentRec?.phone || studentRec?.phone_number || inserted.student_phone || inserted.phone;
             const formattedPhone = normalizePhone(rawPhone);
@@ -4244,7 +4244,7 @@
             // find phone from cache or DB
             let studentRec = allStudents.find(s => s.student_id === studentIdKey || s.admission_number === studentIdKey || String(s.id) === String(studentIdKey));
             if (!studentRec) {
-              try { const { data: sdata } = await sb.from('students').select('phone,phone_number').or(`student_id.eq.${studentIdKey},admission_number.eq.${studentIdKey}`).limit(1).maybeSingle(); if (sdata) studentRec = sdata; } catch(_){ }
+              try { const { data: sdata } = await sb.from('student_master_db').select('phone,phone_number').or(`student_id.eq.${studentIdKey},admission_number.eq.${studentIdKey}`).limit(1).maybeSingle(); if (sdata) studentRec = sdata; } catch(_){ }
             }
 
             const rawPhone = studentRec?.phone || studentRec?.phone_number || inserted.student_phone || inserted.phone;
@@ -5189,7 +5189,7 @@
             last_notification_at: new Date().toISOString()
           };
 
-          const res = await sb.from('students').update(payload).eq('student_id', studentId).select();
+          const res = await sb.from('student_master_db').update(payload).eq('student_id', studentId).select();
           if (res && res.error) {
             const msg = res.error.message || String(res.error);
             if (msg.includes('Could not find the table') || msg.toLowerCase().includes('not found') || msg.includes('404')) {
@@ -5709,7 +5709,7 @@
           if (!student || !(student.phone || student.phone_number)) {
             const id = currentApprovedPayment.student_id;
             if (id) {
-              const { data, error } = await sb.from('students').select('student_id,admission_number,phone,phone_number').or(`student_id.eq.${id},admission_number.eq.${id}`).limit(1).maybeSingle();
+              const { data, error } = await sb.from('student_master_db').select('student_id,admission_number,phone,phone_number').or(`student_id.eq.${id},admission_number.eq.${id}`).limit(1).maybeSingle();
               if (!error && data) student = Object.assign({}, student || {}, data);
             }
           }
@@ -6028,7 +6028,7 @@
                   }
                 }
               } else {
-                // gather from students/payments depending on recipient
+                // gather from student_master_db/payments depending on recipient
                 if (recipient === 'all') {
                   allStudents.forEach(s => { const p = normalizeForSms(s.phone || s.phone_number || s.mobile); if(p) list.push(p); });
                 } else if (recipient === 'pending' || recipient === 'approved') {

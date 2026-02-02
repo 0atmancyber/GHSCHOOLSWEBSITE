@@ -9,5 +9,5 @@ SELECT
   school,
   phone_number,
   whatsapp_number
-FROM students
+FROM student_master_db
 WHERE student_id = 'GHTS7099';

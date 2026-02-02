@@ -28,11 +28,11 @@ ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now
 -- Step 3: Drop existing foreign key if it exists (to avoid conflicts)
 ALTER TABLE payments DROP CONSTRAINT IF EXISTS fk_payments_students CASCADE;
 
--- Step 4: Add foreign key constraint to link with students table
+-- Step 4: Add foreign key constraint to link with student_master_db table
 ALTER TABLE payments 
 ADD CONSTRAINT fk_payments_students 
 FOREIGN KEY (student_id) 
-REFERENCES students(student_id) 
+REFERENCES student_master_db(student_id) 
 ON DELETE RESTRICT 
 ON UPDATE CASCADE;
 
@@ -83,7 +83,7 @@ SELECT
   p.updated_at,
   p.reference_code
 FROM payments p
-LEFT JOIN students s ON p.student_id = s.student_id
+LEFT JOIN student_master_db s ON p.student_id = s.student_id
 ORDER BY p.payment_date DESC;
 
 -- Step 9: Create a view for payments summary by student
@@ -96,7 +96,7 @@ SELECT
   s.surname,
   s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.surname AS full_name,
   s.email,
-  s.phone_number,
+  s.phone_number_1,
   s.department,
   s.level,
   COUNT(p.id) as total_payments,
@@ -105,9 +105,9 @@ SELECT
   COUNT(CASE WHEN p.status = 'failed' THEN 1 END) as failed_payments,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_amount_paid,
   COALESCE(MAX(p.payment_date), NULL) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
-GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number, s.department, s.level;
+GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.phone_number_1, s.department, s.level;
 
 -- Step 10: Create a view for payment eligibility status
 -- Shows which students have paid enough to be eligible for registration
@@ -121,7 +121,7 @@ SELECT
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) as total_paid,
   COALESCE(SUM(CASE WHEN p.status IN ('approved', 'completed', 'success', 'paid') THEN p.amount ELSE 0 END), 0) >= 5000 as is_eligible_80_percent,
   COALESCE(MAX(p.payment_date), s.created_at) as last_payment_date
-FROM students s
+FROM student_master_db s
 LEFT JOIN payments p ON s.student_id = p.student_id
 GROUP BY s.id, s.student_id, s.first_name, s.middle_name, s.surname, s.email, s.department, s.level, s.created_at;
 
@@ -174,13 +174,13 @@ UPDATE payments SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL;
 -- IF YOU GET CONSTRAINT ERRORS:
 -- ============================================================================
 -- If you get "insert or update on table 'payments' violates foreign key constraint"
--- it means there are payment records with student_id values that don't exist in students table.
+-- it means there are payment records with student_id values that don't exist in student_master_db table.
 -- 
 -- To find mismatched records, run:
 -- SELECT DISTINCT p.student_id 
 -- FROM payments p 
--- WHERE NOT EXISTS (SELECT 1 FROM students s WHERE s.student_id = p.student_id);
+-- WHERE NOT EXISTS (SELECT 1 FROM student_master_db s WHERE s.student_id = p.student_id);
 --
--- To fix: Either add the missing students or delete the orphaned payment records:
+-- To fix: Either add the missing student_master_db rows or delete the orphaned payment records:
 -- DELETE FROM payments 
--- WHERE student_id NOT IN (SELECT student_id FROM students);
+-- WHERE student_id NOT IN (SELECT student_id FROM student_master_db);

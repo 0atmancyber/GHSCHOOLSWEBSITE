@@ -1,5 +1,5 @@
--- Create students table (Updated with email field)
-CREATE TABLE IF NOT EXISTS students (
+-- Create student_master_db table (Updated with email field)
+CREATE TABLE IF NOT EXISTS student_master_db (
   id BIGSERIAL PRIMARY KEY,
   student_id VARCHAR(50) NOT NULL UNIQUE,
   first_name VARCHAR(100) NOT NULL,
@@ -15,22 +15,22 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 -- Create index on student_id for faster lookups
-CREATE INDEX IF NOT EXISTS idx_students_student_id ON students(student_id);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_student_id ON student_master_db(student_id);
 
 -- Create index on school for filtering by school/department
-CREATE INDEX IF NOT EXISTS idx_students_school ON students(school);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_school ON student_master_db(school);
 
 -- Create index on current_level for filtering by level
-CREATE INDEX IF NOT EXISTS idx_students_current_level ON students(current_level);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_current_level ON student_master_db(current_level);
 
 -- Create index on phone_number for contact purposes
-CREATE INDEX IF NOT EXISTS idx_students_phone ON students(phone_number);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_phone ON student_master_db(phone_number);
 
 -- Create index on whatsapp_number for contact purposes
-CREATE INDEX IF NOT EXISTS idx_students_whatsapp ON students(whatsapp_number);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_whatsapp ON student_master_db(whatsapp_number);
 
 -- Create index on email for faster lookups
-CREATE INDEX IF NOT EXISTS idx_students_email ON students(email);
+CREATE INDEX IF NOT EXISTS idx_student_master_db_email ON student_master_db(email);
 
 -- Optional: Create a view to count students by department
 CREATE OR REPLACE VIEW students_by_department AS
@@ -41,7 +41,7 @@ SELECT
   COUNT(CASE WHEN current_level = 'Level 200' THEN 1 END) as level_200,
   COUNT(CASE WHEN current_level = 'Level 300' THEN 1 END) as level_300,
   COUNT(CASE WHEN current_level = 'Level 400' THEN 1 END) as level_400
-FROM students
+FROM student_master_db
 GROUP BY school;
 
 -- Optional: Create a view to count students by level
@@ -49,25 +49,25 @@ CREATE OR REPLACE VIEW students_by_level AS
 SELECT 
   current_level as level,
   COUNT(*) as total_students
-FROM students
+FROM student_master_db
 GROUP BY current_level
 ORDER BY current_level;
 
 -- Enable RLS (Row Level Security) - optional but recommended
-ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_master_db ENABLE ROW LEVEL SECURITY;
 
 -- Create policy to allow anyone to insert (for registration)
-CREATE POLICY "Allow insert for anonymous users" ON students
+CREATE POLICY "Allow insert for anonymous users" ON student_master_db
   FOR INSERT
   WITH CHECK (true);
 
 -- Create policy to allow anyone to read their own data
-CREATE POLICY "Allow read for all users" ON students
+CREATE POLICY "Allow read for all users" ON student_master_db
   FOR SELECT
   USING (true);
 
 -- Create policy to allow users to update their own data
-CREATE POLICY "Allow update for users" ON students
+CREATE POLICY "Allow update for users" ON student_master_db
   FOR UPDATE
   USING (true)
   WITH CHECK (true);

@@ -5,7 +5,7 @@
 create extension if not exists "pgcrypto";
 
 -- 1) Students
-create table if not exists public.students (
+create table if not exists public.student_master_db (
   id uuid primary key default gen_random_uuid(),
   first_name text,
   last_name text,
@@ -21,8 +21,8 @@ create table if not exists public.students (
   metadata jsonb default '{}'::jsonb,
   created_at timestamptz default now()
 );
-create unique index if not exists idx_students_email on public.students((lower(email))) where email is not null;
-create index if not exists idx_students_phone on public.students(phone) where phone is not null;
+create unique index if not exists idx_student_master_db_email on public.student_master_db((lower(email))) where email is not null;
+create index if not exists idx_student_master_db_phone on public.student_master_db(phone) where phone is not null;
 
 -- 2) Programs (catalog)
 create table if not exists public.programs (
@@ -53,7 +53,7 @@ create index if not exists idx_courses_program_id on public.courses(program_id);
 -- 4) Registrations (student -> enrolment record)
 create table if not exists public.registrations (
   id uuid primary key default gen_random_uuid(),
-  student_id uuid references public.students(id) on delete cascade,
+  student_id uuid references public.student_master_db(id) on delete cascade,
   level text,
   school text,
   program_id uuid references public.programs(id) on delete set null,
@@ -72,7 +72,7 @@ create index if not exists idx_registrations_created_at on public.registrations(
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   reference text unique,
-  student_id uuid references public.students(id) on delete set null,
+  student_id uuid references public.student_master_db(id) on delete set null,
   registration_id uuid references public.registrations(id) on delete set null,
   amount numeric(12,2) not null default 0,
   currency text default 'GHS',
@@ -161,7 +161,7 @@ begin
   _phone := coalesce(p_row.phone, null);
   if _phone is null and p_row.student_id is not null then
     begin
-      select phone into _student_phone from public.students where id = p_row.student_id limit 1;
+      select phone into _student_phone from public.student_master_db where id = p_row.student_id limit 1;
     exception when others then
       _student_phone := null;
     end;
@@ -189,8 +189,8 @@ execute function public.enqueue_sms_on_payment();
 
 -- 10) Useful constraints / policies hints (commented)
 -- Example: enable Row Level Security and create policies for authenticated users.
--- alter table public.students enable row level security;
--- create policy "Allow authenticated insert" on public.students
+-- alter table public.student_master_db enable row level security;
+-- create policy "Allow authenticated insert" on public.student_master_db
 --   for insert using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- End of consolidated schema

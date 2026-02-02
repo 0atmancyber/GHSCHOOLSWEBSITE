@@ -803,7 +803,7 @@
       try {
         // Try matching student_id first
         let { data: row, error } = await supabaseClient
-          .from('students')
+          .from('student_master_db')
           .select('*')
           .eq('student_id', admissionNumber)
           .maybeSingle();
@@ -811,7 +811,7 @@
         if (!row) {
           // Try matching admission_number
           const res = await supabaseClient
-            .from('students')
+            .from('student_master_db')
             .select('*')
             .eq('admission_number', admissionNumber)
             .maybeSingle();
@@ -820,7 +820,7 @@
         }
 
         if (error) {
-          console.warn('Error checking students table:', error);
+          console.warn('Error checking student_master_db table:', error);
           return null;
         }
 
@@ -841,7 +841,7 @@
       // Update the info display elements
       document.getElementById('infoName').textContent = computedFullName || '—';
       document.getElementById('infoEmail').textContent = studentData.email || '—';
-      document.getElementById('infoPhone').textContent = studentData.phone_number || '—';
+      document.getElementById('infoPhone').textContent = studentData.phone_number_1 || studentData.phone_number || studentData.phone || '—';
       document.getElementById('infoAdmissionNo').textContent = studentData.student_id || '—';
       document.getElementById('infoProgram').textContent = studentData.program_applying_for || '—';
       document.getElementById('infoSchool').textContent = SCHOOL_DISPLAY_NAMES[studentData.school_selected] || '—';
@@ -864,8 +864,7 @@
         localStorage.setItem('student_data', JSON.stringify(studentData));
       } catch (e) { console.warn('Could not store full student_data in localStorage', e); }
       // Store student's contact and id so dashboard fallbacks and fetches can use them
-      if (studentData.phone_number) localStorage.setItem('student_phone', studentData.phone_number);
-      if (studentData.phone) localStorage.setItem('student_phone', studentData.phone);
+      if (studentData.phone_number_1 || studentData.phone_number || studentData.phone) localStorage.setItem('student_phone', studentData.phone_number_1 || studentData.phone_number || studentData.phone);
       if (studentData.email) localStorage.setItem('studentEmail', studentData.email);
       if (studentData.student_id) localStorage.setItem('studentId', studentData.student_id);
       // For backward compatibility, also set admission_number if present

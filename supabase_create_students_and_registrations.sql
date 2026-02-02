@@ -4,8 +4,8 @@
 -- Ensure pgcrypto is available for gen_random_uuid()
 create extension if not exists "pgcrypto";
 
--- Students table: store full student info
-create table if not exists students (
+-- student_master_db table: store full student info
+create table if not exists student_master_db (
   id uuid primary key default gen_random_uuid(),
   first_name text,
   last_name text,
@@ -29,7 +29,7 @@ create index if not exists idx_students_phone on students(phone) where phone is 
 -- Registrations table: links to students and stores course selections
 create table if not exists registrations (
   id uuid primary key default gen_random_uuid(),
-  student_id uuid references students(id) on delete cascade,
+  student_id uuid references student_master_db(id) on delete cascade,
   level text,
   school text,
   program text,

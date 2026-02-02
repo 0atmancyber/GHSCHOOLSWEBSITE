@@ -1126,9 +1126,9 @@
                 if (Array.isArray(registrations)) mergedRegs.push(...registrations);
                 analyticsData.registrations = mergedRegs;
 
-                // Fetch students table
+                // Fetch student_master_db table
                 const { data: students, error: stuError } = await supabaseClient
-                    .from('students')
+                    .from('student_master_db')
                     .select('*');
 
                 // Fetch newstudents (fresh admissions pipeline)

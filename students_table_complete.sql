@@ -1,8 +1,8 @@
--- Complete Students Table SQL
+-- Complete student_master_db Table SQL
 -- This table stores all student information for the GH Schools system
 
--- STEP 1: Create the students table
-CREATE TABLE IF NOT EXISTS students (
+-- STEP 1: Create the student_master_db table
+CREATE TABLE IF NOT EXISTS student_master_db (
   id BIGSERIAL PRIMARY KEY,
   student_id VARCHAR(50) UNIQUE NOT NULL,
   first_name VARCHAR(100) NOT NULL,
@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 -- STEP 2: Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_student_id ON students(student_id);
-CREATE INDEX IF NOT EXISTS idx_department ON students(department);
-CREATE INDEX IF NOT EXISTS idx_level ON students(level);
-CREATE INDEX IF NOT EXISTS idx_course_type ON students(course_type);
-CREATE INDEX IF NOT EXISTS idx_email ON students(email);
-CREATE INDEX IF NOT EXISTS idx_phone_number ON students(phone_number);
+CREATE INDEX IF NOT EXISTS idx_student_id ON student_master_db(student_id);
+CREATE INDEX IF NOT EXISTS idx_department ON student_master_db(department);
+CREATE INDEX IF NOT EXISTS idx_level ON student_master_db(level);
+CREATE INDEX IF NOT EXISTS idx_course_type ON student_master_db(course_type);
+CREATE INDEX IF NOT EXISTS idx_email ON student_master_db(email);
+CREATE INDEX IF NOT EXISTS idx_phone_number ON student_master_db(phone_number);
 CREATE INDEX IF NOT EXISTS idx_created_at ON students(created_at);

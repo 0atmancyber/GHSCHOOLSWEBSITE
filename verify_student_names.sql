@@ -11,10 +11,10 @@ SELECT
   whatsapp_number,
   created_at,
   updated_at
-FROM students
+FROM student_master_db
 WHERE student_id = 'GHTS7099'
 ORDER BY updated_at DESC
-LIMIT 1;
+LIMIT 1; 
 
 -- If you want to verify multiple students with names populated:
 SELECT 
@@ -23,7 +23,7 @@ SELECT
   email,
   school,
   current_level
-FROM students
+FROM student_master_db
 WHERE first_name != 'Unknown' 
   AND first_name IS NOT NULL
   AND first_name != ''

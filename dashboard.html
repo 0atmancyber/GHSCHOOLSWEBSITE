@@ -253,6 +253,7 @@
       color: white; 
       border-radius: 15px; 
       padding: 25px 30px; 
+      margin-top: 16px; 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
@@ -1161,13 +1162,18 @@
       .welcome-banner { 
         flex-direction: column; 
         text-align: center; 
-        padding: 20px; 
-        gap: 20px; 
+        padding: 12px 14px; 
+        gap: 12px; 
+        width: 100%;
+        box-sizing: border-box;
+        overflow: visible;
+        align-items: center;
+        margin-top: 38px;
       }
-      
-      .welcome-banner img { 
-        width: 70px; 
-      }
+      .welcome-banner > div { width: 100%;  }
+      .welcome-banner h2 { font-size: 18px; line-height: 1.2; margin: 0; word-break: break-word; hyphens: auto; }
+      .welcome-banner p { margin: 0; font-size: 13px; color: rgba(255,255,255,0.95); }
+      .welcome-banner img { width: 60px; flex-shrink: 0; margin-top: 8px; }
       
       .modal-content {
         padding: 20px;

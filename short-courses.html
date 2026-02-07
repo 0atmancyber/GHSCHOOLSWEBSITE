@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Short Courses - GH Schools</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Master a professional skill in 3 or 6 months. GH Schools offers intensive weekend short courses in Fashion, Media, and Technology.">
+  <meta name="keywords"
+    content="Short courses Ghana, Fashion school, Media school, GH Schools, Weekend intensive, Foundation Craft">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="GH Schools Short Courses Catalog">
+  <meta property="og:description"
+    content="Master a professional skill in 3 months. Intensive weekend classes available now.">
+  <meta property="og:image" content="images/foundation craft - bridal wear.jpeg">
+  <meta property="og:url" content="https://ghschools.online/short-courses.html">
+  <meta property="og:type" content="website">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="short-courses.css">
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+</head>
+
+<body>
+
+  <!-- Top Bar (Consistent with Index) -->
+  <div class="top-bar">
+    <div class="contact-info">
+      <span><i class="fas fa-envelope" href="mailto:admissions@ghschools.online"></i> admissions@ghschools.online</span>
+      <span><a href="tel:+233302424909"><i class="fas fa-phone"></i> +233 302 424 909</a></span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="images/GH Schools.png" alt="Logo">
+      <div class="logo-text">
+        <strong>GH <br> SCHOOLS </strong>
+        <small>TRAIN • PRACTICE • ACHIEVE</small>
+      </div>
+    </div>
+    <div class="hamburger" onclick="openMobileNav()">☰</div>
+    <nav class="nav-container">
+      <!-- The JS will clone the nav from here if needed, 
+             or you can paste your full nav structure here for SEO -->
+      <div class="nav-links">
+        <a href="index.html">HOME</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Slider -->
+  <section class="hero-slider">
+    <div class="slider-container" id="heroSlider">
+      <div class="slide active" style="background-image: url('images/cosmetology.jpg')"></div>
+      <div class="slide" style="background-image: url('images/fash.jpg')"></div>
+      <div class="slide" style="background-image: url('images/GH\ Media.jpg')"></div>
+      <div class="slide" style="background-image: url('images/mine.jpg')"></div>
+      <div class="slide" style="background-image: url('images/GH\ Catering.jpg')"></div>
+    </div>
+    <div class="hero-overlay">
+      <h1 class="animate__animated animate__fadeInDown">Short Course Catalog</h1>
+      <p class="animate__animated animate__fadeInUp">Intensive Weekend Programs for Busy Professionals</p>
+    </div>
+  </section>
+
+  <!-- Description Card -->
+  <section class="intro-section">
+    <div class="description-card animate__animated animate__fadeIn">
+      <h2>Supercharge Your Ambition</h2>
+      <p>Our Short Course Catalog is designed for workers, business executives, and beginners who want to master a craft
+        without committing to a full-time academic schedule. With 3 months of intensive training (Saturdays for theory
+        and Sundays for practice), you gain industry-standard skills to start your own business or enhance your career.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter Section -->
+  <section class="filter-bar">
+    <div class="filter-group">
+      <label>Filter by School:</label>
+      <select id="schoolFilter" onchange="filterCourses()">
+        <option value="all">All Schools</option>
+        <option value="fashion">Fashion School</option>
+        <option value="media">Media School</option>
+        <option value="tech">Technology School</option>
+        <option value="cosmetology">Cosmetology School</option>
+        <option value="catering">Catering School</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Filter by Level:</label>
+      <select id="levelFilter" onchange="filterCourses()">
+        <option value="all">All Levels</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediary">Intermediary</option>
+        <option value="masters">Masters</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Course Cards Container -->
+  <section class="course-grid" id="courseGrid">
+
+    <!-- Course 1: Beginners Class -->
+    <div class="course-card" data-school="fashion" data-level="beginner">
+      <div class="card-image">
+        <img src="images/foundation craft - ladies.jpeg" alt="Fashion Beginners">
+        <span class="type-tag">Foundation Craft</span>
+      </div>
+      <div class="card-content">
+        <div class="card-header">
+          <span class="school-pill fashion">Fashion School</span>
+          <h3>Beginners Class</h3>
+        </div>
+        <p class="course-desc">For busy professionals, workers, business executies and beginners with NO fashion
+          background.</p>
+        <ul class="highlights">
+          <li><i class="fas fa-check"></i> Fashion Basics</li>
+          <li><i class="fas fa-check"></i> Ladiess Wear</li>
+        </ul>
+        <div class="schedule-info">
+          <p><strong>Start Date:</strong> 1st March, 2026</p>
+          <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
+          <p><strong>Duration:</strong> 3 Months</p>
+        </div>
+        <div class="price-tag">GHC 4,800</div>
+      </div>
+    </div>
+
+    <!-- Course 2: Beginner Men's Wear -->
+    <div class="course-card" data-school="fashion" data-level="beginner">
+      <div class="card-image">
+        <img src="images/foundation craft - mens.jpeg" alt="Men's Wear">
+        <span class="type-tag">Foundation Craft</span>
+      </div>
+      <div class="card-content">
+        <div class="card-header">
+          <span class="school-pill fashion">Fashion School</span>
+          <h3>Beginners Class</h3>
+        </div>
+        <p class="course-desc">For busy professionals, workers, business executies and beginners with NO fashion
+          background.</p>
+        <ul class="highlights">
+          <li><i class="fas fa-check"></i> Fashion Basics</li>
+          <li><i class="fas fa-check"></i> Men's Wear</li>
+        </ul>
+        <div class="schedule-info">
+          <p><strong>Start Date:</strong> 1st March, 2026</p>
+          <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
+          <p><strong>Duration:</strong> 3 Months</p>
+        </div>
+        <div class="price-tag">GHC 4,800</div>
+      </div>
+    </div>
+
+    <!-- Course 3: Bridal Essentials -->
+    <div class="course-card" data-school="fashion" data-level="masters">
+      <div class="card-image">
+        <img src="images/foundation craft - bridal wear.jpeg" alt="Bridal Wear">
+        <span class="type-tag">Advance Craft</span>
+      </div>
+      <div class="card-content">
+        <div class="card-header">
+          <span class="school-pill fashion">Fashion School</span>
+          <h3>Master Class</h3>
+        </div>
+        <p class="course-desc">For industry practitioners, fashion house owners, past fashion stduents, fashion workers
+          with experience.</p>
+        <ul class="highlights">
+          <li><i class="fas fa-check"></i> Advance Corsetry</li>
+          <li><i class="fas fa-check"></i> Bridal Wear</li>
+        </ul>
+        <div class="schedule-info">
+          <p><strong>Start Date:</strong> 1st March, 2026</p>
+          <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
+          <p><strong>Duration:</strong> 6 Months</p>
+        </div>
+        <div class="price-tag">GHC 6,000</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Empty State Message -->
+  <div id="noResults" class="no-results" style="display:none;">
+    <i class="fas fa-search"></i>
+    <p>No short courses are currently available for this selection.</p>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="faq-container">
+      <h2>Frequently Asked Questions</h2>
+
+      <!-- CATEGORY 1: ADMISSIONS & ENROLLMENT -->
+      <div class="faq-item-main">
+        <div class="faq-question faq-red">Admissions & Enrollment</div>
+        <div class="faq-answer">
+          <div class="faq-container-nested">
+            <div class="faq-item">
+              <div class="faq-question">Do I need prior fashion experience?</div>
+              <div class="faq-answer">
+                <p>No. Our Foundation Craft courses are designed for absolute beginners with no prior background.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">What is the age requirement?</div>
+              <div class="faq-answer">
+                <p>Our short courses are open to everyone aged 16 and above, including busy professionals and retirees.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORY 2: COURSE SPECIFICS -->
+      <div class="faq-item-main">
+        <div class="faq-question faq-dark">Course Details & Sessions</div>
+        <div class="faq-answer">
+          <div class="faq-container-nested">
+            <div class="faq-item">
+              <div class="faq-question">Are the materials provided?</div>
+              <div class="faq-answer">
+                <p>Standard training equipment is provided on campus, but students are required to buy their personal
+                  basic tools (e.g., measuring tapes, scissors).</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">What is the "After Church" session?</div>
+              <div class="faq-answer">
+                <p>Sunday practice sessions usually start from 1:30 PM to allow students to attend morning church
+                  services.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORY 3: PAYMENTS & CERTIFICATION -->
+      <div class="faq-item-main">
+        <div class="faq-question faq-yellow">Payments & Certification</div>
+        <div class="faq-answer">
+          <div class="faq-container-nested">
+            <div class="faq-item">
+              <div class="faq-question">Can I pay in installments?</div>
+              <div class="faq-answer">
+                <p>Yes. We allow a flexible payment plan: 60% upon admission and 40% halfway through the course.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">Is the certificate accredited?</div>
+              <div class="faq-answer">
+                <p>Yes, you receive a Certificate of Competence from GH Schools, which is widely recognized in the
+                  industry.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="more-faq">
+        <a href="faq.html">View Full FAQ Page <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Action Hub -->
+  <section class="action-hub">
+    <button class="hub-btn paystack" onclick="alert('Paystack Modal Triggered')"><i class="fas fa-credit-card"></i> Pay
+      Online Now</button>
+    <a href="https://wa.me/233544622250?text=Hi%20GH%20Schools,%20I'm%20interested%20in%20your%20short%20course."
+      class="hub-btn whatsapp"><i class="fab fa-whatsapp" target="_blank"></i> WhatsApp Admissions</a>
+    <a href="tel:+233302424909" class="hub-btn call"><i class="fas fa-phone"></i> Call to Inquire</a>
+  </section>
+
+  <!-- Google Map Section -->
+  <!-- Map Section Restructured -->
+  <section class="map-section">
+    <!-- Container 1: The Map View -->
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7941.359662013961!2d-0.233076!3d5.61421!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9963cab10c63%3A0x332b2a1be1a7c23f!2sGH%20MEDIA%20SCHOOL!5e0!3m2!1sen!2sgh!4v1770500860975!5m2!1sen!2sgh"
+        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
+    <!-- Container 2: The Action Button -->
+    <div class="map-button-wrapper">
+      <a href="https://maps.app.goo.gl/cHmz8EZTUjHC1QJYA" class="map-app-btn" target="_blank">
+        <i class="fas fa-map-marked-alt"></i> Open in Google Maps App
+      </a>
+    </div>
+
+    <!-- Container 3: The Physical Address -->
+    <div class="map-address-card">
+      <p>
+        <i class="fas fa-location-dot"></i>
+        <strong>Location:</strong> House no 43 Tycan building Abofu, Achimota, Accra P.O.BOX NT 521, Accra GA/R
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer (Same as Index) -->
+  <footer class="site-footer">
+    <p>&copy; 2026 GH SCHOOLS. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Mobile Nav Placeholder -->
+  <div class="mobile-nav-modal" id="mobileNavModal">
+    <div class="modal-panel">
+      <span class="close-btn" onclick="closeMobileNav()">&times;</span>
+      <div id="mobileModalLinks">
+        <!-- Add this line below -->
+        <a href="index.html"
+          style="display: block; padding: 20px; font-weight: bold; color: #a40000; text-decoration: none; font-size: 1.5rem; text-align: center;">HOME</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="short-courses.js"></script>
+</body>
+
+</html>

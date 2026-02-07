@@ -1723,7 +1723,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <i class="fas fa-wallet"></i>
-          <h3 id="totalPayable">GHS 4500.00</h3>
+          <h3 id="totalPayable">GHS 2700.00</h3>
           <p>Total Payable</p>
         </div>
         <div class="stat-card">
@@ -1733,7 +1733,7 @@
         </div>
         <div class="stat-card">
           <i class="fas fa-exclamation-circle"></i>
-          <h3 id="outstandingBalance">GHS 4500.00</h3>
+          <h3 id="outstandingBalance">GHS 2700.00</h3>
           <p>Outstanding Balance</p>
         </div>
       </div>
@@ -2229,10 +2229,10 @@
       <button class="close-btn" onclick="toggleModal('tuitionModal')">&times;</button>
       <h3>Pay Tuition Fee</h3>
       <div id="tuitionInfoSection" style="margin-bottom:20px;">
-        <p>The full tuition fee for the semester is <strong style="color: #dc3545;">GHS 3,500.00</strong>.</p>
+        <p>The full tuition fee for the semester is <strong style="color: #dc3545;">GHS 2,550.00</strong>.</p>
         <div id="tuitionPaidInfo" style="padding:12px; background:#f0f0f0; border-radius:8px; margin-bottom:12px; display:none;">
           <strong>Amount Already Paid:</strong> <span id="tuitionPaidAmount">GHS 0.00</span><br>
-          <strong>Remaining Balance:</strong> <span id="tuitionBalance">GHS 3,500.00</span>
+          <strong>Remaining Balance:</strong> <span id="tuitionBalance">GHS 2,550.00</span>
         </div>
       </div>
       <div id="tuitionOptionsContainer"></div>
@@ -2250,21 +2250,21 @@
       <div class="fee-option">
         <label>
           <input type="checkbox" name="otherFee" value="SRC Dues|50">
-          <strong>SRC Dues</strong> – GHS 300.00
+          <strong>SRC Dues</strong> – GHS 50.00
           <br><small style="color: #6c757d;">Supports student union and welfare activities.</small>
         </label>
       </div>
       <div class="fee-option">
         <label>
           <input type="checkbox" name="otherFee" value="Medical Dues|80">
-          <strong>Medical Dues</strong> – GHS 200.00
+          <strong>Medical Dues</strong> – GHS 80.00
           <br><small style="color: #6c757d;">Covers basic healthcare and first aid services.</small>
         </label>
       </div>
       <div class="fee-option">
         <label>
           <input type="checkbox" name="otherFee" value="Departmental Dues|50">
-          <strong>Departmental Dues</strong> – GHS 500.00
+          <strong>Departmental Dues</strong> – GHS 50.00
           <br><small style="color: #6c757d;">For departmental resources and academic materials.</small>
         </label>
       </div>
@@ -2845,13 +2845,13 @@ window.studentLastName  = _parts.slice(1).join(' ') || '';
 
 /* ---------- Totals (DB-backed) ---------- */
 // Canonical fee constants
-const TUITION = 3500; // full tuition
-const FEE_SRC = 300;
-const FEE_MEDICAL = 200;
-const FEE_DEPT = 500;
+const TUITION = 2550; // full tuition
+const FEE_SRC = 50;
+const FEE_MEDICAL = 80;
+const FEE_DEPT = 50;
 
 // Computed payable total
-let totalPayable = TUITION + FEE_SRC + FEE_MEDICAL + FEE_DEPT; // 4500
+let totalPayable = TUITION + FEE_SRC + FEE_MEDICAL + FEE_DEPT; // 2730
 let totalPaid = 0;
 let outstandingBalance = totalPayable;
 
@@ -3647,10 +3647,10 @@ async function saveReceiptToSupabase(receipt) {
       payment_coverage: (function(){
         try{
           const tt = (receipt.fee_breakdown || '').toString();
-          // Try to extract tuition amount from the breakdown if available (e.g. 'Tuition: GHS 2800')
+          // Try to extract tuition amount from the breakdown if available (e.g. 'Tuition: GHS 2040')
           const tuitionMatch = tt.match(/tuition[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i) || tt.match(/tuition[^0-9\n\r]*ghs[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i);
           const tuitionAmt = tuitionMatch ? Number(tuitionMatch[1]) : null;
-          const tuitionBase = (typeof TUITION !== 'undefined' ? TUITION : 3500);
+          const tuitionBase = (typeof TUITION !== 'undefined' ? TUITION : 2550);
           if (tuitionMatch && Number.isFinite(tuitionAmt)){
             const pct = Math.round((tuitionAmt / tuitionBase) * 100);
             if (pct >= 100) return 'full';
@@ -3670,7 +3670,7 @@ async function saveReceiptToSupabase(receipt) {
           return 'full';
         }catch(e){ return null; }
       })(),
-      coverage_percent: (function(){ try{ const tt=(receipt.fee_breakdown||'').toString(); const tuitionMatch = tt.match(/tuition[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i) || tt.match(/tuition[^0-9\n\r]*ghs[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i); if(tuitionMatch) return Math.round(Number(tuitionMatch[1])/(typeof TUITION!=='undefined'?TUITION:3500)*100); if(tt.toLowerCase().includes('tuition')) return Math.round((Number(receipt.amount||0)/(typeof TUITION!=='undefined'?TUITION:3500))*100); return 100;}catch(e){return null;} })(),
+      coverage_percent: (function(){ try{ const tt=(receipt.fee_breakdown||'').toString(); const tuitionMatch = tt.match(/tuition[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i) || tt.match(/tuition[^0-9\n\r]*ghs[^0-9\n\r]*([0-9]+(?:\.[0-9]+)?)/i); if(tuitionMatch) return Math.round(Number(tuitionMatch[1])/(typeof TUITION!=='undefined'?TUITION:2550)*100); if(tt.toLowerCase().includes('tuition')) return Math.round((Number(receipt.amount||0)/(typeof TUITION!=='undefined'?TUITION:2550))*100); return 100;}catch(e){return null;} })(),
       transaction_ref: receipt.reference,
       receipt_number: receipt.receipt_number || genRcptNo(),
       payment_date: receipt.date_iso || new Date().toISOString(),
@@ -4195,7 +4195,7 @@ window.payTuition = ()=>{
 
   // Notify user about remaining 20% of tuition if they only paid 80%
   try{
-    const fullTuition = typeof TUITION !== 'undefined' ? TUITION : 3500;
+    const fullTuition = typeof TUITION !== 'undefined' ? TUITION : 2550;
     const currentSummary = window._lastPaymentSummary || { tuitionPaid: 0 };
     const tuitionPaidBefore = Number(currentSummary.tuitionPaid || 0);
     const paidTowardsTuition = (tuitionPaidBefore + tuitionAmt);
@@ -4220,7 +4220,7 @@ window.payOtherFees = ()=>{
 
       const summary = await fetchPaymentsSummary(studentId);
       const tuitionPaid = Number(summary.tuitionPaid || 0);
-      const eightyPercent = Math.round((typeof TUITION !== 'undefined' ? TUITION : 3500) * 0.8);
+      const eightyPercent = Math.round((typeof TUITION !== 'undefined' ? TUITION : 2550) * 0.8);
       if(tuitionPaid < eightyPercent){
         const ok = await showConfirm('Your account has not paid the required 80% of tuition. GH policy requires paying 80% of tuition and other fees together. Would you like to combine the selected other fees with the tuition payment now?');
         if(!ok) return;
@@ -4685,7 +4685,7 @@ function parseBreakdownToMap(breakdown){
 async function hasRegistrationAccess(studentIdParam){
   // Required amounts for registration (in GHS)
   const REQUIRED = { 
-    tuition: 2800,        // 80% of GHS 3,500
+    tuition: 2040,        // 80% of GHS 2,550
     src: 50,              // SRC Dues
     medical: 80,          // Medical Dues
     departmental: 50      // Departmental Dues
@@ -4941,8 +4941,8 @@ window.openTuitionModal = async ()=>{
     // Fetch current tuition payment status
     const summary = await fetchPaymentsSummary(studentId);
     const tuitionPaid = summary.tuitionPaid || 0;
-    const fullTuition = 3500;
-    const eightyPercent = 2800;
+    const fullTuition = 2550;
+    const eightyPercent = 2040;
     const balance = Math.max(0, fullTuition - tuitionPaid);
     const isPaid80 = tuitionPaid >= eightyPercent;
     const isPaid100 = tuitionPaid >= fullTuition;
@@ -5019,7 +5019,7 @@ window.openTuitionModal = async ()=>{
       const combined = (tuitionVal + otherSum) || 0;
       const el = document.getElementById('combinedTotalDisplay'); if(el) el.textContent = `GHS ${gh(combined)}`;
       try{
-        const fullTuitionLocal = typeof fullTuition !== 'undefined' ? fullTuition : (typeof TUITION !== 'undefined' ? TUITION : 3500);
+        const fullTuitionLocal = typeof fullTuition !== 'undefined' ? fullTuition : (typeof TUITION !== 'undefined' ? TUITION : 2550);
         const beforePaid = Number(tuitionPaid || 0);
         const remainingAfter = Math.max(0, fullTuitionLocal - (beforePaid + tuitionVal));
         const remEl = document.getElementById('tuitionRemainingAfter'); if(remEl) remEl.textContent = `Remaining tuition after this payment: GHS ${gh(remainingAfter)}`;
@@ -5235,46 +5235,6 @@ document.addEventListener('DOMContentLoaded', function() {
       typeWriter(loadingText, originalText);
     };
   }
-});
-
-// Allow loading dashboard for a student via a unique URL and provide a copy-link button
-document.addEventListener('DOMContentLoaded', function() {
-  function getParam(name){
-    try{ const params = new URLSearchParams(window.location.search); return params.get(name); }catch(e){return null;}
-  }
-
-  const sid = getParam('sid') || getParam('studentId') || getParam('s');
-  const sname = getParam('name') || getParam('studentName');
-  if(sid){
-    try{ localStorage.setItem('studentId', sid); localStorage.setItem('student_id', sid); window.studentId = sid; }catch(e){}
-  }
-  if(sname){
-    try{ const decoded = decodeURIComponent(sname); localStorage.setItem('studentName', decoded); window.studentName = decoded; }catch(e){}
-  }
-
-  window.getStudentDashboardLink = function(){
-    const id = localStorage.getItem('studentId') || localStorage.getItem('student_id');
-    if(!id) return null;
-    return `${location.origin}${location.pathname}?sid=${encodeURIComponent(id)}`;
-  };
-
-  // Create a small copy-link button for convenience
-  try{
-    const existing = document.getElementById('copyDashboardLinkBtn');
-    if(!existing){
-      const btn = document.createElement('button');
-      btn.id = 'copyDashboardLinkBtn';
-      btn.type = 'button';
-      btn.textContent = 'Copy my dashboard link';
-      btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:9999;padding:10px 12px;background:#007bff;color:#fff;border:none;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;font-size:13px;';
-      btn.addEventListener('click', async function(){
-        const link = window.getStudentDashboardLink();
-        if(!link){ alert('No student id available to build a link.'); return; }
-        try{ await navigator.clipboard.writeText(link); btn.textContent = 'Link copied!'; setTimeout(()=>btn.textContent='Copy my dashboard link',2000); }catch(e){ prompt('Copy this link:', link); }
-      });
-      document.body.appendChild(btn);
-    }
-  }catch(e){ /* ignore */ }
 });
 
     document.addEventListener('DOMContentLoaded', function() {

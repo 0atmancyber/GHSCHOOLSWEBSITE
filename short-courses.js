@@ -10,20 +10,45 @@ function nextSlide() {
 setInterval(nextSlide, 5000);
 
 // Filter Logic
+// Filter Logic
 function filterCourses() {
     const schoolValue = document.getElementById('schoolFilter').value;
     const levelValue = document.getElementById('levelFilter').value;
+    const statusValue = document.getElementById('statusFilter').value;
+
     const courses = document.querySelectorAll('.course-card');
     let visibleCount = 0;
+
+    const today = new Date();
 
     courses.forEach(card => {
         const cardSchool = card.getAttribute('data-school');
         const cardLevel = card.getAttribute('data-level');
+        const startDateStr = card.getAttribute('data-start-date');
+        const durationMonths = parseInt(card.getAttribute('data-duration') || '0');
 
+        // Determine Status
+        let cardStatus = 'unknown';
+        if (startDateStr) {
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + durationMonths);
+
+            if (today < startDate) {
+                cardStatus = 'coming-soon';
+            } else if (today >= startDate && today <= endDate) {
+                cardStatus = 'ongoing';
+            } else {
+                cardStatus = 'passed';
+            }
+        }
+
+        // Check Matches
         const schoolMatch = (schoolValue === 'all' || schoolValue === cardSchool);
         const levelMatch = (levelValue === 'all' || levelValue === cardLevel);
+        const statusMatch = (statusValue === 'all' || statusValue === cardStatus);
 
-        if (schoolMatch && levelMatch) {
+        if (schoolMatch && levelMatch && statusMatch) {
             card.style.display = 'flex';
             visibleCount++;
         } else {
@@ -33,7 +58,9 @@ function filterCourses() {
 
     // Handle empty state
     const noResults = document.getElementById('noResults');
-    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    if (noResults) {
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
 }
 
 // FAQ Accordion Logic

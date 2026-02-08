@@ -16,7 +16,7 @@
   <meta property="og:title" content="GH Schools Short Courses Catalog">
   <meta property="og:description"
     content="Master a professional skill in 3 months. Intensive weekend classes available now.">
-  <meta property="og:image" content="images/fashion-master-class-gh-schools-square.jpeg">
+  <meta property="og:image" content="images/fashion_master_class_400x400.jpg">
   <meta property="og:url" content="https://ghschools.online/short-courses.html">
   <meta property="og:type" content="website">
 
@@ -104,13 +104,23 @@
         <option value="masters">Masters</option>
       </select>
     </div>
+    <div class="filter-group">
+      <label>Filter by Status:</label>
+      <select id="statusFilter" onchange="filterCourses()">
+        <option value="all">All Statuses</option>
+        <option value="coming-soon">Coming Soon</option>
+        <option value="ongoing">Ongoing</option>
+        <option value="passed">Passed</option>
+      </select>
+    </div>
   </section>
 
   <!-- Course Cards Container -->
   <section class="course-grid" id="courseGrid">
 
     <!-- Course 1: Beginners Class -->
-    <div class="course-card" data-school="fashion" data-level="beginner">
+    <div class="course-card" data-school="fashion" data-level="beginner" data-start-date="2026-03-01" data-duration="3"
+      data-course-name="Fashion Beginners Class">
       <div class="card-image">
         <img src="images/foundation craft - ladies.jpeg" alt="Fashion Beginners">
         <span class="type-tag">Foundation Craft</span>
@@ -131,12 +141,17 @@
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 3 Months</p>
         </div>
-        <div class="price-tag">GHC 4,800</div>
+        <div class="card-footer">
+          <div class="price-badge">GHC 4,800</div>
+          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Beginners Class')"><i
+              class="fas fa-credit-card"></i> Pay Online</button>
+        </div>
       </div>
     </div>
 
     <!-- Course 2: Beginner Men's Wear -->
-    <div class="course-card" data-school="fashion" data-level="beginner">
+    <div class="course-card" data-school="fashion" data-level="beginner" data-start-date="2026-03-01" data-duration="3"
+      data-course-name="Fashion Mens Wear">
       <div class="card-image">
         <img src="images/foundation craft - mens.jpeg" alt="Men's Wear">
         <span class="type-tag">Foundation Craft</span>
@@ -157,12 +172,17 @@
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 3 Months</p>
         </div>
-        <div class="price-tag">GHC 4,800</div>
+        <div class="card-footer">
+          <div class="price-badge">GHC 4,800</div>
+          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Mens Wear')"><i
+              class="fas fa-credit-card"></i> Pay Online</button>
+        </div>
       </div>
     </div>
 
     <!-- Course 3: Bridal Essentials -->
-    <div class="course-card" data-school="fashion" data-level="masters">
+    <div class="course-card" data-school="fashion" data-level="masters" data-start-date="2026-03-01" data-duration="6"
+      data-course-name="Fashion Master Class">
       <div class="card-image">
         <img src="images/foundation craft - bridal wear.jpeg" alt="Bridal Wear">
         <span class="type-tag">Advance Craft</span>
@@ -183,7 +203,11 @@
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 6 Months</p>
         </div>
-        <div class="price-tag">GHC 6,000</div>
+        <div class="card-footer">
+          <div class="price-badge">GHC 6,000</div>
+          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Master Class')"><i
+              class="fas fa-credit-card"></i> Pay Online</button>
+        </div>
       </div>
     </div>
 
@@ -275,8 +299,6 @@
 
   <!-- Action Hub -->
   <section class="action-hub">
-    <button class="hub-btn paystack" onclick="alert('Paystack Modal Triggered')"><i class="fas fa-credit-card"></i> Pay
-      Online Now</button>
     <a href="https://wa.me/233544622250?text=Hi%20GH%20Schools,%20I'm%20interested%20in%20your%20short%20course."
       class="hub-btn whatsapp"><i class="fab fa-whatsapp" target="_blank"></i> WhatsApp Admissions</a>
     <a href="tel:+233302424909" class="hub-btn call"><i class="fas fa-phone"></i> Call to Inquire</a>

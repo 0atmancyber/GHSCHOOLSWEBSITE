@@ -140,11 +140,12 @@
           <p><strong>Start Date:</strong> 1st March, 2026</p>
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 3 Months</p>
+          <p><strong>Admissions Form:</strong> GHC 200</p>
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 4,800</div>
           <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Beginners Class')"><i
-              class="fas fa-credit-card"></i> Pay Online</button>
+              class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -171,11 +172,12 @@
           <p><strong>Start Date:</strong> 1st March, 2026</p>
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 3 Months</p>
+          <p><strong>Admissions Form:</strong> GHC 200</p>
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 4,800</div>
           <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Mens Wear')"><i
-              class="fas fa-credit-card"></i> Pay Online</button>
+              class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -202,11 +204,12 @@
           <p><strong>Start Date:</strong> 1st March, 2026</p>
           <p><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</p>
           <p><strong>Duration:</strong> 6 Months</p>
+          <p><strong>Admissions Form:</strong> GHC 200</p>
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 6,000</div>
           <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Master Class')"><i
-              class="fas fa-credit-card"></i> Pay Online</button>
+              class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -292,7 +295,7 @@
       </div>
 
       <div class="more-faq">
-        <a href="faq.html">View Full FAQ Page <i class="fas fa-arrow-right"></i></a>
+        <a href="#" onclick="openFaqModal(); return false;">View More Questions <i class="fas fa-plus-circle"></i></a>
       </div>
     </div>
   </section>
@@ -343,6 +346,58 @@
         <!-- Add this line below -->
         <a href="index.html"
           style="display: block; padding: 20px; font-weight: bold; color: #a40000; text-decoration: none; font-size: 1.5rem; text-align: center;">HOME</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Modal -->
+  <div class="faq-modal" id="faqModal">
+    <div class="faq-modal-content">
+      <span class="close-faq-btn" onclick="closeFaqModal()">&times;</span>
+      <h2>More Questions</h2>
+      <div class="faq-container-nested">
+
+        <!-- Question 1 -->
+        <div class="faq-item">
+          <div class="faq-question">Are there weekend classes?</div>
+          <div class="faq-answer">
+            <p>Yes, all our short courses are weekend-based to accommodate workers and students.</p>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">Is there hostel accommodation?</div>
+          <div class="faq-answer">
+            <p>Yes, we have hostel facilities available for students coming from far locations.</p>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">Can I switch courses after registering?</div>
+          <div class="faq-answer">
+            <p>Switching courses is allowed within the first two weeks of admission, subject to availability.</p>
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">Do you offer job placement?</div>
+          <div class="faq-answer">
+            <p>While we don't guarantee jobs, we provide career guidance and connect students with industry
+              opportunities.</p>
+          </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="faq-item">
+          <div class="faq-question">What documents do I need for registration?</div>
+          <div class="faq-answer">
+            <p>You will need a valid ID, passport-sized photographs, and a filled admission form.</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

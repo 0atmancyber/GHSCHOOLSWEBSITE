@@ -738,6 +738,7 @@ header {
     transform: translateY(-2px);
 }
 
+
 /* Update Mobile styles for new footer */
 @media (max-width: 768px) {
     .card-footer {
@@ -752,3 +753,66 @@ header {
     }
 }
 
+
+/* FAQ Modal Styles */
+.faq-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+}
+
+.faq-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.faq-modal-content {
+    background: var(--white);
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh; /* Allow scrolling inside if too tall */
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.faq-modal.show .faq-modal-content {
+    transform: translateY(0);
+}
+
+.close-faq-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: var(--dark);
+    cursor: pointer;
+    line-height: 1;
+    transition: 0.2s;
+}
+
+.close-faq-btn:hover {
+    color: var(--primary);
+}
+
+.faq-modal-content h2 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+}

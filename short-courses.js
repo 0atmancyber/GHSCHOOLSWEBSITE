@@ -63,9 +63,11 @@ function filterCourses() {
     }
 }
 
+
 // FAQ Accordion Logic
 document.addEventListener("DOMContentLoaded", function () {
-    const allQuestions = document.querySelectorAll('.faq-section .faq-question');
+    // UPDATED: Now selects questions in both the main section AND the modal
+    const allQuestions = document.querySelectorAll('.faq-question');
 
     allQuestions.forEach(question => {
         question.addEventListener('click', function (e) {
@@ -73,18 +75,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const parentItem = this.closest('.faq-item, .faq-item-main');
             const answer = this.nextElementSibling;
-            const isActive = parentItem.classList.contains('active');
 
-            // Find the immediate container to close siblings ONLY at the same level
+            // Find the immediate container (either .faq-container-nested or .faq-section)
             const container = parentItem.parentElement;
 
             // 1. Close siblings at this level
             Array.from(container.children).forEach(sibling => {
-                if (sibling !== parentItem && sibling.classList.contains('active')) {
-                    sibling.classList.remove('active');
-                    // 2. Recursive Cleanup: If closing a parent, close all children inside it
-                    const childActiveItems = sibling.querySelectorAll('.active');
-                    childActiveItems.forEach(child => child.classList.remove('active'));
+                // Ensure we are only targeting direct siblings that are faq items
+                if (sibling !== parentItem && (sibling.classList.contains('faq-item') || sibling.classList.contains('faq-item-main'))) {
+                    if (sibling.classList.contains('active')) {
+                        sibling.classList.remove('active');
+                        // 2. Recursive Cleanup: If closing a parent, close all children inside it
+                        const childActiveItems = sibling.querySelectorAll('.active');
+                        childActiveItems.forEach(child => child.classList.remove('active'));
+                    }
                 }
             });
 
@@ -93,6 +97,32 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// FAQ Modal Functions
+function openFaqModal() {
+    const modal = document.getElementById('faqModal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+        // Close when clicking outside content
+        modal.onclick = function (e) {
+            if (e.target === modal) {
+                closeFaqModal();
+            }
+        }
+    } else {
+        console.error("FAQ Modal not found!");
+    }
+}
+
+function closeFaqModal() {
+    const modal = document.getElementById('faqModal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+}
 
 // Mobile Nav Functions (Same as index)
 function openMobileNav() {

@@ -920,6 +920,19 @@ async function populateLetterFromRecord(rec) {
     // Use the improved program type decision function
     const programType = determineProgramTypeForRecord(rec);
 
+    // Determine chosen course (from checkbox selections) and inject into DOM
+    const chosenRaw = (rec.course_type || '').toString();
+    const chosenFirst = chosenRaw.split(',')[0]?.trim() || '';
+    const fashionChoices = ['MENS WEAR','LADIES WEAR','ADVANCE CRAFT'];
+    let courseDisplay = programName;
+    if (fashionChoices.includes(chosenFirst.toUpperCase())) {
+      courseDisplay = `${chosenFirst} — Fashion Design`;
+      // ensure the programBar shows Fashion programs (if available)
+      if (SCHOOL && Array.isArray(SCHOOL.programs) && SCHOOL.programs.length) {
+        const pb = $('programBar'); if (pb) pb.innerHTML = SCHOOL.programs.map(p => `<span>${p}</span>`).join('');
+      }
+    }
+
     // Inject into DOM
     setText('brandName', SCHOOL.display);
     setText('schoolName1', SCHOOL.display);
@@ -927,7 +940,7 @@ async function populateLetterFromRecord(rec) {
     setText('programDuration', programDurationText);
     setText('attnName', norm(name));
     setText('idRow', admissionNo);
-    setText('courseRow', programName);
+    setText('courseRow', courseDisplay);
 
     // FIXED: Program type and program name are now properly combined
     setText('programType', programType === 'diploma' ? 'diploma' : 'certificate');
@@ -971,8 +984,19 @@ async function populateLetterFromRecord(rec) {
     // Program bar (unchanged)
     const programBar = $('programBar');
     if (programBar) {
+      try {
+        const firstChoice = (chosenFirst || '').toString();
+        if (firstChoice && ['MENS WEAR','LADIES WEAR','ADVANCE CRAFT'].includes(firstChoice.toUpperCase())) {
+          programBar.innerHTML = `<span>${firstChoice}</span><span>Fashion Design</span>`;
+          programBar.style.backgroundColor = SCHOOL.color || '#000';
+        } else {
+          programBar.innerHTML = (SCHOOL.programs||[]).map(p => `<span>${p}</span>`).join('');
+          programBar.style.backgroundColor = SCHOOL.color || '#000';
+        }
+      } catch (e) {
         programBar.innerHTML = (SCHOOL.programs||[]).map(p => `<span>${p}</span>`).join('');
         programBar.style.backgroundColor = SCHOOL.color || '#000';
+      }
     }
 
     // Store the loaded record (unchanged)
@@ -1007,22 +1031,34 @@ async function populateLetterFromRecord(rec) {
         const soc = (rec.social_studies_grade || rec.grade_social_studies || rec.social_studies || '').toString().toUpperCase();
         const sci = (rec.integrated_science_grade || rec.grade_integrated_science || rec.integrated_science || '').toString().toUpperCase();
         
-        if (programType === 'diploma') {
-            note.innerHTML = `<strong>Admission Decision Note:</strong> Student qualifies for Diploma program. Core WASSCE grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}) - all within A1–D7 range, and program duration is two years.`;
-        } else {
-            const failingSubjects = [];
-            if (['E8','F9'].includes(eng)) failingSubjects.push('English');
-            if (['E8','F9'].includes(mat)) failingSubjects.push('Mathematics');
-            if (['E8','F9'].includes(soc)) failingSubjects.push('Social Studies');
-            if (['E8','F9'].includes(sci)) failingSubjects.push('Integrated Science');
-            
-            if (failingSubjects.length > 0) {
-                note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program due to failing grades (E8/F9) in: ${failingSubjects.join(', ')}. Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
-            } else {
-                note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program (does not meet all diploma requirements). Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
+            // Only show the Admission Decision Note when NOT coming directly from the ghfashion form
+            try {
+              const fromFashion = localStorage.getItem('from_ghfashion');
+              if (!fromFashion) {
+                if (programType === 'diploma') {
+                  note.innerHTML = `<strong>Admission Decision Note:</strong> Student qualifies for Diploma program. Core WASSCE grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}) - all within A1–D7 range, and program duration is two years.`;
+                } else {
+                  const failingSubjects = [];
+                  if (['E8','F9'].includes(eng)) failingSubjects.push('English');
+                  if (['E8','F9'].includes(mat)) failingSubjects.push('Mathematics');
+                  if (['E8','F9'].includes(soc)) failingSubjects.push('Social Studies');
+                  if (['E8','F9'].includes(sci)) failingSubjects.push('Integrated Science');
+              
+                  if (failingSubjects.length > 0) {
+                    note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program due to failing grades (E8/F9) in: ${failingSubjects.join(', ')}. Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
+                  } else {
+                    note.innerHTML = `<strong>Admission Decision Note:</strong> Student admitted for Certificate program (does not meet all diploma requirements). Core grades: English (${eng}), Mathematics (${mat}), Social Studies (${soc}), Integrated Science (${sci}).`;
+                  }
+                }
+                letterBody.prepend(note);
+              } else {
+                // remove the flag so subsequent visits behave normally
+                localStorage.removeItem('from_ghfashion');
+              }
+            } catch (e) {
+              // if localStorage is unavailable, fall back to showing the note
+              letterBody.prepend(note);
             }
-        }
-        letterBody.prepend(note);
     }
 }
 
@@ -1104,6 +1140,51 @@ async function populateLetterFromRecord(rec) {
     // Also update the fee breakdown to be more clear
     const paymentSummary = document.querySelector('.payment-summary');
     if (paymentSummary) {
+        // If arriving from the GH Fashion form, show fashion-specific program details instead
+        const fromFashion = (function(){ try { return localStorage.getItem('from_ghfashion'); } catch(e){ return null; } })();
+        if (fromFashion) {
+            const chosenCourse = (document.getElementById('courseRow')?.textContent || '').trim();
+            paymentSummary.innerHTML = `
+              <h3 style="margin-top: 0; color: #004085;">Fashion Short-Course Options</h3>
+              <p style="margin-top:0; color:#666; font-size:14px;">You applied via the Fashion short-courses. Choose the option that fits you. Details below:</p>
+
+              <div style="margin-top:12px;">
+                <h4 style="margin:6px 0 4px;">Beginners Class</h4>
+                <p style="margin:4px 0; color:#444;">For busy professionals, workers, business executives and beginners with NO fashion background.</p>
+                <ul style="margin:6px 0 8px 18px; color:#444;">
+                  <li><strong>Course Focus:</strong> Fashion Basics; Ladies Wear</li>
+                  <li><strong>Start Date:</strong> 1st March, 2026</li>
+                  <li><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</li>
+                  <li><strong>Duration:</strong> 3 Months</li>
+                  <li><strong>Admission Form:</strong> GHC 200</li>
+                  <li><strong>Fees:</strong> GHC 4,800</li>
+                </ul>
+              </div>
+
+              <div style="margin-top:8px;">
+                <h4 style="margin:6px 0 4px;">Master Class</h4>
+                <p style="margin:4px 0; color:#444;">For industry practitioners, fashion house owners, past fashion students, and fashion workers with experience.</p>
+                <ul style="margin:6px 0 8px 18px; color:#444;">
+                  <li><strong>Course Focus:</strong> Advance Corsetry; Bridal Wear</li>
+                  <li><strong>Start Date:</strong> 1st March, 2026</li>
+                  <li><strong>Sessions:</strong> Sat (Whole Day - Classes) | Sun (After Church - Practice)</li>
+                  <li><strong>Duration:</strong> 6 Months</li>
+                  <li><strong>Admission Form:</strong> GHC 200</li>
+                  <li><strong>Fees:</strong> GHC 6,000</li>
+                </ul>
+              </div>
+
+              <div style="margin-top:10px; background:#fffdf2; border:1px dashed #f0e2a2; padding:12px; border-radius:8px;">
+                <strong>Selected:</strong> ${chosenCourse || '—'}
+              </div>
+            `;
+            // set the modal totals to match short-course fee if needed (keep totals as-is for admission flow)
+            try { document.getElementById('modalAdmFee').textContent = 'GHC 200.00'; } catch(e){}
+            try { document.getElementById('modalTuitionFee').textContent = 'See course details above'; } catch(e){}
+            try { document.getElementById('modalTotalFee').textContent = 'Varies by course'; } catch(e){}
+            return;
+        }
+
         const existingNote = paymentSummary.querySelector('.tuition-note');
         if (existingNote) existingNote.remove();
         

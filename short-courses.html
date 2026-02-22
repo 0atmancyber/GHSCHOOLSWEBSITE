@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="short-courses.css">
   <link rel="icon" type="image/png" href="images/favicon.png" />
+  
 </head>
 
 <body>
@@ -151,8 +152,7 @@
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 4,800</div>
-          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Beginners Class')"><i
-              class="fas fa-credit-card"></i> Apply Online</button>
+            <button class="pay-btn"><i class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -183,8 +183,7 @@
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 4,800</div>
-          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Mens Wear')"><i
-              class="fas fa-credit-card"></i> Apply Online</button>
+            <button class="pay-btn"><i class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -215,8 +214,7 @@
         </div>
         <div class="card-footer">
           <div class="price-badge">GHC 6,000</div>
-          <button class="pay-btn" onclick="alert('Paystack Modal Triggered for Fashion Master Class')"><i
-              class="fas fa-credit-card"></i> Apply Online</button>
+            <button class="pay-btn"><i class="fas fa-credit-card"></i> Apply Online</button>
         </div>
       </div>
     </div>
@@ -345,6 +343,18 @@
     <p>&copy; 2026 GH SCHOOLS. All Rights Reserved.</p>
   </footer>
 
+  <!-- Loading overlay for Apply redirect (white bg, red animated student icon) -->
+  <div id="applyLoadingOverlay" style="display:none; position:fixed; inset:0; background:#ffffff; z-index:9999; align-items:center; justify-content:center;">
+    <div style="text-align:center; color:#b22222; padding:1.5rem 2rem;">
+      <div class="student-loader" style="font-size:64px; color:#b22222; margin-bottom:12px; animation:spin 0.9s linear infinite;"></div>
+      <div style="font-size:1.05rem; font-weight:700; color:#b22222;">Preparing application...</div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
   <!-- Mobile Nav Placeholder -->
   <div class="mobile-nav-modal" id="mobileNavModal">
     <div class="modal-panel">
@@ -410,6 +420,35 @@
   </div>
 
   <script src="short-courses.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const overlay = document.getElementById('applyLoadingOverlay');
+      if (!overlay) return;
+      document.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const card = btn.closest('.course-card');
+          const school = card ? (card.dataset.school || '') : '';
+          const level = card ? (card.dataset.level || '') : '';
+          const course = card ? (card.dataset.courseName || card.dataset.course || '') : '';
+          const priceEl = card ? card.querySelector('.price-badge') : null;
+          const price = priceEl ? priceEl.textContent.trim() : '';
+
+          // show white overlay with red icon, then redirect (do NOT save anything server-side)
+          overlay.style.display = 'flex';
+          const params = new URLSearchParams({ school, level, course, price });
+          setTimeout(() => {
+            window.location.href = 'buyforms.html?' + params.toString();
+          }, 700);
+        });
+      });
+    });
+  </script>
+  <style>
+    /* small style for the student loader using FontAwesome icon */
+    .student-loader::before { content: "\f19d"; font-family: 'Font Awesome 6 Free'; font-weight:900; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </body>
 
 

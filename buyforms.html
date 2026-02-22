@@ -415,7 +415,21 @@
     }
 
     console.log('Payment page loaded');
-    const FORM_FEE = .100; // GHS
+    // Determine admission form fee based on origin:
+    // - If arriving from short-courses (query params or referrer), fee = 200 GHS
+    // - Otherwise (direct admission flow), fee = 150 GHS
+    let FORM_FEE = 150; // default GHS
+    // expose origin flag to payment handlers
+    let fromShortCourses = false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      fromShortCourses = params.has('school') || params.has('course') || params.has('interest_id') || (document.referrer && document.referrer.includes('short-courses'));
+      if (fromShortCourses) FORM_FEE = 0.1;
+      // update visible price immediately
+      try { document.querySelector('.price').textContent = `₵${FORM_FEE.toFixed(2)}`; } catch (e) {}
+    } catch (e) {
+      console.warn('Failed to parse query params for fee logic', e);
+    }
     
     const form = document.getElementById("admissionForm");
     const submitBtn = document.getElementById("submitBtn");
@@ -579,11 +593,13 @@
               if (error) {
                 console.error('Error updating payment record:', error);
               }
-              // ✅ Redirect after successful payment — include only the generated reference code (no Paystack reference in URL)
-              if (referenceCode) {
-                window.location.href = `admissionforms.html?ref=${encodeURIComponent(referenceCode)}`;
+              // ✅ Redirect after successful payment — only after DB update is complete
+              // If user came from short-courses, send them to the course admission form page
+              const targetWithRef = (target) => referenceCode ? `${target}?ref=${encodeURIComponent(referenceCode)}` : target;
+              if (fromShortCourses) {
+                window.location.href = targetWithRef('ghfashionforms.html');
               } else {
-                window.location.href = 'admissionforms.html';
+                window.location.href = targetWithRef('admissionforms.html');
               }
             });
         }

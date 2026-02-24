@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GH Schools · choose payment channel</title>
+  <title>GH Schools · secure payment channel</title>
   <!-- Font Awesome 6 (free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -14,11 +14,11 @@
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #fafafc;
-      color: #1e1e2f;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1e293b;
       line-height: 1.5;
-      padding: 24px 16px;
+      padding: 2rem 1.5rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -26,192 +26,284 @@
     }
 
     .channel-container {
-      max-width: 1000px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
     }
 
-    /* back link */
+    /* step indicator */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem 1.2rem 0.5rem 0.8rem;
+      border-radius: 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid #e9eef2;
+      font-weight: 500;
+      color: #64748b;
+    }
+    .step.active {
+      background: #b22222;
+      border-color: #b22222;
+      color: white;
+      box-shadow: 0 8px 16px -8px rgba(178,34,34,0.3);
+    }
+    .step i {
+      font-size: 1rem;
+    }
+    .step.active i {
+      color: white;
+    }
+    .step-line {
+      width: 40px;
+      height: 2px;
+      background: #d9e0e8;
+      border-radius: 2px;
+    }
+    @media (max-width: 500px) {
+      .step-line {
+        width: 20px;
+      }
+      .step {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* back link refined */
     .back-nav {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
-      padding: 8px 0;
-      color: #4a4a5e;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 1rem 0.5rem 0.75rem;
+      background: white;
+      border-radius: 40px;
+      color: #334155;
       text-decoration: none;
       font-weight: 500;
       font-size: 0.95rem;
-      border-radius: 40px;
-      transition: color 0.2s;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .back-nav i {
-      font-size: 1rem;
+      font-size: 0.9rem;
+      color: #b22222;
       transition: transform 0.2s;
     }
     .back-nav:hover {
+      background: #f8fafc;
+      border-color: #b22222;
       color: #b22222;
+      box-shadow: 0 8px 16px -12px rgba(178,34,34,0.2);
     }
     .back-nav:hover i {
       transform: translateX(-4px);
     }
 
-    /* course summary card — more visual */
+    /* course summary card — elevated */
     .course-summary-card {
       background: white;
-      border-radius: 24px;
-      padding: 24px 28px;
-      margin-bottom: 32px;
-      box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
-      border: 1px solid #f0eef2;
+      border-radius: 28px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0,0,0,0.02);
+      border: 1px solid #edf2f7;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 1.5rem;
+      backdrop-filter: blur(2px);
     }
 
     .course-summary__info {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
-      gap: 18px 32px;
+      gap: 1.5rem 2.5rem;
     }
 
     .summary-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.75rem;
     }
 
     .summary-item i {
       color: #b22222;
-      font-size: 1.1rem;
-      width: 22px;
+      font-size: 1.2rem;
+      width: 1.5rem;
       text-align: center;
     }
 
     .summary-item strong {
       font-weight: 600;
-      color: #2c2c3a;
-      margin-right: 4px;
+      color: #1e293b;
+      margin-right: 0.2rem;
     }
 
     .summary-item span {
-      color: #4a4a5e;
-      background: #f4f2f7;
-      padding: 4px 12px;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 0.4rem 1rem;
       border-radius: 40px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 500;
+      border: 1px solid #e2e8f0;
     }
 
     .summary-price {
-      background: #fce9e9;
-      color: #b22222;
+      background: linear-gradient(135deg, #b22222 0%, #8b1a1a 100%);
+      color: white;
       font-weight: 700;
-      padding: 8px 20px;
+      padding: 0.7rem 2rem;
       border-radius: 60px;
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       letter-spacing: -0.01em;
-      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.02);
+      box-shadow: 0 10px 20px -12px #b22222;
       white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
-    /* header */
+    /* page header */
     .page-header {
-      margin-bottom: 28px;
+      margin-bottom: 2rem;
     }
     .page-header h2 {
-      font-size: 1.9rem;
-      font-weight: 650;
+      font-size: 2.2rem;
+      font-weight: 700;
       letter-spacing: -0.02em;
-      color: #1a1a2c;
-      margin-bottom: 6px;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
     .page-header .subhead {
-      color: #5e5e72;
-      font-size: 1rem;
-      border-left: 3px solid #b22222;
-      padding-left: 16px;
-      background: rgba(178, 34, 34, 0.02);
-      border-radius: 0 8px 8px 0;
-      line-height: 1.4;
+      color: #475569;
+      font-size: 1.1rem;
+      border-left: 4px solid #b22222;
+      padding-left: 1.5rem;
+      background: #f8fafc;
+      border-radius: 0 1rem 1rem 0;
+      line-height: 1.5;
+      padding: 0.8rem 1.5rem;
+      box-shadow: inset 0 0 0 1px #ffffff40, 0 4px 8px -8px #00000020;
     }
 
     /* channels grid */
     .channels-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 24px;
-      margin: 32px 0 40px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
     }
 
     .channel-card {
       background: white;
-      border-radius: 28px;
-      padding: 28px 24px;
-      box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.1);
-      transition: all 0.25s ease;
-      border: 1px solid #f0eaf0;
+      border-radius: 2rem;
+      padding: 2rem 1.8rem 1.8rem;
+      box-shadow: 0 25px 40px -18px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.02);
+      transition: all 0.3s cubic-bezier(0.2,0,0,1);
+      border: 1px solid #edf2f7;
       display: flex;
       flex-direction: column;
       height: fit-content;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .channel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #b22222 0%, #d14b4b 80%, #ffe5e5 100%);
+      opacity: 0.7;
     }
 
     .channel-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 25px 40px -16px rgba(178, 34, 34, 0.15);
-      border-color: #ffe1e1;
+      transform: translateY(-6px);
+      box-shadow: 0 32px 50px -22px rgba(178, 34, 34, 0.2);
+      border-color: #fcc9c9;
     }
 
     .channel-card.soon {
-      background: #fdfdfd;
-      opacity: 0.92;
-      filter: grayscale(0.1);
-      border: 1px dashed #ccc;
+      background: #ffffff;
+      filter: none;
+      border: 1px solid #e9eef2;
+      opacity: 0.95;
+    }
+    .channel-card.soon::before {
+      background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 80%, #f1f5f9 100%);
+      opacity: 0.4;
     }
 
     .card-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
     }
     .card-header h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e1e2e;
+      font-size: 1.7rem;
+      font-weight: 650;
+      color: #0f172a;
       margin: 0;
     }
     .card-header i {
-      font-size: 2rem;
+      font-size: 2.2rem;
       color: #b22222;
+      background: #fee9e9;
+      padding: 0.6rem;
+      border-radius: 18px;
+    }
+    .channel-card.soon .card-header i {
+      background: #f1f5f9;
+      color: #475569;
     }
 
     .pay-methods {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 12px;
-      margin: 16px 0 18px;
-      background: #f8f6fc;
-      padding: 16px 14px;
-      border-radius: 20px;
+      gap: 0.6rem 0.8rem;
+      margin: 1.2rem 0 1.5rem;
+      background: #f8fafc;
+      padding: 1.2rem 1rem;
+      border-radius: 1.5rem;
       list-style: none;
+      border: 1px solid #eef2f6;
     }
 
     .pay-methods li {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 0.5rem;
       background: white;
-      padding: 6px 14px 6px 10px;
+      padding: 0.5rem 1rem 0.5rem 0.8rem;
       border-radius: 40px;
       font-size: 0.9rem;
       font-weight: 500;
-      color: #2c2c3a;
+      color: #1e293b;
       box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-      border: 1px solid #eee;
+      border: 1px solid #e2e8f0;
     }
     .pay-methods li i {
       color: #b22222;
@@ -219,49 +311,53 @@
     }
 
     .channel-description {
-      color: #3f3f52;
-      margin: 8px 0 10px;
-      font-size: 0.95rem;
+      color: #475569;
+      margin: 0.2rem 0 0.2rem;
+      font-size: 1rem;
+      line-height: 1.5;
     }
 
     .muted-note {
-      color: #6b6b80;
+      color: #64748b;
       font-size: 0.9rem;
-      border-top: 1px solid #edeaf0;
-      margin-top: 16px;
-      padding-top: 16px;
+      border-top: 1px dashed #d9e2ef;
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.8rem;
     }
     .muted-note i {
       color: #b22222;
+      font-size: 1rem;
     }
 
     .cta-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 0.7rem;
       background: #b22222;
       color: white;
       border: none;
-      padding: 14px 22px;
-      border-radius: 50px;
+      padding: 1rem 1.8rem;
+      border-radius: 60px;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 1.05rem;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.15s, transform 0.1s, box-shadow 0.2s;
-      margin-top: 18px;
-      box-shadow: 0 8px 18px -6px rgba(178, 34, 34, 0.3);
+      transition: all 0.2s;
+      margin-top: 1.2rem;
+      box-shadow: 0 12px 24px -14px #b22222;
       width: fit-content;
       border: 1px solid rgba(255,255,255,0.2);
+      align-self: flex-start;
     }
 
     .cta-button:hover {
       background: #8f1b1b;
-      box-shadow: 0 12px 22px -8px rgba(178, 34, 34, 0.5);
+      box-shadow: 0 18px 30px -16px #b22222;
+      transform: scale(1.02);
     }
     .cta-button:active {
       transform: scale(0.98);
@@ -269,78 +365,162 @@
 
     .cta-button i {
       font-size: 1.1rem;
+      transition: transform 0.2s;
+    }
+    .cta-button:hover i {
+      transform: translateX(4px);
     }
 
     .badge-soon {
-      background: #eae6f0;
-      color: #4a3f5e;
+      background: #e9eef2;
+      color: #334155;
       font-weight: 600;
-      font-size: 0.8rem;
-      padding: 4px 12px;
+      font-size: 0.75rem;
+      padding: 0.3rem 1rem;
       border-radius: 60px;
       letter-spacing: 0.3px;
-      margin-left: 12px;
       text-transform: uppercase;
+      margin-left: 0.8rem;
+      border: 1px solid #cdd9e6;
     }
 
     .contact-row {
-      margin-top: 28px;
+      margin-top: 2rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 0 8px;
-      border-top: 1px solid #e4dfe8;
+      gap: 1rem;
+      padding: 1.5rem 0 0.5rem;
+      border-top: 1px solid #e2e8f0;
     }
     .contact-row a {
       color: #b22222;
       text-decoration: none;
       font-weight: 500;
+      border-bottom: 1px dotted transparent;
+      transition: border-color 0.2s;
     }
     .contact-row a:hover {
-      text-decoration: underline;
+      border-bottom-color: #b22222;
     }
 
     .trust-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: #3e3e4f;
+      gap: 0.7rem;
+      color: #475569;
       font-size: 0.9rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
     }
     .trust-badge i {
-      color: #2b8f5b;
+      color: #10b981;
+      font-size: 1.1rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 60px;
+      border: 1px solid #e2e8f0;
+    }
+    .contact-info i {
+      color: #b22222;
+      margin-right: 0.2rem;
+    }
+    .contact-info span {
+      color: #94a3b8;
+    }
+
+    /* offline help card enhancement */
+    .help-offline {
+      margin-top: 1.5rem;
+      background: #f1f4f9;
+      border-radius: 1.2rem;
+      padding: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+    .help-offline i {
+      font-size: 2rem;
+      color: #b22222;
+      opacity: 0.7;
+    }
+    .help-offline p {
+      color: #334155;
+      font-weight: 500;
+    }
+    .help-offline a {
+      color: #b22222;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
     }
 
     /* mobile fine-tune */
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
+      body { padding: 1.2rem; }
       .course-summary-card {
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px;
+        padding: 1.5rem;
       }
       .summary-price {
         align-self: flex-start;
+        font-size: 1.3rem;
+        padding: 0.6rem 1.5rem;
       }
       .page-header h2 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
       }
       .channels-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .card-header h3 {
+        font-size: 1.5rem;
+      }
+      .contact-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .trust-badge {
+        width: 100%;
+        justify-content: center;
+      }
+      .contact-info {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
   <div class="channel-container">
-    <!-- enhanced back link -->
+    <!-- step indicator (progress) -->
+    <div class="step-indicator">
+      <div class="step"><i class="fas fa-check-circle"></i> 1. Choose course</div>
+      <div class="step-line"></div>
+      <div class="step active"><i class="fas fa-credit-card"></i> 2. Payment method</div>
+      <div class="step-line"></div>
+      <div class="step"><i class="fas fa-file-alt"></i> 3. Confirmation</div>
+    </div>
+
+    <!-- refined back navigation -->
     <a href="short-courses.html" class="back-nav">
       <i class="fas fa-arrow-left"></i> Back to courses
     </a>
 
-    <!-- dynamic course summary (enriched) -->
+    <!-- dynamic course summary (elevated) -->
     <div class="course-summary-card" id="courseSummary">
-      <!-- filled by js -->
       <div class="course-summary__info">
         <div class="summary-item"><i class="fas fa-graduation-cap"></i> <strong>Course:</strong> <span id="summaryCourse">—</span></div>
         <div class="summary-item"><i class="fas fa-school"></i> <strong>School:</strong> <span id="summarySchool">—</span></div>
@@ -350,9 +530,10 @@
     </div>
 
     <div class="page-header">
-      <h2>💳 Complete your admission</h2>
+      <h2><i class="fas fa-lock" style="font-size:2rem; color:#b22222; -webkit-text-fill-color:#b22222;"></i> Complete your payment</h2>
       <div class="subhead">
-        <i class="fas fa-lock" style="margin-right:6px; color:#b22222;"></i> Select how you’d like to pay — all channels are secure. You can also pay later.
+        <i class="fas fa-shield-alt" style="margin-right:8px; color:#b22222;"></i> 
+        All transactions are protected by bank-grade encryption. Select your preferred secure channel.
       </div>
     </div>
 
@@ -360,62 +541,63 @@
       <!-- Paystack channel (enhanced) -->
       <div class="channel-card" id="paystackChannel">
         <div class="card-header">
-          <i class="fas fa-bolt" style="color:#b22222;"></i>
+          <i class="fas fa-bolt"></i>
           <h3>Pay with Paystack</h3>
         </div>
         <p class="channel-description">
-          Fast, encrypted, and trusted by thousands. Choose from multiple payment methods:
+          Ghana’s most trusted online payment gateway. Instant confirmation and multiple options:
         </p>
         <ul class="pay-methods">
           <li><i class="fas fa-credit-card"></i> Visa, Mastercard, Verve</li>
           <li><i class="fas fa-mobile-alt"></i> MTN MoMo, Vodafone Cash, AirtelTigo</li>
           <li><i class="fas fa-university"></i> Bank transfer / deposit</li>
-          <li><i class="fas fa-phone-alt"></i> USSD (instant)</li>
-          <li><i class="fas fa-shield-alt"></i> 3DS secure</li>
+          
         </ul>
         <div class="muted-note">
-          <i class="fas fa-redirect"></i> After selection, you’ll complete the admission form with your payment reference.
+          <i class="fas fa-redo-alt"></i> After payment you’ll fill the admission form with your transaction reference.
         </div>
-        <!-- Continue button: id unchanged, but we style it as cta -->
         <a id="paystackContinue" class="cta-button">
-          <i class="fas fa-arrow-right"></i> Continue with Paystack
+          <i class="fas fa-arrow-right"></i> Continue to Paystack
         </a>
       </div>
 
-      <!-- other channels card (coming soon, but more visually integrated) -->
+      <!-- other channels – now with helpful contact & offline options -->
       <div class="channel-card soon">
         <div class="card-header">
-          <i class="fas fa-clock" style="color:#7f6c8c;"></i>
-          <h3>More options <span class="badge-soon">soon</span></h3>
+          <i class="fas fa-landmark"></i>
+          <h3>Offline & bank <span class="badge-soon">assisted</span></h3>
         </div>
         <p class="channel-description">
-          Direct bank deposit, campus cash office, mobile money (direct), and instalment plans.
+          Pay directly at any branch, via mobile money (manual), or request an instalment plan.
         </p>
-        <ul class="pay-methods" style="background:#f2f0f5;">
-          <li><i class="fas fa-building"></i> Bank teller</li>
-          <li><i class="fas fa-hand-holding-usd"></i> Campus payment</li>
-          <li><i class="fas fa-wallet"></i> Instalments</li>
+        <ul class="pay-methods" style="background:#f1f5f9;">
+          <li><i class="fas fa-building"></i> Bank teller (Ecobank, GCB, etc.)</li>
+          <li><i class="fas fa-hand-holding-usd"></i> Campus cash office</li>
+          <li><i class="fas fa-wallet"></i> Instalments / part payment</li>
         </ul>
-        <div class="muted-note">
-          <i class="fas fa-envelope"></i> Need assistance? Contact admissions — we’re happy to help.
-        </div>
-        <!-- you could add a disabled-looking button -->
-        <div style="margin-top:18px; opacity:0.6;">
-          <span style="background:#ccc; color:#3a2e3f; padding:10px 20px; border-radius:60px; display:inline-block; font-weight:500;"><i class="fas fa-hourglass-half"></i> Available soon</span>
+        <!-- extra help card -->
+      
+        <div style="margin-top:1.2rem;">
+          <span style="background:#eef2f6; color:#334155; padding:0.7rem 1.8rem; border-radius:60px; display:inline-block; font-weight:500;"><i class="fas fa-envelope"></i> Request assistance</span>
         </div>
       </div>
     </div>
 
-    <!-- extra trust & contact row -->
+    <!-- extra trust & contact row with more info -->
     <div class="contact-row">
       <div class="trust-badge">
-        <i class="fas fa-shield-check"></i> <span>All payments are 256-bit encrypted</span>
+      
       </div>
-      <div>
-        <i class="fas fa-headset" style="color:#b22222;"></i> <a href="mailto:admissions@ghschools.online">admissions@ghschools.online</a> 
-        <span style="margin:0 6px; color:#ccc;">|</span> 
-        <i class="fas fa-phone-alt" style="color:#b22222;"></i> +233 (0)30 222 1111
+      <div class="contact-info">
+        <i class="fas fa-headset"></i> <a href="mailto:admissions@ghschools.online">admissions@ghschools.online</a>
+        <span>|</span>
+        <i class="fas fa-phone-alt"></i> +233 (0)30 222 1111
       </div>
+    </div>
+
+    <!-- small print / security reassurance -->
+    <div style="margin-top: 1.5rem; text-align: center; color: #94a3b8; font-size: 0.8rem; border-top: 1px solid #e9edf2; padding-top: 1.5rem;">
+      <i class="fas fa-lock" style="margin-right: 4px;"></i> GH Schools never stores your card details. Payments are processed securely by Paystack (PCI DSS Level 1).
     </div>
   </div>
 
@@ -427,38 +609,32 @@
       const course = params.get('course') || '';
       const price = params.get('price') || '';
 
-      // Update summary card with ids (also keep old innerHTML for compatibility, but we update specific spans)
+      // Update summary card
       document.getElementById('summaryCourse').innerText = course || 'Not specified';
       document.getElementById('summarySchool').innerText = school || '—';
       document.getElementById('summaryLevel').innerText = level || '—';
       document.getElementById('summaryPrice').innerText = price ? `GHS ${price}` : 'GHS 0';
 
-      // (optional keep old summary method, but we already replaced; for any legacy scripts, fill old container as well)
-      const oldSummaryEl = document.getElementById('courseSummary');
-      if (oldSummaryEl) {
-        // keep it updated, but structure changed: we also set fallback
-        oldSummaryEl.innerHTML = `<div style="display:none;">legacy</div>`; // we don't need it, but it's fine
-      }
-
-      // Continue with Paystack: build forward URL
+      // Continue with Paystack: build forward URL to buyforms.html (or admission form)
       const contLink = document.getElementById('paystackContinue');
       if (contLink) {
         const forward = new URL('buyforms.html', window.location.href);
-        // set channel=paystack, keep all other params
         params.set('channel', 'paystack');
         forward.search = params.toString();
         contLink.setAttribute('href', forward.toString());
-
-        // Ensure normal navigation, but also we can add click tracking if needed (optional)
-        contLink.addEventListener('click', function(e) {
-          // (optional tracking)
-        });
+        // optional click tracking (can be extended)
       }
 
-      // if any parameter is missing, we still show nicely
+      // "Request assistance" – we can add an email link or open a modal? For simplicity, mailto:
+      const assistSpan = document.querySelector('.help-offline + div span');
+      if (assistSpan) {
+        assistSpan.addEventListener('click', () => {
+          window.location.href = 'mailto:fees@ghschools.online?subject=Payment%20assistance%20request&body=Please%20help%20me%20with%20offline%20payment%20options.';
+        });
+        assistSpan.style.cursor = 'pointer';
+      }
     })();
   </script>
-  <!-- small note: fallback for very old browsers (no effect) -->
   <noscript>Please enable JavaScript to choose a payment channel.</noscript>
 </body>
 </html>

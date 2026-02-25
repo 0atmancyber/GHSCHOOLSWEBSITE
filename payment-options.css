@@ -344,8 +344,14 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow: visible;            /* allow button shadow/pill to breathe at edges */
   transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+/* Clip only the accent bar so it stays flush at the top rounded corners */
+.channel-card .card-accent {
+  border-radius: calc(var(--radius-card) - 1.5px) calc(var(--radius-card) - 1.5px) 0 0;
+  overflow: hidden;
 }
 
 .channel-card:hover {
@@ -377,13 +383,21 @@ body {
 /* Card inner padding wrapper (everything below accent bar) */
 .channel-card .card-header,
 .channel-card .channel-description,
-.channel-card .pay-methods,
 .channel-card .muted-note,
-.channel-card .cta-button,
 .channel-card .momo-helper-text,
 .channel-card .card-footer-logo {
   padding-left: 1.75rem;
   padding-right: 1.75rem;
+}
+
+/* CTA button: margin-based containment, no overflow calc issues */
+.channel-card .cta-button {
+  align-self: center;
+  width: calc(100% - 3.5rem);
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
 }
 
 /* ============================================================
@@ -602,7 +616,7 @@ body {
    CTA BUTTONS
    ============================================================ */
 .cta-button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
@@ -617,7 +631,6 @@ body {
   margin-top: 1.25rem;
   margin-bottom: 0.85rem;
   padding: 1rem 1.75rem;
-  width: calc(100% - 3.5rem);  /* full width inside padding */
 }
 .cta-button i {
   font-size: 0.9rem;
@@ -687,6 +700,9 @@ body {
   padding-bottom: 1.25rem !important;
   border-top: 1.5px solid var(--border);
   margin-top: auto;
+  /* Clip to card's bottom rounded corners */
+  border-radius: 0 0 calc(var(--radius-card) - 1.5px) calc(var(--radius-card) - 1.5px);
+  overflow: hidden;
 }
 .card-footer-logo strong {
   font-family: var(--font-display);
@@ -913,14 +929,7 @@ body {
     font-size: 0.88rem;
   }
 
-  /* CTA buttons — full width flush with card padding */
-  .cta-button {
-    width: calc(100% - 3.5rem);
-    margin-left: 1.75rem;
-    margin-right: 1.75rem;
-    justify-content: center;
-    box-sizing: border-box;
-  }
+  /* CTA buttons — inherits width:100% from base, no overrides needed */
 
   .contact-row {
     flex-direction: column;
@@ -953,11 +962,11 @@ body {
     margin-left: 1.25rem;
     margin-right: 1.25rem;
   }
-  /* CTA: recalculate for smaller card padding */
-  .cta-button {
-    width: calc(100% - 2.5rem);
+  /* CTA button margins match reduced card padding */
+  .channel-card .cta-button {
     margin-left: 1.25rem;
     margin-right: 1.25rem;
+    width: calc(100% - 2.5rem);
   }
   /* Summary price full width already, just shrink font */
   .summary-price {

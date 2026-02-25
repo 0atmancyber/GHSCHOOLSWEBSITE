@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Payment - Stanbic</title>
+    
+    <!-- Supabase JS Library (Must load before kowri.js) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="kowri-style.css">
+</head>
+<body>
+
+    <div class="payment-card">
+        <div class="header">
+            <h2>Admission Payment</h2>
+        </div>
+
+        <div class="amount-badge">
+            <span class="label">Fee Amount</span>
+            <span class="value">GHS 200.00</span>
+        </div>
+
+        <div id="error-box" class="error-message"></div>
+
+        <form id="payment-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" name="first_name" required placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" name="last_name" required placeholder="Doe">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="024XXXXXXX">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span>(Optional)</span></label>
+                <input type="email" id="email" name="email" placeholder="john@example.com">
+            </div>
+
+            <button type="submit" id="pay-btn">
+                <span id="btn-text">Pay Now</span>
+                <div id="btn-spinner" class="spinner"></div>
+            </button>
+        </form>
+    </div>
+
+    <!-- Custom Logic -->
+    <script src="kowri.js"></script>
+</body>
+</html>

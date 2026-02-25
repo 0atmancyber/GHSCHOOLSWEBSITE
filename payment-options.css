@@ -1,0 +1,966 @@
+/* ============================================================
+   GH Schools · Payment Options — Redesigned CSS
+   ============================================================ */
+
+/* --- CSS Custom Properties --- */
+:root {
+  --brand:        #b22222;
+  --brand-dark:   #8f1b1b;
+  --brand-light:  #fee9e9;
+  --brand-glow:   rgba(178, 34, 34, 0.18);
+
+  --gold:         #C9921A;
+  --gold-dark:    #a57614;
+  --gold-light:   #fef5e2;
+  --gold-glow:    rgba(201, 146, 26, 0.18);
+
+  --ink:          #0f172a;
+  --ink-2:        #1e293b;
+  --ink-3:        #334155;
+  --muted:        #64748b;
+  --subtle:       #94a3b8;
+  --border:       #e2e8f0;
+  --surface:      #f5f7fb;
+  --white:        #ffffff;
+
+  --radius-card:  1.75rem;
+  --radius-btn:   60px;
+  --radius-chip:  40px;
+
+  --shadow-card:  0 24px 48px -16px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-btn-red:  0 14px 28px -12px var(--brand);
+  --shadow-btn-gold: 0 14px 28px -12px var(--gold);
+
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--surface);
+  color: var(--ink-2);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 2.5rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Subtle background texture */
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(178,34,34,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(201,146,26,0.04) 0%, transparent 60%);
+}
+
+.channel-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   STEP INDICATOR
+   ============================================================ */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.1rem 0.55rem 0.7rem;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.step-num {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.step.done {
+  color: var(--brand);
+  border-color: var(--brand-light);
+  background: #fff8f8;
+}
+.step.done .step-num {
+  background: var(--brand-light);
+  border-color: var(--brand-light);
+  color: var(--brand);
+}
+
+.step.active {
+  color: var(--white);
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: 0 8px 20px -10px var(--brand);
+}
+.step.active .step-num {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.4);
+  color: var(--white);
+}
+
+.step-line {
+  width: 2.5rem;
+  height: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   BACK NAVIGATION
+   ============================================================ */
+.back-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+  padding: 0.55rem 1.1rem 0.55rem 0.9rem;
+  background: var(--white);
+  border-radius: var(--radius-chip);
+  color: var(--ink-3);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--border);
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.back-nav i {
+  font-size: 0.85rem;
+  color: var(--brand);
+  transition: transform var(--transition);
+}
+.back-nav:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  box-shadow: 0 6px 18px -10px var(--brand-glow);
+}
+.back-nav:hover i {
+  transform: translateX(-4px);
+}
+
+/* ============================================================
+   COURSE SUMMARY CARD
+   ============================================================ */
+.course-summary-card {
+  background: var(--white);
+  border-radius: var(--radius-card);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative left accent bar */
+.course-summary-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--brand) 0%, #d14b4b 100%);
+  border-radius: 4px 0 0 4px;
+}
+
+.course-summary__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.5rem;
+}
+.summary-item:first-child {
+  padding-left: 1rem;
+}
+
+.summary-item i {
+  color: var(--brand);
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 1.1rem;
+  text-align: center;
+}
+
+.summary-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.summary-item__text strong {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+}
+.summary-item__text span {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.summary-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.summary-price {
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  color: var(--white);
+  font-weight: 800;
+  padding: 0.65rem 1.8rem;
+  border-radius: var(--radius-btn);
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  box-shadow: var(--shadow-btn-red);
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--brand-light);
+  color: var(--brand);
+  border-radius: 14px;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.subhead {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ink-3);
+  font-size: 0.95rem;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  padding: 0.85rem 1.25rem;
+  border-radius: 1rem;
+  max-width: fit-content;
+}
+.subhead i {
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   CHANNELS GRID
+   ============================================================ */
+.channels-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  margin: 0 0 2.5rem;
+}
+
+/* ============================================================
+   CHANNEL CARD — BASE
+   ============================================================ */
+.channel-card {
+  background: var(--white);
+  border-radius: var(--radius-card);
+  padding: 0;
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+.channel-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Top accent bar */
+.card-accent {
+  height: 5px;
+  width: 100%;
+  flex-shrink: 0;
+}
+.card-accent--red {
+  background: linear-gradient(90deg, var(--brand) 0%, #e05555 60%, #ffcaca 100%);
+}
+.card-accent--gold {
+  background: linear-gradient(90deg, var(--gold-dark) 0%, var(--gold) 60%, #f5d68a 100%);
+}
+
+#paystackChannel:hover {
+  border-color: rgba(178,34,34,0.25);
+  box-shadow: 0 32px 56px -20px var(--brand-glow), 0 2px 8px rgba(0,0,0,0.04);
+}
+#kowriChannel:hover {
+  border-color: rgba(201,146,26,0.3);
+  box-shadow: 0 32px 56px -20px var(--gold-glow), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Card inner padding wrapper (everything below accent bar) */
+.channel-card .card-header,
+.channel-card .channel-description,
+.channel-card .pay-methods,
+.channel-card .muted-note,
+.channel-card .cta-button,
+.channel-card .momo-helper-text,
+.channel-card .card-footer-logo {
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}
+
+/* ============================================================
+   CARD HEADER
+   ============================================================ */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.6rem;
+  padding-bottom: 0.75rem;
+}
+
+.card-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.card-icon--red {
+  background: var(--brand-light);
+  color: var(--brand);
+}
+.card-icon--gold {
+  background: var(--gold-light);
+  color: var(--gold);
+}
+
+.card-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.card-header__text h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Live / Available badges */
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 40px;
+  width: fit-content;
+}
+.card-badge--live {
+  background: #dcfce7;
+  color: #15803d;
+}
+.card-badge--gold {
+  background: var(--gold-light);
+  color: var(--gold-dark);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-green 2s infinite;
+}
+.badge-dot--gold {
+  background: var(--gold);
+  animation: pulse-gold 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* ============================================================
+   CHANNEL DESCRIPTION
+   ============================================================ */
+.channel-description {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  padding-bottom: 0.5rem;
+}
+
+/* ============================================================
+   PAY METHODS LIST
+   ============================================================ */
+.pay-methods {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: var(--surface);
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  border-radius: 1rem;
+  margin: 0.5rem 1.75rem 1rem;
+  border: 1.5px solid #eef2f7;
+}
+
+/* Method chips — Paystack card */
+.method-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  padding: 0.35rem 0.85rem;
+  border-radius: 40px;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+}
+.method-chip i { font-size: 0.8rem; }
+
+.method-chip--card {
+  background: #f0f4ff;
+  color: #3b5bdb;
+  border-color: #d0dafe;
+}
+.method-chip--momo {
+  background: #fffbea;
+  color: #92600a;
+  border-color: #fde68a;
+}
+.method-chip--vodafone {
+  background: #fff1f1;
+  color: #c01111;
+  border-color: #fecaca;
+}
+.method-chip--airteltigo {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+.method-chip--bank {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+/* Network chips — Mobile Money card */
+.pay-methods--networks {
+  padding-top: 0.9rem !important;
+  padding-bottom: 0.9rem !important;
+}
+
+.network-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 40px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  color: var(--ink-3);
+  white-space: nowrap;
+  transition: var(--transition);
+}
+.network-chip strong {
+  font-weight: 800;
+}
+.network-chip--mtn:hover  { border-color: #FFCC00; background: #fffdf0; }
+.network-chip--vodafone:hover { border-color: #E60000; background: #fff5f5; }
+.network-chip--airteltigo:hover { border-color: #0057A8; background: #f0f6ff; }
+
+.network-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MUTED NOTE
+   ============================================================ */
+.muted-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  border-top: 1.5px dashed #dde4ed;
+  padding-top: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+.muted-note i {
+  color: var(--brand);
+  font-size: 0.9rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   CTA BUTTONS
+   ============================================================ */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+  margin-top: 1.25rem;
+  margin-bottom: 0.85rem;
+  padding: 1rem 1.75rem;
+  width: calc(100% - 3.5rem);  /* full width inside padding */
+}
+.cta-button i {
+  font-size: 0.9rem;
+  transition: transform var(--transition);
+}
+.cta-button:hover i {
+  transform: translateX(4px);
+}
+
+.cta-button--red {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  color: var(--white);
+  box-shadow: var(--shadow-btn-red);
+}
+.cta-button--red:hover {
+  box-shadow: 0 20px 36px -14px var(--brand);
+  transform: translateY(-2px) scale(1.01);
+}
+.cta-button--red:active {
+  transform: scale(0.98);
+}
+
+.cta-button--gold {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--white);
+  box-shadow: var(--shadow-btn-gold);
+}
+.cta-button--gold:hover {
+  box-shadow: 0 20px 36px -14px var(--gold);
+  transform: translateY(-2px) scale(1.01);
+}
+.cta-button--gold:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================
+   MOMO HELPER TEXT
+   ============================================================ */
+.momo-helper-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: -0.4rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.momo-helper-text i {
+  color: var(--gold);
+  font-size: 0.88rem;
+}
+
+/* ============================================================
+   CARD FOOTER LOGO
+   ============================================================ */
+.card-footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--subtle);
+  padding-top: 0.75rem !important;
+  padding-bottom: 1.25rem !important;
+  border-top: 1.5px solid var(--border);
+  margin-top: auto;
+}
+.card-footer-logo strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--muted);
+}
+.card-footer-logo i {
+  font-size: 0.75rem;
+  color: var(--brand);
+}
+.card-footer-logo--gold i {
+  color: var(--gold);
+}
+
+/* ============================================================
+   CONTACT ROW
+   ============================================================ */
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-top: 1.5px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  padding: 0.5rem 1.1rem;
+  border-radius: 40px;
+  border: 1.5px solid #bbf7d0;
+}
+.trust-badge i {
+  font-size: 0.85rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  background: var(--white);
+  padding: 0.55rem 1.2rem;
+  border-radius: 40px;
+  border: 1.5px solid var(--border);
+  font-size: 0.88rem;
+}
+.contact-info i {
+  color: var(--brand);
+  font-size: 0.85rem;
+}
+.contact-info a {
+  color: var(--ink-3);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+.contact-info a:hover {
+  color: var(--brand);
+}
+.contact-divider {
+  color: var(--border);
+}
+
+/* ============================================================
+   SECURITY FOOTER
+   ============================================================ */
+.security-footer {
+  text-align: center;
+  color: var(--subtle);
+  font-size: 0.78rem;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  border-top: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.security-footer i {
+  font-size: 0.8rem;
+}
+
+/* ============================================================
+   CARD SELECTED STATE (JS-triggered on CTA click)
+   ============================================================ */
+.card--selected {
+  transform: translateY(-3px) scale(0.99) !important;
+  transition: all 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+#paystackChannel.card--selected {
+  box-shadow: 0 0 0 3px var(--brand), 0 32px 56px -20px var(--brand-glow) !important;
+  border-color: var(--brand) !important;
+}
+#kowriChannel.card--selected {
+  box-shadow: 0 0 0 3px var(--gold), 0 32px 56px -20px var(--gold-glow) !important;
+  border-color: var(--gold) !important;
+}
+
+/* ============================================================
+   CARD ENTRY ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.channel-container > * {
+  animation: fadeUp 0.45s ease both;
+}
+.step-indicator     { animation-delay: 0.05s; }
+.back-nav           { animation-delay: 0.1s; }
+.course-summary-card{ animation-delay: 0.15s; }
+.page-header        { animation-delay: 0.2s; }
+.channels-grid      { animation-delay: 0.25s; }
+.contact-row        { animation-delay: 0.3s; }
+.security-footer    { animation-delay: 0.35s; }
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+@media (max-width: 900px) {
+  .channels-grid {
+    gap: 1.25rem;
+  }
+  .card-header__text h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+   ============================================================ */
+@media (max-width: 700px) {
+  body {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .channels-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .step-label {
+    display: none;
+  }
+  .step {
+    padding: 0.55rem 0.8rem;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+  }
+  .step-num {
+    border: none;
+    background: transparent;
+  }
+  .step-line {
+    width: 1.5rem;
+  }
+
+  /* --- Course Summary Card --- */
+  .course-summary-card {
+    flex-direction: column;
+    align-items: stretch;          /* stretch so children fill full width */
+    padding: 1.4rem 1.25rem 1.4rem 1.5rem;
+    gap: 0;
+    overflow: visible;             /* allow price pill shadow to breathe */
+  }
+  .course-summary__info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    width: 100%;
+  }
+  .summary-item {
+    padding: 0.65rem 0;            /* vertical rhythm between items */
+    padding-left: 0;               /* reset desktop padding */
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+    gap: 0.7rem;
+  }
+  .summary-item:first-child {
+    padding-left: 0;
+    padding-top: 0;
+  }
+  .summary-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .summary-item i {
+    width: 1.5rem;                 /* fixed width so all values left-align */
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .summary-divider {
+    display: none;                 /* hidden on mobile, borders replace them */
+  }
+  /* Price pill — sits below the info block, full width */
+  .summary-price {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 1.35rem;
+    padding: 0.75rem 1.5rem;
+    margin-top: 1.1rem;
+    border-radius: var(--radius-btn);
+    box-sizing: border-box;
+  }
+
+  .page-header h2 {
+    font-size: 1.6rem;
+  }
+  .subhead {
+    font-size: 0.88rem;
+  }
+
+  /* CTA buttons — full width flush with card padding */
+  .cta-button {
+    width: calc(100% - 3.5rem);
+    margin-left: 1.75rem;
+    margin-right: 1.75rem;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .contact-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .trust-badge,
+  .contact-info {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  body {
+    padding: 1.2rem 0.85rem 2rem;
+  }
+  .page-header h2 {
+    font-size: 1.4rem;
+  }
+  .channel-card .card-header,
+  .channel-card .channel-description,
+  .channel-card .muted-note,
+  .channel-card .momo-helper-text,
+  .channel-card .card-footer-logo {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  .pay-methods {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+  /* CTA: recalculate for smaller card padding */
+  .cta-button {
+    width: calc(100% - 2.5rem);
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+  /* Summary price full width already, just shrink font */
+  .summary-price {
+    font-size: 1.2rem;
+  }
+}

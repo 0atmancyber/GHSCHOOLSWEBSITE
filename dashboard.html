@@ -2942,6 +2942,7 @@ async function refreshTotalsFromDB(studentIdParam){
     saveTotalsToStorage();
     updateDashboardUI();
     try{ await refreshRegisterButtonState(); }catch(e){ /* ignore */ }
+    try{ await refreshPayTuitionButtonState(); }catch(e){ /* ignore */ }
     // Also refresh history table so it stays in sync
     const rows = await renderHistoryTable('', { useCacheFirst: false }, sid);
     console.log('[refreshTotalsFromDB] fetched totals:', { totalPaid, outstandingBalance, rowsCount: (rows?rows.length:0) });
@@ -2960,6 +2961,19 @@ async function refreshRegisterButtonState(){
     btn.style.opacity = allowed ? '' : '0.6';
     btn.title = allowed ? 'You may proceed to register courses' : 'You must pay required fees before registering';
   }catch(e){ console.warn('refreshRegisterButtonState failed', e); }
+}
+
+// Update Pay Tuition button state: disable when payment requirement is met
+async function refreshPayTuitionButtonState(){
+  try{
+    const btn = document.getElementById('payTuitionBtn');
+    if(!btn) return;
+    const allowed = await hasRegistrationAccess(studentId);
+    // If allowed === true, required payments are met — disable the Pay button
+    btn.disabled = !!allowed;
+    btn.style.opacity = allowed ? '0.6' : '';
+    btn.title = allowed ? 'Required payments completed' : 'Pay Tuition';
+  }catch(e){ console.warn('refreshPayTuitionButtonState failed', e); }
 }
 
 // Fetch total paid amount for a given studentId (authoritative) and update UI

@@ -2445,6 +2445,9 @@ const supabase = createClient(
 );
 
 window.supabase = supabase;
+// Backwards-compat: some older code in this file references `window.__sb`.
+// Ensure both aliases point to the same Supabase client.
+window.__sb = supabase;
 
 /* ---------- Avatar upload (profile picture) ---------- */
 const AVATAR_BUCKET = 'student-avatars';
@@ -2859,39 +2862,59 @@ let outstandingBalance = totalPayable;
 async function fetchPaymentsSummary(studentIdParam){
   if(!studentIdParam) return { totalPaid: 0, tuitionPaid: 0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
   try{
-    let payments;
-    const { data: paymentsData, error } = await window.__sb
-      .from('payments')
-      .select('*')
-      .eq('student_id', studentIdParam)
-      .in('status', ['paid','success','approved','completed']);
-
-    if(error){
-      console.error('fetchPaymentsSummary failed (initial select):', error);
-      // Try a more permissive fallback to select all columns if the initial select failed (schema mismatch)
-      try{
-        const { data: altPayments, error: altError } = await window.__sb.from('payments').select('*').eq('student_id', studentIdParam).in('status', ['paid','success','approved','completed']);
-        if(altError){
-          console.error('fetchPaymentsSummary fallback also failed:', altError);
-          return { totalPaid: 0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
-        }
-        // use altPayments as payments
-        payments = altPayments || [];
-      }catch(fallbackErr){
-        console.error('fetchPaymentsSummary fallback exception:', fallbackErr);
-        return { totalPaid: 0, tuitionPaid:0, srcPaid:0, medPaid:0, deptPaid:0, rows: [] };
-      }
-    } else {
+    let payments = [];
+    // Primary attempt: filter by student_id and common success statuses
+    try{
+      const { data: paymentsData, error } = await window.__sb
+        .from('payments')
+        .select('*')
+        .eq('student_id', studentIdParam)
+        .in('status', ['paid','success','approved','completed']);
+      if(error) throw error;
       payments = paymentsData || [];
+    }catch(primaryErr){
+      console.warn('[fetchPaymentsSummary] primary query failed:', primaryErr);
+      // fall through to try permissive queries below
     }
 
+    // If no payments found, try without status filter (some records may use different status values)
+    if(!(payments && payments.length)){
+      try{
+        const { data: alt, error: altErr } = await window.__sb.from('payments').select('*').eq('student_id', studentIdParam);
+        if(!altErr && Array.isArray(alt) && alt.length) payments = alt;
+      }catch(e){ console.warn('[fetchPaymentsSummary] no-status fallback failed', e); }
+    }
+
+    // If still none, try matching by student email (some rows store email instead)
+    if(!(payments && payments.length) && window.studentEmail){
+      try{
+        const { data: byEmail, error: emailErr } = await window.__sb.from('payments').select('*').ilike('student_email', window.studentEmail).limit(200);
+        if(!emailErr && Array.isArray(byEmail) && byEmail.length) payments = byEmail;
+      }catch(e){ console.warn('[fetchPaymentsSummary] email fallback failed', e); }
+    }
+
+    // If still none, try a permissive unfiltered sample (last 200 rows) to at least detect schema
+    if(!(payments && payments.length)){
+      try{
+        const { data: sample, error: sampleErr } = await window.__sb.from('payments').select('*').order('created_at', { ascending: false }).limit(200);
+        if(!sampleErr && Array.isArray(sample) && sample.length) payments = sample.filter(r => {
+          // best-effort: match studentIdParam to likely fields
+          const sid = String(studentIdParam || '').trim();
+          return String(r.student_id || r.studentid || r.student || r.student_ref || '').toLowerCase() === sid.toLowerCase() || String(r.student_email || '').toLowerCase() === (window.studentEmail||'').toLowerCase();
+        });
+      }catch(e){ console.warn('[fetchPaymentsSummary] permissive sample failed', e); }
+    }
+
+    // Compute totals with support for multiple amount/fee field names
     let tuitionPaid=0, srcPaid=0, medPaid=0, deptPaid=0;
     let total = 0;
     (payments || []).forEach(p=>{
-      const amt = Number(p.amount) || 0;
+      const amt = Number(p.amount || p.amount_paid || p.payment_amount || p.amt || p.paid_amount) || 0;
       total += amt;
-      const type = ((p.fee_type || '')).toString().toLowerCase();
-      console.log('[fetchPaymentsSummary] Processing payment:', { amount: p.amount, parsedAmt: amt, fee_type: p.fee_type, type, status: p.status });
+      const rawFee = (p.fee_type || p.payment_type || p.fee_breakdown || p.fee || '').toString().toLowerCase();
+      const desc = (p.fee_breakdown || p.description || p.note || '').toString().toLowerCase();
+      const type = rawFee || desc || '';
+      console.log('[fetchPaymentsSummary] Processing payment:', { amountRaw: p.amount, parsedAmt: amt, fee_type: rawFee, desc, status: p.status });
       if(type.includes('tuition')) tuitionPaid += amt;
       else if(type.includes('src')) srcPaid += amt;
       else if(type.includes('medical')) medPaid += amt;
@@ -4364,21 +4387,22 @@ async function openStudentProfileModal(){
       // Load latest profile from server
       try{
         toggleModal('loadingModal');
+        // Use permissive select to avoid errors when certain columns are missing
         const { data, error } = await window.__sb.from('student_master_db')
-          .select('student_id, first_name, middle_name, surname, email, phone_number_1, phone_number_2, whatsapp, department, level')
+          .select('*')
           .eq('student_id', sid)
           .maybeSingle();
         if(error) throw error;
         if(data){
-          document.getElementById('editFirstName').value = data.first_name || '';
-          document.getElementById('editMiddleName').value = data.middle_name || '';
-          document.getElementById('editSurname').value = data.surname || '';
+          document.getElementById('editFirstName').value = data.first_name || data.firstname || '';
+          document.getElementById('editMiddleName').value = data.middle_name || data.othername || '';
+          document.getElementById('editSurname').value = data.surname || data.lastname || '';
           document.getElementById('editEmail').value = data.email || '';
-          document.getElementById('editPhone1').value = data.phone_number_1 || '';
-          document.getElementById('editPhone2').value = data.phone_number_2 || '';
-          document.getElementById('editWhatsapp').value = data.whatsapp || '';
-          document.getElementById('editDepartment').value = data.department || '';
-          document.getElementById('editLevel').value = data.level || '';
+          document.getElementById('editPhone1').value = data.phone_number_1 || data.phone || data.phone_number || '';
+          document.getElementById('editPhone2').value = data.phone_number_2 || data.phone_alt || '';
+          document.getElementById('editWhatsapp').value = data.whatsapp || data.whatsapp_number || '';
+          document.getElementById('editDepartment').value = data.department || data.school || data.faculty || data.department_name || '';
+          document.getElementById('editLevel').value = data.level || data.current_level || data.student_level || '';
         }
       }catch(e){
         console.warn('Could not load profile for editing:', e);
@@ -4507,15 +4531,17 @@ function rowsToHTML(rows) {
   }
   return rows.map(r => {
     const when = new Date(r.created_at || r.payment_date || Date.now()).toLocaleString();
-    const fullName = `${r.firstname || ''} ${r.lastname || ''}`.trim();
+    // Prefer canonical student_name where available, fall back to firstname/lastname
+    const fullName = (r.student_name && String(r.student_name).trim()) || `${r.firstname || ''} ${r.lastname || ''}`.trim();
 
-    // Build a clear breakdown string. Prefer explicit fee_breakdown; otherwise infer from payment_type.
+    // Determine a friendly breakdown string. Try common column names in order of likelihood.
     let breakdownHtml = '';
     try{
-      if(r.fee_breakdown && String(r.fee_breakdown).trim()){
-        breakdownHtml = escapeHtml(String(r.fee_breakdown));
+      const rawBreak = (r.fee_breakdown || r.fee_type || r.payment_type || '').toString();
+      if(rawBreak && rawBreak.trim()){
+        breakdownHtml = escapeHtml(rawBreak);
       } else {
-        const type = (r.payment_type || '').toString().toLowerCase();
+        const type = (r.payment_type || r.fee_type || '').toString().toLowerCase();
         const amt = Number(r.amount) || 0;
         const parts = [];
         if(type.includes('tuition')) parts.push(`Tuition: GHS ${gh(amt)}`);
@@ -4525,15 +4551,15 @@ function rowsToHTML(rows) {
         else parts.push(`Amount: GHS ${gh(amt)}`);
         breakdownHtml = escapeHtml(parts.join(', '));
       }
-    }catch(e){ breakdownHtml = escapeHtml(r.fee_breakdown || ''); }
+    }catch(e){ breakdownHtml = escapeHtml((r.fee_breakdown || r.fee_type || r.payment_type) || ''); }
 
     return `
       <tr style="border-bottom:1px solid #eee;">
         <td style="padding:8px;">${escapeHtml(when)}</td>
-        <td style="padding:8px;">${escapeHtml(r.payment_type || '')}</td>
+        <td style="padding:8px;">${escapeHtml(r.fee_type || r.payment_type || (r.fee_breakdown||''))}</td>
         <td style="padding:8px;">${breakdownHtml}</td>
         <td style="padding:8px;text-align:right;padding-right:12px;">GHS ${gh(r.amount)}</td>
-        <td style="padding:8px;">${escapeHtml(r.receipt_number || '')}</td>
+        <td style="padding:8px;">${escapeHtml(r.receipt_number || r.transaction_ref || r.reference || '')}</td>
         <td style="padding:8px;">${escapeHtml(fullName)}</td>
         <td style="padding:8px;white-space:nowrap;">
           <button class="viewReceiptBtn" data-ref="${escapeHtml(r.transaction_ref || '')}" style="margin-right:6px;padding:6px 8px;border-radius:6px;border:none;background:#4a00e0;color:white;cursor:pointer;">View</button>
@@ -4996,9 +5022,8 @@ window.openTuitionModal = async ()=>{
 
     document.getElementById('tuitionOptionsContainer').innerHTML = optionsHTML + otherHTML;
 
-    // Auto-select first available option
-    const firstRadio = document.querySelector('#tuitionModal input[type="radio"]');
-    if(firstRadio) firstRadio.checked = true;
+    // Do not auto-select any tuition radio option — let the student choose.
+    // (Previously auto-selected the first available option; removed to respect user's choice.)
 
     // Pre-select any pending other fees (if user came from the other-fees modal)
     try{
@@ -5030,6 +5055,20 @@ window.openTuitionModal = async ()=>{
     document.querySelectorAll('#tuitionModal input[name="tuitionAmount"]').forEach(i=>i.addEventListener('change', updateCombinedTotal));
     document.querySelectorAll('#tuitionModal input[name="otherFeeInTuition"]').forEach(i=>i.addEventListener('change', updateCombinedTotal));
     setTimeout(updateCombinedTotal, 40);
+
+    // Allow students to uncheck a selected tuition radio by clicking it again.
+    // Radios don't support unchecking by default; simulate toggle behaviour.
+    document.querySelectorAll('#tuitionModal input[name="tuitionAmount"]').forEach(radio=>{
+      radio.addEventListener('mousedown', function(){ this._wasChecked = this.checked; });
+      radio.addEventListener('click', function(e){
+        if(this._wasChecked){
+          this.checked = false;
+          this._wasChecked = false;
+          try{ updateCombinedTotal(); }catch(_){ }
+          e.preventDefault();
+        }
+      });
+    });
 
     toggleModal('tuitionModal');
   }catch(e){
@@ -5725,66 +5764,88 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Helper — find best matching school/program for the current student profile
     function detectStudentSchoolAndProgram(){
-      // PRIORITY 1: Use student department from database
-      const dept = (window.studentDept || window.studentDepartment || '').toString().trim();
-      if(dept && DEPARTMENT_TO_SCHOOL[dept]) {
-        const school = DEPARTMENT_TO_SCHOOL[dept];
-        console.log('[detectStudentSchoolAndProgram] Using department mapping:', dept, '→', school);
-        return { school: school, program: null };
-      }
+      // Build a list of candidate fields from runtime and localStorage
+      const candidates = [];
+      // prefer explicit runtime fields
+      const runtimeFields = [
+        window.studentSchool,
+        window.studentDept,
+        window.studentDepartment,
+        window.studentDepartmentName,
+        window.studentFaculty,
+        window.studentDivision,
+        window.studentProgram,
+        window.studentCourseType,
+        window.studentDepartment || ''
+      ];
+      runtimeFields.forEach(v=>{ if(v) candidates.push(String(v).trim()); });
 
-      // PRIORITY 2: Try case-insensitive department match
-      const deptLower = dept.toLowerCase();
-      for(const [key, val] of Object.entries(DEPARTMENT_TO_SCHOOL)) {
-        if(key.toLowerCase() === deptLower) {
-          const school = val;
-          console.log('[detectStudentSchoolAndProgram] Found department match:', dept, '→', school);
-          return { school: school, program: null };
+      // also check localStorage fallbacks
+      try{
+        const lsSchool = localStorage.getItem('studentSchool'); if(lsSchool) candidates.push(lsSchool.trim());
+        const lsDept = localStorage.getItem('studentDepartment'); if(lsDept) candidates.push(lsDept.trim());
+      }catch(e){}
+
+      // Normalize candidates to lower-case for comparisons, but keep originals for selection
+      const normalized = candidates.map(s=>({ raw: s, norm: String(s||'').toLowerCase() }));
+
+      // 1) Try direct mapping from department-like values to school using DEPARTMENT_TO_SCHOOL
+      for(const c of normalized){
+        if(!c.norm) continue;
+        for(const [key,val] of Object.entries(DEPARTMENT_TO_SCHOOL)){
+          if(key.toLowerCase() === c.norm){
+            const school = val;
+            window.studentSchool = school;
+            try{ localStorage.setItem('studentSchool', school); }catch(e){}
+            console.log('[detectStudentSchoolAndProgram] Department -> school mapping:', c.raw, '→', school);
+            return { school: school, program: window.studentProgram || window.studentCourseType || null };
+          }
         }
       }
 
-      // PRIORITY 3: Try partial department match
-      for(const [key, val] of Object.entries(DEPARTMENT_TO_SCHOOL)) {
-        if(deptLower.includes(key.toLowerCase()) || key.toLowerCase().includes(deptLower)) {
-          const school = val;
-          console.log('[detectStudentSchoolAndProgram] Found partial department match:', dept, '→', school);
-          return { school: school, program: null };
+      // 2) Try partial matches (contains / startsWith)
+      for(const c of normalized){
+        if(!c.norm) continue;
+        for(const [key,val] of Object.entries(DEPARTMENT_TO_SCHOOL)){
+          const k = key.toLowerCase();
+          if(c.norm.includes(k) || k.includes(c.norm) || c.norm.startsWith(k.split(' ')[0])){
+            const school = val;
+            window.studentSchool = school;
+            try{ localStorage.setItem('studentSchool', school); }catch(e){}
+            console.log('[detectStudentSchoolAndProgram] Partial department match:', c.raw, '→', school);
+            return { school: school, program: window.studentProgram || window.studentCourseType || null };
+          }
         }
       }
 
-      // Fallback: Original logic
-      const schoolVal = (window.studentSchool || window.studentDept || window.studentDepartment || '').toString().trim();
-      const programVal = (window.studentProgram || window.studentCourseType || window.studentDept || '').toString().trim();
-      
-      console.log('[detectStudentSchoolAndProgram] No department match, using fallback: schoolVal:', schoolVal, 'programVal:', programVal);
-      
-      // 1) Try exact school match first
-      if(schoolVal && DASHBOARD_SCHOOL_DATA[schoolVal]) {
-        console.log('[detectStudentSchoolAndProgram] Found exact school match:', schoolVal);
-        return { school: schoolVal, program: programVal || null };
-      }
+      // 3) Fallback: try to match against known DASHBOARD_SCHOOL_DATA keys
+      const schoolCandidates = [];
+      // gather likely school strings
+      [window.studentSchool, window.studentDept, window.studentDepartment, window.studentProgram, window.studentCourseType].forEach(v=>{ if(v) schoolCandidates.push(String(v).trim()); });
+      try{ const ls = localStorage.getItem('studentSchool'); if(ls) schoolCandidates.push(ls); }catch(e){}
 
-      // 2) Try case-insensitive school match
       const keys = Object.keys(DASHBOARD_SCHOOL_DATA);
-      for(const k of keys) {
-        if(k.toLowerCase() === schoolVal.toLowerCase()) {
-          console.log('[detectStudentSchoolAndProgram] Found case-insensitive school match:', k);
-          return { school: k, program: programVal || null };
+      for(const sraw of schoolCandidates){
+        if(!sraw) continue;
+        const s = sraw.toLowerCase();
+        for(const k of keys){
+          if(k.toLowerCase() === s){ window.studentSchool = k; try{ localStorage.setItem('studentSchool', k); }catch(e){}; return { school: k, program: window.studentProgram || window.studentCourseType || null }; }
         }
       }
 
-      // 3) Try partial school match
-      for(const k of keys) {
-        const schoolName = k.toLowerCase();
-        if(schoolVal.toLowerCase().includes(schoolName.split(' ')[0]) || schoolName.includes(schoolVal.toLowerCase())) {
-          console.log('[detectStudentSchoolAndProgram] Found partial school match:', k);
-          return { school: k, program: programVal || null };
-        }
+      // 4) Partial school name match (first word)
+      for(const sraw of schoolCandidates){
+        if(!sraw) continue;
+        const s = sraw.toLowerCase();
+        for(const k of keys){ const kn = k.toLowerCase(); if(kn.includes(s) || s.includes(kn.split(' ')[0])){ window.studentSchool = k; try{ localStorage.setItem('studentSchool', k); }catch(e){}; return { school: k, program: window.studentProgram || window.studentCourseType || null }; } }
       }
 
-      // 4) Fallback to first school
-      console.log('[detectStudentSchoolAndProgram] No match found, using fallback school:', keys[0]);
-      return { school: keys[0], program: programVal||null };
+      // 5) As a last resort, return any previously stored school or default to the first available
+      const fallback = window.studentSchool || keys[0];
+      window.studentSchool = fallback;
+      try{ localStorage.setItem('studentSchool', fallback); }catch(e){}
+      console.log('[detectStudentSchoolAndProgram] No match found, using fallback school:', fallback);
+      return { school: fallback, program: window.studentProgram || window.studentCourseType || null };
     }
 
     // Minimum number of elective courses required (change as needed)

@@ -27,7 +27,8 @@ form.addEventListener('submit', async (e) => {
         first_name: document.getElementById('first-name').value,
         last_name: document.getElementById('last-name').value,
         phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value
+        email: document.getElementById('email').value,
+        amount: document.getElementById('amount') ? document.getElementById('amount').value : '200'
     };
 
     try {
@@ -39,10 +40,15 @@ form.addEventListener('submit', async (e) => {
             }
         });
 
-        if (error) throw new Error(error.message);
+        // Handle function invocation errors
+        if (error) {
+            console.error("Function invocation error:", error);
+            throw new Error(error.message || "Failed to connect to payment server");
+        }
 
         // Check for custom errors returned by the function
         if (data && data.error) {
+            console.error("Payment function returned error:", data.error);
             throw new Error(data.error);
         }
 

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Test Console</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        h2 { font-size: 16px; color: #555; margin: 15px 0 10px 0; }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label { 
+            display: block; 
+            font-weight: 500; 
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .log-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            color: #333;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #ddd;
+            padding-left: 10px;
+        }
+        .log-entry.info { border-color: #17a2b8; color: #17a2b8; }
+        .log-entry.success { border-color: #28a745; color: #28a745; }
+        .log-entry.error { border-color: #dc3545; color: #dc3545; }
+        .log-entry.warning { border-color: #ffc107; color: #ff6600; }
+        .status {
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        .status.loading { background: #cce5ff; color: #004085; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .credentials {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Kowri Payment System Test</h1>
+
+        <div class="test-panel">
+            <div class="credentials">
+                ✅ Environment variables configured in Supabase secrets:
+                <br>KOWRI_APP_ID, KOWRI_APP_REFERENCE, KOWRI_SERVICE_CODE, KOWRI_BASE_URL, KOWRI_WEBHOOK_URL
+            </div>
+
+            <h2>Test Payment Request</h2>
+            <form id="test-form">
+                <div class="form-group">
+                    <label for="amount">Amount (GHS) - Minimum 0.50</label>
+                    <input type="number" id="amount" value="1" min="0.50" step="0.01" required placeholder="0.50">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number (MTN)</label>
+                    <input type="tel" id="phone" value="024XXXXXXX" required placeholder="024XXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" value="Test" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" value="User" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (Optional)</label>
+                    <input type="email" id="email" value="test@example.com">
+                </div>
+                <button type="submit" id="submit-btn">Test Payment Initiation</button>
+            </form>
+            <div id="test-status"></div>
+        </div>
+
+        <div class="test-panel">
+            <h2>Request/Response Log</h2>
+            <div id="log-box" class="log-box">
+                <div class="log-entry info">Ready to test...</div>
+            </div>
+            <button onclick="clearLogs()" style="margin-top: 10px;">Clear Logs</button>
+            <button onclick="downloadLogs()" style="margin-top: 10px; background: #6c757d;">Download Logs</button>
+        </div>
+
+        <div class="test-panel">
+            <h2>Troubleshooting Guide</h2>
+            <ul style="line-height: 1.8;">
+                <li><strong>400 Error:</strong> Missing or invalid Kowri credentials in Supabase secrets</li>
+                <li><strong>Connection Error:</strong> Check if KOWRI_BASE_URL is correct</li>
+                <li><strong>Invalid phone:</strong> Use valid MTN Ghana number (024...)</li>
+                <li><strong>Check browser console:</strong> F12 → Console tab for detailed errors</li>
+                <li><strong>Webhook not firing:</strong> Verify KOWRI_WEBHOOK_URL matches your domain</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://fyriapqeztevzkcaaiqw.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY";
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const logBox = document.getElementById('log-box');
+        const statusBox = document.getElementById('test-status');
+        const form = document.getElementById('test-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function setStatus(message, type = 'loading') {
+            statusBox.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function clearLogs() {
+            logBox.innerHTML = '<div class="log-entry info">Logs cleared</div>';
+        }
+
+        function downloadLogs() {
+            const logs = logBox.innerText;
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(logs));
+            element.setAttribute('download', `payment-test-${Date.now()}.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            logBox.innerHTML = '';
+
+            const formData = {
+                first_name: document.getElementById('first-name').value,
+                last_name: document.getElementById('last-name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                amount: document.getElementById('amount').value
+            };
+
+            log('Starting payment test...', 'info');
+            log(`Amount: GHS ${formData.amount}`, 'info');
+            log(`Phone: ${formData.phone}`, 'info');
+            log(`Name: ${formData.first_name} ${formData.last_name}`, 'info');
+            setStatus('Processing payment request...', 'loading');
+
+            try {
+                log('Calling kowri-payment Edge Function...', 'info');
+                
+                const { data, error } = await supabaseClient.functions.invoke('kowri-payment', {
+                    body: {
+                        action: 'initiate_payment',
+                        payload: formData
+                    }
+                });
+
+                if (error) {
+                    log(`Function invocation error: ${error.message}`, 'error');
+                    
+                    // Try to extract error details from different possible locations
+                    let errorDetail = error.message;
+                    if (error.context && error.context.error) {
+                        errorDetail = error.context.error;
+                    }
+                    if (typeof error.context === 'string') {
+                        try {
+                            const parsed = JSON.parse(error.context);
+                            if (parsed.error) errorDetail = parsed.error;
+                        } catch (e) {
+                            errorDetail = error.context;
+                        }
+                    }
+                    
+                    log(`Detailed error: ${errorDetail}`, 'error');
+                    setStatus(`❌ Error: ${errorDetail}`, 'error');
+                    console.error('Full error object:', error);
+                    console.log('Function logs: Check Supabase Dashboard > Edge Functions > kowri-payment > Logs tab');
+                } else if (data && data.error) {
+                    log(`Payment error: ${data.error}`, 'error');
+                    setStatus(`❌ ${data.error}`, 'error');
+                } else if (data && data.success) {
+                    log(`✓ Success! Message: ${data.message}`, 'success');
+                    log(`Merchant Order ID: ${data.merchantOrderId}`, 'success');
+                    setStatus(`✅ Payment initiated! ${data.message}`, 'success');
+                } else {
+                    log(`Unexpected response: ${JSON.stringify(data)}`, 'warning');
+                    setStatus(`⚠️ Unexpected response`, 'error');
+                }
+
+                log(`Full response: ${JSON.stringify(data, null, 2)}`, 'info');
+
+            } catch (err) {
+                log(`Caught exception: ${err.message}`, 'error');
+                setStatus(`❌ ${err.message}`, 'error');
+                console.error('Full error:', err);
+            }
+
+            submitBtn.disabled = false;
+        });
+
+        log('Test page loaded. Fill the form and click "Test Payment Initiation"', 'info');
+    </script>
+</body>
+</html>

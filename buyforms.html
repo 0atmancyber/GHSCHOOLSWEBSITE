@@ -418,7 +418,7 @@
     // Determine admission form fee based on origin:
     // - If arriving from short-courses (query params or referrer), fee = 200 GHS
     // - Otherwise (direct admission flow), fee = 150 GHS
-    let FORM_FEE = 150; // default GHS
+    let FORM_FEE = .5; // default GHS
     // expose origin flag to payment handlers
     let fromShortCourses = false;
     try {

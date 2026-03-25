@@ -695,7 +695,9 @@
       60%  { transform: scale(1.15); }
       100% { transform: scale(1); opacity: 1; }
     }
-50%  { background-position: 100% 50%; }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
@@ -970,7 +972,202 @@
     .tpct-card.selected .tpct-check, .tpct-card.selected-full .tpct-check { display:flex; }
     .tpct-card.selected-full .tpct-check { background:var(--success); }
 
-    /* ── RESULTS MODAL ─────────────────────────────────── */
+    /* ── MILESTONE PAYMENT CARDS ───────────────────────── */
+    .milestone-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+      transition: all .22s cubic-bezier(.4,0,.2,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .milestone-card:hover:not([style*="cursor:default"]) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249,115,22,.12);
+    }
+    .milestone-card.milestone-met {
+      border-color: var(--success);
+      background: var(--success-light);
+    }
+    .milestone-card.milestone-partial {
+      border-color: var(--warning);
+      background: var(--warning-light);
+    }
+    .milestone-card.milestone-met-full {
+      border-color: var(--success);
+      background: linear-gradient(135deg,#e6fbf5,#d1fae5);
+    }
+    .milestone-card.milestone-balance {
+      border-color: var(--border);
+      background: var(--surface);
+    }
+    .milestone-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .milestone-icon { margin-bottom: 6px; }
+    .milestone-amt {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+      margin-bottom: 4px;
+    }
+    .milestone-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .milestone-btn {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+      margin-top: 2px;
+    }
+    .milestone-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .milestone-btn.milestone-btn-full { background: #F59E0B; }
+    .milestone-btn.milestone-btn-full:hover { background: #D97706; }
+    .milestone-done-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* ── FEE SCHEDULE PAGE ──────────────────────────────── */
+    .fee-schedule-page {
+      display: none;
+    }
+    .fee-schedule-page.active {
+      display: block;
+    }
+    .fee-schedule-page-header {
+      background: var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      color: #fff;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .fee-schedule-page-header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+    }
+    .fee-schedule-back {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 10px;
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 16px;
+      transition: background .15s;
+    }
+    .fee-schedule-back:hover { background: rgba(255,255,255,.25); }
+    .fs-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .fs-table-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .fs-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      align-items: center;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      transition: background .15s;
+    }
+    .fs-row:last-child { border-bottom: none; }
+    .fs-row:hover { background: var(--bg); }
+    .fs-row-head {
+      background: var(--bg);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: var(--text-muted);
+    }
+    .fs-fee-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fs-fee-icon {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .fs-amount { font-family: 'Plus Jakarta Sans',sans-serif; font-weight: 800; font-size: 14px; color: var(--text); }
+    .fs-paid   { font-weight: 700; font-size: 13px; color: var(--success); }
+    .fs-bal    { font-weight: 800; font-size: 13px; }
+    .fs-status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      border-radius: 20px; padding: 4px 10px;
+      font-size: 11px; font-weight: 700;
+    }
+    .fs-pay-btn {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 7px 14px; font-size: 12px; font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+      white-space: nowrap;
+    }
+    .fs-pay-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .fs-pay-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    @media (max-width: 768px) {
+      .fs-row { grid-template-columns: 1fr 1fr; }
+      .fs-row-head { display: none; }
+    }
     .results-gpa-ring {
       width: 100px; height: 100px;
       border-radius: 50%;
@@ -1921,6 +2118,9 @@
         <a href="#" data-page="payment">
           <i class="fas fa-credit-card"></i> Payments
         </a>
+        <a href="#" data-page="fee-schedule">
+          <i class="fas fa-file-invoice-dollar"></i> Fee Schedule
+        </a>
         <a href="#" data-page="register">
           <i class="fas fa-clipboard-check"></i> Course Register
         </a>
@@ -2114,6 +2314,71 @@
         </div>
 
       </div><!-- /page-content -->
+
+      <!-- ══════ FEE SCHEDULE PAGE ══════ -->
+      <div class="fee-schedule-page" id="feeSchedulePage">
+        <div style="padding:28px;max-width:1100px;margin:0 auto;">
+          <!-- Back button -->
+          <button class="fee-schedule-back" onclick="closeFeeSchedulePage()">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+          </button>
+
+          <!-- Page header -->
+          <div class="fee-schedule-page-header">
+            <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
+              <div style="width:56px;height:56px;background:rgba(255,255,255,.18);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.3px;">Fee Schedule</div>
+                <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:3px;" id="fsPageSubtitle">Loading your fee schedule…</div>
+              </div>
+            </div>
+            <!-- Summary stats -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;position:relative;z-index:1;" id="fsPageStats">
+              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Total Fees</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;" id="fsTotalFees">GHS 0.00</div>
+              </div>
+              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Total Paid</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#86efac;" id="fsTotalPaid">GHS 0.00</div>
+              </div>
+              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Outstanding</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fca5a5;" id="fsOutstanding">GHS 0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment milestone cards on fee schedule page -->
+          <div id="fsMilestoneCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;"></div>
+
+          <!-- Fee table -->
+          <div class="fs-table-wrap">
+            <div class="fs-table-header">
+              <div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;">Fee Breakdown</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="fsTableSubtitle">All fees for this academic year</div>
+              </div>
+              <button class="btn-ghost" onclick="openHistoryModal()"><i class="fas fa-history" style="margin-right:5px;"></i>Payment History</button>
+            </div>
+            <div class="fs-row fs-row-head">
+              <div>Fee Name</div>
+              <div>Total Amount</div>
+              <div>Paid</div>
+              <div>Balance</div>
+              <div>Action</div>
+            </div>
+            <div id="fsFeeRows">
+              <div style="padding:32px;text-align:center;color:var(--text-muted);">
+                <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;"></div>
+                Loading fee schedule…
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /fee-schedule-page -->
     </main>
   </div><!-- /app-shell -->
 
@@ -2293,12 +2558,11 @@
         <button class="modal-close" onclick="closeModal('otherFeesModal')" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Select the fees you'd like to pay. If tuition 80% isn't met yet, we'll combine them into one payment.</p>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Select a fee below to pay it directly. Tap any unpaid fee to proceed.</p>
         <div id="otherFeesList"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn-outline" onclick="closeModal('otherFeesModal')">Cancel</button>
-        <button id="otherProceedBtn" class="btn-solid" onclick="payOtherFees()">Proceed to Pay</button>
+        <button class="btn-outline" onclick="closeModal('otherFeesModal')">Close</button>
       </div>
     </div>
   </div>
@@ -2853,17 +3117,167 @@
         a.classList.toggle('active', a.dataset.page === page);
       });
       // Route actions
-      if(page === 'payment')   { openPaymentsOverviewModal();        return; }
-      if(page === 'register')  { registerCourses();                 return; }
-      if(page === 'results')   { showResultsNotice();               return; }
-      if(page === 'support')   { openModal('globalMessageModal'); showMsg('Support', 'Please contact admin via WhatsApp or email for support.'); return; }
-      if(page === 'settings')  { openSettingsModal(); return; }
-      if(page === 'profile')   { openProfileModal();               return; }
-      if(page === 'logout')    { doLogout();                        return; }
-      if(page === 'calendar')  { showMsg('Academic Calendar', 'Academic calendar is not yet available. Check back soon!'); return; }
-      if(page === 'blog')      { showMsg('News & Blog', 'No articles yet. Check back soon!'); return; }
+      if(page === 'payment')      { openPaymentsOverviewModal();        return; }
+      if(page === 'fee-schedule') { openFeeSchedulePage();              return; }
+      if(page === 'register')     { registerCourses();                  return; }
+      if(page === 'results')      { showResultsNotice();                return; }
+      if(page === 'support')      { openModal('globalMessageModal'); showMsg('Support', 'Please contact admin via WhatsApp or email for support.'); return; }
+      if(page === 'settings')     { openSettingsModal(); return; }
+      if(page === 'profile')      { openProfileModal();                return; }
+      if(page === 'logout')       { doLogout();                         return; }
+      if(page === 'calendar')     { showMsg('Academic Calendar', 'Academic calendar is not yet available. Check back soon!'); return; }
+      if(page === 'blog')         { showMsg('News & Blog', 'No articles yet. Check back soon!'); return; }
     }
     window.showPage = showPage;
+
+    /* ── FEE SCHEDULE PAGE ──────────────────────────────── */
+    function openFeeSchedulePage(){
+      const mainContent = document.querySelector('.page-content');
+      const fsPage = document.getElementById('feeSchedulePage');
+      if(!mainContent || !fsPage) return;
+      mainContent.style.display = 'none';
+      fsPage.classList.add('active');
+      renderFeeSchedulePage();
+    }
+    window.openFeeSchedulePage = openFeeSchedulePage;
+
+    function closeFeeSchedulePage(){
+      const mainContent = document.querySelector('.page-content');
+      const fsPage = document.getElementById('feeSchedulePage');
+      if(!mainContent || !fsPage) return;
+      mainContent.style.display = '';
+      fsPage.classList.remove('active');
+      // Reset sidebar active state
+      document.querySelectorAll('.sidebar-nav a').forEach(a => {
+        a.classList.toggle('active', a.dataset.page === 'dashboard');
+      });
+    }
+    window.closeFeeSchedulePage = closeFeeSchedulePage;
+
+    function renderFeeSchedulePage(){
+      const schedule = _currentFeeSchedule || [];
+      const summary  = window._lastPaymentSummary || {};
+
+      // Subtitle
+      const sub = document.getElementById('fsPageSubtitle');
+      if(sub && schedule.length){
+        const s = schedule[0];
+        sub.textContent = `${s.academic_year || ''} · Level ${s.level || ''} · ${s.program || 'All Programs'}`;
+      }
+
+      // Totals
+      let grandTotal = 0, grandPaid = 0;
+      schedule.forEach(f => {
+        const n = (f.fee_name||'').toLowerCase();
+        let paid = 0;
+        if(n.includes('tuition'))    paid = Number(summary.tuitionPaid||0);
+        else if(n.includes('src'))   paid = Number(summary.srcPaid||0);
+        else if(n.includes('medical')) paid = Number(summary.medPaid||0);
+        else if(n.includes('department')||n.includes('departmental')) paid = Number(summary.deptPaid||0);
+        paid = Math.min(paid, Number(f.amount||0));
+        grandTotal += Number(f.amount||0);
+        grandPaid  += paid;
+      });
+      const grandBal = Math.max(0, grandTotal - grandPaid);
+
+      const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+      setEl('fsTotalFees',  'GHS '+gh(grandTotal));
+      setEl('fsTotalPaid',  'GHS '+gh(grandPaid));
+      setEl('fsOutstanding','GHS '+gh(grandBal));
+
+      // Tuition/other split for milestone cards
+      const tFees     = schedule.filter(f=>(f.fee_name||'').toLowerCase().includes('tuition'));
+      const otherKeys = ['src','medical','department','departmental'];
+      const oFees     = schedule.filter(f=>{const n=(f.fee_name||'').toLowerCase();return otherKeys.some(k=>n.includes(k));});
+      const tTotal    = tFees.reduce((s,f)=>s+Number(f.amount||0),0);
+      const tPaid     = Math.min(Number(summary.tuitionPaid||0),tTotal);
+      const tBal      = Math.max(0,tTotal-tPaid);
+      const tPct      = tTotal>0?Math.min(100,Math.round((tPaid/tTotal)*100)):100;
+      const oTotal    = oFees.reduce((s,f)=>s+Number(f.amount||0),0);
+      const oPaid     = Math.min(oFees.reduce((s,f)=>{const n=(f.fee_name||'').toLowerCase();if(n.includes('src'))return s+Number(summary.srcPaid||0);if(n.includes('medical'))return s+Number(summary.medPaid||0);if(n.includes('department')||n.includes('departmental'))return s+Number(summary.deptPaid||0);return s;},0),oTotal);
+      const oBal      = Math.max(0,oTotal-oPaid);
+      const need80    = Math.max(0,Math.round(tTotal*0.8*100)/100-tPaid);
+      const met80     = tPct>=80&&oBal<=0.01;
+      const metFull   = tBal<=0.01&&oBal<=0.01;
+
+      // Milestone cards on the page
+      const mc = document.getElementById('fsMilestoneCards');
+      if(mc){
+        mc.innerHTML = `
+          <div class="milestone-card ${met80?'milestone-met':''}" onclick="${met80?'':'selectMilestone(\"80\")'}" style="cursor:${met80?'default':'pointer'};">
+            <div class="milestone-label">80% Tuition + Others</div>
+            <div class="milestone-icon">${met80?'<i class="fas fa-check-circle" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-unlock" style="font-size:24px;color:var(--primary);"></i>'}</div>
+            <div class="milestone-amt" style="font-size:18px;">${met80?'Met':'GHS '+gh(Math.max(0,need80+oBal))}</div>
+            <div class="milestone-desc">${met80?'Course registration is unlocked':'Pay to unlock course registration'}</div>
+            ${!met80?`<button class="milestone-btn" style="margin-top:10px;" onclick="event.stopPropagation();selectMilestone('80')"><i class="fas fa-unlock" style="margin-right:5px;"></i>Pay 80%</button>`:`<div class="milestone-done-badge" style="margin-top:10px;"><i class="fas fa-check"></i> Registration Unlocked</div>`}
+          </div>
+          <div class="milestone-card ${metFull?'milestone-met-full':''}" onclick="${metFull?'':'selectMilestone(\"100\")'}" style="cursor:${metFull?'default':'pointer'};">
+            <div class="milestone-label">100% Tuition + Others</div>
+            <div class="milestone-icon">${metFull?'<i class="fas fa-star" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-trophy" style="font-size:24px;color:#F59E0B;"></i>'}</div>
+            <div class="milestone-amt" style="font-size:18px;">${metFull?'All Cleared!':'GHS '+gh(Math.max(0,tBal+oBal))}</div>
+            <div class="milestone-desc">${metFull?'All fees fully settled':'Pay to fully clear all fees'}</div>
+            ${!metFull?`<button class="milestone-btn milestone-btn-full" style="margin-top:10px;" onclick="event.stopPropagation();selectMilestone('100')"><i class="fas fa-trophy" style="margin-right:5px;"></i>Pay in Full</button>`:`<div class="milestone-done-badge" style="background:var(--success-light);color:var(--success);margin-top:10px;"><i class="fas fa-star"></i> Fully Cleared</div>`}
+          </div>
+          <div class="milestone-card milestone-balance" style="cursor:default;">
+            <div class="milestone-label">Outstanding Balance</div>
+            <div class="milestone-icon">${grandBal<=0.01?'<i class="fas fa-check-circle" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-exclamation-triangle" style="font-size:24px;color:var(--danger);"></i>'}</div>
+            <div class="milestone-amt" style="font-size:18px;color:${grandBal<=0.01?'var(--success)':'var(--danger)'};">GHS ${gh(grandBal)}</div>
+            <div class="milestone-desc">${grandBal<=0.01?'No outstanding balance':'Total remaining balance'}</div>
+            <div style="margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.6;">
+              Tuition: <strong>GHS ${gh(tBal)}</strong><br>
+              Others: <strong>GHS ${gh(oBal)}</strong>
+            </div>
+          </div>
+        `;
+      }
+
+      // Fee table rows
+      const rows = document.getElementById('fsFeeRows');
+      if(!rows) return;
+      if(!schedule.length){
+        rows.innerHTML = `<div style="padding:32px;text-align:center;color:var(--text-muted);">No fee schedule available. Please contact admin.</div>`;
+        return;
+      }
+
+      rows.innerHTML = schedule.map(f => {
+        const style = getFeeStyle(f.fee_name);
+        const n = (f.fee_name||'').toLowerCase();
+        let paid = 0;
+        if(n.includes('tuition'))    paid = Number(summary.tuitionPaid||0);
+        else if(n.includes('src'))   paid = Number(summary.srcPaid||0);
+        else if(n.includes('medical')) paid = Number(summary.medPaid||0);
+        else if(n.includes('department')||n.includes('departmental')) paid = Number(summary.deptPaid||0);
+        paid = Math.min(paid, Number(f.amount||0));
+        const bal = Math.max(0, Number(f.amount||0)-paid);
+        const fullyPaid = bal<=0.01;
+        const partial = paid>0&&!fullyPaid;
+        const isTuition = n.includes('tuition');
+
+        const statusClass = fullyPaid?'paid':partial?'partial':'unpaid';
+        const statusLabel = fullyPaid?'Paid':partial?'Partial':'Unpaid';
+        const statusColors = {paid:'background:var(--success-light);color:var(--success)',partial:'background:var(--warning-light);color:#8B6200',unpaid:'background:var(--danger-light);color:var(--danger)'};
+
+        return `<div class="fs-row">
+          <div class="fs-fee-name">
+            <div class="fs-fee-icon" style="background:${style.bg};color:${style.color};"><i class="fas ${style.icon}"></i></div>
+            <div>
+              <div style="font-weight:700;">${escapeHtml(f.fee_name)}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(f.academic_year||'')} · Sem ${f.semester||1}</div>
+            </div>
+          </div>
+          <div class="fs-amount">GHS ${gh(f.amount)}</div>
+          <div class="fs-paid" style="color:${fullyPaid?'var(--success)':paid>0?'#8B6200':'var(--text-muted)'};">${paid>0?'GHS '+gh(paid):'—'}</div>
+          <div class="fs-bal" style="color:${fullyPaid?'var(--success)':bal>0?'var(--danger)':'var(--success)'};">${fullyPaid?'<i class="fas fa-check"></i> Cleared':'GHS '+gh(bal)}</div>
+          <div>
+            ${fullyPaid
+              ? `<button class="fs-pay-btn" disabled style="background:var(--success);opacity:.8;"><i class="fas fa-check"></i> Paid</button>`
+              : `<button class="fs-pay-btn" onclick="${isTuition?'openTuitionModal()':'openOtherFeesModal()'}"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>Pay</button>`
+            }
+          </div>
+        </div>`;
+      }).join('');
+    }
+    window.renderFeeSchedulePage = renderFeeSchedulePage;
 
     /* ── BOTTOM NAV NAVIGATION ──────────────────────────── */
     function bnavNavigate(page, btn){
@@ -3615,67 +4029,49 @@
         feeScheduleInfo.textContent = `${s.academic_year} · Level ${s.level} · ${s.program || 'All Programs'}`;
       }
 
-      // Combine SRC, Departmental and Medical into a single "Other Fees" card
+      // Separate fees
       const otherKeys = ['src','medical','department','departmental'];
       const otherFees = schedule.filter(f => {
         const n = (f.fee_name||'').toLowerCase();
         return otherKeys.some(k => n.includes(k));
       });
-
+      const tuitionFees = schedule.filter(f => (f.fee_name||'').toLowerCase().includes('tuition'));
       const remainingFees = schedule.filter(f => !otherFees.includes(f));
+
+      // Compute totals
+      const tTotal = tuitionFees.reduce((s,f)=>s+Number(f.amount||0),0);
+      const tPaid  = Math.min(Number(summary.tuitionPaid||0), tTotal);
+      const tBal   = Math.max(0, tTotal - tPaid);
+      const tPct   = tTotal > 0 ? Math.min(100, Math.round((tPaid/tTotal)*100)) : 100;
+
+      const otherTotal = otherFees.reduce((s,f)=>s+Number(f.amount||0),0);
+      const otherPaid  = otherFees.reduce((s,f)=>{
+        const n=(f.fee_name||'').toLowerCase();
+        if(n.includes('src')) return s+Number(summary.srcPaid||0);
+        if(n.includes('medical')) return s+Number(summary.medPaid||0);
+        if(n.includes('department')||n.includes('departmental')) return s+Number(summary.deptPaid||0);
+        return s;
+      },0);
+      const otherBal = Math.max(0, otherTotal - otherPaid);
+
+      const totalFees = tTotal + otherTotal;
+      const totalPaidAll = tPaid + Math.min(otherPaid, otherTotal);
+      const totalOutstanding = Math.max(0, totalFees - totalPaidAll);
+
+      // 80% milestone amounts needed
+      const need80tuition  = Math.max(0, Math.round(tTotal*0.8*100)/100 - tPaid);
+      const amt80combined  = need80tuition + (tPct >= 80 ? 0 : otherBal); // if tuition not 80% yet, combine
+      const met80          = tPct >= 80 && otherBal <= 0.01;
+      const amt100combined = tBal + otherBal;
+      const metFull        = tBal <= 0.01 && otherBal <= 0.01;
 
       const parts = [];
 
-      // If there are multiple other fees, render a single aggregated card
-      if(otherFees.length > 0){
-        const otherTotal = otherFees.reduce((s,f)=>s + Number(f.amount||0), 0);
-        // determine paid for each category from summary
-        const otherPaid = otherFees.reduce((s,f)=>{
-          const n = (f.fee_name||'').toLowerCase();
-          if(n.includes('src')) return s + Number(summary.srcPaid || 0);
-          if(n.includes('medical')) return s + Number(summary.medPaid || 0);
-          if(n.includes('department')||n.includes('departmental')) return s + Number(summary.deptPaid || 0);
-          return s;
-        }, 0);
-        const outstanding = Math.max(0, otherTotal - otherPaid);
-        const fullyPaid = outstanding <= 0.01;
-        const pct = otherTotal > 0 ? Math.min(100, Math.round((otherPaid/otherTotal)*100)) : 100;
-
-        const statusBadge = fullyPaid ? `<span class="fee-status-badge paid"><i class="fas fa-check"></i> Paid</span>`
-                          : otherPaid > 0 ? `<span class="fee-status-badge partial"><i class="fas fa-clock"></i> Partial (${pct}%)</span>`
-                          : `<span class="fee-status-badge unpaid"><i class="fas fa-times"></i> Unpaid</span>`;
-
-        const btnContent = fullyPaid ? `<i class="fas fa-check"></i> Fully Paid`
-                            : `<i class="fas fa-money-bill"></i> Pay Other Fees`;
-
-        parts.push(`
-          <div class="fee-card" data-fee="Other Fees">
-            <div class="fee-card-header">
-              <div class="fee-card-icon" style="background:${FEE_ICONS.default.bg};color:${FEE_ICONS.default.color};">
-                <i class="fas ${FEE_ICONS.default.icon}"></i>
-              </div>
-              <div>
-                <div class="fee-card-name">Other Fees</div>
-                <div class="fee-card-meta">${escapeHtml((otherFees[0] && otherFees[0].academic_year) || '')} · Multiple</div>
-              </div>
-            </div>
-            <div>
-              <div class="fee-card-amount">GHS <span>${gh(otherTotal)}</span></div>
-              ${otherPaid > 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Paid: GHS ${gh(otherPaid)} &nbsp;|&nbsp; Outstanding: GHS ${gh(outstanding)}</div>` : ''}
-            </div>
-            ${statusBadge}
-            ${!fullyPaid ? `<button class="btn-pay" onclick="openOtherFeesModal()">${btnContent}</button>`
-                         : `<button class="btn-pay success" disabled>${btnContent}</button>`}
-          </div>
-        `);
-      }
-
-      // Render remaining fees (including tuition)
+      // ── TUITION CARD with 3 milestone sub-cards ──────────
       remainingFees.forEach(fee => {
         const style = getFeeStyle(fee.fee_name);
         const isTuition = fee.fee_name.toLowerCase().includes('tuition');
 
-        // Determine paid amount for this fee
         const n = fee.fee_name.toLowerCase();
         let paid = 0;
         if(n.includes('tuition'))   paid = summary.tuitionPaid || 0;
@@ -3685,49 +4081,119 @@
 
         paid = Math.min(paid, fee.amount);
         const feeOut = Math.max(0, fee.amount - paid);
-        const pct = fee.amount > 0 ? Math.min(100, Math.round((paid / fee.amount)*100)) : 100;
+        const pct = fee.amount > 0 ? Math.min(100, Math.round((paid/fee.amount)*100)) : 100;
         const fullyPaid = feeOut <= 0.01;
 
-        let statusBadge, btnContent;
+        let statusBadge;
         if(fullyPaid){
           statusBadge = `<span class="fee-status-badge paid"><i class="fas fa-check"></i> Paid</span>`;
-          btnContent = `<i class="fas fa-check"></i> Fully Paid`;
         } else if(paid > 0){
           statusBadge = `<span class="fee-status-badge partial"><i class="fas fa-clock"></i> Partial (${pct}%)</span>`;
-          btnContent = isTuition ? `<i class="fas fa-money-bill"></i> Pay Balance (GHS ${gh(feeOut)})`
-                                 : `<i class="fas fa-money-bill"></i> Pay Remaining (GHS ${gh(feeOut)})`;
         } else {
           statusBadge = `<span class="fee-status-badge unpaid"><i class="fas fa-times"></i> Unpaid</span>`;
-          btnContent = isTuition ? `<i class="fas fa-graduation-cap"></i> Pay Tuition`
-                                 : `<i class="fas fa-money-bill"></i> Pay Now`;
         }
 
-        const onclick = isTuition ? `openTuitionModal()` : `openOtherFeesModal('${escapeHtml(fee.fee_name)}')`;
+        if(isTuition){
+          // 3 milestone cards inside tuition card
+          const m80amt  = need80tuition + otherBal;
+          const m100amt = tBal + otherBal;
+          const metFullLocal = tBal <= 0.01 && otherBal <= 0.01;
+          const met80Local   = tPct >= 80;
 
-        parts.push(`
-          <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}">
-            <div class="fee-card-header">
-              <div class="fee-card-icon" style="background:${style.bg};color:${style.color};">
-                <i class="fas ${style.icon}"></i>
+          parts.push(`
+            <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}" style="grid-column:1/-1;">
+              <div class="fee-card-header">
+                <div class="fee-card-icon" style="background:${style.bg};color:${style.color};">
+                  <i class="fas ${style.icon}"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
+                  <div class="fee-card-meta">${escapeHtml(fee.academic_year||'')} · Level ${escapeHtml(String(fee.level||''))}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:var(--text);">GHS ${gh(fee.amount)}</div>
+                  ${statusBadge}
+                </div>
+              </div>
+
+              <!-- 3 Payment Milestone Cards -->
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;">
+
+                <!-- Card 1: 80% Tuition + Other Fees -->
+                <div class="milestone-card ${met80Local && otherBal<=0.01 ? 'milestone-met' : (met80Local ? 'milestone-partial' : '')}" onclick="${met80Local && otherBal<=0.01 ? '' : "selectMilestone('80')"}" style="cursor:${met80Local && otherBal<=0.01 ? 'default' : 'pointer'};">
+                  <div class="milestone-label">80% + Others</div>
+                  <div class="milestone-icon">${met80Local && otherBal<=0.01 ? '<i class="fas fa-check-circle" style="color:var(--success);font-size:22px;"></i>' : '<i class="fas fa-unlock" style="font-size:20px;color:var(--primary);"></i>'}</div>
+                  <div class="milestone-amt">${met80Local && otherBal<=0.01 ? 'Met' : 'GHS '+gh(Math.max(0, need80tuition + otherBal))}</div>
+                  <div class="milestone-desc">${met80Local && otherBal<=0.01 ? 'Registration unlocked' : 'Unlocks registration'}</div>
+                  ${!(met80Local && otherBal<=0.01) ? `<button class="milestone-btn" onclick="event.stopPropagation();selectMilestone('80')">Pay Now</button>` : `<div class="milestone-done-badge"><i class="fas fa-check"></i> Done</div>`}
+                </div>
+
+                <!-- Card 2: 100% Tuition + Other Fees -->
+                <div class="milestone-card ${metFullLocal ? 'milestone-met-full' : ''}" onclick="${metFullLocal ? '' : "selectMilestone('100')"}" style="cursor:${metFullLocal ? 'default' : 'pointer'};">
+                  <div class="milestone-label">100% + Others</div>
+                  <div class="milestone-icon">${metFullLocal ? '<i class="fas fa-star" style="color:var(--success);font-size:22px;"></i>' : '<i class="fas fa-trophy" style="font-size:20px;color:#F59E0B;"></i>'}</div>
+                  <div class="milestone-amt">${metFullLocal ? 'All Clear!' : 'GHS '+gh(Math.max(0, tBal + otherBal))}</div>
+                  <div class="milestone-desc">${metFullLocal ? 'Fully cleared' : 'Full clearance'}</div>
+                  ${!metFullLocal ? `<button class="milestone-btn milestone-btn-full" onclick="event.stopPropagation();selectMilestone('100')">Pay All</button>` : `<div class="milestone-done-badge" style="background:var(--success-light);color:var(--success);"><i class="fas fa-star"></i> Cleared</div>`}
+                </div>
+
+                <!-- Card 3: Outstanding Balance -->
+                <div class="milestone-card milestone-balance" style="cursor:default;">
+                  <div class="milestone-label">Outstanding</div>
+                  <div class="milestone-icon" style="font-size:22px;">${totalOutstanding <= 0.01 ? '<i class="fas fa-check-circle" style="color:var(--success);"></i>' : '<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>'}</div>
+                  <div class="milestone-amt" style="color:${totalOutstanding<=0.01?'var(--success)':'var(--danger)'};">GHS ${gh(totalOutstanding)}</div>
+                  <div class="milestone-desc">${totalOutstanding<=0.01 ? 'Nothing due' : 'Total balance due'}</div>
+                  <div style="font-size:10px;color:var(--text-muted);margin-top:6px;">Tuition: GHS ${gh(tBal)}<br>Others: GHS ${gh(otherBal)}</div>
+                </div>
+
+              </div>
+            </div>
+          `);
+        } else {
+          // Non-tuition individual fee card (no progress bar)
+          const btnContent = fullyPaid ? `<i class="fas fa-check"></i> Fully Paid`
+            : paid > 0 ? `<i class="fas fa-money-bill"></i> Pay Remaining (GHS ${gh(feeOut)})`
+            : `<i class="fas fa-money-bill"></i> Pay Now`;
+          const onclick = `openOtherFeesModal('${escapeHtml(fee.fee_name)}')`;
+          parts.push(`
+            <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}">
+              <div class="fee-card-header">
+                <div class="fee-card-icon" style="background:${style.bg};color:${style.color};">
+                  <i class="fas ${style.icon}"></i>
+                </div>
+                <div>
+                  <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
+                  <div class="fee-card-meta">${escapeHtml(fee.academic_year)} · Sem ${fee.semester||1}</div>
+                </div>
               </div>
               <div>
-                <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
-                <div class="fee-card-meta">${escapeHtml(fee.academic_year)} · Sem ${fee.semester||1}</div>
+                <div class="fee-card-amount">GHS <span>${gh(fee.amount)}</span></div>
+                ${paid > 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Paid: GHS ${gh(paid)} &nbsp;|&nbsp; Outstanding: GHS ${gh(feeOut)}</div>` : ''}
               </div>
+              ${statusBadge}
+              ${!fullyPaid ? `<button class="btn-pay" onclick="${onclick}">${btnContent}</button>`
+                           : `<button class="btn-pay success" disabled>${btnContent}</button>`}
             </div>
-            <div>
-              <div class="fee-card-amount">GHS <span>${gh(fee.amount)}</span></div>
-              ${paid > 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Paid: GHS ${gh(paid)} &nbsp;|&nbsp; Outstanding: GHS ${gh(feeOut)}</div>` : ''}
-            </div>
-            ${statusBadge}
-            ${!fullyPaid ? `<button class="btn-pay ${paid > 0 ? '' : ''}" onclick="${onclick}">${btnContent}</button>`
-                         : `<button class="btn-pay success" disabled>${btnContent}</button>`}
-          </div>
-        `);
+          `);
+        }
       });
+
+      // Other Fees aggregated card intentionally removed — other fees are included in the tuition modal milestones
 
       grid.innerHTML = parts.join('');
     }
+
+    // selectMilestone: opens the correct payment modal for 80% or 100% payment
+    window.selectMilestone = function(pct){
+      if(pct === '80'){
+        // Open tuition modal pre-selected to 80%
+        openTuitionModal().then ? openTuitionModal().then(()=>{ setTimeout(()=>selectTuitionPercentCard(80), 200); }) : (() => { openTuitionModal(); setTimeout(()=>selectTuitionPercentCard(80), 400); })();
+      } else {
+        // Full payment — open tuition modal pre-selected to 100%
+        openTuitionModal().then ? openTuitionModal().then(()=>{ setTimeout(()=>selectTuitionPercentCard(100), 200); }) : (() => { openTuitionModal(); setTimeout(()=>selectTuitionPercentCard(100), 400); })();
+      }
+    };
+    window.selectMilestone = window.selectMilestone;
 
     /* ── FETCH STUDENT PROFILE ──────────────────────────── */
     async function fetchStudentProfile(){
@@ -4161,10 +4627,13 @@
         }
 
         // Build detailed tuition fee list with current paid amounts from summary
+        // BUG FIX: distribute tuitionPaid proportionally across multiple tuition items
+        const tuitionTotal = tuitionFees.reduce((s, f) => s + Number(f.amount||0), 0);
         const rows = tuitionFees.map(f => {
-          const n = (f.fee_name||'').toLowerCase();
-          const paid = Math.min(Number(summary.tuitionPaid||0), Number(f.amount||0));
-          const outstanding = Math.max(0, Number(f.amount||0) - paid);
+          const itemAmt  = Number(f.amount||0);
+          const share    = tuitionTotal > 0 ? (itemAmt / tuitionTotal) * Number(summary.tuitionPaid||0) : 0;
+          const paid     = Math.min(share, itemAmt);
+          const outstanding = Math.max(0, itemAmt - paid);
           const disabled = outstanding <= 0.01 ? 'disabled' : '';
           return `
             <div class="fee-option-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
@@ -4212,25 +4681,42 @@
     window.openTuitionModal = openTuitionModal;
 
     function updateTuitionModalTotal(fromCheckbox){
-      // If called from a manual checkbox click, clear the stored % amount
       if(fromCheckbox){ window._tuitionSelectedAmt = 0; window._tuitionSelectedPct = 0; }
-      const checked = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]:checked'));
+      const checked      = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]:checked'));
+      const otherInputs  = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]:not(:disabled)'));
+      const otherChecked = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]:checked:not(:disabled)'));
       let total = 0;
       const names = [];
-      // If a % was selected, use that exact amount instead of summing checkboxes
+
       if(window._tuitionSelectedAmt > 0.01){
+        // % card selected: exact tuition amount + auto-check all outstanding other fees
         total = window._tuitionSelectedAmt;
         checked.forEach(cb => names.push((cb.value||'').split('|')[0]||''));
+
+        // Auto-check every unpaid other fee and add their amounts
+        otherInputs.forEach(cb => { cb.checked = true; });
+        otherInputs.forEach(cb => {
+          const v = (cb.value||'').split('|');
+          const amt = Number(v[1]||0);
+          if(Number.isFinite(amt) && amt > 0){ total += amt; names.push(v[0]||''); }
+        });
       } else {
+        // Manual selection
         checked.forEach(cb => {
           const v = (cb.value||'').split('|');
           const amt = Number(v[1]||0);
           if(Number.isFinite(amt)) total += amt;
           names.push(v[0]||'');
         });
+        otherChecked.forEach(cb => {
+          const v = (cb.value||'').split('|');
+          const amt = Number(v[1]||0);
+          if(Number.isFinite(amt)) total += amt;
+          names.push(v[0]||'');
+        });
       }
+
       const el = document.getElementById('tuitionModalSelectedTotal');
-      // If there are pending other-fees selections (combine flow), include their amounts in the displayed total
       let pendingTotal = 0;
       try {
         if(window.pendingOtherFeesSelection && Array.isArray(window.pendingOtherFeesSelection)){
@@ -4238,7 +4724,6 @@
         }
       } catch(_){ pendingTotal = 0; }
       if(el) el.textContent = `GHS ${gh(Math.round((total + pendingTotal) * 100)/100)}`;
-      // Enable/disable proceed button based on selection or pending other-fees
       try {
         const btn = document.getElementById('tuitionProceedBtn');
         if(btn) btn.disabled = !((total > 0) || (pendingTotal > 0));
@@ -4275,9 +4760,8 @@
         // Visually check all boxes (just for UX indication), but amount shown is exact
         inputs.forEach(i => i.checked = amtToPay > 0);
 
-        // Update the displayed total directly with the precise amount
-        const el = document.getElementById('tuitionModalSelectedTotal');
-        if(el) el.textContent = 'GHS ' + gh(amtToPay);
+        // Delegate display update to updateTuitionModalTotal so Other Fees are included
+        updateTuitionModalTotal();
 
         // Enable proceed button
         const btn = document.getElementById('tuitionProceedBtn');
@@ -4290,7 +4774,9 @@
     /* ── PAY TUITION ────────────────────────────────────── */
     window.payTuition = function(){
       const checked = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]:checked'));
-      if(!checked.length && !(window.pendingOtherFeesSelection && window.pendingOtherFeesSelection.length)){ showToast('Select at least one fee to pay', 'error'); return; }
+      // Re-query other fees AFTER updateTuitionModalTotal may have auto-checked them
+      const otherChecked = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]:checked:not(:disabled)'));
+      if(!checked.length && !otherChecked.length && !(window.pendingOtherFeesSelection && window.pendingOtherFeesSelection.length)){ showToast('Select at least one fee to pay', 'error'); return; }
 
       // If the user selected via the % cards, use the exact stored amount (not checkbox values)
       // This fixes 80% only charging the exact 80% amount, not the full outstanding
@@ -4305,8 +4791,19 @@
         // Reset so manual checkbox changes work correctly next time
         window._tuitionSelectedAmt = 0;
         window._tuitionSelectedPct = 0;
+        // Include all checked other fees on top of the % tuition amount
+        otherChecked.forEach(cb => {
+          const [name, amt] = (cb.value||'').split('|');
+          const a = Number(amt||0);
+          if(Number.isFinite(a) && a > 0){ total += a; parts.push(name); }
+        });
       } else {
         checked.forEach(cb => {
+          const [name, amt] = (cb.value||'').split('|');
+          const a = Number(amt||0);
+          if(Number.isFinite(a) && a > 0){ total += a; parts.push(name); }
+        });
+        otherChecked.forEach(cb => {
           const [name, amt] = (cb.value||'').split('|');
           const a = Number(amt||0);
           if(Number.isFinite(a) && a > 0){ total += a; parts.push(name); }
@@ -4359,72 +4856,50 @@
         const bal = Math.max(0, f.amount - paid);
         const fullyPaid = bal <= 0.01;
         const style = getFeeStyle(f.fee_name);
+        const feeVal = encodeURIComponent(`${f.fee_name}|${bal}`);
         return `
-          <div class="fee-option-row ${fullyPaid ? 'paid-row' : ''}" onclick="${fullyPaid?'':'this.querySelector(\"input\").click()'}">
-            <input type="checkbox" name="otherFee" value="${escapeHtml(f.fee_name)}|${bal}" ${fullyPaid?'disabled':'checked'}>
-            <div style="flex:1;margin:0 12px;">
-              <div class="fee-option-label">${escapeHtml(f.fee_name)}</div>
-              ${fullyPaid ? `<div style="font-size:11px;color:var(--success);"><i class="fas fa-check-circle" style="color:var(--success);"></i> Fully paid</div>` : `<div style="font-size:11px;color:var(--text-muted);">Outstanding: GHS ${gh(bal)}</div>`}
+          <div class="fee-option-row ${fullyPaid ? 'paid-row' : ''}" style="cursor:${fullyPaid?'default':'pointer'};border-radius:12px;margin-bottom:10px;display:flex;align-items:center;gap:14px;padding:14px 16px;" ${!fullyPaid ? `onclick="directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"` : ''}>
+            <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:${fullyPaid?'var(--success-light)':style.bg};color:${fullyPaid?'var(--success)':style.color};">
+              <i class="fas ${fullyPaid?'fa-check-circle':style.icon}"></i>
             </div>
-            <span class="fee-option-amount" style="${fullyPaid?'color:var(--success);':''}">GHS ${gh(fullyPaid ? 0 : bal)}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:14px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
+              ${fullyPaid
+                ? `<div style="font-size:11px;color:var(--success);margin-top:2px;"><i class="fas fa-check-circle"></i> Fully paid</div>`
+                : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Outstanding: <strong>GHS ${gh(bal)}</strong></div>`}
+            </div>
+            ${fullyPaid
+              ? `<span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--success);">Paid</span>`
+              : `<button class="fs-pay-btn" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>GHS ${gh(bal)}</button>`
+            }
           </div>
         `;
       }).join('');
-      // Attach handlers to keep proceed button state in sync
-      setTimeout(() => {
-        const inputs = Array.from(document.querySelectorAll('#otherFeesModal input[name="otherFee"]'));
-        inputs.forEach(i => i.addEventListener('change', updateOtherModalState));
-        updateOtherModalState();
-      }, 40);
       openModal('otherFeesModal');
     }
     window.openOtherFeesModal = openOtherFeesModal;
 
-    function updateOtherModalState(){
-      try {
-        const checked = Array.from(document.querySelectorAll('#otherFeesModal input[name="otherFee"]:checked'));
-        let total = 0;
-        checked.forEach(cb => { const v = (cb.value||'').split('|'); const a = Number(v[1]||0); if(Number.isFinite(a)) total += a; });
-        const btn = document.getElementById('otherProceedBtn');
-        if(btn) btn.disabled = !(total > 0);
-        return { total };
-      } catch(e){ return { total:0 }; }
-    }
-    window.updateOtherModalState = updateOtherModalState;
-
-    /* ── PAY OTHER FEES ─────────────────────────────────── */
-    window.payOtherFees = async function(){
+    // Direct pay a single other fee (no separate proceed button needed)
+    window.directPayOtherFee = async function(feeName, amount){
       try {
         if(studentId) await loadCanonicalFeesForStudent(studentId);
-        const checkboxes = document.querySelectorAll('#otherFeesModal input[name="otherFee"]:checked');
-        if(!checkboxes.length){ showToast('Select at least one fee', 'error'); return; }
-
         const summary = await fetchPaymentsSummary(studentId);
         const tPaid = Number(summary.tuitionPaid || 0);
         const eightyPct = Math.round((TUITION || 0) * 0.8);
 
         if(tPaid < eightyPct){
-          const ok = await showConfirm('You have not yet paid 80% of tuition. Would you like to combine these fees with a tuition payment?');
+          const ok = await showConfirm('You have not yet paid 80% of tuition. Would you like to combine this fee with a tuition payment?');
           if(!ok) return;
-          const selections = [...checkboxes].map(cb => cb.value);
-          window.pendingOtherFeesSelection = selections;
+          window.pendingOtherFeesSelection = [`${feeName}|${amount}`];
           closeModal('otherFeesModal');
           setTimeout(() => openTuitionModal(), 80);
           return;
         }
 
-        let total = 0; const feeTypes = [];
-        checkboxes.forEach(cb => {
-          const [name, price] = (cb.value||'').split('|');
-          const amt = Number(price);
-          if(Number.isFinite(amt) && amt > 0){ total += amt; feeTypes.push(name.trim()); }
-        });
-
-        if(total <= 0){ showToast('No payable amount selected', 'error'); return; }
-        const feeType = feeTypes.join(', ');
-        payWithPaystack(feeType, total, feeType);
+        if(amount <= 0){ showToast('No outstanding amount for this fee', 'error'); return; }
         closeModal('otherFeesModal');
-      } catch(e){ console.error('[payOtherFees]', e); showToast('Could not process fees', 'error'); }
+        payWithPaystack(feeName, amount, feeName);
+      } catch(e){ console.error('[directPayOtherFee]', e); showToast('Could not process fee', 'error'); }
     };
 
     /* ── PAYSTACK ───────────────────────────────────────── */
@@ -4871,11 +5346,16 @@
       const paidAmt   = Number(receipt.amount || 0);
 
       // Build fee-by-fee outstanding table
+      // BUG FIX: distribute tuitionPaid proportionally for multiple tuition line items
+      const tuitionItems    = schedule.filter(f => (f.fee_name||'').toLowerCase().includes('tuition'));
+      const tuitionScheduleTotal = tuitionItems.reduce((s,f) => s + Number(f.amount||0), 0);
       const feeItems = schedule.map(fee => {
         const n = fee.fee_name.toLowerCase();
         let prevPaid = 0;
-        if(n.includes('tuition'))   prevPaid = Number(summary.tuitionPaid || 0);
-        else if(n.includes('src'))  prevPaid = Number(summary.srcPaid     || 0);
+        if(n.includes('tuition')){
+          const share = tuitionScheduleTotal > 0 ? (Number(fee.amount||0) / tuitionScheduleTotal) * Number(summary.tuitionPaid || 0) : 0;
+          prevPaid = share;
+        } else if(n.includes('src'))  prevPaid = Number(summary.srcPaid     || 0);
         else if(n.includes('medical')) prevPaid = Number(summary.medPaid  || 0);
         else if(n.includes('departmental')||n.includes('department')) prevPaid = Number(summary.deptPaid || 0);
         prevPaid = Math.min(prevPaid, fee.amount);
@@ -5543,6 +6023,10 @@
         updateDashboardUI();
         // Re-render fee cards with fresh paid amounts
         renderFeeCards(_currentFeeSchedule, sum);
+        // If fee schedule page is open, refresh it too
+        if(document.getElementById('feeSchedulePage')?.classList.contains('active')){
+          renderFeeSchedulePage();
+        }
         // Update register button state
         const allowed = await hasRegistrationAccess(studentId);
         const btn = document.getElementById('registerCoursesBtn');
@@ -5800,10 +6284,7 @@
               +'<i class="fas '+(f.cleared?'fa-check-circle':f.icon)+'"></i></div>'
               +'<div style="min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--text);">'+escapeHtml(f.feeName)+'</div>'
               +'<div style="margin-top:2px;">'+stHtml+'</div></div></div>'
-              +'<div style="text-align:right;flex-shrink:0;">'+amHtml+'</div></div>'
-              +'<div style="margin-top:8px;"><div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;">'
-              +'<div style="height:100%;width:'+f.pct+'%;background:'+bc+';border-radius:4px;transition:width .7s ease;"></div></div>'
-              +'<div style="display:flex;justify-content:space-between;margin-top:3px;font-size:10px;color:var(--text-muted);"><span>'+f.pct+'% paid</span><span>Required: GHS '+gh(f.required)+'</span></div></div></div>';
+              +'<div style="text-align:right;flex-shrink:0;">'+amHtml+'</div></div></div>';
           });
         } else {
           feeLines='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;"><i class="fas fa-calendar-xmark" style="font-size:22px;margin-bottom:8px;display:block;opacity:.35;"></i>No fees scheduled for Level '+sLvl+' yet</div>';
@@ -5944,7 +6425,7 @@
       // Percentage cards
       const pctContainer = document.getElementById('tuitionPctCards');
       if(pctContainer && tBal > 0.01){
-        const amt80  = Math.max(0, Math.round(tTotal * 0.8 * 100)/100 - tPaid);
+        const amt80  = Math.max(0, Math.round((tTotal * 0.8 - tPaid) * 100) / 100);
         const amt100 = tBal;
         const needMore80  = amt80  > 0.01;
         const needMore100 = amt100 > 0.01;
@@ -5980,14 +6461,47 @@
       if(container){
         const fees = _currentFeeSchedule || [];
         const tuitionFees = fees.filter(f => (f.fee_name||'').toLowerCase().includes('tuition'));
+
+        // Other (non-tuition) fees
+        const otherKeys = ['src','medical','department','departmental'];
+        const otherFeeItems = fees.filter(f => {
+          const n = (f.fee_name||'').toLowerCase();
+          return otherKeys.some(k => n.includes(k));
+        });
+
+        let html = '';
+
+        // Hidden tuition checkboxes (not shown to student — amount driven by % card selection)
         if(tuitionFees.length){
-          const rows = tuitionFees.map(f => {
-            const paid = Math.min(Number(summary.tuitionPaid||0), Number(f.amount||0));
+          // BUG FIX: distribute tuitionPaid proportionally across multiple tuition line items
+          // instead of naively capping each item at the full tuitionPaid total (double-counting)
+          const tuitionTotal = tuitionFees.reduce((s, f) => s + Number(f.amount||0), 0);
+          let remainingPaid  = Number(summary.tuitionPaid||0);
+          const hiddenInputs = tuitionFees.map(f => {
+            const itemAmt  = Number(f.amount||0);
+            const share    = tuitionTotal > 0 ? (itemAmt / tuitionTotal) * Number(summary.tuitionPaid||0) : 0;
+            const paid     = Math.min(share, itemAmt);
+            const outstanding = Math.max(0, itemAmt - paid);
+            const disabled = outstanding <= 0.01 ? 'disabled' : '';
+            return `<input type="checkbox" name="tuitionFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" ${disabled} style="display:none;">`;
+          }).join('');
+          html += `<div id="tuitionHiddenInputs" style="display:none;">${hiddenInputs}</div>`;
+        }
+
+        // Other Fees section
+        if(otherFeeItems.length){
+          const otherRows = otherFeeItems.map(f => {
+            const n = (f.fee_name||'').toLowerCase();
+            let paid = 0;
+            if(n.includes('src'))        paid = Number(summary.srcPaid||0);
+            else if(n.includes('medical')) paid = Number(summary.medPaid||0);
+            else if(n.includes('departmental')||n.includes('department')) paid = Number(summary.deptPaid||0);
+            paid = Math.min(paid, Number(f.amount||0));
             const outstanding = Math.max(0, Number(f.amount||0) - paid);
             const disabled = outstanding <= 0.01 ? 'disabled' : '';
             return `
               <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
-                <input type="checkbox" name="tuitionFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" ${disabled}>
+                <input type="checkbox" name="otherFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" ${disabled}>
                 <div style="flex:1;min-width:0;">
                   <div style="font-weight:700;font-size:13px;">${escapeHtml(f.fee_name)}</div>
                   <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
@@ -5995,16 +6509,20 @@
                 <div style="color:${outstanding<=0.01?'var(--success)':'var(--danger)'};font-weight:800;font-size:13px;flex-shrink:0;">${outstanding<=0.01?'&#10003; Paid':cedis(outstanding)}</div>
               </div>`;
           }).join('');
-          container.innerHTML = `
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-bottom:6px;">Fee Line Items</div>
-            <div style="max-height:220px;overflow:auto;">${rows}</div>`;
+          html += `
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-top:16px;margin-bottom:6px;">Other Fees (Included in Payment)</div>
+            <div style="max-height:180px;overflow:auto;">${otherRows}</div>`;
         }
+
+        if(html) container.innerHTML = html;
       }
 
       // Wire up checkboxes
       setTimeout(() => {
-        const inputs = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]'));
-        inputs.forEach(i => i.addEventListener('change', () => updateTuitionModalTotal(true)));
+        const tuitionInputs = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]'));
+        const otherInputs   = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]'));
+        tuitionInputs.forEach(i => i.addEventListener('change', () => updateTuitionModalTotal(true)));
+        otherInputs.forEach(i   => i.addEventListener('change', () => updateTuitionModalTotal(true)));
         updateTuitionModalTotal();
       }, 50);
     }

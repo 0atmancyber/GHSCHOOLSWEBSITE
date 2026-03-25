@@ -2684,3 +2684,52 @@
   </script>
 </body>
 </html>
+  <script>
+    (function(){
+      // Wrapper for submitForm to ensure user feedback, timeout and error handling
+      function showOverlay(){
+        const m = document.getElementById('loadingOverlay');
+        if(m){ m.classList.add('active'); m.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+      }
+      function hideOverlay(){
+        const m = document.getElementById('loadingOverlay');
+        if(m){ m.classList.remove('active'); m.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
+      }
+
+      // If an original submitForm exists, wrap it with UI/timeout handling
+      const orig = window.submitForm;
+      if (typeof orig === 'function') {
+        window.submitForm = async function wrappedSubmitForm() {
+          const submitBtn = document.querySelector('button[onclick="submitForm()"]') || document.querySelector('button[type="submit"]');
+          try {
+            if (submitBtn) { submitBtn.disabled = true; }
+            showOverlay();
+
+            // Run original submit with timeout (20s). If original resolves, return that result.
+            const timeoutMs = 20000;
+            const result = await Promise.race([
+              Promise.resolve().then(() => orig.apply(this, arguments)),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Submission timeout — please try again')), timeoutMs))
+            ]);
+
+            // allow any follow-up UI in original function to run, then hide overlay
+            hideOverlay();
+            if (submitBtn) { submitBtn.disabled = false; }
+            return result;
+          } catch (err) {
+            console.error('Submission error:', err);
+            hideOverlay();
+            if (submitBtn) { submitBtn.disabled = false; }
+            if (typeof showToast === 'function') {
+              showToast('Submission failed: ' + (err && err.message ? err.message : 'Please try again'), true);
+            } else {
+              alert('Submission failed: ' + (err && err.message ? err.message : 'Please try again'));
+            }
+            return null;
+          }
+        };
+      } else {
+        console.warn('submitForm function not found to wrap');
+      }
+    })();
+  </script>

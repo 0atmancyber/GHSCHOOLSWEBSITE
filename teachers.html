@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GH Schools — Lecturer's Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  /* ── Red / Yellow / Green theme ── */
+  --red:    #DC2626;   /* vivid red      */
+  --red-d:  #991B1B;   /* deep red       */
+  --red-l:  #EF4444;   /* bright red     */
+  --red-glow:rgba(220,38,38,.4);
+
+  --yel:    #EAB308;   /* amber yellow   */
+  --yel-l:  #FDE047;   /* bright yellow  */
+  --yel-d:  #A16207;   /* deep yellow    */
+  --yel-glow:rgba(234,179,8,.38);
+
+  --grn:    #16A34A;   /* vivid green    */
+  --grn-l:  #22C55E;   /* bright green   */
+  --grn-d:  #14532D;   /* deep green     */
+  --grn-glow:rgba(22,163,74,.38);
+
+  /* backgrounds — very dark warm neutral */
+  --bg:    #080C08;
+  --bg2:   #0D110D;
+  --surf:  #111A11;
+  --surf2: #182018;
+
+  /* borders use green tint (primary accent) */
+  --border:  rgba(22,163,74,.18);
+  --border-l:rgba(22,163,74,.36);
+
+  --text:  #E8F5E8;
+  --text-m:#7A9E7A;
+  --text-d:#3D6B3D;
+
+  /* per-assessment colours — red / yellow / green / red */
+  --ca:#22C55E;   /* Class Assess  — green  */
+  --ma:#EAB308;   /* Monthly Assess— yellow */
+  --ms:#EF4444;   /* Mid-Sem       — red    */
+  --es:#16A34A;   /* End-Sem       — deep green */
+
+  --r:14px;--r-lg:22px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:.55}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 0%,   rgba(220,38,38,.07)  0%,transparent 55%),
+    radial-gradient(ellipse at 80% 0%,   rgba(22,163,74,.06)  0%,transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(234,179,8,.05)  0%,transparent 50%)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--grn-d);border-radius:99px}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .55s,transform .55s}
+#loginScreen.exit{opacity:0;transform:scale(1.05);pointer-events:none}
+.lw{width:100%;max-width:410px;padding:20px;animation:riseUp .65s cubic-bezier(.22,1,.36,1)}
+@keyframes riseUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.lc{background:var(--surf);border:1px solid var(--border-l);border-radius:28px;padding:44px 40px 40px;position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.72),0 8px 36px var(--grn-glow)}
+.lc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),var(--yel),var(--grn),var(--yel),var(--red),transparent);background-size:300% auto;animation:shimmer 4s linear infinite}
+@keyframes shimmer{from{background-position:-200% center}to{background-position:200% center}}
+.lg{position:absolute;font-family:'Bebas Neue',sans-serif;color:rgba(22,163,74,.06);line-height:1;pointer-events:none;user-select:none}
+.l-logo{width:76px;height:76px;margin:0 auto 26px;background:linear-gradient(145deg,var(--red),var(--yel-d),var(--grn-d));border-radius:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 44px var(--grn-glow),0 0 0 1px rgba(255,255,255,.07) inset;animation:floatY 4s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.l-logo img{width:52px;height:52px;object-fit:contain}
+.l-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2.5px;color:#fff;text-align:center;line-height:1;margin-bottom:5px}
+.l-sub{text-align:center;color:var(--text-m);font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:34px}
+.l-field{margin-bottom:14px}
+.l-label{display:block;font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-m);margin-bottom:7px}
+.l-input{width:100%;padding:13px 16px;background:var(--surf2);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.l-input:focus{border-color:var(--grn);box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.l-input::placeholder{color:var(--text-d)}
+.l-btn{width:100%;margin-top:6px;padding:15px;background:linear-gradient(145deg,var(--grn-l),var(--grn),var(--grn-d));border:none;border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#fff;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 12px 32px var(--grn-glow);transition:all .28s}
+.l-btn:hover{transform:translateY(-2px);box-shadow:0 20px 44px var(--grn-glow)}
+.l-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);background-size:200% auto;animation:shimmer 2.4s ease-in-out infinite}
+.l-note{text-align:center;color:var(--text-d);font-size:11px;margin-top:14px}
+
+/* ── LOADING ── */
+#elo{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .28s}
+#elo.show{opacity:1;pointer-events:auto}
+.elo-logo{width:68px;height:68px;background:linear-gradient(145deg,var(--red),var(--yel-d),var(--grn-d));border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px var(--grn-glow);margin-bottom:26px;animation:glowP 1.6s ease-in-out infinite}
+@keyframes glowP{0%,100%{box-shadow:0 0 28px var(--grn-glow)}50%{box-shadow:0 0 80px var(--grn-glow)}}
+.elo-logo img{width:46px;height:46px;object-fit:contain}
+.elo-t{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;color:#fff;margin-bottom:7px}
+.elo-s{font-size:11px;color:var(--text-m);letter-spacing:2px;margin-bottom:30px}
+.elo-bw{width:200px;height:3px;background:var(--surf2);border-radius:99px;overflow:hidden}
+.elo-b{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--yel),var(--grn));border-radius:99px;transition:width .28s ease}
+
+/* ── DASH SHELL ── */
+#dash{display:none;position:relative;z-index:1;min-height:100vh}
+#dash.show{display:block;animation:fadeUp .45s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Topbar ── */
+.topbar{height:62px;background:rgba(8,12,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(22px);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:60;box-shadow:0 1px 0 0 rgba(22,163,74,.2);position:relative}
+.tb-brand{display:flex;align-items:center;gap:13px}
+.topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red) 0%,var(--red) 33%,var(--yel) 33%,var(--yel) 66%,var(--grn) 66%,var(--grn) 100%);z-index:1}
+.tb-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--red),var(--yel-d),var(--grn-d));border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px var(--grn-glow);flex-shrink:0}
+.tb-logo img{width:24px;height:24px;object-fit:contain}
+.tb-n{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:2px;color:#fff;line-height:1}
+.tb-s{font-size:10px;color:var(--text-m);letter-spacing:1px;margin-top:1px}
+.tb-r{display:flex;align-items:center;gap:10px}
+.tb-pill{background:var(--surf);border:1px solid var(--border);border-radius:99px;padding:5px 13px;font-size:12px;color:var(--text-m);display:flex;align-items:center;gap:7px}
+.tb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,var(--grn-l),var(--grn-d));display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;color:#fff;box-shadow:0 4px 12px var(--grn-glow);cursor:pointer}
+.nb{width:34px;height:34px;border-radius:9px;background:var(--surf);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-m);transition:all .18s;position:relative}
+.nb:hover{color:var(--yel-l);border-color:var(--border-l)}
+.nd{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--yel-l);border:1.5px solid var(--bg);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Layout ── */
+.layout{display:flex;height:calc(100vh - 62px)}
+
+/* ── Sidebar ── */
+.sidebar{width:236px;flex-shrink:0;background:var(--surf);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 10px;overflow-y:auto;box-shadow:4px 0 24px rgba(0,0,0,.4)}
+.sb-sec{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-d);padding:0 10px;margin:16px 0 7px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;cursor:pointer;color:var(--text-m);font-size:13.5px;font-weight:500;transition:all .18s;border:1px solid transparent;margin-bottom:2px}
+.nav-item i{width:17px;text-align:center;font-size:14px;flex-shrink:0}
+.nav-item:hover{background:rgba(22,163,74,.1);color:var(--text);border-color:rgba(22,163,74,.2)}
+.nav-item.active{background:rgba(22,163,74,.18);color:#fff;border-color:rgba(22,163,74,.38);box-shadow:0 3px 14px rgba(22,163,74,.18)}
+.nav-item.active i{color:var(--grn-l)}
+.sb-bot{margin-top:auto;padding-top:14px;border-top:none;position:relative}.sb-bot::before{content:"";display:block;height:2px;background:linear-gradient(90deg,var(--red),var(--yel),var(--grn));border-radius:2px;margin-bottom:14px}
+.lec-card{background:var(--surf2);border:1px solid var(--border);border-radius:13px;padding:13px;display:flex;align-items:center;gap:10px}
+.lec-av{width:34px;height:34px;border-radius:9px;background:linear-gradient(145deg,var(--grn-l),var(--grn-d));display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;color:#fff;flex-shrink:0}
+.lec-n{font-weight:600;font-size:13px;color:var(--text)}.lec-r{font-size:11px;color:var(--text-m)}
+
+/* ── Main ── */
+.main{flex:1;overflow-y:auto;padding:26px 30px}
+.view{display:none;animation:fadeUp .32s ease}.view.active{display:block}
+.pg-h{margin-bottom:26px}
+.pg-t{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:#fff;display:flex;align-items:center;gap:13px;line-height:1}
+.pg-ic{width:42px;height:42px;border-radius:11px;background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.28);display:flex;align-items:center;justify-content:center;color:var(--yel-l);font-size:17px;flex-shrink:0}
+.pg-s{font-size:12.5px;color:var(--text-m);margin-top:5px;padding-left:55px}
+
+/* ── Cards & Grids ── */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--yel),var(--grn))}
+.st-v{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;color:#fff;line-height:1;margin:7px 0 3px}
+.st-l{font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-m)}
+.st-i{position:absolute;right:14px;top:14px;font-size:34px;color:rgba(22,163,74,.18)}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-red{background:linear-gradient(145deg,var(--grn-l),var(--grn),var(--grn-d));color:#fff;box-shadow:0 6px 20px var(--grn-glow)}
+.btn-red:hover{transform:translateY(-1px);box-shadow:0 10px 28px var(--grn-glow)}
+.btn-gh{background:var(--surf2);border:1px solid var(--border);color:var(--text-m)}
+.btn-gh:hover{background:var(--surf);color:var(--grn-l);border-color:rgba(22,163,74,.3)}
+.btn-del{background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.26);color:var(--red-l)}
+.btn-del:hover{background:rgba(200,16,46,.22)}
+.btn-gold{background:linear-gradient(145deg,var(--yel-l),var(--yel));color:#1A0900;font-weight:700;box-shadow:0 6px 20px var(--yel-glow)}
+.btn-sm{padding:6px 13px;font-size:12px;border-radius:9px}
+.btn-icon{padding:7px}
+
+/* ── Form ── */
+input,select{background:var(--surf2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 13px;outline:none;width:100%;transition:border-color .18s,box-shadow .18s;-webkit-appearance:none}
+select{cursor:pointer}select option{background:var(--surf)}
+input:focus,select:focus{border-color:var(--grn);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+input::placeholder{color:var(--text-d)}
+.fl{display:block;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-m);margin-bottom:6px}
+
+/* ══ FILTER HERO ══ */
+.fhero{background:linear-gradient(135deg,var(--surf) 0%,rgba(22,163,74,.06) 50%,rgba(234,179,8,.04) 100%);border:1px solid var(--border-l);border-radius:var(--r-lg);padding:22px;position:relative;overflow:hidden;margin-bottom:18px}
+.fhero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--yel),var(--grn),var(--yel),var(--red));background-size:300% auto;animation:shimmer 4s linear infinite}
+.fh-lbl{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.fh-lbl span{color:var(--yel-l)}
+.spills{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+.sp{padding:8px 16px;border-radius:11px;font-size:12.5px;font-weight:600;border:1.5px solid var(--border);color:var(--text-m);cursor:pointer;transition:all .18s;user-select:none;background:var(--surf2);display:flex;align-items:center;gap:7px}
+.sp:hover{border-color:var(--yel);color:var(--text)}
+.sp.active{background:rgba(220,38,38,.2);border-color:var(--red);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.22)}
+.sp i{font-size:13px;color:var(--yel-l)}
+.lpills{display:flex;gap:9px}
+.lp{flex:1;padding:11px 6px;border-radius:11px;text-align:center;cursor:pointer;transition:all .18s;user-select:none;border:1.5px solid var(--border);color:var(--text-m);background:var(--surf2)}
+.lp .ln{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;line-height:1;display:block}
+.lp .ll{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.lp:hover{border-color:var(--grn);color:var(--text)}
+.lp.active{background:rgba(22,163,74,.2);border-color:var(--grn);color:#fff;box-shadow:0 4px 20px rgba(22,163,74,.24)}
+.lp.active .ln{color:var(--grn-l)}
+
+/* ══ WEIGHT PANEL ══ */
+.wpanel{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;margin-bottom:18px}
+.wp-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.wp-title span{color:var(--yel-l)}
+.wgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.wb{border-radius:13px;padding:16px 14px;border:1.5px solid var(--border);background:var(--surf2);position:relative;overflow:hidden}
+.wb::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:13px 13px 0 0}
+.wb.ca::after{background:var(--ca)}.wb.ma::after{background:var(--ma)}.wb.ms::after{background:var(--ms)}.wb.es::after{background:var(--es)}
+.wb-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.wb.ca .wb-lbl{color:var(--ca)}.wb.ma .wb-lbl{color:var(--ma)}.wb.ms .wb-lbl{color:var(--ms)}.wb.es .wb-lbl{color:var(--es)}
+.wb-max{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;color:#fff;line-height:1;margin-bottom:4px}
+.wb-pct{font-size:11px;color:var(--text-m)}
+.wb-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:9px}
+.wb-fill{height:100%;border-radius:2px}
+.wb.ca .wb-fill{background:var(--ca)}.wb.ma .wb-fill{background:var(--ma)}.wb.ms .wb-fill{background:var(--ms)}.wb.es .wb-fill{background:var(--es)}
+.tpw{background:var(--surf2);border:1px solid var(--border);border-radius:11px;padding:12px 16px}
+.tpl{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px}
+.tpb{height:8px;background:var(--border);border-radius:4px;overflow:hidden;display:flex;gap:2px}
+.tps{height:100%;border-radius:2px;transition:width .4s}
+.tca{background:var(--ca)}.tma{background:var(--ma)}.tms{background:var(--ms)}.tes{background:var(--es)}
+
+/* ══ COURSE DETAILS ══ */
+.cdet{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;margin-bottom:18px}
+.sec-t{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.sec-t span{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--text-m);letter-spacing:0}
+.dgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+
+/* ══ SCORE TABLE ══ */
+.tshell{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.th-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
+.tscroll{overflow-x:auto}
+.stbl{width:100%;border-collapse:collapse;min-width:1080px}
+.stbl thead tr{background:linear-gradient(90deg,rgba(22,163,74,.14),rgba(234,179,8,.06),rgba(220,38,38,.08));border-bottom:1px solid var(--border)}
+.stbl th{padding:11px 11px;font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;color:var(--text-m)}
+/* coloured assessment headers */
+.th-ca{color:var(--ca)!important;background:rgba(34,197,94,.08)!important}
+.th-ma{color:var(--ma)!important;background:rgba(234,179,8,.07)!important}
+.th-ms{color:var(--ms)!important;background:rgba(239,68,68,.07)!important}
+.th-es{color:var(--es)!important;background:rgba(22,163,74,.09)!important}
+.th-tot{color:#fff!important;background:rgba(255,255,255,.05)!important}
+.stbl tbody tr{border-bottom:1px solid rgba(22,163,74,.06);transition:background .14s}
+.stbl tbody tr:hover{background:rgba(22,163,74,.05)}
+.stbl tbody tr:last-child{border-bottom:none}
+.stbl td{padding:9px 11px;white-space:nowrap;vertical-align:middle}
+
+/* score inputs */
+.sci{background:var(--surf2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:12.5px;padding:6px 8px;outline:none;transition:border-color .18s,box-shadow .18s;width:100%}
+.sci:focus{border-color:var(--grn);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.sci.nf{font-family:'DM Sans',sans-serif}
+/* per-assessment focus colours */
+.sca:focus{border-color:var(--ca)!important;box-shadow:0 0 0 3px rgba(34,197,94,.18)!important}
+.sma:focus{border-color:var(--ma)!important;box-shadow:0 0 0 3px rgba(234,179,8,.18)!important}
+.sms:focus{border-color:var(--ms)!important;box-shadow:0 0 0 3px rgba(239,68,68,.18)!important}
+.ses:focus{border-color:var(--es)!important;box-shadow:0 0 0 3px rgba(22,163,74,.18)!important}
+.sci.over{border-color:var(--red-l)!important;background:rgba(200,16,46,.1)!important}
+
+/* mini bar under each score */
+.mb{height:3px;border-radius:2px;overflow:hidden;background:var(--border);margin-top:3px;width:100%}
+.mf{height:100%;border-radius:2px;transition:width .3s}
+.mfca{background:var(--ca)}.mfma{background:var(--ma)}.mfms{background:var(--ms)}.mfes{background:var(--es)}
+
+/* total + grade */
+.tc{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;color:#fff;text-align:center}
+.gb{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:17px;margin:auto}
+.gA{background:rgba(22,163,74,.2);color:var(--grn-l);border:1px solid rgba(22,163,74,.35)}
+.gB{background:rgba(234,179,8,.18);color:var(--yel-l);border:1px solid rgba(234,179,8,.3)}
+.gC{background:rgba(234,179,8,.12);color:#fde047;border:1px solid rgba(234,179,8,.24)}
+.gD{background:rgba(220,38,38,.15);color:#fca5a5;border:1px solid rgba(220,38,38,.28)}
+.gF{background:rgba(220,38,38,.2);color:var(--red-l);border:1px solid rgba(220,38,38,.35)}
+.rk{font-size:11.5px;font-weight:700}
+.rp{color:var(--grn-l)}.rc{color:var(--yel-l)}.rf{color:var(--red-l)}
+
+.tfoot{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-top:1px solid var(--border);background:rgba(8,12,8,.5);flex-wrap:wrap;gap:10px}
+.info-t{font-size:12px;color:var(--text-m);font-family:'DM Mono',monospace}
+.sbanner{margin-top:12px;padding:11px 15px;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.28);border-radius:11px;color:var(--grn-l);font-weight:600;font-size:13px;display:none;align-items:center;gap:9px}
+
+/* ── Recent uploads ── */
+.ucard{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.uhead{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.urow{display:flex;align-items:center;gap:13px;padding:13px 22px;border-bottom:1px solid rgba(22,163,74,.06);transition:background .14s}
+.urow:hover{background:rgba(22,163,74,.05)}.urow:last-child{border-bottom:none}
+.ui{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:rgba(234,179,8,.12);display:flex;align-items:center;justify-content:center;color:var(--yel-l);font-size:14px}
+.us{font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-d);margin-bottom:2px}
+.uc{font-size:13.5px;font-weight:600;color:var(--text)}
+.um{font-size:11px;color:var(--text-m);margin-left:auto;text-align:right;flex-shrink:0}
+
+/* ── chart ── */
+.chwrap{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;height:300px;display:flex;align-items:center;justify-content:center}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--surf);border:1px solid var(--border-l);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 4px 28px rgba(0,0,0,.65);min-width:270px;transform:translateX(115%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+.toast.show{transform:translateX(0)}
+.ti{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ts .ti{background:rgba(22,163,74,.18);color:var(--grn-l)}
+.te .ti{background:rgba(220,38,38,.16);color:var(--red-l)}
+.tt{font-weight:700;font-size:13.5px;color:var(--text)}.tsb{font-size:11.5px;color:var(--text-m);margin-top:1px}
+
+/* responsive */
+@media(max-width:900px){.sidebar{display:none}.stat-grid{grid-template-columns:repeat(2,1fr)}.wgrid{grid-template-columns:repeat(2,1fr)}.dgrid{grid-template-columns:repeat(2,1fr)}.main{padding:14px}}
+@media(max-width:600px){.stat-grid{grid-template-columns:1fr 1fr}.pg-t{font-size:26px}.lpills{flex-wrap:wrap}.tb-pill{display:none}}
+.hidden{display:none!important}
+.mono{font-family:'DM Mono',monospace}
+.tc{text-align:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stu-src-btn:hover{border-color:var(--grn)!important;color:var(--grn-l)!important}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lw">
+    <div class="lc">
+      <div class="lg" style="font-size:155px;bottom:-25px;right:-16px">GH</div>
+      <div class="lg" style="font-size:76px;top:-8px;left:-8px">✦</div>
+      <div class="l-logo">
+        <img src="images/favicon.png" alt=""
+             onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-graduation-cap\' style=\'color:#fff;font-size:30px;\'></i>'">
+      </div>
+      <div class="l-title">Lecturer's Portal</div>
+      <div class="l-sub">GH Schools · Score Management</div>
+      <div class="l-field"><label class="l-label">Lecturer ID / Email</label><input class="l-input" id="loginId" type="text" placeholder="LC-2024-001" value="LC-2024-001"></div>
+      <div class="l-field"><label class="l-label">Password</label><input class="l-input" id="loginPwd" type="password" placeholder="••••••••" value="password"></div>
+      <button class="l-btn" id="loginBtn"><div class="l-shine"></div><i class="fas fa-door-open" style="margin-right:8px"></i> Enter Portal</button>
+      <p class="l-note"><i class="fas fa-lock" style="margin-right:4px"></i> Secured session · GH Schools Ltd</p>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="elo">
+  <div class="elo-logo">
+    <img src="images/favicon.png" alt=""
+         onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-graduation-cap\' style=\'color:#fff;font-size:26px;\'></i>'">
+  </div>
+  <div class="elo-t">Preparing Portal</div>
+  <div class="elo-s">Loading resources — please wait</div>
+  <div class="elo-bw"><div class="elo-b" id="eloBar"></div></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-logo">
+        <img src="images/favicon.png" alt=""
+             onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-graduation-cap\' style=\'color:#fff;font-size:15px;\'></i>'">
+      </div>
+      <div><div class="tb-n">GH Schools</div><div class="tb-s">Lecturer's Portal</div></div>
+    </div>
+    <div class="tb-r">
+      <div class="tb-pill"><i class="fas fa-calendar-alt" style="color:var(--yel-l)"></i> <span id="topDate"></span></div>
+      <div class="nb"><i class="fas fa-bell"></i><div class="nd"></div></div>
+      <div class="tb-av">DC</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sb-sec">Main Menu</div>
+      <div class="nav-item active" data-view="dashboard"><i class="fas fa-th-large"></i> Dashboard</div>
+      <div class="nav-item" data-view="upload"><i class="fas fa-cloud-upload-alt"></i> Upload Scores</div>
+      <div class="nav-item" data-view="courses"><i class="fas fa-book-open"></i> My Courses</div>
+      <div class="nav-item" data-view="students"><i class="fas fa-users"></i> Students</div>
+      <div class="nav-item" data-view="analytics"><i class="fas fa-chart-bar"></i> Analytics</div>
+      <div class="nav-item" data-view="announcements"><i class="fas fa-bullhorn"></i> Announcements</div>
+      <div class="sb-sec" style="margin-top:auto">Account</div>
+      <div class="nav-item" id="logoutBtn"><i class="fas fa-right-from-bracket" style="color:rgba(220,38,38,.8)"></i><span style="color:rgba(230,100,110,.85)">Sign Out</span></div>
+      <div class="sb-bot">
+        <div class="lec-card"><div class="lec-av">DC</div><div><div class="lec-n">Dr. D. Clark</div><div class="lec-r">Senior Lecturer</div></div></div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div id="view-dashboard" class="view active">
+        <div class="pg-h"><div class="pg-t"><div class="pg-ic"><i class="fas fa-th-large"></i></div> Overview</div><div class="pg-s">Welcome back — teaching snapshot</div></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="st-i"><i class="fas fa-user-graduate"></i></div><div class="st-l">Total Students</div><div class="st-v" id="dStu">—</div></div>
+          <div class="stat-card"><div class="st-i"><i class="fas fa-pen-alt"></i></div><div class="st-l">Assessments</div><div class="st-v" id="dAss">—</div></div>
+          <div class="stat-card"><div class="st-i"><i class="fas fa-chart-line"></i></div><div class="st-l">Avg. Score</div><div class="st-v" id="dAvg">—</div></div>
+          <div class="stat-card"><div class="st-i"><i class="fas fa-trophy"></i></div><div class="st-l">Pass Rate</div><div class="st-v" id="dPass">—</div></div>
+        </div>
+        <div class="ucard">
+          <div class="uhead">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1.5px;color:#fff"><i class="fas fa-history" style="color:var(--yel-l);margin-right:9px;font-size:15px"></i> Recent Uploads</div>
+            <button class="btn btn-gh btn-sm" onclick="switchView('upload')">Upload Scores <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div id="recentList">
+            <div style="text-align:center;padding:38px;color:var(--text-d);font-size:13.5px"><i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;color:var(--border-l)"></i>No uploads yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ UPLOAD SCORES ══ -->
+      <div id="view-upload" class="view">
+        <div class="pg-h">
+          <div class="pg-t"><div class="pg-ic"><i class="fas fa-cloud-upload-alt"></i></div> Upload Scores</div>
+          <div class="pg-s">Select school &amp; level · enter all four assessment marks per student · save</div>
+        </div>
+
+        <!-- Step 1: School + Level -->
+        <div class="fhero">
+          <div class="fh-lbl"><i class="fas fa-filter"></i> Step 1 — <span>School &amp; Level</span></div>
+          <div class="spills" id="schoolPills">
+            <div class="sp" data-school="GH Media School"><i class="fas fa-film"></i> GH Media School</div>
+            <div class="sp" data-school="GH Fashion School"><i class="fas fa-scissors"></i> GH Fashion School</div>
+            <div class="sp" data-school="GH Catering School"><i class="fas fa-utensils"></i> GH Catering School</div>
+            <div class="sp" data-school="GH Cosmetology School"><i class="fas fa-spa"></i> GH Cosmetology School</div>
+            <div class="sp" data-school="GH Technology School"><i class="fas fa-microchip"></i> GH Technology School</div>
+          </div>
+          <div class="lpills" id="levelPills">
+            <div class="lp" data-level="100"><span class="ln">100</span><span class="ll">First Year</span></div>
+            <div class="lp" data-level="200"><span class="ln">200</span><span class="ll">Second Year</span></div>
+            <div class="lp" data-level="300"><span class="ln">300</span><span class="ll">Third Year</span></div>
+            <div class="lp" data-level="400"><span class="ln">400</span><span class="ll">Fourth Year</span></div>
+          </div>
+        </div>
+
+        <!-- Step 2: Weight reference panel -->
+        <div class="wpanel">
+          <div class="wp-title"><i class="fas fa-sliders" style="color:var(--yel-l);font-size:17px"></i> Step 2 — <span>Assessment Weights</span> <span style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--text-m)">(reference — totals 100)</span></div>
+          <div class="wgrid">
+            <div class="wb ca"><div class="wb-lbl"><i class="fas fa-pen-nib" style="margin-right:5px"></i>Class Assessment</div><div class="wb-max">10</div><div class="wb-pct">10% of final mark</div><div class="wb-bar"><div class="wb-fill" style="width:10%"></div></div></div>
+            <div class="wb ma"><div class="wb-lbl"><i class="fas fa-calendar-check" style="margin-right:5px"></i>Monthly Assessment</div><div class="wb-max">10</div><div class="wb-pct">10% of final mark</div><div class="wb-bar"><div class="wb-fill" style="width:10%"></div></div></div>
+            <div class="wb ms"><div class="wb-lbl"><i class="fas fa-file-pen" style="margin-right:5px"></i>Mid-Semester Exam</div><div class="wb-max">20</div><div class="wb-pct">20% of final mark</div><div class="wb-bar"><div class="wb-fill" style="width:20%"></div></div></div>
+            <div class="wb es"><div class="wb-lbl"><i class="fas fa-graduation-cap" style="margin-right:5px"></i>End-of-Sem Exam</div><div class="wb-max">60</div><div class="wb-pct">60% of final mark</div><div class="wb-bar"><div class="wb-fill" style="width:60%"></div></div></div>
+          </div>
+          <div class="tpw">
+            <div class="tpl">
+              <div style="display:flex;gap:16px;flex-wrap:wrap">
+                <span style="color:var(--ca);font-size:11.5px;font-weight:600"><span class="mono">CA</span> /10</span>
+                <span style="color:var(--ma);font-size:11.5px;font-weight:600"><span class="mono">MA</span> /10</span>
+                <span style="color:var(--ms);font-size:11.5px;font-weight:600"><span class="mono">MS</span> /20</span>
+                <span style="color:var(--es);font-size:11.5px;font-weight:600"><span class="mono">ES</span> /60</span>
+              </div>
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff">= 100</span>
+            </div>
+            <div class="tpb"><div class="tps tca" style="width:10%"></div><div class="tps tma" style="width:10%"></div><div class="tps tms" style="width:20%"></div><div class="tps tes" style="width:60%"></div></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Course details -->
+        <div class="cdet">
+          <div class="sec-t"><i class="fas fa-book" style="color:var(--yel-l);font-size:16px"></i> Step 3 — Course Details <span>fill in before entering scores</span></div>
+          <div class="dgrid">
+            <div><label class="fl">Course Code</label><input id="upCode" type="text" placeholder="e.g. MJ101"></div>
+            <div><label class="fl">Course Name</label><input id="upName" type="text" placeholder="e.g. Media Law"></div>
+            <div><label class="fl">Program</label><input id="upProg" type="text" placeholder="All Programs"></div>
+            <div><label class="fl">Session</label><input id="upSess" type="text" placeholder="2024/2025" value="2024/2025"></div>
+            <div><label class="fl">Date</label><input id="upDate" type="date"></div>
+          </div>
+        </div>
+
+        <!-- Step 4: Score table -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1.5px;color:#fff">
+              <i class="fas fa-table" style="color:var(--grn-l);margin-right:8px;font-size:17px"></i>
+              Step 4 — Student Scores
+              <span id="rowCnt" style="font-size:13px;font-family:'DM Mono',monospace;color:var(--text-m);margin-left:10px">0 students</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-gold btn-sm" id="loadFromDbBtn" title="Auto-fill rows from DB for selected school + level"><i class="fas fa-database"></i> Load Students</button>
+              <button class="btn btn-gh btn-sm" id="addRowBtn"><i class="fas fa-plus-circle"></i> Add Row</button>
+              <button class="btn btn-gh btn-sm" id="clearBtn"><i class="fas fa-eraser"></i> Clear</button>
+            </div>
+          </div>
+
+          <div class="tshell">
+            <div class="tscroll">
+              <table class="stbl">
+                <thead>
+                  <tr>
+                    <th style="text-align:center;width:36px">#</th>
+                    <th style="width:90px">Student ID</th>
+                    <th style="width:80px">First Name</th>
+                    <th style="width:80px">Middle Name</th>
+                    <th style="width:80px">Last Name</th>
+                    <th class="th-ca" style="text-align:center;width:92px">
+                      Class Assess.<br><small style="font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.5px">/10 pts</small>
+                    </th>
+                    <th class="th-ma" style="text-align:center;width:92px">
+                      Monthly Assess.<br><small style="font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.5px">/10 pts</small>
+                    </th>
+                    <th class="th-ms" style="text-align:center;width:92px">
+                      Mid-Sem Exam<br><small style="font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.5px">/20 pts</small>
+                    </th>
+                    <th class="th-es" style="text-align:center;width:92px">
+                      End-Sem Exam<br><small style="font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.5px">/60 pts</small>
+                    </th>
+                    <th class="th-tot" style="text-align:center;width:68px">Total<br><small style="font-size:9px;font-family:'DM Mono',monospace">/100</small></th>
+                    <th style="text-align:center;width:48px">Grade</th>
+                    <th style="width:108px">Remarks</th>
+                    <th style="width:36px"></th>
+                  </tr>
+                </thead>
+                <tbody id="scoreBody"></tbody>
+              </table>
+            </div>
+            <div class="tfoot">
+              <div class="info-t" id="infoMsg"></div>
+              <button class="btn btn-red" id="saveBtn"><i class="fas fa-save"></i> Save Assessment</button>
+            </div>
+          </div>
+          <div class="sbanner" id="successBanner"><i class="fas fa-check-circle"></i> Assessment saved successfully!</div>
+        </div>
+      </div>
+
+      <!-- ══ COURSES ══ -->
+      <div id="view-courses" class="view">
+        <div class="pg-h"><div class="pg-t"><div class="pg-ic"><i class="fas fa-book-open"></i></div> My Courses</div><div class="pg-s">Manage all assigned courses</div></div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <select style="max-width:185px"><option value="">All Schools</option><option>GH Media School</option><option>GH Fashion School</option><option>GH Catering School</option><option>GH Cosmetology School</option><option>GH Technology School</option></select>
+            <select style="max-width:138px"><option value="">All Levels</option><option>Level 100</option><option>Level 200</option><option>Level 300</option><option>Level 400</option></select>
+            <input type="text" placeholder="Search course…" style="max-width:185px">
+            <button class="btn btn-red btn-sm">Apply</button>
+            <button class="btn btn-gold btn-sm"><i class="fas fa-plus"></i> New Course</button>
+          </div>
+        </div>
+        <div class="card" style="text-align:center;padding:46px;color:var(--text-d)"><i class="fas fa-book-open" style="font-size:36px;display:block;margin-bottom:12px;color:var(--border-l)"></i><div style="font-size:14.5px;font-weight:600;color:var(--text-m)">No courses added yet</div></div>
+      </div>
+
+      <!-- ══ STUDENTS ══ -->
+      <div id="view-students" class="view">
+        <div class="pg-h">
+          <div class="pg-t"><div class="pg-ic"><i class="fas fa-users"></i></div> Student Directory</div>
+          <div class="pg-s">Live from Supabase — <code style="color:var(--grn-l);font-size:11px">newstudents</code> (Level 100) + <code style="color:var(--yel-l);font-size:11px">student_master_db</code> (Level 200–400)</div>
+        </div>
+
+        <!-- Source toggle + filters -->
+        <div class="card" style="margin-bottom:16px">
+          <!-- DB source badges -->
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-m)">Source:</span>
+            <button class="stu-src-btn active" data-src="all"        style="padding:5px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:rgba(22,163,74,.18);color:var(--grn-l);transition:all .18s">All Students</button>
+            <button class="stu-src-btn"        data-src="newstudents" style="padding:5px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text-m);transition:all .18s">Level 100 (newstudents)</button>
+            <button class="stu-src-btn"        data-src="master"      style="padding:5px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text-m);transition:all .18s">Continuing (student_master_db)</button>
+          </div>
+          <!-- Filter row -->
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+            <div style="flex:1;min-width:180px">
+              <label class="fl">Search</label>
+              <input id="stuSearch" type="text" placeholder="Name, Student ID…">
+            </div>
+            <div style="min-width:150px">
+              <label class="fl">School</label>
+              <select id="stuSchoolFilter">
+                <option value="">All Schools</option>
+                <option>GH Media School</option>
+                <option>GH Fashion School</option>
+                <option>GH Catering School</option>
+                <option>GH Cosmetology School</option>
+                <option>GH Technology School</option>
+              </select>
+            </div>
+            <div style="min-width:130px">
+              <label class="fl">Level</label>
+              <select id="stuLevelFilter">
+                <option value="">All Levels</option>
+                <option value="100">Level 100</option>
+                <option value="200">Level 200</option>
+                <option value="300">Level 300</option>
+                <option value="400">Level 400</option>
+              </select>
+            </div>
+            <button class="btn btn-red btn-sm" id="stuSearchBtn" style="align-self:flex-end"><i class="fas fa-search"></i> Search</button>
+            <button class="btn btn-gh btn-sm" id="stuClearBtn" style="align-self:flex-end"><i class="fas fa-rotate-left"></i> Clear</button>
+          </div>
+          <!-- result meta -->
+          <div id="stuMeta" style="margin-top:10px;font-size:12px;color:var(--text-m);font-family:'DM Mono',monospace"></div>
+        </div>
+
+        <!-- Results table -->
+        <div class="tshell">
+          <!-- Loading skeleton -->
+          <div id="stuLoading" style="display:none;padding:32px;text-align:center;color:var(--text-m)">
+            <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--grn);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>
+            <div style="font-size:13px">Fetching students…</div>
+          </div>
+          <div class="tscroll" id="stuTableWrap">
+            <table class="stbl" id="stuTable">
+              <thead><tr>
+                <th style="width:42px;text-align:center">Source</th>
+                <th>Student ID</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>School / Dept</th>
+                <th>Program</th>
+                <th style="text-align:center">Level</th>
+                <th style="text-align:center">Action</th>
+              </tr></thead>
+              <tbody id="stuBody">
+                <tr><td colspan="9" style="text-align:center;padding:42px;color:var(--text-d)">
+                  <i class="fas fa-users" style="font-size:28px;display:block;margin-bottom:10px;color:var(--border-l)"></i>
+                  Select a filter and click Search, or click Search to load all students
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination -->
+          <div id="stuPager" style="display:none;padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(8,12,8,.4);flex-wrap:wrap;gap:8px">
+            <div style="font-size:12px;color:var(--text-m)" id="stuPagerInfo"></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-gh btn-sm" id="stuPrevBtn"><i class="fas fa-chevron-left"></i></button>
+              <div id="stuPageNums" style="display:flex;gap:4px"></div>
+              <button class="btn btn-gh btn-sm" id="stuNextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ANALYTICS ══ -->
+      <div id="view-analytics" class="view">
+        <div class="pg-h"><div class="pg-t"><div class="pg-ic"><i class="fas fa-chart-bar"></i></div> Analytics</div><div class="pg-s">Performance overview across schools and levels</div></div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <select style="max-width:185px"><option value="">All Schools</option><option>GH Media School</option><option>GH Fashion School</option><option>GH Catering School</option><option>GH Cosmetology School</option><option>GH Technology School</option></select>
+            <select style="max-width:138px"><option value="">All Levels</option><option>Level 100</option><option>Level 200</option><option>Level 300</option><option>Level 400</option></select>
+            <input type="date" style="max-width:155px">
+            <button class="btn btn-red btn-sm" onclick="initChart()"><i class="fas fa-chart-line"></i> Load Chart</button>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="st-l">Class Avg</div><div class="st-v" id="aAvg">—</div></div>
+          <div class="stat-card"><div class="st-l">Pass Rate</div><div class="st-v" id="aPass">—</div></div>
+          <div class="stat-card"><div class="st-l">Fail Rate</div><div class="st-v" id="aFail">—</div></div>
+          <div class="stat-card"><div class="st-l">Highest</div><div class="st-v" id="aHigh">—</div></div>
+        </div>
+        <div class="chwrap"><canvas id="analyticsChart"></canvas></div>
+      </div>
+
+      <!-- ══ ANNOUNCEMENTS ══ -->
+      <div id="view-announcements" class="view">
+        <div class="pg-h"><div class="pg-t"><div class="pg-ic"><i class="fas fa-bullhorn"></i></div> Announcements</div><div class="pg-s">School-wide notices</div></div>
+        <div class="card" style="margin-bottom:16px"><div style="display:flex;gap:10px;flex-wrap:wrap"><input type="text" placeholder="Search…" style="max-width:240px"><input type="date" style="max-width:155px"><button class="btn btn-red btn-sm"><i class="fas fa-search"></i> Filter</button><button class="btn btn-gold btn-sm"><i class="fas fa-plus"></i> New</button></div></div>
+        <div class="card" style="text-align:center;padding:46px;color:var(--text-d)"><i class="fas fa-bullhorn" style="font-size:34px;display:block;margin-bottom:12px;color:var(--border-l)"></i><div style="font-size:14.5px;font-weight:600;color:var(--text-m)">No announcements yet</div></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="ti ts"><i class="fas fa-check"></i></div>
+  <div><div class="tt" id="tT">Done</div><div class="tsb" id="tS"></div></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ══════════════════════════════════════════════
+   SUPABASE CLIENT
+══════════════════════════════════════════════ */
+const SUPA_URL = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+const MAX = { ca:10, ma:10, ms:20, es:60 };
+let rows      = [];
+let selSchool = '';
+let selLevel  = '';
+let chartInst = null;
+
+// Student directory state
+let stuSource   = 'all';   // 'all' | 'newstudents' | 'master'
+let stuPage     = 1;
+const STU_PER_PAGE = 25;
+let stuTotalCount = 0;
+let stuLastQuery  = null;  // { search, school, level, source }
+
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
+function grade(t){ if(t>=70)return'A'; if(t>=60)return'B'; if(t>=50)return'C'; if(t>=40)return'D'; return'F'; }
+function rmkTxt(g){ if(g==='A'||g==='B'||g==='C')return'PASS'; if(g==='D')return'PASS (Cond.)'; return'FAIL'; }
+function rmkCls(g){ if(g==='A'||g==='B'||g==='C')return'rk rp'; if(g==='D')return'rk rc'; return'rk rf'; }
+function gbCls(g){ return 'gb g'+(g||'F'); }
+function clamp(v,mx){ return Math.min(Math.max(parseFloat(v)||0,0),mx); }
+function pct(v,mx){ return mx>0 ? Math.min((v/mx)*100,100) : 0; }
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Normalise a student record into a common shape using EXACT confirmed column names
+// student_master_db: student_id, first_name, middle_name, surname, school, program, pathway, level
+// newstudents:       student_id, first_name, middle_name, last_name, school_selected, program_applying_for
+function normaliseStudent(r, source) {
+  if(!r) return { sid:'', first:'', middle:'', last:'', school:'', program:'', level:'', source };
+
+  let first, middle, last, school, program, level, sid;
+
+  if(source === 'newstudents') {
+    sid     = r.student_id   || '';
+    first   = r.first_name   || '';
+    middle  = r.middle_name  || '';
+    last    = r.last_name    || '';
+    program = r.program_applying_for || r.program || '';
+    level   = '100';
+    // school_selected stores the code: MEDIA, FASHION, CATERING, COSMETOLOGY, TECHNOLOGY
+    const CODE_MAP = {
+      MEDIA:'GH Media School', FASHION:'GH Fashion School',
+      CATERING:'GH Catering School', COSMETOLOGY:'GH Cosmetology School',
+      TECHNOLOGY:'GH Technology School'
+    };
+    school = CODE_MAP[r.school_selected] || r.school_selected || '';
+  } else {
+    // student_master_db
+    sid     = r.student_id  || '';
+    first   = r.first_name  || '';
+    middle  = r.middle_name || '';
+    last    = r.surname     || '';           // confirmed: surname not last_name
+    school  = r.school      || '';           // confirmed: school (full name stored)
+    program = r.program     || r.pathway || '';
+    level   = r.level       || '';
+  }
+
+  return { sid, first, middle, last, school, program, level, source, _raw: r };
+}
+
+function toast(title, sub, type){
+  const t = document.getElementById('toast');
+  document.getElementById('tT').textContent = title;
+  document.getElementById('tS').textContent = sub || '';
+  t.className = 'toast t'+(type==='error'?'e':'s')+' show';
+  t.querySelector('.ti i').className = type==='error' ? 'fas fa-exclamation-triangle' : 'fas fa-check';
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 3800);
+}
+
+function setDate(){
+  const d = new Date();
+  const el = document.getElementById('topDate');
+  if(el) el.textContent = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const di = document.getElementById('upDate');
+  if(di && !di.value) di.value = d.toISOString().slice(0,10);
+}
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+function switchView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.classList.remove('active'));
+  const v = document.getElementById('view-'+id); if(v) v.classList.add('active');
+  const n = document.querySelector('.nav-item[data-view="'+id+'"]'); if(n) n.classList.add('active');
+  if(id==='upload')   renderTable();
+  if(id==='analytics') initChart();
+}
+window.switchView = switchView;
+document.querySelectorAll('.nav-item[data-view]').forEach(it=>{
+  it.addEventListener('click', function(){ switchView(this.dataset.view); });
+});
+
+/* ══════════════════════════════════════════════
+   LOGIN / LOGOUT
+══════════════════════════════════════════════ */
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const elo = document.getElementById('elo');
+  const ls  = document.getElementById('loginScreen');
+  const bar = document.getElementById('eloBar');
+  ls.classList.add('exit'); elo.classList.add('show');
+  let w = 0;
+  const iv = setInterval(()=>{ w += Math.random()*20+7; if(w>100)w=100; bar.style.width=w+'%'; if(w>=100)clearInterval(iv); }, 250);
+  setTimeout(()=>{
+    elo.classList.remove('show');
+    const dash = document.getElementById('dash');
+    dash.style.display = 'block'; dash.classList.add('show');
+    switchView('dashboard');
+    refreshStats(); renderRecent();
+    toast('Welcome back', 'Portal loaded', 'success');
+  }, 3000);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  document.getElementById('dash').style.display = 'none';
+  document.getElementById('loginScreen').classList.remove('exit');
+  toast('Signed out', 'See you next time', 'success');
+});
+
+/* ══════════════════════════════════════════════
+   SCHOOL + LEVEL PILLS (Upload view)
+══════════════════════════════════════════════ */
+document.querySelectorAll('.sp').forEach(p=>{
+  p.addEventListener('click', function(){
+    document.querySelectorAll('.sp').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active'); selSchool = this.dataset.school;
+  });
+});
+document.querySelectorAll('.lp').forEach(p=>{
+  p.addEventListener('click', function(){
+    document.querySelectorAll('.lp').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active'); selLevel = this.dataset.level;
+  });
+});
+
+/* ══════════════════════════════════════════════
+   LOAD STUDENTS FROM DB → pre-fill upload table
+══════════════════════════════════════════════ */
+document.getElementById('loadFromDbBtn').addEventListener('click', async ()=>{
+  if(!selSchool){ toast('Select a school first','Use the school pills above','error'); return; }
+  if(!selLevel) { toast('Select a level first','Use the level pills above','error');  return; }
+
+  const btn = document.getElementById('loadFromDbBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"></div> Loading…';
+
+  try {
+    const fetched = await fetchStudentsForLevel(selSchool, selLevel);
+    if(!fetched.length){
+      toast('No students found', `${selSchool} · Level ${selLevel}`, 'error');
+      return;
+    }
+    // Pre-fill score rows with student names + IDs, blank scores
+    rows = fetched.map(s => ({
+      id:     s.sid,
+      first:  s.first,
+      middle: s.middle,
+      last:   s.last,
+      ca:'', ma:'', ms:'', es:'',
+      total:'', grade:'', remarks:''
+    }));
+    renderTable();
+    toast(`${fetched.length} students loaded`, `${selSchool} · Level ${selLevel}`, 'success');
+  } catch(e) {
+    console.error('[loadFromDbBtn]', e);
+    toast('Failed to load students', e.message || '', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-database"></i> Load Students';
+  }
+});
+
+/* ══════════════════════════════════════════════
+   CORE: fetch students for a given school + level
+   Level 100  → newstudents table
+   Level 200+ → student_master_db table
+══════════════════════════════════════════════ */
+async function fetchStudentsForLevel(school, level, searchTerm='') {
+  const lvlNum = parseInt(level, 10) || 100;
+  const SCHOOL_TO_CODE = {
+    'GH Media School':'MEDIA','GH Fashion School':'FASHION',
+    'GH Catering School':'CATERING','GH Cosmetology School':'COSMETOLOGY',
+    'GH Technology School':'TECHNOLOGY'
+  };
+  const schoolCode = SCHOOL_TO_CODE[school] || school;
+  // First word of school name for ilike match on student_master_db.school
+  // e.g. "GH Media School" → "Media" matches "GH Media School" stored in DB
+  const schoolWord = school.replace(/^GH\s*/i,'').split(' ')[0]; // "Media", "Fashion" etc.
+
+  if(lvlNum === 100) {
+    // ── newstudents ──
+    // school_selected is an exact code: MEDIA | FASHION | CATERING | COSMETOLOGY | TECHNOLOGY
+    // Use .eq() — no or() needed for school, so search gets the only or()
+    let q = sb.from('newstudents')
+      .select('student_id,first_name,middle_name,last_name,school_selected,program_applying_for')
+      .eq('school_selected', schoolCode)
+      .limit(200);
+
+    if(searchTerm) {
+      const s = searchTerm.replace(/'/g,"''");
+      // Single or() — the only &or param in this request
+      q = q.or(`first_name.ilike.%${s}%,last_name.ilike.%${s}%,student_id.ilike.%${s}%`);
+    }
+
+    const { data, error } = await q;
+    if(error) throw error;
+    return (data||[]).map(r => normaliseStudent(r, 'newstudents'));
+
+  } else {
+    // ── student_master_db ──
+    // level column: plain text — "200", "Level 200", "300" etc.
+    // school column: full name stored — "GH Media School", "GH Technology School" etc.
+    // Use chained .ilike() — each becomes a separate &column=ilike.%val% param (AND logic) ✓
+    const ls = String(lvlNum);
+    let q = sb.from('student_master_db')
+      .select('student_id,first_name,middle_name,surname,school,program,pathway,level')
+      .ilike('level', `%${ls}%`)
+      .ilike('school', `%${schoolWord}%`)
+      .limit(200);
+
+    if(searchTerm) {
+      const s = searchTerm.replace(/'/g,"''");
+      // Single or() — the only &or param in this request
+      q = q.or(`first_name.ilike.%${s}%,surname.ilike.%${s}%,student_id.ilike.%${s}%`);
+    }
+
+    const { data, error } = await q;
+    if(error) throw error;
+    return (data||[]).map(r => normaliseStudent(r, 'master'));
+  }
+}
+
+/* ══════════════════════════════════════════════
+   STUDENT DIRECTORY — full search UI
+══════════════════════════════════════════════ */
+
+// Source toggle buttons
+document.querySelectorAll('.stu-src-btn').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.stu-src-btn').forEach(b=>{
+      b.style.background='transparent'; b.style.color='var(--text-m)'; b.classList.remove('active');
+    });
+    this.style.background='rgba(22,163,74,.18)'; this.style.color='var(--grn-l)'; this.classList.add('active');
+    stuSource = this.dataset.src;
+  });
+});
+
+document.getElementById('stuSearchBtn').addEventListener('click', ()=>{ stuPage=1; runStudentSearch(); });
+document.getElementById('stuClearBtn').addEventListener('click', ()=>{
+  document.getElementById('stuSearch').value='';
+  document.getElementById('stuSchoolFilter').value='';
+  document.getElementById('stuLevelFilter').value='';
+  stuPage=1; stuTotalCount=0;
+  document.getElementById('stuBody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-d)">
+    <i class="fas fa-users" style="font-size:28px;display:block;margin-bottom:10px;color:var(--border-l)"></i>
+    Use filters above and click Search</td></tr>`;
+  document.getElementById('stuMeta').textContent='';
+  document.getElementById('stuPager').style.display='none';
+});
+
+// Enter key in search
+document.getElementById('stuSearch').addEventListener('keydown', e=>{ if(e.key==='Enter') runStudentSearch(); });
+
+async function runStudentSearch(){
+  const search  = (document.getElementById('stuSearch').value||'').trim();
+  const school  = document.getElementById('stuSchoolFilter').value;
+  const level   = document.getElementById('stuLevelFilter').value;
+
+  stuLastQuery = { search, school, level, source: stuSource };
+
+  const loading  = document.getElementById('stuLoading');
+  const tableWrap = document.getElementById('stuTableWrap');
+  const body     = document.getElementById('stuBody');
+  const meta     = document.getElementById('stuMeta');
+  const pager    = document.getElementById('stuPager');
+
+  loading.style.display = 'block';
+  tableWrap.style.opacity = '0.4';
+  meta.textContent = 'Searching…';
+
+  try {
+    const { rows: results, total } = await fetchStudentDirectory({ search, school, level, source: stuSource, page: stuPage });
+    stuTotalCount = total;
+
+    loading.style.display = 'none';
+    tableWrap.style.opacity = '1';
+
+    if(!results.length){
+      body.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-d)">
+        <i class="fas fa-search" style="font-size:28px;display:block;margin-bottom:10px;color:var(--border-l)"></i>
+        No students match your search</td></tr>`;
+      meta.textContent = '0 results';
+      pager.style.display = 'none';
+      return;
+    }
+
+    const from = (stuPage-1)*STU_PER_PAGE+1;
+    const to   = Math.min(stuPage*STU_PER_PAGE, total);
+    meta.textContent = `Showing ${from}–${to} of ${total} student${total!==1?'s':''}`;
+
+    body.innerHTML = results.map(s=>{
+      const srcBadge = s.source==='newstudents'
+        ? `<span style="background:rgba(22,163,74,.2);color:var(--grn-l);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.5px">L100</span>`
+        : `<span style="background:rgba(234,179,8,.18);color:var(--yel-l);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.5px">CONT</span>`;
+      const lvlDisplay = s.level ? `Level ${String(s.level).replace(/\D/g,'')||s.level}` : '—';
+      return `<tr class="score-row">
+        <td style="text-align:center">${srcBadge}</td>
+        <td class="mono" style="font-size:12.5px;color:var(--grn-l)">${esc(s.sid)}</td>
+        <td style="font-weight:600">${esc(s.first)}</td>
+        <td style="color:var(--text-m)">${esc(s.middle)}</td>
+        <td style="font-weight:600">${esc(s.last)}</td>
+        <td style="font-size:12px;color:var(--text-m)">${esc(s.school)}</td>
+        <td style="font-size:12px;color:var(--text-m)">${esc(s.program)}</td>
+        <td style="text-align:center">
+          <span style="background:rgba(234,179,8,.15);color:var(--yel-l);font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px">${esc(lvlDisplay)}</span>
+        </td>
+        <td style="text-align:center">
+          <button onclick="useStudentInUpload(${JSON.stringify({sid:s.sid,first:s.first,middle:s.middle,last:s.last}).replace(/"/g,'&quot;')})"
+            class="btn btn-gh btn-sm" title="Add to score sheet" style="padding:4px 10px;font-size:11px">
+            <i class="fas fa-plus"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    // Pagination
+    const totalPages = Math.ceil(total / STU_PER_PAGE);
+    if(totalPages > 1){
+      renderStuPager(totalPages);
+      pager.style.display = 'flex';
+    } else {
+      pager.style.display = 'none';
+    }
+
+  } catch(e){
+    loading.style.display = 'none';
+    tableWrap.style.opacity = '1';
+    console.error('[runStudentSearch]', e);
+    body.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--red-l)">
+      <i class="fas fa-triangle-exclamation" style="font-size:28px;display:block;margin-bottom:10px"></i>
+      Error: ${esc(e.message)}</td></tr>`;
+    meta.textContent = 'Search failed';
+    toast('Search failed', e.message, 'error');
+  }
+}
+
+/* Core DB query for the directory view */
+async function fetchStudentDirectory({ search, school, level, source, page }){
+  const from  = (page-1) * STU_PER_PAGE;
+  const to    = from + STU_PER_PAGE - 1;
+  const lvlNum = parseInt(level, 10);
+  const SCHOOL_TO_CODE = {
+    'GH Media School':'MEDIA','GH Fashion School':'FASHION',
+    'GH Catering School':'CATERING','GH Cosmetology School':'COSMETOLOGY','GH Technology School':'TECHNOLOGY'
+  };
+  const schoolCode = SCHOOL_TO_CODE[school] || school;
+  // First meaningful word for ilike on student_master_db.school
+  const schoolWord = school ? school.replace(/^GH\s+/i,'').split(' ')[0] : '';
+
+  // Decide which table(s) to hit
+  const doNew    = (source==='all' || source==='newstudents') && (!lvlNum || lvlNum===100);
+  const doMaster = (source==='all' || source==='master')      && (!lvlNum || lvlNum!==100);
+
+  let allRows = [], totalCount = 0;
+
+  // ── newstudents (Level 100 only) ──
+  if(doNew) {
+    // Use .eq() for school_selected — no or() needed, so search gets the only or()
+    let q = sb.from('newstudents')
+      .select('student_id,first_name,middle_name,last_name,school_selected,program_applying_for', { count:'exact' });
+
+    if(schoolCode)  q = q.eq('school_selected', schoolCode);
+    if(search) {
+      const s = search.replace(/'/g,"''");
+      q = q.or(`first_name.ilike.%${s}%,last_name.ilike.%${s}%,student_id.ilike.%${s}%`);
+    }
+    q = q.range(from, to);
+
+    const { data, error, count } = await q;
+    if(error) console.warn('[newstudents]', error.message);
+    const mapped = (data||[]).map(r => normaliseStudent(r,'newstudents'));
+
+    if(source==='newstudents') return { rows: mapped, total: count||mapped.length };
+    allRows = mapped; totalCount = count||mapped.length;
+  }
+
+  // ── student_master_db (Level 200–400) ──
+  if(doMaster) {
+    // Two plain .ilike() calls — each becomes a separate &column=ilike.%val% (AND logic, no or= conflict)
+    let q = sb.from('student_master_db')
+      .select('student_id,first_name,middle_name,surname,school,program,pathway,level', { count:'exact' });
+
+    if(lvlNum && lvlNum!==100) q = q.ilike('level', `%${String(lvlNum)}%`);
+    if(schoolWord)              q = q.ilike('school', `%${schoolWord}%`);
+
+    if(search) {
+      const s = search.replace(/'/g,"''");
+      q = q.or(`first_name.ilike.%${s}%,surname.ilike.%${s}%,student_id.ilike.%${s}%`);
+    }
+    q = q.range(from, to);
+
+    const { data, error, count } = await q;
+    if(error) console.warn('[student_master_db]', error.message);
+    const mapped = (data||[]).map(r => normaliseStudent(r,'master'));
+
+    if(source==='master') return { rows: mapped, total: count||mapped.length };
+    // 'all': merge + dedup
+    const combined = dedup([...allRows, ...mapped]);
+    return { rows: combined.slice(0, STU_PER_PAGE), total: totalCount + (count||mapped.length) };
+  }
+
+  // Fallback: return what we have
+  return { rows: allRows.slice(0, STU_PER_PAGE), total: totalCount };
+}
+
+function dedup(arr) {
+  const seen = new Set();
+  return arr.filter(s => { if(seen.has(s.sid)) return false; seen.add(s.sid); return true; });
+}
+
+/* Pager render */
+function renderStuPager(totalPages){
+  const info    = document.getElementById('stuPagerInfo');
+  const nums    = document.getElementById('stuPageNums');
+  const prevBtn = document.getElementById('stuPrevBtn');
+  const nextBtn = document.getElementById('stuNextBtn');
+
+  info.textContent = `Page ${stuPage} of ${totalPages}`;
+  prevBtn.disabled = stuPage <= 1;
+  nextBtn.disabled = stuPage >= totalPages;
+
+  // page number buttons (show up to 5)
+  const pages = [];
+  let start = Math.max(1, stuPage-2);
+  let end   = Math.min(totalPages, start+4);
+  if(end-start < 4) start = Math.max(1, end-4);
+  for(let p=start; p<=end; p++) pages.push(p);
+
+  nums.innerHTML = pages.map(p=>`
+    <button onclick="goStuPage(${p})" class="btn btn-gh btn-sm"
+      style="${p===stuPage?'background:rgba(22,163,74,.2);border-color:var(--grn);color:var(--grn-l)':''};padding:5px 10px;font-size:12px">
+      ${p}
+    </button>`).join('');
+
+  prevBtn.onclick = ()=>{ if(stuPage>1){ stuPage--; runStudentSearch(); } };
+  nextBtn.onclick = ()=>{ if(stuPage<totalPages){ stuPage++; runStudentSearch(); } };
+}
+window.goStuPage = function(p){ stuPage=p; runStudentSearch(); };
+
+/* Add a student from directory into the upload score sheet */
+window.useStudentInUpload = function(s){
+  // Switch to upload view and add a pre-filled row
+  switchView('upload');
+  // Check if row already exists
+  if(rows.some(r=>r.id===s.sid)){
+    toast('Already in sheet', s.first+' '+s.last+' is already in the score table', 'error');
+    return;
+  }
+  rows.push({ id:s.sid, first:s.first, middle:s.middle||'', last:s.last, ca:'',ma:'',ms:'',es:'',total:'',grade:'',remarks:'' });
+  renderTable();
+  // Scroll to the new row
+  setTimeout(()=>{
+    const tbody = document.getElementById('scoreBody');
+    tbody.lastElementChild?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 80);
+  toast('Student added', s.first+' '+s.last+' added to score sheet', 'success');
+};
+
+/* ══════════════════════════════════════════════
+   SCORE TABLE
+══════════════════════════════════════════════ */
+function renderTable(){
+  const tbody = document.getElementById('scoreBody');
+  tbody.innerHTML = '';
+  if(rows.length===0){
+    for(let i=0;i<5;i++) rows.push({id:'',first:'',middle:'',last:'',ca:'',ma:'',ms:'',es:'',total:'',grade:'',remarks:''});
+  }
+  document.getElementById('rowCnt').textContent = rows.length+' student'+(rows.length!==1?'s':'');
+
+  rows.forEach((row, idx)=>{
+    const cv=clamp(row.ca,MAX.ca), mv=clamp(row.ma,MAX.ma), sv=clamp(row.ms,MAX.ms), ev=clamp(row.es,MAX.es);
+    const tot = (row.total!=='')?parseFloat(row.total):null;
+    const g   = row.grade||'';
+
+    const tr = document.createElement('tr'); tr.className='score-row';
+    tr.innerHTML = `
+      <td class="mono" style="font-size:11px;text-align:center;color:var(--text-d)">${idx+1}</td>
+      <td><input type="text" placeholder="ID" class="sci nf sid" value="${esc(row.id)}" style="width:76px"></td>
+      <td><input type="text" placeholder="First" class="sci nf sfn" value="${esc(row.first)}" style="width:70px"></td>
+      <td><input type="text" placeholder="Middle" class="sci nf smn" value="${esc(row.middle)}" style="width:70px"></td>
+      <td><input type="text" placeholder="Last" class="sci nf sln" value="${esc(row.last)}" style="width:70px"></td>
+      <td style="text-align:center">
+        <input type="number" min="0" max="10" step="0.5" placeholder="0–10" class="sci sca cav" value="${row.ca}" style="width:70px;text-align:center">
+        <div class="mb" style="width:70px;margin:3px auto 0"><div class="mf mfca" style="width:${pct(cv,MAX.ca)}%"></div></div>
+      </td>
+      <td style="text-align:center">
+        <input type="number" min="0" max="10" step="0.5" placeholder="0–10" class="sci sma mav" value="${row.ma}" style="width:70px;text-align:center">
+        <div class="mb" style="width:70px;margin:3px auto 0"><div class="mf mfma" style="width:${pct(mv,MAX.ma)}%"></div></div>
+      </td>
+      <td style="text-align:center">
+        <input type="number" min="0" max="20" step="0.5" placeholder="0–20" class="sci sms msv" value="${row.ms}" style="width:70px;text-align:center">
+        <div class="mb" style="width:70px;margin:3px auto 0"><div class="mf mfms" style="width:${pct(sv,MAX.ms)}%"></div></div>
+      </td>
+      <td style="text-align:center">
+        <input type="number" min="0" max="60" step="0.5" placeholder="0–60" class="sci ses esv" value="${row.es}" style="width:70px;text-align:center">
+        <div class="mb" style="width:70px;margin:3px auto 0"><div class="mf mfes" style="width:${pct(ev,MAX.es)}%"></div></div>
+      </td>
+      <td><div class="tc" id="t${idx}">${tot!==null?tot.toFixed(1):'—'}</div></td>
+      <td style="text-align:center"><div class="${gbCls(g)}" id="g${idx}">${g||'—'}</div></td>
+      <td><span class="${rmkCls(g)}" id="r${idx}">${row.remarks||''}</span></td>
+      <td><button class="btn btn-del btn-icon delbtn" title="Remove"><i class="fas fa-trash-alt" style="font-size:11px;pointer-events:none"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+
+    const caIn=tr.querySelector('.cav'), maIn=tr.querySelector('.mav'),
+          msIn=tr.querySelector('.msv'), esIn=tr.querySelector('.esv');
+    const totEl=tr.querySelector('.tc'), grdEl=tr.querySelector('.gb'), rmkEl=tr.querySelector('.rk');
+
+    function recalc(){
+      [[caIn,MAX.ca],[maIn,MAX.ma],[msIn,MAX.ms],[esIn,MAX.es]].forEach(([inp,mx])=>{
+        const v=parseFloat(inp.value);
+        if(!isNaN(v)){
+          if(v>mx){inp.value=mx;inp.classList.add('over');setTimeout(()=>inp.classList.remove('over'),600);}
+          if(v<0) inp.value=0;
+        }
+      });
+      const cv=clamp(caIn.value,MAX.ca), mv=clamp(maIn.value,MAX.ma),
+            sv=clamp(msIn.value,MAX.ms), ev=clamp(esIn.value,MAX.es);
+      const total=cv+mv+sv+ev;
+      const g=grade(total), r=rmkTxt(g);
+      totEl.textContent=total.toFixed(1);
+      grdEl.textContent=g; grdEl.className=gbCls(g);
+      rmkEl.textContent=r; rmkEl.className=rmkCls(g);
+      tr.querySelector('.mfca').style.width=pct(cv,MAX.ca)+'%';
+      tr.querySelector('.mfma').style.width=pct(mv,MAX.ma)+'%';
+      tr.querySelector('.mfms').style.width=pct(sv,MAX.ms)+'%';
+      tr.querySelector('.mfes').style.width=pct(ev,MAX.es)+'%';
+      rows[idx].ca=caIn.value; rows[idx].ma=maIn.value;
+      rows[idx].ms=msIn.value; rows[idx].es=esIn.value;
+      rows[idx].total=total.toFixed(1); rows[idx].grade=g; rows[idx].remarks=r;
+    }
+    [caIn,maIn,msIn,esIn].forEach(inp=>{ inp.addEventListener('input',recalc); inp.addEventListener('blur',recalc); });
+    tr.querySelector('.sid').addEventListener('change',  ()=>{ rows[idx].id=tr.querySelector('.sid').value; });
+    tr.querySelector('.sfn').addEventListener('change',  ()=>{ rows[idx].first=tr.querySelector('.sfn').value; });
+    tr.querySelector('.smn').addEventListener('change',  ()=>{ rows[idx].middle=tr.querySelector('.smn').value; });
+    tr.querySelector('.sln').addEventListener('change',  ()=>{ rows[idx].last=tr.querySelector('.sln').value; });
+    tr.querySelector('.delbtn').addEventListener('click',()=>{ rows.splice(idx,1); renderTable(); });
+  });
+}
+
+document.getElementById('addRowBtn').addEventListener('click', ()=>{
+  rows.push({id:'',first:'',middle:'',last:'',ca:'',ma:'',ms:'',es:'',total:'',grade:'',remarks:''});
+  renderTable();
+  setTimeout(()=>{ document.getElementById('scoreBody').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 60);
+});
+
+document.getElementById('clearBtn').addEventListener('click', ()=>{ rows=[]; renderTable(); document.getElementById('infoMsg').textContent=''; });
+
+/* ══════════════════════════════════════════════
+   SAVE ASSESSMENT → Supabase (+ localStorage backup)
+══════════════════════════════════════════════ */
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  // sync DOM → state
+  document.querySelectorAll('#scoreBody tr').forEach((tr,i)=>{
+    if(!rows[i]) return;
+    const get=(sel,f)=>{ const e=tr.querySelector(sel); if(e) rows[i][f]=e.value; };
+    get('.sid','id'); get('.sfn','first'); get('.smn','middle'); get('.sln','last');
+    get('.cav','ca'); get('.mav','ma');    get('.msv','ms');     get('.esv','es');
+    const tc=tr.querySelector('.tc'); if(tc&&tc.textContent!=='—') rows[i].total=tc.textContent;
+    const gc=tr.querySelector('.gb'); if(gc&&gc.textContent!=='—') rows[i].grade=gc.textContent;
+    const rc=tr.querySelector('.rk'); if(rc) rows[i].remarks=rc.textContent;
+  });
+
+  if(!selSchool){ toast('Select a school first','','error'); return; }
+  if(!selLevel) { toast('Select a level first','','error');  return; }
+
+  const valid = rows.filter(r=>r.id.trim()||r.first.trim());
+  if(!valid.length){ toast('No student data to save','Fill in at least one row','error'); return; }
+
+  const meta = {
+    school:     selSchool,
+    level:      selLevel,
+    program:    document.getElementById('upProg').value,
+    courseCode: document.getElementById('upCode').value,
+    courseName: document.getElementById('upName').value,
+    session:    document.getElementById('upSess').value,
+    date:       document.getElementById('upDate').value,
+    savedAt:    new Date().toISOString()
+  };
+
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px"></div> Saving…';
+
+  // ── localStorage backup always ──
+  const key = `assessment_${meta.courseCode||'nc'}_${meta.date||Date.now()}_${Date.now()}`;
+  try { localStorage.setItem(key, JSON.stringify({ metadata: meta, rows: valid })); } catch(_){}
+
+  // ── Save to Supabase (scores table or fallback to registrations) ──
+  // We'll store in a generic "scores" structure inside an "assessments" table if it exists,
+  // otherwise save each row to the payments-adjacent table.
+  // We'll try inserting into a table called "assessments" with a JSONB rows column.
+  // If that fails we just keep localStorage.
+  let dbSaved = false;
+  try {
+    const payload = {
+      school:      meta.school,
+      level:       meta.level,
+      program:     meta.program || null,
+      course_code: meta.courseCode || null,
+      course_name: meta.courseName || null,
+      session:     meta.session || null,
+      date:        meta.date   || null,
+      assessment_data: { metadata: meta, rows: valid },
+      created_at:  new Date().toISOString()
+    };
+    const { error } = await sb.from('assessments').insert([payload]);
+    if(error){
+      // Table may not exist — that's fine, localStorage is the backup
+      console.warn('[assessments insert]', error.message);
+    } else {
+      dbSaved = true;
+    }
+  } catch(e){ console.warn('[assessments]', e); }
+
+  const c = valid.length;
+  document.getElementById('infoMsg').textContent = `Saved · ${meta.courseCode||'—'} · ${c} student${c!==1?'s':''}${dbSaved?' · synced to DB':'· (local only)'}`;
+  const b = document.getElementById('successBanner'); b.style.display='flex'; setTimeout(()=>b.style.display='none',5000);
+  toast('Assessment saved!', `${c} students${dbSaved?' — synced to Supabase':' — saved locally'}`, 'success');
+  saveBtn.disabled=false; saveBtn.innerHTML='<i class="fas fa-save"></i> Save Assessment';
+  refreshStats(); renderRecent();
+});
+
+/* ══════════════════════════════════════════════
+   DASHBOARD STATS (from localStorage)
+══════════════════════════════════════════════ */
+function refreshStats(){
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('assessment_'));
+  let ts=0, ta=keys.length, sum=0, cnt=0, pass=0;
+  keys.forEach(k=>{ try{ const d=JSON.parse(localStorage.getItem(k)); if(d&&d.rows){ ts+=d.rows.length; d.rows.forEach(r=>{ const t=parseFloat(r.total); if(!isNaN(t)){sum+=t;cnt++;if(t>=50)pass++;}}); } }catch(_){} });
+  document.getElementById('dStu').textContent  = ts||'—';
+  document.getElementById('dAss').textContent  = ta||'—';
+  document.getElementById('dAvg').textContent  = cnt>0?(sum/cnt).toFixed(1):'—';
+  document.getElementById('dPass').textContent = cnt>0?Math.round((pass/cnt)*100)+'%':'—';
+}
+
+function renderRecent(){
+  const list = document.getElementById('recentList');
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('assessment_')).reverse().slice(0,7);
+  if(!keys.length){
+    list.innerHTML=`<div style="text-align:center;padding:36px;color:var(--text-d);font-size:13.5px"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:10px;color:var(--border-l)"></i>No uploads yet</div>`;
+    return;
+  }
+  list.innerHTML = keys.map(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k)), m=d.metadata;
+      return `<div class="urow"><div class="ui"><i class="fas fa-file-alt"></i></div>
+        <div style="flex:1">
+          <div class="us">${esc(m.school||'—')} · Level ${esc(m.level||'—')}</div>
+          <div class="uc">${esc(m.courseCode||'—')} — ${esc(m.courseName||'Untitled')}</div>
+          <div style="font-size:10.5px;color:var(--text-d);margin-top:2px">${esc(m.program||'All Programs')}</div>
+        </div>
+        <div class="um">
+          <div class="mono" style="font-size:12.5px;color:var(--text-m)">${d.rows.length} student${d.rows.length!==1?'s':''}</div>
+          <div style="font-size:10.5px;color:var(--text-d);margin-top:2px">${esc(m.date||'—')}</div>
+        </div>
+      </div>`;
+    }catch(_){ return ''; }
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════
+   ANALYTICS CHART
+══════════════════════════════════════════════ */
+function initChart(){
+  const ctx = document.getElementById('analyticsChart').getContext('2d');
+  if(chartInst) chartInst.destroy();
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('assessment_')).slice(0,8);
+  const labels=[],caD=[],maD=[],msD=[],esD=[];
+  keys.forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));
+      if(d&&d.rows&&d.rows.length){
+        const avg=(f,mx)=>d.rows.reduce((s,r)=>s+clamp(r[f]||0,mx),0)/d.rows.length;
+        labels.push(d.metadata.courseCode||'N/A');
+        caD.push(+avg('ca',MAX.ca).toFixed(1)); maD.push(+avg('ma',MAX.ma).toFixed(1));
+        msD.push(+avg('ms',MAX.ms).toFixed(1)); esD.push(+avg('es',MAX.es).toFixed(1));
+      }
+    }catch(_){}
+  });
+  const allTots=[];
+  Object.keys(localStorage).filter(k=>k.startsWith('assessment_')).forEach(k=>{
+    try{ const d=JSON.parse(localStorage.getItem(k)); if(d&&d.rows) d.rows.forEach(r=>{ const t=parseFloat(r.total); if(!isNaN(t)) allTots.push(t); }); }catch(_){}
+  });
+  if(allTots.length){
+    const avg=allTots.reduce((a,b)=>a+b,0)/allTots.length;
+    const p=allTots.filter(t=>t>=50).length, f=allTots.length-p, hi=Math.max(...allTots);
+    document.getElementById('aAvg').textContent  = avg.toFixed(1);
+    document.getElementById('aPass').textContent = Math.round((p/allTots.length)*100)+'%';
+    document.getElementById('aFail').textContent = Math.round((f/allTots.length)*100)+'%';
+    document.getElementById('aHigh').textContent = isFinite(hi)?hi.toFixed(1):'—';
+  }
+  const hd=labels.length>0;
+  chartInst=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels: hd?labels:['No data yet'],
+      datasets:[
+        {label:'Class Assess. /10',   data:hd?caD:[0], backgroundColor:'rgba(34,197,94,.55)', borderColor:'rgba(34,197,94,.8)',  borderWidth:1, borderRadius:5, stack:'s'},
+        {label:'Monthly /10',         data:hd?maD:[0], backgroundColor:'rgba(234,179,8,.55)', borderColor:'rgba(234,179,8,.8)',  borderWidth:1, borderRadius:5, stack:'s'},
+        {label:'Mid-Sem /20',         data:hd?msD:[0], backgroundColor:'rgba(239,68,68,.55)',  borderColor:'rgba(239,68,68,.8)',   borderWidth:1, borderRadius:5, stack:'s'},
+        {label:'End-Sem /60',         data:hd?esD:[0], backgroundColor:'rgba(22,163,74,.55)',  borderColor:'rgba(22,163,74,.8)',   borderWidth:1, borderRadius:5, stack:'s'},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#7A9E7A',font:{family:'DM Sans',size:11}}},
+        tooltip:{backgroundColor:'#111A11',borderColor:'rgba(22,163,74,.3)',borderWidth:1,titleColor:'#E8F5E8',bodyColor:'#7A9E7A'}
+      },
+      scales:{
+        y:{beginAtZero:true,max:100,stacked:true,grid:{color:'rgba(22,163,74,.07)'},ticks:{color:'#3D6B3D',font:{family:'DM Mono',size:10}}},
+        x:{stacked:true,grid:{display:false},ticks:{color:'#3D6B3D',font:{family:'DM Sans',size:10}}}
+      }
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+setDate();
+renderTable();
+refreshStats();
+renderRecent();
+
+})();
+</script>
+</body>
+</html>

@@ -3,233 +3,638 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GH Schools · Secure Payment Channel</title>
+  <title>GH Schools · secure payment channel</title>
+  <!-- Font Awesome 6 (free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="payment-options.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1e293b;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .channel-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* step indicator */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem 1.2rem 0.5rem 0.8rem;
+      border-radius: 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid #e9eef2;
+      font-weight: 500;
+      color: #64748b;
+    }
+    .step.active {
+      background: #b22222;
+      border-color: #b22222;
+      color: white;
+      box-shadow: 0 8px 16px -8px rgba(178,34,34,0.3);
+    }
+    .step i {
+      font-size: 1rem;
+    }
+    .step.active i {
+      color: white;
+    }
+    .step-line {
+      width: 40px;
+      height: 2px;
+      background: #d9e0e8;
+      border-radius: 2px;
+    }
+    @media (max-width: 500px) {
+      .step-line {
+        width: 20px;
+      }
+      .step {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* back link refined */
+    .back-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 1rem 0.5rem 0.75rem;
+      background: white;
+      border-radius: 40px;
+      color: #334155;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .back-nav i {
+      font-size: 0.9rem;
+      color: #b22222;
+      transition: transform 0.2s;
+    }
+    .back-nav:hover {
+      background: #f8fafc;
+      border-color: #b22222;
+      color: #b22222;
+      box-shadow: 0 8px 16px -12px rgba(178,34,34,0.2);
+    }
+    .back-nav:hover i {
+      transform: translateX(-4px);
+    }
+
+    /* course summary card — elevated */
+    .course-summary-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0,0,0,0.02);
+      border: 1px solid #edf2f7;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .course-summary__info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 1.5rem 2.5rem;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .summary-item i {
+      color: #b22222;
+      font-size: 1.2rem;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    .summary-item strong {
+      font-weight: 600;
+      color: #1e293b;
+      margin-right: 0.2rem;
+    }
+
+    .summary-item span {
+      color: #475569;
+      background: #f1f5f9;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: 1px solid #e2e8f0;
+    }
+
+    .summary-price {
+      background: linear-gradient(135deg, #b22222 0%, #8b1a1a 100%);
+      color: white;
+      font-weight: 700;
+      padding: 0.7rem 2rem;
+      border-radius: 60px;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      box-shadow: 0 10px 20px -12px #b22222;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* page header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    .page-header h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .page-header .subhead {
+      color: #475569;
+      font-size: 1.1rem;
+      border-left: 4px solid #b22222;
+      padding-left: 1.5rem;
+      background: #f8fafc;
+      border-radius: 0 1rem 1rem 0;
+      line-height: 1.5;
+      padding: 0.8rem 1.5rem;
+      box-shadow: inset 0 0 0 1px #ffffff40, 0 4px 8px -8px #00000020;
+    }
+
+    /* channels grid */
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
+    }
+
+    .channel-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem 1.8rem 1.8rem;
+      box-shadow: 0 25px 40px -18px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.02);
+      transition: all 0.3s cubic-bezier(0.2,0,0,1);
+      border: 1px solid #edf2f7;
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .channel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #b22222 0%, #d14b4b 80%, #ffe5e5 100%);
+      opacity: 0.7;
+    }
+
+    .channel-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 32px 50px -22px rgba(178, 34, 34, 0.2);
+      border-color: #fcc9c9;
+    }
+
+    .channel-card.soon {
+      background: #ffffff;
+      filter: none;
+      border: 1px solid #e9eef2;
+      opacity: 0.95;
+    }
+    .channel-card.soon::before {
+      background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 80%, #f1f5f9 100%);
+      opacity: 0.4;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .card-header h3 {
+      font-size: 1.7rem;
+      font-weight: 650;
+      color: #0f172a;
+      margin: 0;
+    }
+    .card-header i {
+      font-size: 2.2rem;
+      color: #b22222;
+      background: #fee9e9;
+      padding: 0.6rem;
+      border-radius: 18px;
+    }
+    .channel-card.soon .card-header i {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .pay-methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 0.8rem;
+      margin: 1.2rem 0 1.5rem;
+      background: #f8fafc;
+      padding: 1.2rem 1rem;
+      border-radius: 1.5rem;
+      list-style: none;
+      border: 1px solid #eef2f6;
+    }
+
+    .pay-methods li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem 1rem 0.5rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1e293b;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      border: 1px solid #e2e8f0;
+    }
+    .pay-methods li i {
+      color: #b22222;
+      font-size: 1rem;
+    }
+
+    .channel-description {
+      color: #475569;
+      margin: 0.2rem 0 0.2rem;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .muted-note {
+      color: #64748b;
+      font-size: 0.9rem;
+      border-top: 1px dashed #d9e2ef;
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .muted-note i {
+      color: #b22222;
+      font-size: 1rem;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      background: #b22222;
+      color: white;
+      border: none;
+      padding: 1rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-top: 1.2rem;
+      box-shadow: 0 12px 24px -14px #b22222;
+      width: fit-content;
+      border: 1px solid rgba(255,255,255,0.2);
+      align-self: flex-start;
+    }
+
+    .cta-button:hover {
+      background: #8f1b1b;
+      box-shadow: 0 18px 30px -16px #b22222;
+      transform: scale(1.02);
+    }
+    .cta-button:active {
+      transform: scale(0.98);
+    }
+
+    .cta-button i {
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+    }
+    .cta-button:hover i {
+      transform: translateX(4px);
+    }
+
+    .badge-soon {
+      background: #e9eef2;
+      color: #334155;
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 0.3rem 1rem;
+      border-radius: 60px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin-left: 0.8rem;
+      border: 1px solid #cdd9e6;
+    }
+
+    .contact-row {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.5rem 0 0.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .contact-row a {
+      color: #b22222;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dotted transparent;
+      transition: border-color 0.2s;
+    }
+    .contact-row a:hover {
+      border-bottom-color: #b22222;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: #475569;
+      font-size: 0.9rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+    }
+    .trust-badge i {
+      color: #10b981;
+      font-size: 1.1rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 60px;
+      border: 1px solid #e2e8f0;
+    }
+    .contact-info i {
+      color: #b22222;
+      margin-right: 0.2rem;
+    }
+    .contact-info span {
+      color: #94a3b8;
+    }
+
+    /* offline help card enhancement */
+    .help-offline {
+      margin-top: 1.5rem;
+      background: #f1f4f9;
+      border-radius: 1.2rem;
+      padding: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+    .help-offline i {
+      font-size: 2rem;
+      color: #b22222;
+      opacity: 0.7;
+    }
+    .help-offline p {
+      color: #334155;
+      font-weight: 500;
+    }
+    .help-offline a {
+      color: #b22222;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
+    }
+
+    /* mobile fine-tune */
+    @media (max-width: 640px) {
+      body { padding: 1.2rem; }
+      .course-summary-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
+      }
+      .summary-price {
+        align-self: flex-start;
+        font-size: 1.3rem;
+        padding: 0.6rem 1.5rem;
+      }
+      .page-header h2 {
+        font-size: 1.8rem;
+      }
+      .channels-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .card-header h3 {
+        font-size: 1.5rem;
+      }
+      .contact-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .trust-badge {
+        width: 100%;
+        justify-content: center;
+      }
+      .contact-info {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="channel-container">
-
-    <!-- Step indicator -->
+    <!-- step indicator (progress) -->
     <div class="step-indicator">
-      <div class="step done">
-        <span class="step-num"><i class="fas fa-check"></i></span>
-        <span class="step-label">Choose Course</span>
-      </div>
+      <div class="step"><i class="fas fa-check-circle"></i> 1. Choose course</div>
       <div class="step-line"></div>
-      <div class="step active">
-        <span class="step-num">2</span>
-        <span class="step-label">Payment Method</span>
-      </div>
+      <div class="step active"><i class="fas fa-credit-card"></i> 2. Payment method</div>
       <div class="step-line"></div>
-      <div class="step">
-        <span class="step-num">3</span>
-        <span class="step-label">Confirmation</span>
-      </div>
+      <div class="step"><i class="fas fa-file-alt"></i> 3. Confirmation</div>
     </div>
 
-    <!-- Back navigation -->
+    <!-- refined back navigation -->
     <a href="short-courses.html" class="back-nav">
-      <i class="fas fa-arrow-left"></i>
-      <span>Back to courses</span>
+      <i class="fas fa-arrow-left"></i> Back to courses
     </a>
 
-    <!-- Course summary card -->
+    <!-- dynamic course summary (elevated) -->
     <div class="course-summary-card" id="courseSummary">
       <div class="course-summary__info">
-        <div class="summary-item">
-          <i class="fas fa-graduation-cap"></i>
-          <div class="summary-item__text">
-            <strong>Course</strong>
-            <span id="summaryCourse">—</span>
-          </div>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-item">
-          <i class="fas fa-school"></i>
-          <div class="summary-item__text">
-            <strong>School</strong>
-            <span id="summarySchool">—</span>
-          </div>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-item">
-          <i class="fas fa-layer-group"></i>
-          <div class="summary-item__text">
-            <strong>Level</strong>
-            <span id="summaryLevel">—</span>
-          </div>
-        </div>
+        <div class="summary-item"><i class="fas fa-graduation-cap"></i> <strong>Course:</strong> <span id="summaryCourse">—</span></div>
+        <div class="summary-item"><i class="fas fa-school"></i> <strong>School:</strong> <span id="summarySchool">—</span></div>
+        <div class="summary-item"><i class="fas fa-layer-group"></i> <strong>Level:</strong> <span id="summaryLevel">—</span></div>
       </div>
       <div class="summary-price" id="summaryPrice">GHS 0</div>
     </div>
 
-    <!-- Page header -->
     <div class="page-header">
-      <h2>
-        <span class="header-icon"><i class="fas fa-shield-halved"></i></span>
-        Complete your payment
-      </h2>
+      <h2><i class="fas fa-lock" style="font-size:2rem; color:#b22222; -webkit-text-fill-color:#b22222;"></i> Complete your payment</h2>
       <div class="subhead">
-        <i class="fas fa-lock"></i>
-        All transactions are protected by bank-grade encryption. Select your preferred secure channel below.
+        <i class="fas fa-shield-alt" style="margin-right:8px; color:#b22222;"></i> 
+        All transactions are protected by bank-grade encryption. Select your preferred secure channel.
       </div>
     </div>
 
-    <!-- Payment channel cards -->
     <div class="channels-grid">
-
-      <!-- Paystack Card -->
+      <!-- Paystack channel (enhanced) -->
       <div class="channel-card" id="paystackChannel">
-        <div class="card-accent card-accent--red"></div>
         <div class="card-header">
-          <div class="card-icon card-icon--red">
-            <i class="fas fa-bolt"></i>
-          </div>
-          <div class="card-header__text">
-            <h3>Pay with Paystack</h3>
-            <span class="card-badge card-badge--live">
-              <span class="badge-dot"></span> Live
-            </span>
-          </div>
+          <i class="fas fa-bolt"></i>
+          <h3>Pay with Paystack</h3>
         </div>
-
         <p class="channel-description">
-          Ghana's most trusted online payment gateway — instant confirmation and multiple options:
+          Ghana’s most trusted online payment gateway. Instant confirmation and multiple options:
         </p>
-
         <ul class="pay-methods">
-          <li>
-            <span class="method-chip method-chip--card">
-              <i class="fas fa-credit-card"></i> Visa / Mastercard / Verve
-            </span>
-          </li>
-          <li>
-            <span class="method-chip method-chip--momo">
-              <i class="fas fa-mobile-alt"></i> MTN MoMo
-            </span>
-          </li>
-          <li>
-            <span class="method-chip method-chip--vodafone">
-              <i class="fas fa-mobile-alt"></i> Vodafone Cash
-            </span>
-          </li>
-          <li>
-            <span class="method-chip method-chip--airteltigo">
-              <i class="fas fa-mobile-alt"></i> AirtelTigo
-            </span>
-          </li>
-          <li>
-            <span class="method-chip method-chip--bank">
-              <i class="fas fa-university"></i> Bank Transfer
-            </span>
-          </li>
+          <li><i class="fas fa-credit-card"></i> Visa, Mastercard, Verve</li>
+          <li><i class="fas fa-mobile-alt"></i> MTN MoMo, Vodafone Cash, AirtelTigo</li>
+          <li><i class="fas fa-university"></i> Bank transfer / deposit</li>
+          
         </ul>
-
         <div class="muted-note">
-          <i class="fas fa-circle-info"></i>
-          After payment, you'll fill the admission form with your transaction reference.
+          <i class="fas fa-redo-alt"></i> After payment you’ll fill the admission form with your transaction reference.
         </div>
-
-        <a id="paystackContinue" class="cta-button cta-button--red" href="#">
-          <span>Continue to Paystack</span>
-          <i class="fas fa-arrow-right"></i>
+        <a id="paystackContinue" class="cta-button">
+          <i class="fas fa-arrow-right"></i> Continue to Paystack
         </a>
-
-        <div class="card-footer-logo">
-          <span>Secured by</span>
-          <strong>Paystack</strong>
-          <i class="fas fa-shield-halved"></i>
-        </div>
       </div>
 
-      <!-- Stanbic Bank Mobile Money Card -->
-      <div class="channel-card soon" id="kowriChannel">
-        <div class="card-accent card-accent--gold"></div>
+      <!-- other channels – now with helpful contact & offline options -->
+      <div class="channel-card soon">
         <div class="card-header">
-          <div class="card-icon card-icon--gold">
-            <i class="fas fa-landmark"></i>
-          </div>
-          <div class="card-header__text">
-            <h3>Stanbic Bank Mobile Money</h3>
-            <span class="card-badge card-badge--gold">
-              <span class="badge-dot badge-dot--gold"></span> Available
-            </span>
-          </div>
+          <i class="fas fa-landmark"></i>
+          <h3>Offline & bank <span class="badge-soon">assisted</span></h3>
         </div>
-
         <p class="channel-description">
-          Pay directly via your preferred mobile money network through Stanbic Bank's secure platform:
+          Pay directly at any branch, via mobile money (manual), or request an instalment plan.
         </p>
-
-        <ul class="pay-methods pay-methods--networks">
-          <li>
-            <span class="network-chip network-chip--mtn">
-              <span class="network-dot" style="background:#FFCC00;"></span>
-              <strong>MTN</strong> MoMo
-            </span>
-          </li>
-          <li>
-            <span class="network-chip network-chip--vodafone">
-              <span class="network-dot" style="background:#E60000;"></span>
-              <strong>Vodafone</strong> Cash
-            </span>
-          </li>
-          <li>
-            <span class="network-chip network-chip--airteltigo">
-              <span class="network-dot" style="background:#0057A8;"></span>
-              <strong>AirtelTigo</strong>
-            </span>
-          </li>
+        <ul class="pay-methods" style="background:#f1f5f9;">
+          <li><i class="fas fa-building"></i> Bank teller (Ecobank, GCB, etc.)</li>
+          <li><i class="fas fa-hand-holding-usd"></i> Campus cash office</li>
+          <li><i class="fas fa-wallet"></i> Instalments / part payment</li>
         </ul>
-
-        <a id="kowriPay" class="cta-button cta-button--gold" href="kowri-pay-now.html">
-          <span>Pay</span>
-          <i class="fas fa-arrow-right"></i>
-        </a>
-
-        <p class="momo-helper-text">
-          <i class="fas fa-mobile-screen-button"></i>
-          Payment will trigger your Mobile Money prompt
-        </p>
-
-        <div class="card-footer-logo card-footer-logo--gold">
-          <span>Powered by</span>
-          <strong>Stanbic Bank</strong>
-          <i class="fas fa-shield-halved"></i>
+        <!-- extra help card -->
+      
+        <div style="margin-top:1.2rem;">
+          <span style="background:#eef2f6; color:#334155; padding:0.7rem 1.8rem; border-radius:60px; display:inline-block; font-weight:500;"><i class="fas fa-envelope"></i> Request assistance</span>
         </div>
       </div>
-
     </div>
 
-    <!-- Trust & contact row -->
+    <!-- extra trust & contact row with more info -->
     <div class="contact-row">
       <div class="trust-badge">
-        <i class="fas fa-lock"></i>
-        <span>256-bit SSL Encrypted</span>
+      
       </div>
       <div class="contact-info">
-        <i class="fas fa-headset"></i>
-        <a href="/cdn-cgi/l/email-protection#2f4e4b42465c5c4640415c6f48475c4c474040435c0140414346414a">
-          <span class="__cf_email__" data-cfemail="0d6c6960647e7e6462637e4d6a657e6e656262617e23626361646368">[email&#160;protected]</span>
-        </a>
-        <span class="contact-divider">|</span>
-        <i class="fas fa-phone-alt"></i>
-        <a href="tel:+233302221111">+233 (0)30 222 1111</a>
+        <i class="fas fa-headset"></i> <a href="mailto:admissions@ghschools.online">admissions@ghschools.online</a>
+        <span>|</span>
+        <i class="fas fa-phone-alt"></i> +233 (0)30 222 1111
       </div>
     </div>
 
-    <!-- Security footer note -->
-    <div class="security-footer">
-      <i class="fas fa-lock"></i>
-      GH Schools never stores your card details. Payments are processed securely by certified payment processors.
+    <!-- small print / security reassurance -->
+    <div style="margin-top: 1.5rem; text-align: center; color: #94a3b8; font-size: 0.8rem; border-top: 1px solid #e9edf2; padding-top: 1.5rem;">
+      <i class="fas fa-lock" style="margin-right: 4px;"></i> GH Schools never stores your card details. Payments are processed securely by Paystack (PCI DSS Level 1).
     </div>
-
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-  <script src="payment-options.js"></script>
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const school = params.get('school') || '';
+      const level = params.get('level') || '';
+      const course = params.get('course') || '';
+      const price = params.get('price') || '';
+
+      // Update summary card
+      document.getElementById('summaryCourse').innerText = course || 'Not specified';
+      document.getElementById('summarySchool').innerText = school || '—';
+      document.getElementById('summaryLevel').innerText = level || '—';
+      document.getElementById('summaryPrice').innerText = price ? `GHS ${price}` : 'GHS 0';
+
+      // Continue with Paystack: build forward URL to buyforms.html (or admission form)
+      const contLink = document.getElementById('paystackContinue');
+      if (contLink) {
+        const forward = new URL('buyforms.html', window.location.href);
+        params.set('channel', 'paystack');
+        forward.search = params.toString();
+        contLink.setAttribute('href', forward.toString());
+        // optional click tracking (can be extended)
+      }
+
+      // "Request assistance" – we can add an email link or open a modal? For simplicity, mailto:
+      const assistSpan = document.querySelector('.help-offline + div span');
+      if (assistSpan) {
+        assistSpan.addEventListener('click', () => {
+          window.location.href = 'mailto:fees@ghschools.online?subject=Payment%20assistance%20request&body=Please%20help%20me%20with%20offline%20payment%20options.';
+        });
+        assistSpan.style.cursor = 'pointer';
+      }
+    })();
+  </script>
+  <noscript>Please enable JavaScript to choose a payment channel.</noscript>
 </body>
 </html>

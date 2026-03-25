@@ -896,6 +896,15 @@
         showToast("Please enter your Student ID", true);
         return;
       }
+      // If the ID is a short-course / portal ID starting with GHWS, redirect to shortcourseportal
+      try {
+        if (String(admissionNumber).toUpperCase().startsWith('GHWS')) {
+          // persist the id so the portal can auto-fill if needed
+          try { localStorage.setItem('studentId', admissionNumber); } catch (e) {}
+          window.location.href = 'shortcourseportal.html?student_id=' + encodeURIComponent(admissionNumber);
+          return;
+        }
+      } catch (e) { /* ignore unexpected */ }
       
       // Show loading state
       const submitButton = document.querySelector('button[type="submit"]');
@@ -933,7 +942,12 @@
       document.getElementById('loginForm').addEventListener('submit', handleLogin);
       
       document.getElementById('proceedToPortal').addEventListener('click', function() {
-        window.location.href = "100dashboard.html";
+        // Pass the student_id as a URL param so the dashboard can load the correct student immediately
+        const studentId = localStorage.getItem('student_id') || localStorage.getItem('studentId') || '';
+        const url = studentId
+          ? '100dashboard.html?student_id=' + encodeURIComponent(studentId)
+          : '100dashboard.html';
+        window.location.href = url;
       });
       
       document.getElementById('viewAdmissionLetter').addEventListener('click', function() {

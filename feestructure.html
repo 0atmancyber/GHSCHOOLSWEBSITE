@@ -1,0 +1,3505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management — GH Schools Admin</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg:        #fff5f5;
+            --surface:   #ffffff;
+            --surface-2: #fff0f0;
+            --surface-3: #ffe4e4;
+            --border:    #fecaca;
+            --border-2:  #fca5a5;
+            --text:      #1a0a0a;
+            --text-2:    #6b2323;
+            --text-3:    #b45454;
+            --accent:    #dc2626;
+            --accent-2:  #ef4444;
+            --accent-bg: rgba(220,38,38,0.10);
+            --accent-bg2:rgba(220,38,38,0.06);
+            --green:     #16a34a;
+            --green-bg:  rgba(22,163,74,0.10);
+            --amber:     #d97706;
+            --amber-bg:  rgba(217,119,6,0.10);
+            --blue:      #2563eb;
+            --blue-bg:   rgba(37,99,235,0.10);
+            --violet:    #7c3aed;
+            --violet-bg: rgba(124,58,237,0.10);
+            --radius-sm: 6px;
+            --radius:    10px;
+            --radius-lg: 16px;
+            --radius-xl: 22px;
+            --shadow:    0 4px 20px rgba(220,38,38,0.10);
+            --shadow-lg: 0 8px 40px rgba(220,38,38,0.15);
+            --mono:      'DM Mono', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ── BACKGROUND TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: -1;
+            background:
+                radial-gradient(ellipse 60% 40% at 80% 10%, rgba(220,38,38,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 10% 80%, rgba(220,38,38,0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ── TOP NAV ── */
+        .topnav {
+            background: #ffffff;
+            border-bottom: 2px solid var(--accent);
+            padding: 0 32px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 12px rgba(220,38,38,0.10);
+        }
+        .topnav-brand {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .brand-mark {
+            width: 34px; height: 34px;
+            background: var(--accent);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; color: white; font-weight: 700;
+            flex-shrink: 0;
+        }
+        .brand-name {
+            font-weight: 700; font-size: 15px; letter-spacing: 0.2px;
+        }
+        .brand-sub {
+            font-size: 11px; color: var(--text-3); letter-spacing: 0.8px;
+            text-transform: uppercase; font-weight: 500;
+        }
+        .topnav-right {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .nav-chip {
+            background: var(--accent-bg);
+            color: var(--accent-2);
+            border: 1px solid rgba(230,57,80,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ── MAIN WRAPPER ── */
+        .main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 28px 60px;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            margin-bottom: 32px; gap: 16px;
+        }
+        .page-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
+        .page-title span { color: var(--accent); }
+        .page-sub { font-size: 13.5px; color: var(--text-2); margin-top: 4px; }
+
+        /* ── STAT CARDS ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 22px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .stat-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+        .stat-label { font-size: 11.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; font-family: var(--mono); }
+        .stat-value.red { color: var(--accent-2); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.blue { color: var(--blue); }
+        .stat-value.amber { color: var(--amber); }
+        .stat-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+        /* ── TABS ── */
+        .tabs-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            padding: 6px 6px 0;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 22px;
+            background: none;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--text-3);
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex; align-items: center; gap: 7px;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tab-btn:hover { color: var(--text-2); background: var(--surface-2); }
+        .tab-btn.active { color: var(--accent-2); border-bottom-color: var(--accent); background: var(--surface-2); }
+        .tab-btn .tab-count {
+            background: var(--accent-bg);
+            color: var(--accent-2);
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+        .tab-content { display: none; padding: 28px; }
+        .tab-content.active { display: block; }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+        }
+        .section-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.2px; }
+        .section-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            padding: 9px 18px;
+            border-radius: var(--radius);
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: inline-flex; align-items: center; gap: 7px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 10px rgba(230,57,80,0.35); }
+        .btn-primary:hover { background: #f04055; box-shadow: 0 4px 16px rgba(230,57,80,0.45); }
+        .btn-secondary { background: var(--surface-3); color: var(--text-2); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--surface-2); color: var(--text); border-color: var(--border-2); }
+        .btn-danger { background: rgba(220,38,38,0.15); color: #f87171; border: 1px solid rgba(220,38,38,0.2); }
+        .btn-danger:hover { background: rgba(220,38,38,0.25); }
+        .btn-warning { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+        .btn-warning:hover { background: rgba(245,158,11,0.2); }
+        .btn-success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+        .btn-success:hover { background: rgba(34,197,94,0.2); }
+        .btn-sm { padding: 6px 12px; font-size: 12.5px; }
+        .btn-xs { padding: 4px 9px; font-size: 11.5px; border-radius: var(--radius-sm); }
+        .btn-icon { padding: 8px; border-radius: var(--radius); }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            align-items: center;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+        .filter-bar label { font-size: 11.5px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-bar select, .filter-bar input[type="text"] {
+            padding: 7px 12px;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            min-width: 140px;
+            transition: border-color 0.15s;
+        }
+        .filter-bar select:focus, .filter-bar input:focus { border-color: var(--accent); outline: none; }
+        .filter-divider { width: 1px; height: 36px; background: var(--border); margin: 0 4px; }
+
+        /* ── SCOPE TOTAL BADGE ── */
+        .scope-total-badge {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px 16px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px;
+        }
+        .scope-total-badge .label { color: var(--text-3); font-weight: 500; }
+        .scope-total-badge .value { font-family: var(--mono); font-weight: 600; color: var(--green); font-size: 14px; }
+
+        /* ── TABLE ── */
+        .table-wrapper {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: var(--surface-2);
+            font-size: 11.5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.7px;
+            color: var(--text-3);
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13.5px;
+            color: var(--text);
+            vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.12s; }
+        tbody tr:hover td { background: var(--surface-2); }
+        .cell-mono { font-family: var(--mono); font-size: 13px; }
+        .cell-amount { font-family: var(--mono); font-weight: 600; color: var(--text); }
+        .cell-muted { color: var(--text-3); font-size: 12.5px; }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 20px;
+            font-size: 11.5px; font-weight: 600; letter-spacing: 0.2px;
+        }
+        .badge-green { background: var(--green-bg); color: var(--green); }
+        .badge-red { background: var(--accent-bg); color: var(--accent-2); }
+        .badge-amber { background: var(--amber-bg); color: var(--amber); }
+        .badge-blue { background: var(--blue-bg); color: var(--blue); }
+        .badge-violet { background: var(--violet-bg); color: var(--violet); }
+        .badge-muted { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            color: var(--text-3);
+        }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; }
+
+        /* ── MODALS ── */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(100,0,0,0.35);
+            backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000; padding: 20px;
+        }
+        .modal.show { display: flex; }
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border-2);
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modal-in 0.2s ease;
+        }
+        @keyframes modal-in {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-box.wide { max-width: 680px; }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .modal-title { font-size: 1.05rem; font-weight: 700; }
+        .modal-close {
+            background: var(--surface-3); border: 1px solid var(--border);
+            width: 30px; height: 30px; border-radius: 8px;
+            color: var(--text-3); cursor: pointer; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+        }
+        .modal-close:hover { background: var(--accent-bg); color: var(--accent-2); border-color: var(--accent); }
+        .modal-actions {
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;
+        }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-weight: 600; font-size: 12.5px;
+            color: var(--text-2); margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(230,57,80,0.1);
+            outline: none;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto; margin-right: 8px;
+            accent-color: var(--accent);
+        }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-note { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+        .checkbox-row { display: flex; align-items: center; }
+
+        /* ── ALERT / NOTICE BANNERS ── */
+        .alert {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 14px 16px; border-radius: var(--radius-lg);
+            margin-bottom: 18px; font-size: 13.5px;
+        }
+        .alert i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .alert-warning { background: var(--amber-bg); border: 1px solid rgba(245,158,11,0.2); color: var(--amber); }
+        .alert-danger  { background: var(--accent-bg); border: 1px solid rgba(230,57,80,0.2); color: var(--accent-2); }
+        .alert-success { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+        .alert-info    { background: var(--blue-bg); border: 1px solid rgba(59,130,246,0.2); color: var(--blue); }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; top: 72px; right: 24px;
+            background: var(--surface-3);
+            border: 1px solid var(--border-2);
+            color: var(--text);
+            padding: 12px 18px 12px 14px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            display: none;
+            align-items: center; gap: 10px;
+            font-size: 13.5px; font-weight: 500;
+            max-width: 360px;
+            animation: toast-in 0.25s ease;
+        }
+        @keyframes toast-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .toast.show { display: flex; }
+        .toast.success { border-left: 3px solid var(--green); }
+        .toast.error   { border-left: 3px solid var(--accent); }
+        .toast-icon { font-size: 15px; flex-shrink: 0; }
+        .toast.success .toast-icon { color: var(--green); }
+        .toast.error .toast-icon { color: var(--accent-2); }
+
+        /* ── STUDENT SUMMARY ── */
+        .student-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+        .student-card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .student-avatar {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--accent), #ff6b7a);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700; color: white;
+            flex-shrink: 0;
+        }
+        .student-name { font-size: 1.05rem; font-weight: 700; }
+        .student-id { font-family: var(--mono); font-size: 12.5px; color: var(--text-3); }
+        .fee-summary-table { width: 100%; border-collapse: collapse; }
+        .fee-summary-table th {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px;
+            color: var(--text-3); font-weight: 600; padding: 8px 12px; text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .fee-summary-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+        .fee-summary-table tr:last-child td { border-bottom: none; }
+        .fee-summary-total {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 14px;
+        }
+
+        /* ── DEFAULT FEE PREVIEW ── */
+        .default-fee-preview {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .fee-preview-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13.5px;
+        }
+        .fee-preview-row:last-child { border-bottom: none; }
+        .fee-preview-row .name { color: var(--text-2); }
+        .fee-preview-row .amount { font-family: var(--mono); font-weight: 600; color: var(--green); }
+        .fee-preview-row .level-badge { font-size: 11px; color: var(--violet); background: var(--violet-bg); padding: 2px 8px; border-radius: 10px; }
+
+        /* ── LOADING SPINNER ── */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-row td { text-align: center; padding: 40px; color: var(--text-3); }
+
+        /* ── HORIZONTAL RULE ── */
+        .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-grid-2 { grid-template-columns: 1fr; }
+            .main { padding: 20px 14px 40px; }
+        }
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .topnav { padding: 0 16px; }
+            .tab-content { padding: 18px; }
+            .section-header { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ── CONFIRM MODAL ── */
+        .confirm-body { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+        .confirm-icon { font-size: 2rem; margin-bottom: 12px; }
+
+        /* ── SEARCH INPUT ── */
+        .search-input-wrap {
+            position: relative; display: flex; align-items: center; flex: 1; max-width: 360px;
+        }
+        .search-input-wrap i { position: absolute; left: 12px; color: var(--text-3); font-size: 13px; }
+        .search-input-wrap input {
+            width: 100%; padding: 9px 12px 9px 36px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13.5px;
+        }
+        .search-input-wrap input:focus { border-color: var(--accent); outline: none; }
+
+        select option { background: #ffffff; color: var(--text); }
+
+        /* ══ COURSE MANAGEMENT STYLES ══ */
+
+        /* Course card grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+            margin-top: 4px;
+        }
+        .course-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+            position: relative;
+        }
+        .course-card:hover {
+            border-color: var(--border-2);
+            box-shadow: 0 2px 12px rgba(220,38,38,0.08);
+            transform: translateY(-1px);
+        }
+        .course-card-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .course-card-body { flex: 1; min-width: 0; }
+        .course-card-name {
+            font-weight: 700; font-size: 13.5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        .course-card-meta {
+            display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
+        }
+        .course-card-actions {
+            display: flex; gap: 5px; flex-shrink: 0;
+        }
+
+        /* School pill selector */
+        .school-pill-group {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+        }
+        .school-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            font-size: 12.5px; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .school-pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg2); }
+        .school-pill.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 2px 8px rgba(220,38,38,0.3); }
+
+        /* Level pill selector */
+        .level-pill-group {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+        }
+        .level-pill {
+            padding: 6px 18px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            font-size: 13px; font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .level-pill:hover { border-color: var(--violet); color: var(--violet); background: var(--violet-bg); }
+        .level-pill.active { background: var(--violet); color: white; border-color: var(--violet); box-shadow: 0 2px 8px rgba(124,58,237,0.28); }
+
+        /* Course type color coding */
+        .course-card[data-type="core"]     { border-left: 3px solid var(--accent-2); }
+        .course-card[data-type="elective"] { border-left: 3px solid var(--blue); }
+        .course-card[data-type="workshop"] { border-left: 3px solid var(--amber); }
+        .course-card[data-type="lab"]      { border-left: 3px solid var(--green); }
+
+        .icon-core     { background: var(--accent-bg); color: var(--accent-2); }
+        .icon-elective { background: var(--blue-bg);   color: var(--blue); }
+        .icon-workshop { background: var(--amber-bg);  color: var(--amber); }
+        .icon-lab      { background: var(--green-bg);  color: var(--green); }
+        .icon-default  { background: var(--surface-3); color: var(--text-3); }
+
+        /* Overview school cards */
+        .school-overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .school-overview-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.18s;
+            position: relative;
+            overflow: hidden;
+        }
+        .school-overview-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        }
+        .school-overview-card:hover {
+            border-color: var(--border-2);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .school-overview-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        }
+        .school-ov-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-bottom: 12px;
+        }
+        .school-ov-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+        .school-ov-count { font-size: 12px; color: var(--text-3); }
+
+        /* Course modal — wide */
+        .modal-box.course-modal { max-width: 1100px; width: 100%; max-height: 95vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .cmodal-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            flex-shrink: 0;
+            background: var(--surface);
+        }
+        .cmodal-body {
+            display: flex; flex: 1; overflow: hidden;
+        }
+        .cmodal-sidebar {
+            width: 260px; flex-shrink: 0;
+            border-right: 1px solid var(--border);
+            background: var(--surface-2);
+            overflow-y: auto;
+            padding: 16px 0;
+        }
+        .cmodal-sidebar-section { padding: 0 16px; margin-bottom: 20px; }
+        .cmodal-sidebar-label {
+            font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-3); margin-bottom: 8px;
+            padding: 0 2px;
+        }
+        .cmodal-nav-item {
+            padding: 9px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px; font-weight: 500;
+            color: var(--text-2);
+            transition: all 0.15s;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 2px;
+        }
+        .cmodal-nav-item:hover { background: var(--surface-3); color: var(--text); }
+        .cmodal-nav-item.active { background: var(--accent-bg); color: var(--accent-2); font-weight: 600; }
+        .cmodal-nav-item .count {
+            margin-left: auto;
+            font-size: 11px; font-family: var(--mono);
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            padding: 1px 6px; border-radius: 8px;
+        }
+        .cmodal-nav-item.active .count { background: var(--accent-bg); border-color: transparent; color: var(--accent); }
+
+        .cmodal-main {
+            flex: 1; overflow-y: auto; padding: 24px 28px;
+        }
+        .cmodal-toolbar {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .cmodal-footer {
+            padding: 14px 28px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+            gap: 12px; flex-wrap: wrap;
+        }
+
+        /* Semester year selector inside modal */
+        .semester-year-bar {
+            display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+        }
+        .sem-chip {
+            padding: 5px 14px;
+            border-radius: 20px; border: 1.5px solid var(--border);
+            background: var(--surface-3);
+            font-size: 12.5px; font-weight: 600; color: var(--text-2);
+            cursor: pointer; transition: all 0.15s;
+        }
+        .sem-chip:hover { border-color: var(--accent-2); color: var(--accent-2); }
+        .sem-chip.active { background: var(--accent-2); color: white; border-color: var(--accent-2); }
+
+        /* Drag-reorder ghost */
+        .course-card.dragging { opacity: 0.4; border-style: dashed; }
+
+        /* Bulk import area */
+        .bulk-import-area {
+            border: 2px dashed var(--border-2);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            background: var(--surface-2);
+            margin-bottom: 16px;
+        }
+        .bulk-import-area textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-family: var(--mono);
+            font-size: 12.5px;
+            color: var(--text);
+            resize: vertical;
+        }
+        .bulk-import-area textarea:focus { outline: none; border-color: var(--accent); }
+
+        /* Progress / stats strip */
+        .course-stats-strip {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; margin-bottom: 20px;
+        }
+        .css-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .css-item .cv { font-size: 1.3rem; font-weight: 700; font-family: var(--mono); }
+        .css-item .cl { font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+
+        @media (max-width: 800px) {
+            .cmodal-body { flex-direction: column; }
+            .cmodal-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 12px 16px; }
+            .course-stats-strip { grid-template-columns: repeat(2,1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="topnav">
+    <div class="topnav-brand">
+        <div class="brand-mark">GH</div>
+        <div>
+            <div class="brand-name">GH Schools</div>
+            <div class="brand-sub">Admin Panel</div>
+        </div>
+    </div>
+    <div class="topnav-right">
+        <span class="nav-chip"><i class="fas fa-lock" style="font-size:10px;"></i> Admin Access</span>
+    </div>
+</nav>
+
+<div class="main">
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Fee <span>Management</span></h1>
+            <p class="page-sub">Configure fee types, schedules, and view student balances.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="location.reload()"><i class="fas fa-rotate-right"></i> Refresh</button>
+    </div>
+
+    <!-- ── STAT CARDS ── -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Fee Types</div>
+            <div class="stat-value blue" id="statFeeTypes">—</div>
+            <div class="stat-sub">Defined categories</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Fee Schedules</div>
+            <div class="stat-value amber" id="statSchedules">—</div>
+            <div class="stat-sub">Active entries</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Current Intake</div>
+            <div class="stat-value" id="statAcadYear" style="font-size:1.1rem;">—</div>
+            <div class="stat-sub">Latest intake period</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Level 100 Total</div>
+            <div class="stat-value green" id="statLevel100">—</div>
+            <div class="stat-sub">Annual fees payable</div>
+        </div>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="tabs-wrapper">
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="feeTypes">
+                <i class="fas fa-tags"></i> Fee Categories
+                <span class="tab-count" id="feeTypeCount">0</span>
+            </button>
+            <button class="tab-btn" data-tab="feeSchedules">
+                <i class="fas fa-table"></i> Fee Schedules
+                <span class="tab-count" id="scheduleCount">0</span>
+            </button>
+            <button class="tab-btn" data-tab="studentSummary">
+                <i class="fas fa-user-circle"></i> Student Balance
+            </button>
+            <button class="tab-btn" data-tab="courseManagement">
+                <i class="fas fa-book-open-reader"></i> Course Management
+                <span class="tab-count" id="courseCount">0</span>
+            </button>
+        </div>
+
+        <!-- ══ FEE TYPES TAB ══ -->
+        <div id="feeTypesTab" class="tab-content active">
+            <div id="feeTypesAlerts"></div>
+
+            <div class="section-header">
+                <div class="section-title">Fee Categories</div>
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="addFeeTypeBtn">
+                        <i class="fas fa-plus"></i> New Category
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="feeTypesTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Mandatory</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="loading-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ══ FEE SCHEDULES TAB ══ -->
+        <div id="feeSchedulesTab" class="tab-content">
+            <div class="section-header">
+                <div class="section-title">Fee Schedules</div>
+                <div class="section-actions">
+                    <div class="scope-total-badge">
+                        <span class="label">Scope total:</span>
+                        <span class="value" id="currentScopeTotal">GHS 0.00</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="addScheduleBtn"><i class="fas fa-plus"></i> New</button>
+                    <button class="btn btn-warning btn-sm" id="generateDefaultsBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate Defaults</button>
+                    <button class="btn btn-danger btn-sm" id="deleteAllSchedulesBtn"><i class="fas fa-trash-alt"></i> Delete All</button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Intake Period</label>
+                    <select id="filterAcademicYear">
+                        <option value="">All Periods</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Level</label>
+                    <select id="filterLevel">
+                        <option value="">All Levels</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Program</label>
+                    <select id="filterProgram">
+                        <option value="">All Programs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Fee Type</label>
+                    <select id="filterFeeType">
+                        <option value="">All Types</option>
+                    </select>
+                </div>
+                <div class="filter-divider"></div>
+                <button class="btn btn-secondary btn-sm" id="applyFilter"><i class="fas fa-filter"></i> Apply</button>
+                <button class="btn btn-secondary btn-sm" id="resetFilter"><i class="fas fa-xmark"></i> Reset</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="feeSchedulesTable">
+                    <thead>
+                        <tr>
+                            <th>Intake Period</th>
+                            <th>Month</th>
+                            <th>Level</th>
+                            <th>Program</th>
+                            <th>Fee Type</th>
+                            <th style="text-align:right;">Amount (GHS)</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="loading-row"><td colspan="7"><span class="spinner"></span> Loading…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ══ STUDENT SUMMARY TAB ══ -->
+        <div id="studentSummaryTab" class="tab-content">
+            <div class="section-header">
+                <div class="section-title">Student Fee Balance</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:24px; max-width:500px;">
+                <div class="search-input-wrap" style="max-width:none; flex:1;">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="studentIdInput" placeholder="Enter Student ID (e.g. GHMS00226)">
+                </div>
+                <button class="btn btn-primary" id="loadStudentBtn"><i class="fas fa-search"></i> Load</button>
+            </div>
+            <div id="studentSummaryResult"></div>
+        </div>
+
+        <!-- ══ COURSE MANAGEMENT TAB ══ -->
+        <div id="courseManagementTab" class="tab-content">
+
+            <!-- How-it-works banner -->
+            <div style="background:linear-gradient(135deg,rgba(37,99,235,0.07),rgba(124,58,237,0.05));border:1.5px solid rgba(37,99,235,0.18);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-start;">
+                <div style="width:38px;height:38px;background:var(--blue-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:17px;flex-shrink:0;"><i class="fas fa-circle-info"></i></div>
+                <div style="flex:1;">
+                    <div style="font-weight:700;font-size:13.5px;color:var(--blue);margin-bottom:6px;">How Course Management Works</div>
+                    <div style="font-size:13px;color:var(--text-2);line-height:1.7;">
+                        Add the courses students can choose from when they register each semester. Pick the <strong>school</strong>, <strong>level</strong> (Year), and <strong>semester</strong>, then list all courses for that group.
+                        <strong style="color:var(--accent-2);">Core</strong> courses are compulsory — every student must take them.
+                        <strong style="color:var(--blue);">Elective</strong> courses are optional — students pick from the list.
+                        Set status to <strong>Active</strong> for students to see a course, or <strong>Draft</strong> to hide it while you're still setting up.
+                    </div>
+                    <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;">
+                        <span style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent-2);display:inline-block;"></span>Core — Every student takes this</span>
+                        <span style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Elective — Student chooses</span>
+                        <span style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Workshop — Practical studio</span>
+                        <span style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--green);display:inline-block;"></span>Lab — Hands-on practical</span>
+                    </div>
+                </div>
+                <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;padding:0;">✕</button>
+            </div>
+
+            <!-- Section header -->
+            <div class="section-header">
+                <div>
+                    <div class="section-title"><i class="fas fa-book-open-reader" style="color:var(--accent-2);margin-right:8px;"></i>Course Catalogue</div>
+                    <div style="font-size:12.5px;color:var(--text-3);margin-top:2px;">Courses students can register for — organised by school, level &amp; semester</div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="loadCourses()"><i class="fas fa-rotate-right"></i> Refresh</button>
+                    <button class="btn btn-warning btn-sm" onclick="openBulkImportModal()"><i class="fas fa-file-import"></i> Bulk Import</button>
+                    <button class="btn btn-primary" onclick="openCourseModal()"><i class="fas fa-plus"></i> Add Course</button>
+                </div>
+            </div>
+
+            <!-- Stats strip -->
+            <div class="course-stats-strip" id="courseStatsStrip">
+                <div class="css-item">
+                    <div class="cv blue" id="csTotalCourses">—</div>
+                    <div class="cl">Total Courses</div>
+                    <div style="font-size:10.5px;color:var(--text-3);margin-top:2px;">in the database</div>
+                </div>
+                <div class="css-item">
+                    <div class="cv green" id="csTotalActive">—</div>
+                    <div class="cl">Active Courses</div>
+                    <div style="font-size:10.5px;color:var(--text-3);margin-top:2px;">visible to students</div>
+                </div>
+                <div class="css-item">
+                    <div class="cv amber" id="csTotalSchools">—</div>
+                    <div class="cl">Schools Set Up</div>
+                    <div style="font-size:10.5px;color:var(--text-3);margin-top:2px;">with at least 1 course</div>
+                </div>
+                <div class="css-item">
+                    <div class="cv" style="color:var(--violet);" id="csCurrentSemester">—</div>
+                    <div class="cl">This Semester</div>
+                    <div style="font-size:10.5px;color:var(--text-3);margin-top:2px;">courses available now</div>
+                </div>
+            </div>
+
+            <!-- School overview cards -->
+            <div style="margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-3);"><i class="fas fa-hand-pointer" style="margin-right:5px;"></i>Click a school to filter</div>
+            <div id="schoolOverviewStrip" class="school-overview-grid" style="margin-bottom:20px;"></div>
+
+            <!-- Filter bar -->
+            <div class="filter-bar" style="margin-bottom:20px;">
+                <div class="filter-group">
+                    <label>School</label>
+                    <select id="cf_school" onchange="applyCourseFilters()">
+                        <option value="">All Schools</option>
+                        <option>Media School</option>
+                        <option>Cosmetology School</option>
+                        <option>School of Fashion</option>
+                        <option>Catering School</option>
+                        <option>School of Technology</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Level (Year)</label>
+                    <select id="cf_level" onchange="applyCourseFilters()">
+                        <option value="">All Levels</option>
+                        <option value="100">Level 100 — Year 1, Sem 1</option>
+                        <option value="200">Level 200 — Year 1, Sem 2</option>
+                        <option value="300">Level 300 — Year 2, Sem 1</option>
+                        <option value="400">Level 400 — Year 2, Sem 2</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Semester</label>
+                    <select id="cf_semester" onchange="applyCourseFilters()">
+                        <option value="">All Semesters</option>
+                        <option value="January">January Semester</option>
+                        <option value="June">June Semester</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Academic Year</label>
+                    <select id="cf_year" onchange="applyCourseFilters()">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Course Type</label>
+                    <select id="cf_type" onchange="applyCourseFilters()">
+                        <option value="">All Types</option>
+                        <option value="core">● Core (Mandatory)</option>
+                        <option value="elective">● Elective (Optional)</option>
+                        <option value="workshop">● Workshop / Studio</option>
+                        <option value="lab">● Lab / Practical</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="cf_status" onchange="applyCourseFilters()">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active (students can see)</option>
+                        <option value="draft">Draft (hidden)</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Search</label>
+                    <div class="search-input-wrap" style="max-width:none;">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="cf_search" placeholder="Course name, code, lecturer…" oninput="applyCourseFilters()">
+                    </div>
+                </div>
+                <div class="filter-divider"></div>
+                <button class="btn btn-secondary btn-sm" onclick="resetCourseFilters()"><i class="fas fa-xmark"></i> Clear Filters</button>
+            </div>
+
+            <!-- Course list header -->
+            <div class="section-header" style="margin-bottom:14px;">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div class="section-title" id="courseListTitle">All Courses</div>
+                    <span class="badge badge-muted" id="courseListCount">0 courses</span>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-secondary btn-xs" onclick="setCourseView('grid')" id="viewGrid" title="Card view"><i class="fas fa-grid-2"></i></button>
+                    <button class="btn btn-secondary btn-xs" onclick="setCourseView('table')" id="viewTable" title="Table view"><i class="fas fa-list"></i></button>
+                    <button class="btn btn-danger btn-xs" id="deleteSelectedBtn" style="display:none;" onclick="deleteSelectedCourses()"><i class="fas fa-trash"></i> Delete Selected (<span id="selectedCount">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Grid view -->
+            <div id="courseGridView" class="course-grid">
+                <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-3);">
+                    <span class="spinner"></span>
+                    <p style="margin-top:12px;font-size:13px;">Loading courses…</p>
+                </div>
+            </div>
+
+            <!-- Table view -->
+            <div id="courseTableView" class="table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:32px;"><input type="checkbox" id="selectAllCourses" onchange="toggleSelectAll(this)" title="Select all visible"></th>
+                            <th>Code</th>
+                            <th>Course Name</th>
+                            <th>School</th>
+                            <th>Level</th>
+                            <th>Semester / Year</th>
+                            <th>Type</th>
+                            <th>Credits</th>
+                            <th>Lecturer</th>
+                            <th>Status</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="courseEmptyState" class="empty-state" style="display:none;">
+                <i class="fas fa-book-open"></i>
+                <p id="courseEmptyMsg">No courses found. Add your first course to get started.</p>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="openCourseModal()"><i class="fas fa-plus"></i> Add Course</button>
+                    <button class="btn btn-warning btn-sm" onclick="openBulkImportModal()"><i class="fas fa-file-import"></i> Bulk Import</button>
+                </div>
+            </div>
+
+        </div>
+    </div><!-- /tabs-wrapper -->
+</div><!-- /main -->
+
+<!-- ══════════════════════════════════════════
+     COURSE MANAGEMENT MODAL (full-screen wide)
+══════════════════════════════════════════ -->
+<div class="modal" id="courseModal">
+    <div class="modal-box course-modal">
+
+        <!-- Modal Header -->
+        <div class="cmodal-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:40px;height:40px;background:var(--accent-bg);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--accent-2);">
+                    <i class="fas fa-book-open-reader"></i>
+                </div>
+                <div>
+                    <div style="font-weight:800;font-size:16px;" id="cmodalTitle">Add Course</div>
+                    <div style="font-size:12px;color:var(--text-3);">Configure course details, assignments, and availability</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('courseModal')" style="width:34px;height:34px;">✕</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="cmodal-body" style="overflow-y:auto;max-height:75vh;flex-direction:column;padding:0;">
+            <form id="courseForm" style="padding:28px;display:flex;flex-direction:column;gap:0;">
+
+                <input type="hidden" id="courseId">
+
+                <!-- Row 1: Code + Name -->
+                <div class="form-grid-2" style="margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Course Code <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="courseCode" placeholder="e.g. MED101, COS203…" required maxlength="20">
+                        <div class="form-note">Short unique identifier for this course</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Course Name <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="courseName" placeholder="e.g. Introduction to Photography" required>
+                    </div>
+                </div>
+
+                <!-- Row 2: School + Program -->
+                <div class="form-grid-2" style="margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>School <span style="color:var(--accent)">*</span></label>
+                        <select id="courseSchool" required onchange="updateProgramDropdown()">
+                            <option value="">Select school…</option>
+                            <option value="Media School">Media School</option>
+                            <option value="Cosmetology School">Cosmetology School</option>
+                            <option value="School of Fashion">School of Fashion</option>
+                            <option value="Catering School">Catering School</option>
+                            <option value="School of Technology">School of Technology</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Program / Pathway</label>
+                        <select id="courseProgram">
+                            <option value="">All Programs (applies to whole school)</option>
+                        </select>
+                        <div class="form-note">Leave blank to apply to all programs in that school</div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Level + Semester + Year -->
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Level <span style="color:var(--accent)">*</span></label>
+                        <select id="courseLevel" required>
+                            <option value="">Select level…</option>
+                            <option value="100">Level 100</option>
+                            <option value="200">Level 200</option>
+                            <option value="300">Level 300</option>
+                            <option value="400">Level 400</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Semester <span style="color:var(--accent)">*</span></label>
+                        <select id="courseSemester" required>
+                            <option value="">Select semester…</option>
+                            <option value="January">January Semester</option>
+                            <option value="June">June Semester</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Academic Year <span style="color:var(--accent)">*</span></label>
+                        <select id="courseYear" required></select>
+                    </div>
+                </div>
+
+                <!-- Row 4: Type + Credits + Status -->
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Course Type <span style="color:var(--accent)">*</span></label>
+                        <select id="courseType" required onchange="updateTypePreview()">
+                            <option value="">Select type…</option>
+                            <option value="core">Core (Mandatory)</option>
+                            <option value="elective">Elective (Optional)</option>
+                            <option value="workshop">Workshop / Studio</option>
+                            <option value="lab">Lab / Practical</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Credit Hours</label>
+                        <input type="number" id="courseCredits" min="0" max="12" placeholder="e.g. 3" value="3">
+                        <div class="form-note">Credit hours / units for this course</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Status</label>
+                        <select id="courseStatus">
+                            <option value="active">Active (visible to students)</option>
+                            <option value="draft">Draft (hidden from students)</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 5: Lecturer + Max students -->
+                <div class="form-grid-2" style="margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Lecturer / Instructor</label>
+                        <input type="text" id="courseLecturer" placeholder="e.g. Dr. Kwame Mensah">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Max Enrolment</label>
+                        <input type="number" id="courseMaxStudents" min="0" placeholder="Leave blank for unlimited" value="">
+                        <div class="form-note">Maximum number of students allowed to register</div>
+                    </div>
+                </div>
+
+                <!-- Row 6: Description -->
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Course Description</label>
+                    <textarea id="courseDescription" rows="3" placeholder="Brief description of what this course covers…" style="width:100%;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical;"></textarea>
+                </div>
+
+                <!-- Row 7: Prerequisites + Schedule -->
+                <div class="form-grid-2" style="margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Prerequisites</label>
+                        <input type="text" id="coursePrerequisites" placeholder="e.g. MED101, COS101 (comma-separated)">
+                        <div class="form-note">Course codes required before taking this course</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Schedule / Timetable</label>
+                        <input type="text" id="courseSchedule" placeholder="e.g. Mon/Wed 9:00–11:00am, Room A3">
+                    </div>
+                </div>
+
+                <!-- Live preview banner -->
+                <div id="coursePreviewBanner" style="display:none;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:4px;">
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-3);margin-bottom:8px;">Preview</div>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div id="previewIcon" class="course-card-icon icon-default" style="width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;"></div>
+                        <div>
+                            <div style="font-weight:700;font-size:14px;" id="previewName">—</div>
+                            <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;" id="previewMeta"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="modal-actions" style="margin-top:20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('courseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveCourseBtn"><i class="fas fa-save"></i> Save Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══ BULK IMPORT MODAL ══ -->
+<div class="modal" id="bulkImportModal">
+    <div class="modal-box" style="max-width:820px;width:95vw;padding:0;max-height:92vh;display:flex;flex-direction:column;">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1e40af,#4f46e5);padding:22px 28px;border-radius:20px 20px 0 0;color:white;flex-shrink:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div style="width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;"><i class="fas fa-file-import"></i></div>
+                    <div>
+                        <div style="font-weight:800;font-size:17px;">Bulk Import Courses</div>
+                        <div style="font-size:12px;opacity:0.8;margin-top:2px;">Add many courses at once — paste a list, check for errors, then save to the database</div>
+                    </div>
+                </div>
+                <button onclick="closeModal('bulkImportModal')" style="background:rgba(255,255,255,0.15);border:none;color:white;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+            </div>
+        </div>
+
+        <!-- Scrollable body -->
+        <div style="overflow-y:auto;flex:1;padding:24px 28px;">
+
+            <!-- STEP 1: School templates -->
+            <div style="margin-bottom:22px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <div style="width:26px;height:26px;background:#1e40af;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">1</div>
+                    <div style="font-weight:700;font-size:13.5px;color:var(--text-2);">Start with a sample template <span style="font-weight:400;color:var(--text-3);">— or skip and type your own</span></div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+                    <button onclick="fillBulkTemplate('media')" style="background:rgba(37,99,235,0.08);border:1.5px solid rgba(37,99,235,0.25);border-radius:var(--radius);padding:14px 8px;cursor:pointer;transition:all 0.15s;text-align:center;font-family:inherit;" onmouseover="this.style.background='rgba(37,99,235,0.15)'" onmouseout="this.style.background='rgba(37,99,235,0.08)'">
+                        <i class="fas fa-camera" style="font-size:20px;color:#2563eb;display:block;margin-bottom:6px;"></i>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-2);">Media</div><div style="font-size:10.5px;color:var(--text-3);">School</div>
+                    </button>
+                    <button onclick="fillBulkTemplate('cosmetology')" style="background:rgba(124,58,237,0.08);border:1.5px solid rgba(124,58,237,0.25);border-radius:var(--radius);padding:14px 8px;cursor:pointer;transition:all 0.15s;text-align:center;font-family:inherit;" onmouseover="this.style.background='rgba(124,58,237,0.15)'" onmouseout="this.style.background='rgba(124,58,237,0.08)'">
+                        <i class="fas fa-scissors" style="font-size:20px;color:#7c3aed;display:block;margin-bottom:6px;"></i>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-2);">Cosmetology</div><div style="font-size:10.5px;color:var(--text-3);">School</div>
+                    </button>
+                    <button onclick="fillBulkTemplate('fashion')" style="background:rgba(219,39,119,0.08);border:1.5px solid rgba(219,39,119,0.25);border-radius:var(--radius);padding:14px 8px;cursor:pointer;transition:all 0.15s;text-align:center;font-family:inherit;" onmouseover="this.style.background='rgba(219,39,119,0.15)'" onmouseout="this.style.background='rgba(219,39,119,0.08)'">
+                        <i class="fas fa-shirt" style="font-size:20px;color:#db2777;display:block;margin-bottom:6px;"></i>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-2);">Fashion</div><div style="font-size:10.5px;color:var(--text-3);">School</div>
+                    </button>
+                    <button onclick="fillBulkTemplate('catering')" style="background:rgba(217,119,6,0.08);border:1.5px solid rgba(217,119,6,0.25);border-radius:var(--radius);padding:14px 8px;cursor:pointer;transition:all 0.15s;text-align:center;font-family:inherit;" onmouseover="this.style.background='rgba(217,119,6,0.15)'" onmouseout="this.style.background='rgba(217,119,6,0.08)'">
+                        <i class="fas fa-utensils" style="font-size:20px;color:#d97706;display:block;margin-bottom:6px;"></i>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-2);">Catering</div><div style="font-size:10.5px;color:var(--text-3);">School</div>
+                    </button>
+                    <button onclick="fillBulkTemplate('technology')" style="background:rgba(22,163,74,0.08);border:1.5px solid rgba(22,163,74,0.25);border-radius:var(--radius);padding:14px 8px;cursor:pointer;transition:all 0.15s;text-align:center;font-family:inherit;" onmouseover="this.style.background='rgba(22,163,74,0.15)'" onmouseout="this.style.background='rgba(22,163,74,0.08)'">
+                        <i class="fas fa-laptop-code" style="font-size:20px;color:#16a34a;display:block;margin-bottom:6px;"></i>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-2);">Technology</div><div style="font-size:10.5px;color:var(--text-3);">School</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Format guide + textarea -->
+            <div style="margin-bottom:22px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <div style="width:26px;height:26px;background:#1e40af;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">2</div>
+                    <div style="font-weight:700;font-size:13.5px;color:var(--text-2);">Paste your courses — one course per line</div>
+                </div>
+
+                <!-- Column reference -->
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:12px;">
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-3);margin-bottom:10px;"><i class="fas fa-columns" style="margin-right:5px;"></i>Each line must have 8 columns separated by the | symbol</div>
+                    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-bottom:10px;">
+                        <div style="text-align:center;padding:8px 4px;background:var(--accent-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--accent-2);text-transform:uppercase;letter-spacing:0.4px;">1</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Code</div>
+                            <div style="font-size:10px;color:var(--text-3);">MED101</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--blue-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:0.4px;">2</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Name</div>
+                            <div style="font-size:10px;color:var(--text-3);">Photography</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--violet-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:0.4px;">3</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">School</div>
+                            <div style="font-size:10px;color:var(--text-3);">Media School</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--violet-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:0.4px;">4</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Level</div>
+                            <div style="font-size:10px;color:var(--text-3);">100</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--blue-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:0.4px;">5</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Semester</div>
+                            <div style="font-size:10px;color:var(--text-3);">January</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--surface-3);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:0.4px;">6</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Year</div>
+                            <div style="font-size:10px;color:var(--text-3);">2026</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--amber-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:0.4px;">7</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Type</div>
+                            <div style="font-size:10px;color:var(--text-3);">core</div>
+                        </div>
+                        <div style="text-align:center;padding:8px 4px;background:var(--green-bg);border-radius:6px;">
+                            <div style="font-size:9.5px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.4px;">8</div>
+                            <div style="font-size:11.5px;font-weight:700;margin:3px 0;">Credits</div>
+                            <div style="font-size:10px;color:var(--text-3);">3</div>
+                        </div>
+                    </div>
+                    <div style="font-family:var(--mono);font-size:11.5px;background:var(--surface-3);border-radius:6px;padding:8px 12px;color:var(--text-2);word-break:break-all;">
+                        MED101 | Introduction to Photography | Media School | 100 | January | 2026 | core | 3
+                    </div>
+                    <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;">
+                        <span style="font-size:11.5px;color:var(--text-3);"><strong>Type:</strong> core · elective · workshop · lab</span>
+                        <span style="font-size:11.5px;color:var(--text-3);"><strong>Semester:</strong> January · June</span>
+                        <span style="font-size:11.5px;color:var(--text-3);"><strong>Level:</strong> 100 · 200 · 300 · 400</span>
+                        <span style="font-size:11.5px;color:var(--text-3);"><strong>Lines starting with #</strong> are ignored (comments)</span>
+                    </div>
+                </div>
+
+                <!-- Textarea -->
+                <div style="position:relative;">
+                    <textarea id="bulkImportText" rows="9"
+                        placeholder="Paste your courses here — one per line. Example:&#10;MED101 | Introduction to Photography | Media School | 100 | January | 2026 | core | 3&#10;MED102 | Digital Editing Fundamentals | Media School | 100 | January | 2026 | core | 3&#10;MED103 | Media Ethics & Law | Media School | 100 | January | 2026 | elective | 2&#10;&#10;Or click a school template above to load sample courses."
+                        style="width:100%;padding:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);font-family:var(--mono);font-size:12.5px;color:var(--text);resize:vertical;line-height:1.75;transition:border-color 0.15s;"
+                        oninput="onBulkTextInput()"
+                        onfocus="this.style.borderColor='var(--blue)'"
+                        onblur="this.style.borderColor='var(--border)'"></textarea>
+                    <div id="bulkLineCount" style="position:absolute;bottom:10px;right:12px;font-size:11px;color:var(--text-3);background:var(--surface);padding:2px 8px;border-radius:20px;border:1px solid var(--border);">0 lines</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button onclick="clearBulkText()" class="btn btn-xs btn-secondary"><i class="fas fa-eraser"></i> Clear</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Check button -->
+            <div style="margin-bottom:18px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <div style="width:26px;height:26px;background:#1e40af;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">3</div>
+                    <div style="font-weight:700;font-size:13.5px;color:var(--text-2);">Check for errors, then import</div>
+                </div>
+                <button type="button" onclick="parseBulkImport()" style="width:100%;padding:13px;background:var(--surface-2);border:1.5px dashed var(--border-2);border-radius:var(--radius-lg);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-2);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;" onmouseover="this.style.background='var(--surface-3)';this.style.borderColor='var(--blue)'" onmouseout="this.style.background='var(--surface-2)';this.style.borderColor='var(--border-2)'">
+                    <i class="fas fa-magnifying-glass" style="color:var(--blue);"></i> Check &amp; Preview Courses
+                </button>
+            </div>
+
+            <!-- Validation results -->
+            <div id="bulkParsePreview" style="display:none;margin-bottom:18px;">
+
+                <!-- Summary -->
+                <div id="bulkParseSuccess" class="alert" style="margin-bottom:12px;">
+                    <i class="fas fa-circle-check"></i>
+                    <div id="bulkParseMsg"></div>
+                </div>
+
+                <!-- Error rows -->
+                <div id="bulkErrorSection" style="display:none;background:rgba(220,38,38,0.05);border:1.5px solid rgba(220,38,38,0.2);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px;">
+                    <div style="font-weight:700;font-size:13px;color:var(--accent-2);margin-bottom:10px;"><i class="fas fa-triangle-exclamation" style="margin-right:6px;"></i>These lines have problems and will be skipped:</div>
+                    <div id="bulkErrorList" style="font-size:12.5px;line-height:2;"></div>
+                    <div style="margin-top:10px;font-size:12px;color:var(--text-3);">Fix the errors in the text area above, then click <strong>Check &amp; Preview</strong> again.</div>
+                </div>
+
+                <!-- Valid preview -->
+                <div id="bulkValidSection" style="display:none;">
+                    <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:10px;"><i class="fas fa-circle-check" style="margin-right:6px;"></i>Ready to save — review before importing:</div>
+                    <div style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-lg);">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead>
+                                <tr style="background:var(--surface-2);position:sticky;top:0;z-index:1;">
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">#</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Code</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Course Name</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">School</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Level</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Semester / Year</th>
+                                    <th style="padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Type</th>
+                                    <th style="padding:9px 12px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);">Cr.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkParseBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import progress bar (shown while saving) -->
+            <div id="bulkProgressSection" style="display:none;margin-bottom:18px;">
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <span style="font-weight:600;font-size:13.5px;"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;color:var(--blue);"></i>Saving courses to database…</span>
+                        <span id="bulkProgressText" style="font-size:13px;font-family:var(--mono);color:var(--blue);font-weight:700;">0 / 0</span>
+                    </div>
+                    <div style="background:var(--border);border-radius:20px;height:10px;overflow:hidden;">
+                        <div id="bulkProgressBar" style="height:100%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:20px;width:0%;transition:width 0.4s ease;"></div>
+                    </div>
+                    <div id="bulkProgressDetail" style="font-size:12px;color:var(--text-3);margin-top:6px;min-height:18px;"></div>
+                </div>
+            </div>
+
+            <!-- Import result summary -->
+            <div id="bulkResultSection" style="display:none;margin-bottom:18px;"></div>
+
+        </div>
+
+        <!-- Footer actions (sticky) -->
+        <div style="padding:16px 28px;border-top:1px solid var(--border);background:var(--surface);border-radius:0 0 20px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;">
+            <div style="font-size:12.5px;color:var(--text-3);display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-shield-halved" style="color:var(--green);"></i>
+                Duplicate courses (same code + school + level + semester + year) are automatically skipped.
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-secondary" onclick="closeModal('bulkImportModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="executeBulkImport()" id="bulkImportBtn" disabled style="min-width:180px;">
+                    <i class="fas fa-cloud-arrow-up"></i> Save to Database
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ COURSE DETAIL / VIEW MODAL ══ -->
+<div class="modal" id="courseDetailModal">
+    <div class="modal-box wide">
+        <div class="modal-header">
+            <span class="modal-title" id="cdModalTitle">Course Details</span>
+            <button class="modal-close" onclick="closeModal('courseDetailModal')">✕</button>
+        </div>
+        <div id="courseDetailBody" style="font-size:14px;color:var(--text-2);line-height:1.7;"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('courseDetailModal')">Close</button>
+            <button class="btn btn-primary" id="cdEditBtn">
+                <i class="fas fa-pen"></i> Edit Course
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODALS ══ (original modals follow) -->
+
+<!-- Fee Type Modal -->
+<div class="modal" id="feeTypeModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title" id="feeTypeModalTitle">New Fee Category</span>
+            <button class="modal-close" onclick="closeModal('feeTypeModal')">✕</button>
+        </div>
+        <form id="feeTypeForm">
+            <input type="hidden" id="feeTypeId">
+            <div class="form-group">
+                <label>Name <span style="color:var(--accent)">*</span></label>
+                <input type="text" id="feeTypeName" placeholder="e.g. Tuition, SRC Dues…" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="feeTypeDescription" placeholder="Optional description">
+            </div>
+            <div class="form-group">
+                <div class="checkbox-row">
+                    <input type="checkbox" id="feeTypeMandatory" checked>
+                    <label for="feeTypeMandatory" style="text-transform:none; font-size:13.5px; margin-bottom:0; color:var(--text);">Mandatory fee</label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('feeTypeModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Fee Schedule Modal -->
+<div class="modal" id="scheduleModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title" id="scheduleModalTitle">New Fee Schedule</span>
+            <button class="modal-close" onclick="closeModal('scheduleModal')">✕</button>
+        </div>
+        <form id="scheduleForm">
+            <input type="hidden" id="scheduleId">
+            <div class="form-group">
+                <label>Fee Type <span style="color:var(--accent)">*</span></label>
+                <select id="scheduleFeeTypeId" required>
+                    <option value="">Select fee type…</option>
+                </select>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Intake Period <span style="color:var(--accent)">*</span></label>
+                    <select id="scheduleIntakePeriod" required>
+                        <option value="">Select intake period…</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="opacity:0;">—</label>
+                    <div style="display:flex;align-items:center;gap:8px;padding:10px 0;">
+                        <i class="fas fa-circle-info" style="color:var(--text-3);font-size:13px;"></i>
+                        <span style="font-size:12px;color:var(--text-3);">Select the month and year fees apply</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="scheduleAcademicYear">
+            <input type="hidden" id="scheduleSemester">
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Level</label>
+                    <select id="scheduleLevel">
+                        <option value="">All Levels</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Program</label>
+                    <select id="scheduleProgram">
+                        <option value="">All Programs</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Amount (GHS) <span style="color:var(--accent)">*</span></label>
+                <input type="number" step="0.01" min="0" id="scheduleAmount" placeholder="0.00" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('scheduleModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="confirm-icon" id="confirmIcon">⚠️</div>
+        <div class="modal-title" id="confirmModalTitle" style="margin-bottom:10px;">Confirm</div>
+        <div class="confirm-body" id="confirmModalMessage"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="confirmCancelBtn">Cancel</button>
+            <button class="btn btn-danger" id="confirmOkBtn">Yes, proceed</button>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Modal -->
+<div class="modal" id="alertModal">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header">
+            <span class="modal-title" id="alertModalTitle">Notice</span>
+            <button class="modal-close" onclick="closeModal('alertModal')">✕</button>
+        </div>
+        <p id="alertModalMessage" style="font-size:14px; color:var(--text-2); line-height:1.6;"></p>
+        <div class="modal-actions"><button class="btn btn-primary" id="alertOkBtn">OK</button></div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon"></span>
+    <span id="toastMsg"></span>
+</div>
+
+<!-- ══ SCRIPTS ══ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ==================== CONFIG ====================
+const SUPABASE_URL  = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Canonical schools — match newstudents.school_selected codes + full names
+const GH_SCHOOLS = [
+    'Media School', 'Cosmetology School', 'School of Fashion',
+    'Catering School', 'School of Technology'
+];
+
+// ==================== UTILITIES ====================
+function escapeHtml(v) {
+    if (v == null) return '';
+    return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function uuidv4() {
+    return (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random()*16|0, v = c==='x'?r:(r&0x3|0x8); return v.toString(16);
+        });
+}
+
+// ── Toast ──
+let _toastTimer;
+function showToast(msg, isError = false) {
+    const el   = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const msgEl= document.getElementById('toastMsg');
+    clearTimeout(_toastTimer);
+    icon.className = 'toast-icon fas ' + (isError ? 'fa-circle-xmark' : 'fa-circle-check');
+    msgEl.textContent = msg;
+    el.className = 'toast show ' + (isError ? 'error' : 'success');
+    _toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3500);
+}
+
+// ── Modals ──
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+window.closeModal = closeModal;
+
+document.addEventListener('click', e => {
+    document.querySelectorAll('.modal.show').forEach(m => {
+        if (e.target === m) closeModal(m.id);
+    });
+});
+
+function showConfirm(msg, title = 'Confirm', icon = '⚠️') {
+    return new Promise(resolve => {
+        document.getElementById('confirmModalTitle').textContent = title;
+        document.getElementById('confirmModalMessage').textContent = msg;
+        document.getElementById('confirmIcon').textContent = icon;
+        const ok  = document.getElementById('confirmOkBtn');
+        const no  = document.getElementById('confirmCancelBtn');
+        const done = (v) => { closeModal('confirmModal'); resolve(v); };
+        ok.onclick  = () => done(true);
+        no.onclick  = () => done(false);
+        openModal('confirmModal');
+    });
+}
+function showAlertModal(msg, title = 'Notice') {
+    return new Promise(resolve => {
+        document.getElementById('alertModalTitle').textContent = title;
+        document.getElementById('alertModalMessage').textContent = msg;
+        document.getElementById('alertOkBtn').onclick = () => { closeModal('alertModal'); resolve(); };
+        openModal('alertModal');
+    });
+}
+
+// ==================== STATS ====================
+async function refreshStats() {
+    try {
+        const [{ count: tc }, { count: sc }, yr] = await Promise.all([
+            sb.from('fee_types').select('*', { count: 'exact', head: true }),
+            sb.from('fee_schedules').select('*', { count: 'exact', head: true }),
+            sb.from('fee_schedules').select('academic_year, semester').order('academic_year', { ascending: false }).limit(1)
+        ]);
+        const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? '—'; };
+        setEl('statFeeTypes', tc ?? '—');
+        setEl('statSchedules', sc ?? '—');
+        setEl('feeTypeCount', tc ?? '0');
+        setEl('scheduleCount', sc ?? '0');
+        if (yr.data && yr.data.length) {
+            const latestYear = yr.data[0].academic_year;
+            const latestSem  = yr.data[0].semester;
+            setEl('statAcadYear', latestSem ? `${latestSem} ${latestYear}` : latestYear);
+            // Compute Level 100 (January intake) total
+            try {
+                const { data: feeRows } = await sb
+                    .from('fee_schedules')
+                    .select('amount, fee_types!fee_schedules_fee_type_id_fkey(name)')
+                    .eq('academic_year', latestYear)
+                    .eq('semester', 'January')
+                    .eq('level', '100');
+                if (feeRows) {
+                    const seen = new Set();
+                    let tot = 0;
+                    feeRows.forEach(r => {
+                        const name = r.fee_types?.name || '';
+                        if (!seen.has(name)) { seen.add(name); tot += Number(r.amount || 0); }
+                    });
+                    setEl('statLevel100', 'GHS ' + tot.toFixed(2));
+                }
+            } catch(e) { /* non-critical */ }
+        }
+    } catch(e) { console.warn('refreshStats error', e); }
+}
+
+// ==================== FEE TYPES ====================
+async function loadFeeTypes() {
+    const tbody = document.querySelector('#feeTypesTable tbody');
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>';
+    const { data, error } = await sb.from('fee_types').select('*').order('name');
+    if (error) { showToast('Error loading fee types: ' + error.message, true); return; }
+
+    document.getElementById('feeTypeCount').textContent = data.length;
+
+    if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-tags"></i><p>No fee types defined yet.</p></div></td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = data.map(ft => `
+        <tr>
+            <td><strong>${escapeHtml(ft.name)}</strong></td>
+            <td class="cell-muted">${escapeHtml(ft.description || '—')}</td>
+            <td><span class="badge badge-green"><i class="fas fa-circle" style="font-size:7px;"></i> Active</span></td>
+            <td>${ft.is_mandatory
+                ? '<span class="badge badge-red"><i class="fas fa-asterisk" style="font-size:8px;"></i> Yes</span>'
+                : '<span class="badge badge-muted">No</span>'}</td>
+            <td style="text-align:right;">
+                <button class="btn btn-xs btn-secondary" onclick="editFeeType('${ft.id}')"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-xs btn-danger" onclick="deleteFeeType('${ft.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+
+    await checkRequiredFeeTypes(data);
+    refreshStats();
+}
+
+// Check required fee types and show warning
+async function checkRequiredFeeTypes(data) {
+    const container = document.getElementById('feeTypesAlerts');
+    container.innerHTML = '';
+    // FIXED: 'Admission Fee' (not 'Admission') to match what dashboard picks
+    const required = ['Admission Fee', 'Tuition', 'SRC Dues', 'Departmental Dues', 'Medical Dues'];
+    const existing = new Set(data.map(d => d.name));
+    const missing = required.filter(n => !existing.has(n));
+    if (!missing.length) return;
+
+    const div = document.createElement('div');
+    div.className = 'alert alert-warning';
+    div.innerHTML = `
+        <i class="fas fa-triangle-exclamation"></i>
+        <div style="flex:1;">
+            <strong>Missing required fee types:</strong> ${missing.map(n => `<code style="background:rgba(0,0,0,0.2);padding:1px 5px;border-radius:4px;">${n}</code>`).join(', ')}.
+            The student dashboard expects these exact names.
+        </div>
+        <button class="btn btn-warning btn-sm" id="createMissingBtn">Create Missing</button>
+    `;
+    container.appendChild(div);
+
+    document.getElementById('createMissingBtn').onclick = async () => {
+        const inserts = missing.map(name => ({
+            name, description: 'Auto-created', is_mandatory: true
+        }));
+        const { error } = await sb.from('fee_types').insert(inserts);
+        if (error) { showToast('Error: ' + error.message, true); return; }
+        showToast('Missing fee types created');
+        loadFeeTypes();
+        loadFilterOptions();
+    };
+}
+
+window.editFeeType = async (id) => {
+    const { data, error } = await sb.from('fee_types').select('*').eq('id', id).single();
+    if (error || !data) { showToast('Error fetching fee type', true); return; }
+    document.getElementById('feeTypeId').value = data.id;
+    document.getElementById('feeTypeName').value = data.name;
+    document.getElementById('feeTypeDescription').value = data.description || '';
+    document.getElementById('feeTypeMandatory').checked = !!data.is_mandatory;
+    document.getElementById('feeTypeModalTitle').textContent = 'Edit Fee Category';
+    openModal('feeTypeModal');
+};
+
+window.deleteFeeType = async (id) => {
+    const ok = await showConfirm('Delete this fee type? This may break existing fee schedules.', 'Delete Fee Type', '🗑️');
+    if (!ok) return;
+    const { error } = await sb.from('fee_types').delete().eq('id', id);
+    if (error) { showToast('Error: ' + error.message, true); return; }
+    showToast('Fee type deleted');
+    loadFeeTypes();
+    loadFeeSchedules();
+};
+
+document.getElementById('addFeeTypeBtn').onclick = () => {
+    document.getElementById('feeTypeForm').reset();
+    document.getElementById('feeTypeId').value = '';
+    document.getElementById('feeTypeModalTitle').textContent = 'New Fee Category';
+    openModal('feeTypeModal');
+};
+
+document.getElementById('feeTypeForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id = document.getElementById('feeTypeId').value;
+    const payload = {
+        name: document.getElementById('feeTypeName').value.trim(),
+        description: document.getElementById('feeTypeDescription').value.trim() || null,
+        is_mandatory: document.getElementById('feeTypeMandatory').checked,
+    };
+    if (!payload.name) { showToast('Name is required', true); return; }
+    const { error } = id
+        ? await sb.from('fee_types').update(payload).eq('id', id)
+        : await sb.from('fee_types').insert(payload);
+    if (error) { showToast('Error saving: ' + error.message, true); return; }
+    showToast('Fee category saved');
+    closeModal('feeTypeModal');
+    loadFeeTypes();
+    loadFilterOptions();
+});
+
+// ==================== INTAKE PERIOD HELPERS ====================
+// Generates intake period options: January and June for current + surrounding years
+function populateIntakePeriodDropdown() {
+    const select = document.getElementById('scheduleIntakePeriod');
+    if (!select) return;
+    const cur = select.value;
+    const y1 = new Date().getFullYear();
+    const y2 = y1 + 1;
+    // Exactly 4 periods covering the full 2-year school stay
+    const options = [
+        { value: 'January-' + y1, label: 'January ' + y1 },
+        { value: 'June-'    + y1, label: 'June '    + y1 },
+        { value: 'January-' + y2, label: 'January ' + y2 },
+        { value: 'June-'    + y2, label: 'June '    + y2 },
+    ];
+    select.innerHTML = '<option value="">Select intake period\u2026</option>' +
+        options.map(function(o) {
+            return '<option value="' + o.value + '"' + (cur === o.value ? ' selected' : '') + '>' + escapeHtml(o.label) + '</option>';
+        }).join('');
+    if (cur) select.value = cur;
+}
+
+// ==================== FEE SCHEDULES ====================
+let allSchedules = [];
+let feeTypesList = [];
+
+async function loadFeeSchedules() {
+    const tbody = document.querySelector('#feeSchedulesTable tbody');
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="7"><span class="spinner"></span> Loading…</td></tr>';
+    const { data, error } = await sb
+        .from('fee_schedules')
+        .select('*, fee_types(name)')
+        .order('academic_year', { ascending: false })
+        .order('level')
+        .order('program')
+        .order('semester');
+    if (error) { showToast('Error loading schedules: ' + error.message, true); return; }
+    allSchedules = data || [];
+    document.getElementById('scheduleCount').textContent = allSchedules.length;
+    applyFilters();
+    refreshStats();
+}
+
+function applyFilters() {
+    const periodKey = document.getElementById('filterAcademicYear').value; // e.g. "January-2026"
+    const level   = document.getElementById('filterLevel').value;
+    const prog    = document.getElementById('filterProgram').value;
+    const feeType = document.getElementById('filterFeeType').value;
+
+    const filtered = allSchedules.filter(s => {
+        if (periodKey) {
+            const key = s.semester && s.academic_year ? `${s.semester}-${s.academic_year}` : s.academic_year;
+            if (key !== periodKey) return false;
+        }
+        if (level   && s.level !== level)           return false;
+        if (prog    && s.program !== prog)          return false;
+        if (feeType && s.fee_type_id !== feeType)   return false;
+        return true;
+    });
+
+    const tbody = document.querySelector('#feeSchedulesTable tbody');
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-table"></i><p>No schedules match the current filters.</p></div></td></tr>';
+        document.getElementById('currentScopeTotal').textContent = 'GHS 0.00';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(s => {
+        // Build display: academic_year = "2026", semester = "January" or "June"
+        const intakePeriod = s.semester ? `${s.semester} ${s.academic_year}` : s.academic_year;
+        const semBadge = s.semester === 'January'
+            ? `<span class="badge badge-blue"><i class="fas fa-snowflake" style="font-size:9px;"></i> January</span>`
+            : s.semester === 'June'
+            ? `<span class="badge badge-amber"><i class="fas fa-sun" style="font-size:9px;"></i> June</span>`
+            : `<span class="badge badge-muted">Annual</span>`;
+        return `
+        <tr>
+            <td class="cell-mono">${escapeHtml(intakePeriod)}</td>
+            <td>${semBadge}</td>
+            <td>${s.level ? `<span class="badge badge-violet">Lvl ${escapeHtml(s.level)}</span>` : '<span class="badge badge-muted">All</span>'}</td>
+            <td class="cell-muted">${escapeHtml(s.program || 'All')}</td>
+            <td><strong>${escapeHtml(s.fee_types?.name || s.fee_type || '—')}</strong></td>
+            <td style="text-align:right;" class="cell-amount">GHS ${Number(s.amount).toFixed(2)}</td>
+            <td style="text-align:right;">
+                <button class="btn btn-xs btn-secondary" onclick="editSchedule('${s.id}')"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-xs btn-danger" onclick="deleteSchedule('${s.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `}).join('');
+
+    // Compute scope total client-side
+    const total = filtered.reduce((sum, s) => sum + Number(s.amount || 0), 0);
+    document.getElementById('currentScopeTotal').textContent = 'GHS ' + total.toFixed(2);
+}
+
+window.editSchedule = async (id) => {
+    const { data, error } = await sb.from('fee_schedules').select('*').eq('id', id).single();
+    if (error || !data) { showToast('Error fetching schedule', true); return; }
+    await loadFeeTypesForDropdown('scheduleFeeTypeId');
+    populateIntakePeriodDropdown();
+    document.getElementById('scheduleId').value = data.id;
+    document.getElementById('scheduleFeeTypeId').value = data.fee_type_id;
+    // Set the combined intake period value: "January-2026" or "June-2026"
+    const intakeVal = data.semester && data.academic_year ? `${data.semester}-${data.academic_year}` : '';
+    document.getElementById('scheduleIntakePeriod').value = intakeVal;
+    document.getElementById('scheduleLevel').value = (!data.level || data.level === 'All') ? '' : data.level;
+    document.getElementById('scheduleProgram').value = (!data.program || data.program === 'All') ? '' : data.program;
+    document.getElementById('scheduleAmount').value = data.amount;
+    document.getElementById('scheduleModalTitle').textContent = 'Edit Fee Schedule';
+    openModal('scheduleModal');
+};
+
+window.deleteSchedule = async (id) => {
+    const ok = await showConfirm('Delete this fee schedule entry?', 'Delete Schedule', '🗑️');
+    if (!ok) return;
+    const { error } = await sb.from('fee_schedules').delete().eq('id', id);
+    if (error) { showToast('Error: ' + error.message, true); return; }
+    showToast('Schedule deleted');
+    loadFeeSchedules();
+};
+
+document.getElementById('addScheduleBtn').onclick = async () => {
+    await loadFeeTypesForDropdown('scheduleFeeTypeId');
+    populateIntakePeriodDropdown();
+    document.getElementById('scheduleForm').reset();
+    document.getElementById('scheduleId').value = '';
+    document.getElementById('scheduleModalTitle').textContent = 'New Fee Schedule';
+    openModal('scheduleModal');
+};
+
+document.getElementById('scheduleForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id  = document.getElementById('scheduleId').value;
+    const now = new Date().toISOString();
+    const lvlRaw  = document.getElementById('scheduleLevel').value;
+    const progRaw = document.getElementById('scheduleProgram').value;
+
+    // Parse intake period: "January-2026" → academic_year="2026", semester="January"
+    const intakeRaw = document.getElementById('scheduleIntakePeriod').value;
+    if (!intakeRaw) { showToast('Please select an intake period', true); return; }
+    const dashIdx = intakeRaw.lastIndexOf('-');
+    const semRaw  = intakeRaw.substring(0, dashIdx);   // "January" or "June"
+    const yearRaw = intakeRaw.substring(dashIdx + 1);  // "2026"
+
+    const payload = {
+        fee_type_id:   document.getElementById('scheduleFeeTypeId').value || null,
+        academic_year: yearRaw || null,
+        semester:      semRaw  || null,
+        level:         lvlRaw  || null,
+        program:       progRaw || null,
+        amount: (() => { const v = parseFloat(document.getElementById('scheduleAmount').value); return Number.isFinite(v) ? v : null; })(),
+    };
+
+    if (!payload.fee_type_id) { showToast('Please select a fee type', true); return; }
+    if (!payload.academic_year) { showToast('Intake period is required', true); return; }
+    if (payload.amount === null || payload.amount < 0) { showToast('Enter a valid amount', true); return; }
+
+    let error;
+    if (id) {
+        payload.updated_at = now;
+        ({ error } = await sb.from('fee_schedules').update(payload).eq('id', id));
+    } else {
+        payload.id = uuidv4();
+        payload.created_at = now;
+        payload.updated_at = now;
+        ({ error } = await sb.from('fee_schedules').insert(payload));
+    }
+
+    if (error) { showToast('Error saving: ' + error.message, true); return; }
+    showToast('Fee schedule saved');
+    closeModal('scheduleModal');
+    loadFeeSchedules();
+    loadFilterOptions();
+});
+
+document.getElementById('deleteAllSchedulesBtn')?.addEventListener('click', async () => {
+    const ok = await showConfirm(
+        'This will permanently delete ALL fee schedules. This action cannot be undone.',
+        'Delete All Fee Schedules', '⚠️'
+    );
+    if (!ok) return;
+    try {
+        showToast('Deleting…');
+        const { data: rows, error: fetchErr } = await sb.from('fee_schedules').select('id');
+        if (fetchErr) throw fetchErr;
+        const ids = (rows || []).map(r => r.id).filter(Boolean);
+        if (ids.length) {
+            for (let i = 0; i < ids.length; i += 1000) {
+                const { error } = await sb.from('fee_schedules').delete().in('id', ids.slice(i, i + 1000));
+                if (error) throw error;
+            }
+        }
+        // Clear totals table
+        try { await sb.from('fee_structure_totals').delete().neq('academic_year', '____'); } catch(e) {}
+        showToast('All fee schedules deleted');
+        allSchedules = [];
+        applyFilters();
+        loadFilterOptions();
+        refreshStats();
+    } catch(e) {
+        showToast('Error: ' + (e.message || e), true);
+    }
+});
+
+// ==================== GENERATE DEFAULTS ====================
+document.getElementById('generateDefaultsBtn')?.addEventListener('click', async () => {
+    const y1 = new Date().getFullYear();
+    const y2 = y1 + 1;
+    const periods = [
+        'January ' + y1,
+        'June '    + y1,
+        'January ' + y2,
+        'June '    + y2,
+    ];
+
+    const previewHtml =
+        '<div class="form-group" style="margin-bottom:18px;">' +
+            '<label style="display:block;font-weight:600;font-size:12.5px;color:var(--text-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Intake Period <span style="color:var(--accent)">*</span></label>' +
+            '<select id="generateIntakePeriod" style="width:100%;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:\'DM Sans\',sans-serif;font-size:13.5px;">' +
+                '<option value="">Select intake period…</option>' +
+                periods.map(function(p) { return '<option value="' + p + '">' + p + '</option>'; }).join('') +
+            '</select>' +
+        '</div>' +
+        '<div class="default-fee-preview">' +
+            '<div class="fee-preview-row"><span class="name"><i class="fas fa-graduation-cap" style="color:var(--violet);margin-right:8px;"></i>Admission Fee</span><div style="display:flex;align-items:center;gap:8px;"><span class="level-badge">Level 100 only</span><span class="amount">GHS 800.00</span></div></div>' +
+            '<div class="fee-preview-row"><span class="name"><i class="fas fa-book" style="color:var(--blue);margin-right:8px;"></i>Tuition</span><span class="amount">GHS 2,550.00</span></div>' +
+            '<div class="fee-preview-row"><span class="name"><i class="fas fa-users" style="color:var(--green);margin-right:8px;"></i>SRC Dues</span><span class="amount">GHS 50.00</span></div>' +
+            '<div class="fee-preview-row"><span class="name"><i class="fas fa-building" style="color:var(--amber);margin-right:8px;"></i>Departmental Dues</span><span class="amount">GHS 50.00</span></div>' +
+            '<div class="fee-preview-row"><span class="name"><i class="fas fa-heart-pulse" style="color:var(--accent-2);margin-right:8px;"></i>Medical Dues</span><span class="amount">GHS 80.00</span></div>' +
+        '</div>' +
+        '<p style="font-size:12.5px;color:var(--text-3);margin-top:12px;">These fees will be set for <strong>all 4 levels (100–400)</strong> under the selected intake period. Admission Fee (GHS 800) is added for Level 100 only. Existing entries will be skipped.</p>';
+
+    document.getElementById('alertModalTitle').textContent = 'Generate Default Fee Schedules';
+    document.getElementById('alertModalMessage').innerHTML = previewHtml;
+    document.getElementById('alertOkBtn').textContent = 'Cancel';
+    document.getElementById('alertOkBtn').onclick = () => closeModal('alertModal');
+
+    let proceedBtn = document.getElementById('alertProceedBtn');
+    if (!proceedBtn) {
+        proceedBtn = document.createElement('button');
+        proceedBtn.id = 'alertProceedBtn';
+        proceedBtn.className = 'btn btn-primary';
+        proceedBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate';
+        document.getElementById('alertOkBtn').parentElement.prepend(proceedBtn);
+    }
+    proceedBtn.style.display = 'inline-flex';
+    openModal('alertModal');
+
+    proceedBtn.onclick = async () => {
+        const selected = document.getElementById('generateIntakePeriod')?.value;
+        if (!selected) { showToast('Please select an intake period', true); return; }
+        closeModal('alertModal');
+        proceedBtn.style.display = 'none';
+        await runGenerateDefaults(selected);
+    };
+});
+
+async function runGenerateDefaults(intakePeriod) {
+    try {
+        showToast('Generating default fee schedules…');
+
+        // Parse "January 2026" or "June 2026" → { semester, academic_year }
+        const parts        = intakePeriod.trim().split(' ');
+        const semester     = parts[0];   // 'January' or 'June'
+        const academic_year= parts[1];   // '2026'
+
+        // Fees for ALL levels 100-400
+        const allLevelFees = {
+            'Tuition':           2550,
+            'SRC Dues':          50,
+            'Departmental Dues': 50,
+            'Medical Dues':      80,
+        };
+        // Admission Fee only for Level 100
+        const level100OnlyFees = {
+            'Admission Fee': 800,
+        };
+
+        // 1. Ensure all fee types exist
+        const allFeeNames = [...Object.keys(allLevelFees), ...Object.keys(level100OnlyFees)];
+        const { data: existingTypes = [], error: etErr } = await sb.from('fee_types').select('id, name');
+        if (etErr) throw etErr;
+        const byName = new Map((existingTypes || []).map(f => [f.name, f.id]));
+
+        const toCreate = allFeeNames.filter(n => !byName.has(n));
+        if (toCreate.length) {
+            const { data: created, error: insErr } = await sb
+                .from('fee_types')
+                .insert(toCreate.map(n => ({ name: n, description: 'Auto-created', is_mandatory: true })))
+                .select('id, name');
+            if (insErr) throw insErr;
+            (created || []).forEach(f => byName.set(f.name, f.id));
+        }
+
+        // 2. Build insert rows — same intake period for ALL 4 levels
+        const levels = ['100', '200', '300', '400'];
+        const nowIso = new Date().toISOString();
+        const inserts = [];
+
+        levels.forEach(function(level) {
+            // All-level fees for every level
+            Object.entries(allLevelFees).forEach(function([name, amount]) {
+                const feeTypeId = byName.get(name);
+                if (!feeTypeId) return;
+                inserts.push({
+                    id: uuidv4(), fee_type_id: feeTypeId, fee_type: name,
+                    academic_year, semester, level, program: null,
+                    amount, created_at: nowIso, updated_at: nowIso,
+                });
+            });
+            // Admission Fee — Level 100 only
+            if (level === '100') {
+                Object.entries(level100OnlyFees).forEach(function([name, amount]) {
+                    const feeTypeId = byName.get(name);
+                    if (!feeTypeId) return;
+                    inserts.push({
+                        id: uuidv4(), fee_type_id: feeTypeId, fee_type: name,
+                        academic_year, semester, level: '100', program: null,
+                        amount, created_at: nowIso, updated_at: nowIso,
+                    });
+                });
+            }
+        });
+
+        if (!inserts.length) { showToast('Nothing to insert', true); return; }
+
+        // 3. Check which rows already exist so we skip only true duplicates
+        const { data: existing = [] } = await sb
+            .from('fee_schedules')
+            .select('fee_type_id, academic_year, semester, level')
+            .eq('academic_year', academic_year)
+            .eq('semester', semester);
+
+        const existingKeys = new Set(
+            (existing || []).map(r => `${r.fee_type_id}|${r.academic_year}|${r.semester}|${r.level}`)
+        );
+
+        const newRows = inserts.filter(r =>
+            !existingKeys.has(`${r.fee_type_id}|${r.academic_year}|${r.semester}|${r.level}`)
+        );
+
+        const skipped = inserts.length - newRows.length;
+
+        // 4. Insert only genuinely new rows in chunks
+        let inserted = 0;
+        const CHUNK = 100;
+        for (let i = 0; i < newRows.length; i += CHUNK) {
+            const chunk = newRows.slice(i, i + CHUNK);
+            const { error } = await sb.from('fee_schedules').insert(chunk);
+            if (error) {
+                // Row-by-row fallback for any remaining conflicts
+                for (const row of chunk) {
+                    try {
+                        const { error: rowErr } = await sb.from('fee_schedules').insert(row);
+                        if (!rowErr) inserted++;
+                    } catch(e) { /* skip */ }
+                }
+            } else {
+                inserted += chunk.length;
+            }
+        }
+
+        const msg = newRows.length === 0
+            ? `All schedules for ${intakePeriod} already exist (${skipped} entries skipped).`
+            : `Generated for ${intakePeriod} — Levels 100, 200, 300 &amp; 400: ${inserted} new entries added${skipped > 0 ? ', ' + skipped + ' skipped (already exist)' : ''}.`;
+        showToast(msg);
+        await loadFeeSchedules();
+        await loadFilterOptions();
+        await refreshStats();
+
+    } catch(e) {
+        console.error('generateDefaults error', e);
+        showToast('Error: ' + (e.message || e), true);
+    }
+}
+
+// ==================== FILTER / DROPDOWN HELPERS ====================
+async function loadFilterOptions() {
+    const { data: rows } = await sb.from('fee_schedules').select('academic_year, semester').order('academic_year', { ascending: false });
+    // Build unique "semester year" combos e.g. "January 2026"
+    const seen = new Set();
+    const periods = [];
+    (rows || []).forEach(r => {
+        const key = r.semester && r.academic_year ? `${r.semester}-${r.academic_year}` : r.academic_year;
+        const label = r.semester ? `${r.semester} ${r.academic_year}` : (r.academic_year || '');
+        if (key && !seen.has(key)) { seen.add(key); periods.push({ key, label }); }
+    });
+    // Sort: latest year first, June before January within same year? Actually Jan first (chronological)
+    periods.sort((a, b) => {
+        const [mA, yA] = a.label.split(' ');
+        const [mB, yB] = b.label.split(' ');
+        if (yB !== yA) return (yB || '') > (yA || '') ? 1 : -1;
+        return mA === 'January' ? -1 : 1;
+    }).reverse();
+
+    const yearSelect = document.getElementById('filterAcademicYear');
+    yearSelect.innerHTML = '<option value="">All Periods</option>' +
+        periods.map(p => `<option value="${escapeHtml(p.key)}">${escapeHtml(p.label)}</option>`).join('');
+
+    const progSelect = document.getElementById('filterProgram');
+    progSelect.innerHTML = '<option value="">All Programs</option>' +
+        GH_SCHOOLS.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+
+    const schedProgSelect = document.getElementById('scheduleProgram');
+    if (schedProgSelect) {
+        const cur = schedProgSelect.value;
+        schedProgSelect.innerHTML = '<option value="">All Programs</option>' +
+            GH_SCHOOLS.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+        if (cur) schedProgSelect.value = cur;
+    }
+
+    await loadFeeTypesForDropdown('filterFeeType');
+    await loadFeeTypesForDropdown('scheduleFeeTypeId');
+}
+
+async function loadFeeTypesForDropdown(selectId) {
+    const { data, error } = await sb.from('fee_types').select('id, name').order('name');
+    if (error || !data) return;
+    feeTypesList = data;
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const cur = select.value;
+    const isScheduleModal = selectId === 'scheduleFeeTypeId';
+    // FIXED: different placeholder for schedule modal vs filter
+    select.innerHTML = (isScheduleModal
+        ? '<option value="">Select fee type…</option>'
+        : '<option value="">All Types</option>') +
+        data.map(ft => `<option value="${ft.id}">${escapeHtml(ft.name)}</option>`).join('');
+    if (cur) select.value = cur;
+}
+
+// ==================== STUDENT FEE SUMMARY ====================
+// FIXED: proper name field mapping for newstudents schema
+function formatStudentDataForAdmin(raw) {
+    // newstudents uses first_name / last_name (not firstname/lastname)
+    const firstName = raw.first_name || raw.firstname || raw.fname || '';
+    const lastName  = raw.last_name  || raw.lastname  || raw.surname || '';
+    const name = raw.name || raw.full_name
+        || `${firstName} ${lastName}`.trim()
+        || 'Unknown';
+    // Level: school_year is WASSCE year (not academic level); default to 100
+    let level = 'Level 100';
+    if (raw.level || raw.student_level || raw.academic_level) {
+        const lv = String(raw.level || raw.student_level || raw.academic_level);
+        const n  = parseInt(lv.replace(/\D/g,''), 10);
+        if (!isNaN(n) && n >= 100) level = `Level ${n}`;
+    }
+    return {
+        student_id: raw.student_id || raw.id,
+        name,
+        level,
+        program: raw.program_applying_for || raw.program || '',
+        school:  raw.school_selected || raw.school_name || '',
+    };
+}
+
+document.getElementById('loadStudentBtn').addEventListener('click', async () => {
+    const sid = document.getElementById('studentIdInput').value.trim();
+    if (!sid) { showToast('Please enter a student ID', true); return; }
+    await loadStudentFeeSummary(sid);
+});
+
+document.getElementById('studentIdInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loadStudentBtn').click();
+});
+
+async function loadStudentFeeSummary(studentId) {
+    const resultDiv = document.getElementById('studentSummaryResult');
+    resultDiv.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-3);"><span class="spinner" style="width:28px;height:28px;border-width:3px;"></span><p style="margin-top:12px;">Loading student…</p></div>`;
+
+    try {
+        // 1. Fetch student from newstudents
+        const { data: nsData, error: nsErr } = await sb
+            .from('newstudents').select('*').eq('student_id', studentId).maybeSingle();
+        if (nsErr) throw nsErr;
+
+        if (!nsData) {
+            resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-circle-xmark"></i><div>No student found with ID: <strong>${escapeHtml(studentId)}</strong></div></div>`;
+            return;
+        }
+
+        const student = formatStudentDataForAdmin(nsData);
+
+        // 2. Resolve intake period from student level
+        //    Level 100 & 300 → January intake; Level 200 & 400 → June intake
+        const levelNum = String(student.level).replace(/\D/g, '') || '100';
+        const intakeSemester = ['100','300'].includes(levelNum) ? 'January' : 'June';
+
+        // Get latest year for this semester
+        let academicYear = null;
+        const { data: yearData } = await sb
+            .from('fee_schedules').select('academic_year')
+            .eq('semester', intakeSemester)
+            .order('academic_year', { ascending: false }).limit(1);
+        if (yearData && yearData.length) {
+            academicYear = yearData[0].academic_year;
+        } else {
+            // Fallback: any latest year
+            const { data: anyYear } = await sb.from('fee_schedules').select('academic_year').order('academic_year', { ascending: false }).limit(1);
+            if (anyYear && anyYear.length) academicYear = anyYear[0].academic_year;
+        }
+        const intakePeriodLabel = academicYear ? `${intakeSemester} ${academicYear}` : intakeSemester;
+
+        // 3. Fetch fee schedules for this level + intake period
+
+        let feeRows = null;
+        // Try exact level + semester + year, then fallback to null level
+        const queries = [
+            sb.from('fee_schedules').select('amount, fee_types!fee_schedules_fee_type_id_fkey(name, is_mandatory)')
+                .eq('level', levelNum)
+                .eq('semester', intakeSemester)
+                .eq('academic_year', academicYear),
+            sb.from('fee_schedules').select('amount, fee_types!fee_schedules_fee_type_id_fkey(name, is_mandatory)')
+                .is('level', null)
+                .eq('semester', intakeSemester)
+                .eq('academic_year', academicYear),
+        ];
+        for (const q of queries) {
+            const { data, error } = await q;
+            if (!error && data && data.length) { feeRows = data; break; }
+        }
+        if (!feeRows) feeRows = [];
+
+        const feeMap = {};
+        feeRows.forEach(item => {
+            if (item.fee_types?.is_mandatory === false) return;
+            const name = item.fee_types?.name;
+            if (!name) return;
+            feeMap[name] = (feeMap[name] || 0) + Number(item.amount || 0);
+        });
+
+        // 4. FIXED: Fetch payments from 'payments' table (not level100payments)
+        const { data: payments, error: payErr } = await sb
+            .from('payments')
+            .select('*')
+            .eq('student_id', student.student_id)
+            .eq('status', 'approved');
+        if (payErr) throw payErr;
+
+        const paidByType = {};
+        (payments || []).forEach(p => {
+            const type = p.fee_type || 'Other';
+            paidByType[type] = (paidByType[type] || 0) + Number(p.amount || 0);
+        });
+
+        const totalPayable = Object.values(feeMap).reduce((a,b) => a+b, 0);
+        const totalPaid    = Object.values(paidByType).reduce((a,b) => a+b, 0);
+        const outstanding  = Math.max(0, totalPayable - totalPaid);
+        const initials     = student.name.charAt(0).toUpperCase();
+
+        let html = `
+            <div class="student-card">
+                <div class="student-card-header">
+                    <div class="student-avatar">${initials}</div>
+                    <div>
+                        <div class="student-name">${escapeHtml(student.name)}</div>
+                        <div class="student-id">${escapeHtml(student.student_id)}</div>
+                        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+                            <span class="badge badge-violet">${escapeHtml(student.level)}</span>
+                            ${student.program ? `<span class="badge badge-blue">${escapeHtml(student.program)}</span>` : ''}
+                            ${intakePeriodLabel ? `<span class="badge ${intakeSemester==='January'?'badge-blue':'badge-amber'}"><i class="fas fa-${intakeSemester==='January'?'snowflake':'sun'}" style="font-size:9px;"></i> ${escapeHtml(intakePeriodLabel)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                ${!Object.keys(feeMap).length
+                    ? `<div class="alert alert-warning"><i class="fas fa-triangle-exclamation"></i><div>No fee schedule found for <strong>Level ${levelNum}</strong> in <strong>${intakePeriodLabel}</strong>. Check that fee schedules have been configured for this intake period.</div></div>`
+                    : ''}
+
+                <table class="fee-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Fee Type</th>
+                            <th style="text-align:right;">Required</th>
+                            <th style="text-align:right;">Paid</th>
+                            <th style="text-align:right;">Outstanding</th>
+                            <th style="text-align:center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        Object.keys(feeMap).sort().forEach(name => {
+            const req  = feeMap[name];
+            const paid = paidByType[name] || 0;
+            const rem  = Math.max(0, req - paid);
+            html += `<tr>
+                <td><strong>${escapeHtml(name)}</strong></td>
+                <td style="text-align:right;" class="cell-amount">GHS ${req.toFixed(2)}</td>
+                <td style="text-align:right;" style="color:var(--green);">GHS ${paid.toFixed(2)}</td>
+                <td style="text-align:right;"><strong style="color:${rem>0?'var(--accent-2)':'var(--green)'}">GHS ${rem.toFixed(2)}</strong></td>
+                <td style="text-align:center;">${rem <= 0
+                    ? '<span class="badge badge-green"><i class="fas fa-check"></i> Paid</span>'
+                    : '<span class="badge badge-red"><i class="fas fa-clock"></i> Pending</span>'}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>
+
+                <div class="fee-summary-total">
+                    <div>
+                        <div style="font-size:12px;color:var(--text-3);margin-bottom:2px;">TOTAL OUTSTANDING</div>
+                        <div style="font-size:1.35rem;font-weight:700;font-family:var(--mono);color:${outstanding>0?'var(--accent-2)':'var(--green)'}">
+                            GHS ${outstanding.toFixed(2)}
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:12px;color:var(--text-3);">Total paid: <strong style="color:var(--green)">GHS ${totalPaid.toFixed(2)}</strong></div>
+                        <div style="font-size:12px;color:var(--text-3);">Total required: <strong>GHS ${totalPayable.toFixed(2)}</strong></div>
+                    </div>
+                </div>
+            </div>`;
+
+        // Payment history
+        if (payments && payments.length) {
+            html += `
+            <div class="student-card">
+                <div style="font-weight:700;margin-bottom:14px;font-size:14px;"><i class="fas fa-receipt" style="color:var(--accent-2);margin-right:8px;"></i>Payment History</div>
+                <table class="fee-summary-table">
+                    <thead><tr><th>Date</th><th>Type</th><th style="text-align:right;">Amount</th><th>Reference</th><th>Status</th></tr></thead>
+                    <tbody>
+                        ${payments.slice(0, 15).map(p => `<tr>
+                            <td class="cell-muted">${new Date(p.created_at).toLocaleDateString()}</td>
+                            <td>${escapeHtml(p.fee_type || '—')}</td>
+                            <td style="text-align:right;" class="cell-amount">GHS ${Number(p.amount || 0).toFixed(2)}</td>
+                            <td class="cell-mono" style="font-size:12px;">${escapeHtml(p.transaction_ref || p.receipt_number || '—')}</td>
+                            <td><span class="badge ${p.status==='approved'?'badge-green':p.status==='pending'?'badge-amber':'badge-red'}">${escapeHtml(p.status)}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+        } else {
+            html += `<div class="alert alert-info"><i class="fas fa-info-circle"></i><div>No payment records found for this student.</div></div>`;
+        }
+
+        resultDiv.innerHTML = html;
+
+    } catch(err) {
+        console.error(err);
+        resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-circle-xmark"></i><div>Error: ${escapeHtml(err.message)}</div></div>`;
+    }
+}
+
+// ==================== TAB SWITCHING ====================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const tabId = btn.dataset.tab + 'Tab';
+        const content = document.getElementById(tabId);
+        if (content) content.classList.add('active');
+        if (btn.dataset.tab === 'feeSchedules') loadFeeSchedules();
+    });
+});
+
+// ==================== FILTER BUTTONS ====================
+document.getElementById('applyFilter').addEventListener('click', applyFilters);
+document.getElementById('resetFilter').addEventListener('click', () => {
+    ['filterAcademicYear','filterLevel','filterProgram','filterFeeType'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    applyFilters();
+});
+
+// ==================== COURSE MANAGEMENT ====================
+
+// ── State ──
+let allCourses      = [];
+let filteredCourses = [];
+let courseView      = 'grid';   // 'grid' | 'table'
+let selectedCourseIds = new Set();
+let _bulkParsed     = [];
+
+// School meta (icon, colour)
+const SCHOOL_META = {
+    'Media School':        { icon: 'fa-camera',       color: '#2563eb', bg: 'rgba(37,99,235,0.10)'   },
+    'Cosmetology School':  { icon: 'fa-scissors',     color: '#7c3aed', bg: 'rgba(124,58,237,0.10)' },
+    'School of Fashion':   { icon: 'fa-shirt',        color: '#db2777', bg: 'rgba(219,39,119,0.10)' },
+    'Catering School':     { icon: 'fa-utensils',     color: '#d97706', bg: 'rgba(217,119,6,0.10)'  },
+    'School of Technology':{ icon: 'fa-laptop-code',  color: '#16a34a', bg: 'rgba(22,163,74,0.10)'  },
+};
+const TYPE_META = {
+    core:     { label:'Core',     icon:'fa-star',        cls:'icon-core'     },
+    elective: { label:'Elective', icon:'fa-circle-dot',  cls:'icon-elective' },
+    workshop: { label:'Workshop', icon:'fa-hammer',      cls:'icon-workshop' },
+    lab:      { label:'Lab',      icon:'fa-flask',       cls:'icon-lab'      },
+};
+
+// School programs map
+const SCHOOL_PROGRAMS = {
+    'Media School':         ['Journalism','Photography','Film & Television','Public Relations','Graphic Design'],
+    'Cosmetology School':   ['Hair Dressing','Beauty Therapy','Nail Technology','Makeup Artistry'],
+    'School of Fashion':    ['Fashion Design','Textile Arts','Fashion Merchandising','Pattern Making'],
+    'Catering School':      ['Culinary Arts','Pastry & Baking','Hotel Management','Food & Beverage'],
+    'School of Technology': ['Information Technology','Computer Science','Electronics','Networking','Software Engineering'],
+};
+
+// Bulk import templates
+const BULK_TEMPLATES = {
+    media: `MED101 | Introduction to Mass Communication | Media School | 100 | January | 2026 | core | 3
+MED102 | Photography Fundamentals | Media School | 100 | January | 2026 | core | 3
+MED103 | Digital Media Production | Media School | 100 | January | 2026 | core | 3
+MED104 | Media Ethics & Law | Media School | 100 | January | 2026 | core | 2
+MED105 | Graphic Design Basics | Media School | 100 | January | 2026 | elective | 2
+MED201 | Photojournalism | Media School | 200 | June | 2026 | core | 3
+MED202 | Broadcast Journalism | Media School | 200 | June | 2026 | core | 3
+MED203 | Video Editing & Post-Production | Media School | 200 | June | 2026 | lab | 3
+MED204 | Public Relations Fundamentals | Media School | 200 | June | 2026 | elective | 2`,
+    cosmetology: `COS101 | Hair Science & Trichology | Cosmetology School | 100 | January | 2026 | core | 3
+COS102 | Scalp & Hair Care | Cosmetology School | 100 | January | 2026 | core | 3
+COS103 | Introduction to Cosmetology | Cosmetology School | 100 | January | 2026 | core | 2
+COS104 | Salon Safety & Hygiene | Cosmetology School | 100 | January | 2026 | core | 2
+COS105 | Nail Technology Basics | Cosmetology School | 100 | January | 2026 | elective | 2
+COS201 | Advanced Hair Colouring | Cosmetology School | 200 | June | 2026 | core | 3
+COS202 | Skin Care & Esthetics | Cosmetology School | 200 | June | 2026 | core | 3
+COS203 | Makeup Artistry | Cosmetology School | 200 | June | 2026 | workshop | 3`,
+    fashion: `FSH101 | Fashion Design Fundamentals | School of Fashion | 100 | January | 2026 | core | 3
+FSH102 | Textile Science | School of Fashion | 100 | January | 2026 | core | 3
+FSH103 | Pattern Making & Drafting | School of Fashion | 100 | January | 2026 | lab | 3
+FSH104 | Fashion History | School of Fashion | 100 | January | 2026 | core | 2
+FSH105 | Introduction to Sewing | School of Fashion | 100 | January | 2026 | workshop | 2
+FSH201 | Garment Construction | School of Fashion | 200 | June | 2026 | core | 3
+FSH202 | Fashion Illustration | School of Fashion | 200 | June | 2026 | core | 3
+FSH203 | Fabric Manipulation | School of Fashion | 200 | June | 2026 | workshop | 3`,
+    catering: `CAT101 | Culinary Arts Fundamentals | Catering School | 100 | January | 2026 | core | 3
+CAT102 | Kitchen Safety & Hygiene | Catering School | 100 | January | 2026 | core | 2
+CAT103 | Introduction to Baking | Catering School | 100 | January | 2026 | lab | 3
+CAT104 | Food Science & Nutrition | Catering School | 100 | January | 2026 | core | 2
+CAT105 | Restaurant Management | Catering School | 100 | January | 2026 | elective | 2
+CAT201 | Advanced Pastry Techniques | Catering School | 200 | June | 2026 | core | 3
+CAT202 | Continental Cuisine | Catering School | 200 | June | 2026 | core | 3
+CAT203 | Food Costing & Budgeting | Catering School | 200 | June | 2026 | elective | 2`,
+    technology: `TCH101 | Computer Fundamentals | School of Technology | 100 | January | 2026 | core | 3
+TCH102 | Introduction to Programming | School of Technology | 100 | January | 2026 | core | 3
+TCH103 | Database Management | School of Technology | 100 | January | 2026 | core | 3
+TCH104 | Networking Basics | School of Technology | 100 | January | 2026 | core | 2
+TCH105 | Web Design Fundamentals | School of Technology | 100 | January | 2026 | elective | 2
+TCH201 | Software Engineering | School of Technology | 200 | June | 2026 | core | 3
+TCH202 | Systems Analysis | School of Technology | 200 | June | 2026 | core | 3
+TCH203 | Electronics & Hardware | School of Technology | 200 | June | 2026 | lab | 3`,
+};
+
+// ── Load courses from Supabase ──
+async function loadCourses() {
+    try {
+        showCourseLoadingState();
+        const { data, error } = await sb
+            .from('course_schedules')
+            .select('*')
+            .order('school').order('level').order('semester').order('course_name');
+        if (error) throw error;
+        allCourses = data || [];
+        document.getElementById('courseCount').textContent = allCourses.length;
+        populateCourseYearFilter();
+        refreshCourseStats();
+        renderSchoolOverviewCards();
+        applyCourseFilters();
+    } catch (err) {
+        console.error('loadCourses:', err);
+        // If table doesn't exist yet, show setup prompt
+        if (err.message && (err.message.includes('does not exist') || err.message.includes('relation'))) {
+            showCourseSetupPrompt();
+        } else {
+            showToast('Error loading courses: ' + err.message, true);
+        }
+    }
+}
+
+function showCourseLoadingState() {
+    document.getElementById('courseGridView').innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-3);">
+            <span class="spinner"></span>
+            <p style="margin-top:12px;font-size:13px;">Loading courses…</p>
+        </div>`;
+}
+
+function showCourseSetupPrompt() {
+    document.getElementById('courseGridView').innerHTML = `
+        <div style="grid-column:1/-1;">
+            <div class="alert alert-warning" style="margin-bottom:20px;">
+                <i class="fas fa-triangle-exclamation"></i>
+                <div>
+                    <strong>Database table not found.</strong> The <code>course_schedules</code> table needs to be created in Supabase first.
+                    <button class="btn btn-warning btn-sm" style="margin-top:8px;display:block;" onclick="showCourseTableSQL()">
+                        <i class="fas fa-database"></i> Show SQL to Create Table
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    allCourses = [];
+    refreshCourseStats();
+}
+
+window.showCourseTableSQL = function() {
+    const sql = `-- Run this in your Supabase SQL Editor
+CREATE TABLE IF NOT EXISTS public.course_schedules (
+  id              UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  course_code     TEXT NOT NULL,
+  course_name     TEXT NOT NULL,
+  school          TEXT NOT NULL,
+  program         TEXT,
+  level           TEXT NOT NULL,
+  semester        TEXT NOT NULL,
+  academic_year   TEXT NOT NULL,
+  course_type     TEXT DEFAULT 'core',
+  credits         INTEGER DEFAULT 3,
+  lecturer        TEXT,
+  max_students    INTEGER,
+  description     TEXT,
+  prerequisites   TEXT,
+  schedule_info   TEXT,
+  status          TEXT DEFAULT 'active',
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable Row Level Security
+ALTER TABLE public.course_schedules ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read (students can see courses)
+CREATE POLICY "course_schedules_read" ON public.course_schedules
+  FOR SELECT USING (true);
+
+-- Allow authenticated write (admin)
+CREATE POLICY "course_schedules_write" ON public.course_schedules
+  FOR ALL USING (true);`;
+
+    const el = document.createElement('pre');
+    el.style.cssText = 'background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-size:12px;overflow:auto;max-height:400px;margin-top:16px;white-space:pre-wrap;word-break:break-word;';
+    el.textContent = sql;
+
+    // Show in alert modal
+    document.getElementById('alertModalTitle').textContent = 'SQL: Create course_schedules Table';
+    document.getElementById('alertModalMessage').innerHTML = '';
+    document.getElementById('alertModalMessage').appendChild(el);
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn btn-secondary btn-sm';
+    copyBtn.style.marginTop = '10px';
+    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy SQL';
+    copyBtn.onclick = () => { navigator.clipboard.writeText(sql); showToast('SQL copied to clipboard'); };
+    document.getElementById('alertModalMessage').appendChild(copyBtn);
+
+    document.getElementById('alertOkBtn').onclick = () => { closeModal('alertModal'); };
+    openModal('alertModal');
+};
+
+// ── Populate year filter ──
+function populateCourseYearFilter() {
+    const sel = document.getElementById('cf_year');
+    const years = [...new Set(allCourses.map(c => c.academic_year).filter(Boolean))].sort((a,b)=>b-a);
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">All Years</option>' +
+        years.map(y => `<option value="${y}" ${y===cur?'selected':''}>${y}</option>`).join('');
+}
+
+// ── Course stats ──
+function refreshCourseStats() {
+    const total   = allCourses.length;
+    const active  = allCourses.filter(c => c.status === 'active').length;
+    const schools = new Set(allCourses.map(c=>c.school).filter(Boolean)).size;
+    const curYear = new Date().getFullYear();
+    const curSem  = new Date().getMonth() < 6 ? 'January' : 'June';
+    const semCourses = allCourses.filter(c => String(c.academic_year) === String(curYear) && c.semester === curSem).length;
+    const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setEl('csTotalCourses',   total);
+    setEl('csTotalActive',    active);
+    setEl('csTotalSchools',   schools);
+    setEl('csCurrentSemester', semCourses + ' courses');
+    setEl('courseCount',      total);
+}
+
+// ── School overview cards ──
+function renderSchoolOverviewCards() {
+    const strip = document.getElementById('schoolOverviewStrip');
+    if (!strip) return;
+    const schools = GH_SCHOOLS;
+    strip.innerHTML = schools.map(school => {
+        const meta   = SCHOOL_META[school] || { icon:'fa-school', color:'#64748b', bg:'rgba(100,116,139,0.1)' };
+        const count  = allCourses.filter(c => c.school === school).length;
+        const levels = [...new Set(allCourses.filter(c=>c.school===school).map(c=>c.level).filter(Boolean))].sort();
+        return `
+        <div class="school-overview-card" onclick="filterBySchoolCard('${school}')" style="--sc:${meta.color};">
+            <div class="school-ov-icon" style="background:${meta.bg};color:${meta.color};">
+                <i class="fas ${meta.icon}"></i>
+            </div>
+            <div class="school-ov-name">${school}</div>
+            <div class="school-ov-count">
+                ${count} course${count!==1?'s':''} · 
+                ${levels.length ? 'Levels ' + levels.join(', ') : 'No courses yet'}
+            </div>
+            <div style="margin-top:8px;height:3px;background:${meta.bg};border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${Math.min(100,Math.round(count/Math.max(1,allCourses.length)*100*GH_SCHOOLS.length))}%;background:${meta.color};border-radius:4px;transition:width 0.5s;"></div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.filterBySchoolCard = function(school) {
+    document.getElementById('cf_school').value = school;
+    applyCourseFilters();
+};
+
+// ── Filters ──
+function applyCourseFilters() {
+    const school  = document.getElementById('cf_school').value;
+    const level   = document.getElementById('cf_level').value;
+    const sem     = document.getElementById('cf_semester').value;
+    const year    = document.getElementById('cf_year').value;
+    const type    = document.getElementById('cf_type').value;
+    const status  = (document.getElementById('cf_status') || {}).value || '';
+    const q       = (document.getElementById('cf_search').value || '').toLowerCase().trim();
+
+    filteredCourses = allCourses.filter(c => {
+        if (school && c.school       !== school) return false;
+        if (level  && c.level        !== level)  return false;
+        if (sem    && c.semester     !== sem)    return false;
+        if (year   && String(c.academic_year) !== String(year)) return false;
+        if (type   && c.course_type  !== type)   return false;
+        if (status && c.status       !== status)  return false;
+        if (q && !((c.course_name||'').toLowerCase().includes(q) ||
+                   (c.course_code||'').toLowerCase().includes(q) ||
+                   (c.description||'').toLowerCase().includes(q) ||
+                   (c.lecturer||'').toLowerCase().includes(q))) return false;
+        return true;
+    });
+
+    const parts = [];
+    if (school) parts.push(school);
+    if (level)  parts.push('Level ' + level);
+    if (sem)    parts.push(sem);
+    if (year)   parts.push(year);
+    if (type)   parts.push(type.charAt(0).toUpperCase() + type.slice(1));
+    document.getElementById('courseListTitle').textContent = parts.length ? parts.join(' · ') : 'All Courses';
+    const cnt = filteredCourses.length;
+    document.getElementById('courseListCount').textContent = cnt + ' course' + (cnt !== 1 ? 's' : '');
+
+    if (!allCourses.length && parts.length === 0) {
+        document.getElementById('courseEmptyMsg').textContent = 'No courses yet. Add your first course to get started.';
+    } else if (!cnt) {
+        document.getElementById('courseEmptyMsg').textContent = 'No courses match these filters. Try clearing some filters.';
+    }
+
+    renderCourses();
+}
+
+function resetCourseFilters() {
+    ['cf_school','cf_level','cf_semester','cf_year','cf_type','cf_status'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value = '';
+    });
+    document.getElementById('cf_search').value = '';
+    applyCourseFilters();
+}
+
+// ── Render ──
+function renderCourses() {
+    const empty = document.getElementById('courseEmptyState');
+    const grid  = document.getElementById('courseGridView');
+    const tbl   = document.getElementById('courseTableView');
+
+    if (!filteredCourses.length) {
+        grid.innerHTML = '';
+        document.getElementById('courseTableBody').innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    if (courseView === 'grid') {
+        grid.style.display = 'grid';
+        tbl.style.display  = 'none';
+        grid.innerHTML = filteredCourses.map(c => buildCourseCard(c)).join('');
+    } else {
+        grid.style.display = 'none';
+        tbl.style.display  = 'block';
+        renderCourseTable();
+    }
+}
+
+function buildCourseCard(c) {
+    const typeMeta  = TYPE_META[c.course_type] || { label: c.course_type||'—', icon:'fa-book', cls:'icon-default' };
+    const schoolMeta= SCHOOL_META[c.school]    || { color:'#64748b', bg:'rgba(100,116,139,0.1)', icon:'fa-school' };
+    const statusBadge = c.status === 'active' ? 'badge-green' : c.status === 'draft' ? 'badge-amber' : 'badge-muted';
+    const semBadge    = c.semester === 'January' ? 'badge-blue' : 'badge-amber';
+    const semIcon     = c.semester === 'January' ? 'fa-snowflake' : 'fa-sun';
+    const sel = selectedCourseIds.has(c.id);
+    return `
+    <div class="course-card" data-type="${c.course_type||'core'}" data-id="${c.id}" style="${sel?'border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,0.12);':''}">
+        <input type="checkbox" style="margin-top:2px;accent-color:var(--accent);flex-shrink:0;" ${sel?'checked':''} onchange="toggleCourseSelect('${c.id}',this.checked)">
+        <div class="course-card-icon ${typeMeta.cls}">
+            <i class="fas ${typeMeta.icon}"></i>
+        </div>
+        <div class="course-card-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                <div>
+                    <div class="course-card-name" title="${escapeHtml(c.course_name)}">${escapeHtml(c.course_name)}</div>
+                    <div style="font-size:11.5px;color:var(--text-3);font-family:var(--mono);">${escapeHtml(c.course_code||'—')}</div>
+                </div>
+                <span class="badge ${statusBadge}" style="flex-shrink:0;font-size:10px;">${c.status||'active'}</span>
+            </div>
+            <div class="course-card-meta">
+                <span class="badge badge-muted" style="background:${schoolMeta.bg};color:${schoolMeta.color};"><i class="fas ${schoolMeta.icon}" style="font-size:9px;"></i> ${escapeHtml(c.school)}</span>
+                <span class="badge badge-violet">Lvl ${escapeHtml(c.level)}</span>
+                <span class="badge ${semBadge}"><i class="fas ${semIcon}" style="font-size:9px;"></i> ${escapeHtml(c.semester)}</span>
+                <span class="badge badge-muted">${escapeHtml(c.academic_year)}</span>
+                <span class="badge badge-muted"><i class="fas fa-star" style="font-size:8px;"></i> ${c.credits||'—'} cr</span>
+                <span class="badge ${typeMeta.cls==='icon-core'?'badge-red':typeMeta.cls==='icon-elective'?'badge-blue':typeMeta.cls==='icon-workshop'?'badge-amber':'badge-green'}">${typeMeta.label}</span>
+            </div>
+            ${c.lecturer ? `<div style="font-size:12px;color:var(--text-3);margin-top:6px;"><i class="fas fa-user-tie" style="margin-right:5px;"></i>${escapeHtml(c.lecturer)}</div>` : ''}
+        </div>
+        <div class="course-card-actions" style="flex-direction:column;gap:4px;">
+            <button class="btn btn-xs btn-secondary" onclick="viewCourse('${c.id}')" title="View details"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-xs btn-secondary" onclick="editCourse('${c.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-xs btn-danger" onclick="deleteCourse('${c.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+    </div>`;
+}
+
+function renderCourseTable() {
+    const tbody = document.getElementById('courseTableBody');
+    tbody.innerHTML = filteredCourses.map(c => {
+        const typeMeta   = TYPE_META[c.course_type] || { label: c.course_type||'—' };
+        const schoolMeta = SCHOOL_META[c.school]    || { color:'#64748b' };
+        const statusBadge= c.status==='active'?'badge-green':c.status==='draft'?'badge-amber':'badge-muted';
+        const semBadge   = c.semester==='January'?'badge-blue':'badge-amber';
+        const typeBadge  = c.course_type==='core'?'badge-red':c.course_type==='elective'?'badge-blue':c.course_type==='workshop'?'badge-amber':'badge-green';
+        const sel = selectedCourseIds.has(c.id);
+        return `<tr ${sel?'style="background:var(--accent-bg2);"':''}>
+            <td><input type="checkbox" ${sel?'checked':''} style="accent-color:var(--accent);" onchange="toggleCourseSelect('${c.id}',this.checked)"></td>
+            <td class="cell-mono" style="font-weight:700;font-size:12.5px;">${escapeHtml(c.course_code||'—')}</td>
+            <td>
+                <strong style="font-size:13.5px;">${escapeHtml(c.course_name)}</strong>
+                ${c.description?`<div style="font-size:11.5px;color:var(--text-3);margin-top:2px;">${escapeHtml(c.description.substring(0,60))}${c.description.length>60?'…':''}</div>`:''}
+            </td>
+            <td style="color:${schoolMeta.color};font-weight:600;font-size:13px;">${escapeHtml(c.school)}</td>
+            <td><span class="badge badge-violet">Level ${escapeHtml(c.level)}</span></td>
+            <td><span class="badge ${semBadge}">${escapeHtml(c.semester)}</span> <span style="font-size:12px;color:var(--text-3);">${escapeHtml(c.academic_year)}</span></td>
+            <td><span class="badge ${typeBadge}">${typeMeta.label}</span></td>
+            <td class="cell-mono" style="text-align:center;">${c.credits||'—'}</td>
+            <td style="font-size:12.5px;color:var(--text-3);">${c.lecturer ? `<i class="fas fa-user-tie" style="margin-right:4px;font-size:10px;"></i>${escapeHtml(c.lecturer)}` : '<span style="opacity:0.5;">—</span>'}</td>
+            <td><span class="badge ${statusBadge}">${c.status||'active'}</span></td>
+            <td style="text-align:right;white-space:nowrap;">
+                <button class="btn btn-xs btn-secondary" onclick="viewCourse('${c.id}')" title="View details"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-xs btn-secondary" onclick="editCourse('${c.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-xs btn-danger"    onclick="deleteCourse('${c.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ── View toggle ──
+function setCourseView(v) {
+    courseView = v;
+    document.getElementById('viewGrid').classList.toggle('btn-primary', v==='grid');
+    document.getElementById('viewTable').classList.toggle('btn-primary', v==='table');
+    renderCourses();
+}
+
+// ── Multi-select ──
+window.toggleCourseSelect = function(id, checked) {
+    if (checked) selectedCourseIds.add(id);
+    else         selectedCourseIds.delete(id);
+    const btn = document.getElementById('deleteSelectedBtn');
+    const cnt = document.getElementById('selectedCount');
+    if (cnt) cnt.textContent = selectedCourseIds.size;
+    btn.style.display = selectedCourseIds.size ? 'inline-flex' : 'none';
+};
+window.toggleSelectAll = function(cb) {
+    if (cb.checked) filteredCourses.forEach(c => selectedCourseIds.add(c.id));
+    else            selectedCourseIds.clear();
+    const cnt = document.getElementById('selectedCount');
+    if (cnt) cnt.textContent = selectedCourseIds.size;
+    document.getElementById('deleteSelectedBtn').style.display = selectedCourseIds.size ? 'inline-flex' : 'none';
+    renderCourses();
+};
+
+window.deleteSelectedCourses = async function() {
+    if (!selectedCourseIds.size) return;
+    const ok = await showConfirm(`Delete ${selectedCourseIds.size} selected course(s)? This cannot be undone.`, 'Delete Courses', '🗑️');
+    if (!ok) return;
+    const ids = [...selectedCourseIds];
+    const { error } = await sb.from('course_schedules').delete().in('id', ids);
+    if (error) { showToast('Error deleting: ' + error.message, true); return; }
+    showToast(`${ids.length} course(s) deleted`);
+    selectedCourseIds.clear();
+    const btn = document.getElementById('deleteSelectedBtn');
+    const cnt = document.getElementById('selectedCount');
+    if (cnt) cnt.textContent = '0';
+    btn.style.display = 'none';
+    loadCourses();
+};
+
+// ── View course detail ──
+window.viewCourse = function(id) {
+    const c = allCourses.find(x => x.id === id);
+    if (!c) return;
+    const typeMeta   = TYPE_META[c.course_type] || { label: c.course_type||'—', icon:'fa-book', cls:'icon-default' };
+    const schoolMeta = SCHOOL_META[c.school]    || { color:'#64748b', bg:'rgba(100,116,139,0.1)', icon:'fa-school' };
+    const semIcon    = c.semester==='January' ? 'fa-snowflake' : 'fa-sun';
+
+    document.getElementById('cdModalTitle').textContent = c.course_name;
+    document.getElementById('cdEditBtn').onclick = () => { closeModal('courseDetailModal'); editCourse(id); };
+
+    document.getElementById('courseDetailBody').innerHTML = `
+        <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px;">
+            <div class="course-card-icon ${typeMeta.cls}" style="width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">
+                <i class="fas ${typeMeta.icon}"></i>
+            </div>
+            <div style="flex:1;min-width:200px;">
+                <div style="font-size:1.15rem;font-weight:800;margin-bottom:4px;">${escapeHtml(c.course_name)}</div>
+                <div style="font-family:var(--mono);font-size:13px;color:var(--text-3);margin-bottom:10px;">${escapeHtml(c.course_code||'—')}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <span class="badge" style="background:${schoolMeta.bg};color:${schoolMeta.color};"><i class="fas ${schoolMeta.icon}" style="font-size:9px;"></i> ${escapeHtml(c.school)}</span>
+                    <span class="badge badge-violet">Level ${escapeHtml(c.level)}</span>
+                    <span class="badge ${c.semester==='January'?'badge-blue':'badge-amber'}"><i class="fas ${semIcon}" style="font-size:9px;"></i> ${escapeHtml(c.semester)} ${escapeHtml(c.academic_year)}</span>
+                    <span class="badge ${c.course_type==='core'?'badge-red':c.course_type==='elective'?'badge-blue':c.course_type==='workshop'?'badge-amber':'badge-green'}">${typeMeta.label}</span>
+                    <span class="badge ${c.status==='active'?'badge-green':c.status==='draft'?'badge-amber':'badge-muted'}">${c.status||'active'}</span>
+                </div>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
+            ${[
+                ['Credits',    c.credits || '—',            'fa-star'],
+                ['Lecturer',   c.lecturer || 'Not assigned', 'fa-user-tie'],
+                ['Max Students', c.max_students ? c.max_students : 'Unlimited', 'fa-users'],
+                ['Program',    c.program || 'All Programs',  'fa-diagram-project'],
+                ['Schedule',   c.schedule_info || '—',      'fa-calendar-days'],
+                ['Prerequisites', c.prerequisites || 'None','fa-list-check'],
+            ].map(([label,val,icon]) => `
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;">
+                    <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-3);margin-bottom:5px;"><i class="fas ${icon}" style="margin-right:5px;opacity:0.7;"></i>${label}</div>
+                    <div style="font-weight:600;font-size:13.5px;">${escapeHtml(String(val))}</div>
+                </div>`).join('')}
+        </div>
+        ${c.description ? `
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:14px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-3);margin-bottom:8px;"><i class="fas fa-align-left" style="margin-right:6px;"></i>Description</div>
+            <p style="font-size:14px;line-height:1.65;color:var(--text-2);">${escapeHtml(c.description)}</p>
+        </div>` : ''}
+        <div style="font-size:11.5px;color:var(--text-3);margin-top:4px;">
+            Created: ${c.created_at ? new Date(c.created_at).toLocaleString() : '—'} &nbsp;·&nbsp;
+            Updated: ${c.updated_at ? new Date(c.updated_at).toLocaleString() : '—'}
+        </div>`;
+
+    openModal('courseDetailModal');
+};
+
+// ── Open Add/Edit modal ──
+window.openCourseModal = function() {
+    document.getElementById('courseForm').reset();
+    document.getElementById('courseId').value = '';
+    document.getElementById('cmodalTitle').textContent = 'Add Course';
+    document.getElementById('saveCourseBtn').textContent = '  Save Course';
+    document.getElementById('coursePreviewBanner').style.display = 'none';
+    populateCourseYearDropdown();
+    openModal('courseModal');
+};
+
+window.editCourse = async function(id) {
+    const c = allCourses.find(x => x.id === id);
+    if (!c) { showToast('Course not found', true); return; }
+    populateCourseYearDropdown();
+    updateProgramDropdown(c.school);
+
+    document.getElementById('courseId').value          = c.id;
+    document.getElementById('courseCode').value        = c.course_code     || '';
+    document.getElementById('courseName').value        = c.course_name     || '';
+    document.getElementById('courseSchool').value      = c.school          || '';
+    document.getElementById('courseProgram').value     = c.program         || '';
+    document.getElementById('courseLevel').value       = c.level           || '';
+    document.getElementById('courseSemester').value    = c.semester        || '';
+    document.getElementById('courseYear').value        = c.academic_year   || '';
+    document.getElementById('courseType').value        = c.course_type     || '';
+    document.getElementById('courseCredits').value     = c.credits         || 3;
+    document.getElementById('courseStatus').value      = c.status          || 'active';
+    document.getElementById('courseLecturer').value    = c.lecturer        || '';
+    document.getElementById('courseMaxStudents').value = c.max_students    || '';
+    document.getElementById('courseDescription').value = c.description     || '';
+    document.getElementById('coursePrerequisites').value = c.prerequisites || '';
+    document.getElementById('courseSchedule').value    = c.schedule_info   || '';
+
+    document.getElementById('cmodalTitle').textContent = 'Edit Course';
+    document.getElementById('saveCourseBtn').innerHTML = '<i class="fas fa-save"></i>  Update Course';
+    updateTypePreview();
+    openModal('courseModal');
+};
+
+function populateCourseYearDropdown() {
+    const sel = document.getElementById('courseYear');
+    const curY = new Date().getFullYear();
+    const years = [curY - 1, curY, curY + 1, curY + 2];
+    const cur = sel.value;
+    sel.innerHTML = years.map(y => `<option value="${y}" ${y==curY?'selected':''}>${y}</option>`).join('');
+    if (cur) sel.value = cur;
+}
+
+window.updateProgramDropdown = function(school) {
+    const s = school || document.getElementById('courseSchool').value;
+    const sel = document.getElementById('courseProgram');
+    const programs = SCHOOL_PROGRAMS[s] || [];
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">All Programs (applies to whole school)</option>' +
+        programs.map(p => `<option value="${p}" ${p===cur?'selected':''}>${p}</option>`).join('');
+};
+
+window.updateTypePreview = function() {
+    const name   = document.getElementById('courseName').value.trim();
+    const code   = document.getElementById('courseCode').value.trim();
+    const type   = document.getElementById('courseType').value;
+    const school = document.getElementById('courseSchool').value;
+    const level  = document.getElementById('courseLevel').value;
+    const sem    = document.getElementById('courseSemester').value;
+    const year   = document.getElementById('courseYear').value;
+    const creds  = document.getElementById('courseCredits').value;
+
+    const banner = document.getElementById('coursePreviewBanner');
+    if (!name && !type) { banner.style.display='none'; return; }
+    banner.style.display = 'block';
+
+    const typeMeta   = TYPE_META[type] || { icon:'fa-book', cls:'icon-default', label:type||'—' };
+    const schoolMeta = SCHOOL_META[school] || { color:'#64748b', bg:'rgba(100,116,139,0.1)', icon:'fa-school' };
+    const semBadge   = sem==='January'?'badge-blue':'badge-amber';
+
+    document.getElementById('previewIcon').className = `course-card-icon ${typeMeta.cls}`;
+    document.getElementById('previewIcon').innerHTML = `<i class="fas ${typeMeta.icon}"></i>`;
+    document.getElementById('previewName').textContent = (name||'Untitled Course') + (code ? ` (${code})` : '');
+    document.getElementById('previewMeta').innerHTML = [
+        school ? `<span class="badge" style="background:${schoolMeta.bg};color:${schoolMeta.color};">${school}</span>` : '',
+        level  ? `<span class="badge badge-violet">Level ${level}</span>` : '',
+        sem    ? `<span class="badge ${semBadge}">${sem}</span>` : '',
+        year   ? `<span class="badge badge-muted">${year}</span>` : '',
+        creds  ? `<span class="badge badge-muted">${creds} credits</span>` : '',
+        type   ? `<span class="badge">${typeMeta.label}</span>` : '',
+    ].filter(Boolean).join('');
+};
+
+// wire up live preview on name/type changes
+['courseName','courseCode','courseType','courseSchool','courseLevel','courseSemester','courseYear','courseCredits'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateTypePreview);
+    if (el) el.addEventListener('change', updateTypePreview);
+});
+
+// ── Save course ──
+document.getElementById('courseForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id = document.getElementById('courseId').value;
+    const now = new Date().toISOString();
+
+    const payload = {
+        course_code:   document.getElementById('courseCode').value.trim().toUpperCase(),
+        course_name:   document.getElementById('courseName').value.trim(),
+        school:        document.getElementById('courseSchool').value,
+        program:       document.getElementById('courseProgram').value || null,
+        level:         document.getElementById('courseLevel').value,
+        semester:      document.getElementById('courseSemester').value,
+        academic_year: document.getElementById('courseYear').value,
+        course_type:   document.getElementById('courseType').value,
+        credits:       parseInt(document.getElementById('courseCredits').value) || 3,
+        status:        document.getElementById('courseStatus').value,
+        lecturer:      document.getElementById('courseLecturer').value.trim() || null,
+        max_students:  parseInt(document.getElementById('courseMaxStudents').value) || null,
+        description:   document.getElementById('courseDescription').value.trim() || null,
+        prerequisites: document.getElementById('coursePrerequisites').value.trim() || null,
+        schedule_info: document.getElementById('courseSchedule').value.trim() || null,
+        updated_at:    now,
+    };
+    if (!id) payload.created_at = now;
+
+    const btn = document.getElementById('saveCourseBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span> Saving…';
+
+    try {
+        const { error } = id
+            ? await sb.from('course_schedules').update(payload).eq('id', id)
+            : await sb.from('course_schedules').insert(payload);
+        if (error) throw error;
+        showToast(id ? 'Course updated successfully' : 'Course added successfully');
+        closeModal('courseModal');
+        loadCourses();
+    } catch (err) {
+        showToast('Error saving course: ' + err.message, true);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> ' + (id ? 'Update Course' : 'Save Course');
+    }
+});
+
+// ── Delete single course ──
+window.deleteCourse = async function(id) {
+    const c = allCourses.find(x => x.id === id);
+    const ok = await showConfirm(
+        `Delete "${c ? c.course_name : 'this course'}"? Students who registered for it may be affected.`,
+        'Delete Course', '🗑️'
+    );
+    if (!ok) return;
+    const { error } = await sb.from('course_schedules').delete().eq('id', id);
+    if (error) { showToast('Error: ' + error.message, true); return; }
+    showToast('Course deleted');
+    loadCourses();
+};
+
+// ── Bulk Import ──
+window.openBulkImportModal = function() {
+    document.getElementById('bulkImportText').value = '';
+    document.getElementById('bulkParsePreview').style.display = 'none';
+    document.getElementById('bulkProgressSection').style.display = 'none';
+    document.getElementById('bulkResultSection').style.display = 'none';
+    document.getElementById('bulkImportBtn').disabled = true;
+    document.getElementById('bulkLineCount').textContent = '0 lines';
+    _bulkParsed = [];
+    openModal('bulkImportModal');
+};
+
+window.fillBulkTemplate = function(school) {
+    document.getElementById('bulkImportText').value = BULK_TEMPLATES[school] || '';
+    document.getElementById('bulkParsePreview').style.display = 'none';
+    document.getElementById('bulkResultSection').style.display = 'none';
+    document.getElementById('bulkImportBtn').disabled = true;
+    _bulkParsed = [];
+    onBulkTextInput();
+};
+
+window.clearBulkText = function() {
+    document.getElementById('bulkImportText').value = '';
+    document.getElementById('bulkParsePreview').style.display = 'none';
+    document.getElementById('bulkResultSection').style.display = 'none';
+    document.getElementById('bulkImportBtn').disabled = true;
+    document.getElementById('bulkLineCount').textContent = '0 lines';
+    _bulkParsed = [];
+};
+
+window.onBulkTextInput = function() {
+    const raw = document.getElementById('bulkImportText').value;
+    const dataLines = raw.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
+    document.getElementById('bulkLineCount').textContent = dataLines.length + ' line' + (dataLines.length !== 1 ? 's' : '');
+    // reset parse state
+    document.getElementById('bulkImportBtn').disabled = true;
+    _bulkParsed = [];
+};
+
+const VALID_SCHOOLS = ['Media School','Cosmetology School','School of Fashion','Catering School','School of Technology'];
+const VALID_SEMESTERS = ['january','june'];
+const VALID_LEVELS   = ['100','200','300','400'];
+const VALID_TYPES    = ['core','elective','workshop','lab'];
+
+window.parseBulkImport = function() {
+    const raw = document.getElementById('bulkImportText').value.trim();
+    if (!raw) { showToast('Paste some courses first, or click a school template above.', true); return; }
+
+    const lines  = raw.split('\n');
+    const parsed = [];
+    const errors = [];
+
+    lines.forEach((line, i) => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) return; // skip blanks / comments
+
+        const parts = trimmed.split('|').map(p => p.trim());
+        const lineNum = i + 1;
+
+        if (parts.length < 6) {
+            errors.push({ line: lineNum, text: trimmed, reason: `Only ${parts.length} column(s) found — need at least 6 (Code | Name | School | Level | Semester | Year)` });
+            return;
+        }
+
+        const [code, name, school, level, semester, year, type, credits] = parts;
+        const rowErrors = [];
+
+        if (!code)   rowErrors.push('missing course code (col 1)');
+        if (!name)   rowErrors.push('missing course name (col 2)');
+        if (!school) rowErrors.push('missing school (col 3)');
+        else if (!VALID_SCHOOLS.includes(school)) rowErrors.push(`school "${school}" not recognised — use: ${VALID_SCHOOLS.join(', ')}`);
+        if (!level)  rowErrors.push('missing level (col 4)');
+        else if (!VALID_LEVELS.includes(level)) rowErrors.push(`level must be 100, 200, 300 or 400`);
+        if (!semester) rowErrors.push('missing semester (col 5)');
+        else if (!VALID_SEMESTERS.includes(semester.toLowerCase())) rowErrors.push(`semester must be January or June`);
+        if (!year)   rowErrors.push('missing year (col 6)');
+        else if (!/^\d{4}$/.test(year)) rowErrors.push(`year must be 4 digits e.g. 2026`);
+
+        const typeNorm = (type || 'core').toLowerCase();
+        if (type && !VALID_TYPES.includes(typeNorm)) rowErrors.push(`type "${type}" not valid — use: core, elective, workshop, lab`);
+
+        // Normalise semester capitalisation
+        const semNorm = semester ? (semester.charAt(0).toUpperCase() + semester.slice(1).toLowerCase()) : 'January';
+
+        if (rowErrors.length) {
+            errors.push({ line: lineNum, text: trimmed, reason: rowErrors.join('; ') });
+            return;
+        }
+
+        parsed.push({
+            course_code:   code.toUpperCase(),
+            course_name:   name,
+            school:        school,
+            level:         level,
+            semester:      semNorm,
+            academic_year: year,
+            course_type:   typeNorm,
+            credits:       parseInt(credits) || 3,
+            status:        'active',
+            created_at:    new Date().toISOString(),
+            updated_at:    new Date().toISOString(),
+        });
+    });
+
+    _bulkParsed = parsed;
+
+    // Show preview section
+    document.getElementById('bulkParsePreview').style.display = 'block';
+    document.getElementById('bulkResultSection').style.display = 'none';
+
+    // Summary banner
+    const successEl = document.getElementById('bulkParseSuccess');
+    const msgEl     = document.getElementById('bulkParseMsg');
+    if (errors.length && !parsed.length) {
+        successEl.className = 'alert alert-danger';
+        msgEl.innerHTML = `<strong>No valid courses found.</strong> All ${errors.length} line(s) have errors — see details below.`;
+    } else if (errors.length) {
+        successEl.className = 'alert alert-warning';
+        msgEl.innerHTML = `<strong>${parsed.length} course(s) are valid</strong> and ready to import. ${errors.length} line(s) have errors and will be skipped — see details below.`;
+    } else {
+        successEl.className = 'alert alert-success';
+        msgEl.innerHTML = `<strong>${parsed.length} course(s) look good!</strong> Review the list below, then click <em>Save to Database</em>.`;
+    }
+
+    // Error list
+    const errSection = document.getElementById('bulkErrorSection');
+    const errList    = document.getElementById('bulkErrorList');
+    if (errors.length) {
+        errSection.style.display = 'block';
+        errList.innerHTML = errors.map(e =>
+            `<div style="padding:5px 0;border-bottom:1px solid rgba(220,38,38,0.1);">
+                <span style="font-family:var(--mono);color:var(--accent-2);font-weight:700;">Line ${e.line}:</span>
+                <span style="color:var(--accent-2);margin:0 8px;">→</span>
+                <span style="color:var(--text-2);">${escapeHtml(e.reason)}</span>
+                <div style="font-family:var(--mono);font-size:11px;color:var(--text-3);margin-top:2px;padding-left:4px;word-break:break-all;">${escapeHtml(e.text.substring(0, 100))}${e.text.length > 100 ? '…' : ''}</div>
+            </div>`
+        ).join('');
+    } else {
+        errSection.style.display = 'none';
+    }
+
+    // Valid preview table
+    const validSection = document.getElementById('bulkValidSection');
+    const tbody        = document.getElementById('bulkParseBody');
+    if (parsed.length) {
+        validSection.style.display = 'block';
+        tbody.innerHTML = parsed.map((c, i) => {
+            const typeCls = c.course_type==='core'?'badge-red':c.course_type==='elective'?'badge-blue':c.course_type==='workshop'?'badge-amber':'badge-green';
+            const semCls  = c.semester==='January'?'badge-blue':'badge-amber';
+            return `<tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:8px 12px;font-size:12px;color:var(--text-3);font-family:var(--mono);">${i+1}</td>
+                <td style="padding:8px 12px;font-family:var(--mono);font-weight:700;font-size:12.5px;">${escapeHtml(c.course_code)}</td>
+                <td style="padding:8px 12px;font-weight:600;font-size:13px;">${escapeHtml(c.course_name)}</td>
+                <td style="padding:8px 12px;font-size:12.5px;">${escapeHtml(c.school)}</td>
+                <td style="padding:8px 12px;"><span class="badge badge-violet">Lvl ${escapeHtml(c.level)}</span></td>
+                <td style="padding:8px 12px;"><span class="badge ${semCls}">${escapeHtml(c.semester)}</span> <span style="font-size:12px;color:var(--text-3);">${escapeHtml(c.academic_year)}</span></td>
+                <td style="padding:8px 12px;"><span class="badge ${typeCls}">${c.course_type}</span></td>
+                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:12.5px;">${c.credits}</td>
+            </tr>`;
+        }).join('');
+    } else {
+        validSection.style.display = 'none';
+    }
+
+    document.getElementById('bulkImportBtn').disabled = (parsed.length === 0);
+};
+
+window.executeBulkImport = async function() {
+    if (!_bulkParsed.length) return;
+
+    const btn = document.getElementById('bulkImportBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;"></span> Saving…';
+
+    // Show progress, hide result
+    document.getElementById('bulkProgressSection').style.display = 'block';
+    document.getElementById('bulkResultSection').style.display   = 'none';
+
+    const total    = _bulkParsed.length;
+    const CHUNK    = 25;   // insert 25 at a time so we get progress updates
+    let imported   = 0;
+    let skipped    = 0;
+    const failMsgs = [];
+
+    const setProgress = (done, detail = '') => {
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('bulkProgressBar').style.width   = pct + '%';
+        document.getElementById('bulkProgressText').textContent  = `${done} / ${total}`;
+        document.getElementById('bulkProgressDetail').textContent = detail;
+    };
+
+    setProgress(0, 'Starting…');
+
+    for (let i = 0; i < _bulkParsed.length; i += CHUNK) {
+        const chunk = _bulkParsed.slice(i, i + CHUNK);
+        setProgress(i, `Saving batch ${Math.floor(i/CHUNK)+1}…`);
+
+        try {
+            // upsert: if the unique key (code+school+level+semester+year) already exists → update
+            // ignoreDuplicates would skip — we use upsert so re-runs are safe
+            const { data, error } = await sb
+                .from('course_schedules')
+                .upsert(chunk, {
+                    onConflict: 'course_code,school,level,semester,academic_year',
+                    ignoreDuplicates: true   // skip if duplicate — don't overwrite existing
+                })
+                .select('id');
+
+            if (error) {
+                // If upsert not supported (older Supabase), fall back to plain insert
+                if (error.message && error.message.toLowerCase().includes('duplicate')) {
+                    skipped += chunk.length;
+                } else {
+                    // Try row by row for this chunk to isolate failures
+                    for (const row of chunk) {
+                        const { error: rowErr } = await sb.from('course_schedules').insert(row);
+                        if (rowErr) {
+                            if (rowErr.message && (rowErr.message.includes('duplicate') || rowErr.message.includes('unique'))) {
+                                skipped++;
+                            } else {
+                                failMsgs.push(`${row.course_code}: ${rowErr.message}`);
+                            }
+                        } else {
+                            imported++;
+                        }
+                    }
+                }
+            } else {
+                const saved = (data || []).length;
+                const dup   = chunk.length - saved;
+                imported += saved;
+                skipped  += dup;
+            }
+        } catch (err) {
+            failMsgs.push(`Batch ${Math.floor(i/CHUNK)+1}: ${err.message}`);
+        }
+
+        setProgress(Math.min(i + CHUNK, total));
+    }
+
+    setProgress(total, 'Done!');
+
+    // Build result summary
+    let resultHtml = '';
+    if (imported > 0) {
+        resultHtml += `<div class="alert alert-success" style="margin-bottom:10px;">
+            <i class="fas fa-circle-check"></i>
+            <div><strong>${imported} course(s) saved successfully</strong> to the database.</div>
+        </div>`;
+    }
+    if (skipped > 0) {
+        resultHtml += `<div class="alert alert-info" style="margin-bottom:10px;">
+            <i class="fas fa-circle-info"></i>
+            <div><strong>${skipped} course(s) were skipped</strong> — they already exist in the database (same code, school, level, semester, and year).</div>
+        </div>`;
+    }
+    if (failMsgs.length) {
+        resultHtml += `<div class="alert alert-danger" style="margin-bottom:10px;">
+            <i class="fas fa-circle-xmark"></i>
+            <div><strong>${failMsgs.length} error(s):</strong><br>${failMsgs.map(m => `• ${escapeHtml(m)}`).join('<br>')}</div>
+        </div>`;
+    }
+
+    document.getElementById('bulkProgressSection').style.display = 'none';
+    document.getElementById('bulkResultSection').style.display   = 'block';
+    document.getElementById('bulkResultSection').innerHTML       = resultHtml;
+
+    btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Save to Database';
+
+    if (imported > 0) {
+        showToast(`${imported} course(s) imported successfully!`);
+        _bulkParsed = [];
+        document.getElementById('bulkImportBtn').disabled = true;
+        loadCourses(); // refresh course list in background
+    } else if (!failMsgs.length) {
+        showToast('All courses already existed — nothing new was added.', false);
+    }
+};
+
+// ── Tab switching — extend to load courses ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.dataset.tab === 'courseManagement') loadCourses();
+    });
+});
+
+// ==================== INIT ====================
+(async () => {
+    await Promise.all([loadFeeTypes(), loadFeeSchedules(), loadFilterOptions()]);
+    await refreshStats();
+})();
+</script>
+</body>
+</html>

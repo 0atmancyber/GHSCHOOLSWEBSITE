@@ -2168,6 +2168,22 @@
     </div>
   </div>
 
+  <!-- Student Portal Choice Modal -->
+  <div id="studentPortalChoiceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:3100; align-items:center; justify-content:center;"> 
+    <div style="background:#fff; width:92%; max-width:520px; border-radius:10px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.4); text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <h3 style="margin:0; font-size:1.1rem; color:#b22222">Student Portal</h3>
+        <button id="studentPortalChoiceClose" style="background:transparent; border:none; font-size:20px; cursor:pointer;">&times;</button>
+      </div>
+      <p style="color:#444; margin-top:8px;">Are you a new student or a continuing student?</p>
+      <div style="display:flex; gap:12px; margin-top:14px; flex-wrap:wrap;">
+        <button id="studentPortalNew" style="flex:1 1 200px; background:#b22222; color:#fff; border:none; padding:12px 14px; border-radius:8px; cursor:pointer; font-weight:700;">New Student</button>
+        <button id="studentPortalCont" style="flex:1 1 200px; background:#333; color:#fff; border:none; padding:12px 14px; border-radius:8px; cursor:pointer; font-weight:700;">Continuing Student</button>
+      </div>
+      <p style="margin-top:12px; color:#666; font-size:0.95rem;">You will be redirected shortly after selection.</p>
+    </div>
+  </div>
+
   <div class="top-bar">
     <div class="top-left"></div>
     <div class="top-right">
@@ -2971,6 +2987,35 @@
       // Close modal when clicking the backdrop
       var modal = document.getElementById('applyModal');
       if(modal){ modal.addEventListener('click', function(e){ if(e.target === modal) closeApplyModal(); }); }
+
+      // Student Portal choice handling
+      var studentPortalModal = document.getElementById('studentPortalChoiceModal');
+      function showStudentPortalModal(){ if(studentPortalModal) studentPortalModal.style.display = 'flex'; }
+      function closeStudentPortalModal(){ if(studentPortalModal) studentPortalModal.style.display = 'none'; }
+
+      // Desktop top link
+      document.querySelectorAll('.top-login').forEach(function(el){
+        el.addEventListener('click', function(e){
+          e.preventDefault();
+          showStudentPortalModal();
+        });
+      });
+
+      // Mobile portal link is injected dynamically; delegate clicks
+      document.addEventListener('click', function(e){
+        var mobile = e.target.closest('.student-portal-mobile');
+        if(mobile){ e.preventDefault(); showStudentPortalModal(); }
+      });
+
+      // Modal controls
+      var spClose = document.getElementById('studentPortalChoiceClose');
+      if(spClose) spClose.addEventListener('click', closeStudentPortalModal);
+      if(studentPortalModal) studentPortalModal.addEventListener('click', function(e){ if(e.target === studentPortalModal) closeStudentPortalModal(); });
+
+      var spNew = document.getElementById('studentPortalNew');
+      var spCont = document.getElementById('studentPortalCont');
+      if(spNew) spNew.addEventListener('click', function(){ showLoadingAndRedirect('newstudent.html'); });
+      if(spCont) spCont.addEventListener('click', function(){ showLoadingAndRedirect('signup.html'); });
 
       // Attach click handlers to any Apply links/buttons (by text or classes)
       var nodes = Array.from(document.querySelectorAll('a, button'));

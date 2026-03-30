@@ -972,6 +972,260 @@
     .tpct-card.selected .tpct-check, .tpct-card.selected-full .tpct-check { display:flex; }
     .tpct-card.selected-full .tpct-check { background:var(--success); }
 
+    /* ── PAY CHECKOUT PAGE ──────────────────────────────── */
+    #payCheckoutPage {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 800;
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+      animation: checkoutPageIn .3s cubic-bezier(.4,0,.2,1) both;
+    }
+    #payCheckoutPage.show { display: flex; }
+    @keyframes checkoutPageIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .co-topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .co-back-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text);
+      font-size: 16px;
+      cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .co-back-btn:hover { background: var(--bg); }
+    .co-topbar-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--text);
+      flex: 1;
+    }
+    .co-secure-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: var(--success);
+      background: var(--success-light);
+      border-radius: 20px;
+      padding: 5px 12px;
+    }
+    .co-body {
+      flex: 1;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .co-hero {
+      border-radius: 20px;
+      padding: 32px 28px;
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .co-hero.orange { background: linear-gradient(135deg,#F97316 0%,#EA580C 100%); }
+    .co-hero.green  { background: linear-gradient(135deg,#00C48C 0%,#00A878 100%); }
+    .co-hero::before {
+      content: '';
+      position: absolute;
+      top: -50px; right: -50px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50%;
+    }
+    .co-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -30px;
+      width: 150px; height: 150px;
+      background: rgba(255,255,255,.05);
+      border-radius: 50%;
+    }
+    .co-hero-icon {
+      width: 60px; height: 60px;
+      background: rgba(255,255,255,.18);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 16px;
+      position: relative; z-index: 1;
+    }
+    .co-hero-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: .75;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .co-hero-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .co-hero-desc {
+      font-size: 13px;
+      opacity: .8;
+      line-height: 1.5;
+      position: relative; z-index: 1;
+    }
+    .co-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .co-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .co-card-header-icon {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .co-card-header-icon.green { background: var(--success-light); color: var(--success); }
+    .co-card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .co-card-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .co-fee-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .co-fee-row:last-child { border-bottom: none; }
+    .co-fee-row-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .co-fee-row-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .co-fee-row-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .co-fee-row-amt {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .co-total-bar {
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .co-total-bar.orange { background: var(--primary-light); border: 1.5px solid rgba(249,115,22,.2); }
+    .co-total-bar.green  { background: var(--success-light);  border: 1.5px solid rgba(0,196,140,.2); }
+    .co-total-label { font-size: 13px; font-weight: 700; color: var(--text); }
+    .co-total-sub   { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+    .co-total-amt {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: -0.5px;
+    }
+    .co-total-amt.orange { color: var(--primary); }
+    .co-total-amt.green  { color: var(--success); }
+    .co-pay-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform .2s, box-shadow .2s, filter .2s;
+    }
+    .co-pay-btn.orange {
+      background: linear-gradient(135deg,#F97316,#EA580C);
+      box-shadow: 0 6px 24px rgba(249,115,22,.35);
+    }
+    .co-pay-btn.green {
+      background: linear-gradient(135deg,#00C48C,#00A878);
+      box-shadow: 0 6px 24px rgba(0,196,140,.35);
+    }
+    .co-pay-btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+    .co-pay-btn:active { transform: translateY(0); }
+    .co-pay-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; filter: none; box-shadow: none; }
+    .co-student-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+    }
+    .co-student-avatar {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .co-student-name { font-weight: 700; font-size: 14px; color: var(--text); }
+    .co-student-id   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .co-trust-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0 0 4px;
+    }
+    .co-trust-strip i { font-size: 13px; color: var(--success); }
+
     /* ── MILESTONE PAYMENT CARDS ───────────────────────── */
     .milestone-card {
       background: var(--bg);
@@ -1057,46 +1311,7 @@
       margin-top: 2px;
     }
 
-    /* ── FEE SCHEDULE PAGE ──────────────────────────────── */
-    .fee-schedule-page {
-      display: none;
-    }
-    .fee-schedule-page.active {
-      display: block;
-    }
-    .fee-schedule-page-header {
-      background: var(--primary);
-      border-radius: var(--radius-lg);
-      padding: 28px 32px;
-      color: #fff;
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .fee-schedule-page-header::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 200px; height: 200px;
-      background: rgba(255,255,255,.06);
-      border-radius: 50%;
-    }
-    .fee-schedule-back {
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 10px;
-      color: #fff;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 16px;
-      transition: background .15s;
-    }
-    .fee-schedule-back:hover { background: rgba(255,255,255,.25); }
+    /* Fee schedule styles removed */
     .fs-table-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -2059,11 +2274,6 @@
         max-width: 100%;
       }
 
-      /* Payments overview modal: single column on mobile */
-      #paymentsOverviewModal .modal-box {
-        max-width: 100%;
-      }
-
       /* Fix history table on mobile */
       #historyModal .modal-box {
         height: 90vh;
@@ -2076,6 +2286,500 @@
       .stats-row { grid-template-columns: 1fr; }
       .welcome-meta { gap: 6px; }
       .welcome-pill { font-size: 11px; padding: 4px 10px; }
+    }
+
+    /* ══════════════════════════════════════════════════════
+       PAYMENTS OVERVIEW — INLINE PAGE (sidebar stays visible)
+    ══════════════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════════════
+       PAYMENTS OVERVIEW PAGE — Full Redesign
+    ═══════════════════════════════════════════════════════ */
+    .pmov-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #F4F6FB;
+      z-index: 500;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .pmov-page.show { display: block; }
+
+    .pmov-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 0 60px;
+    }
+
+    /* ── Sticky topbar ──────────────────────────── */
+    .pmov-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(244,246,251,.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(229,231,235,.7);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .pmov-back-btn {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .pmov-back-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+    .pmov-header-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      flex: 1;
+    }
+    .pmov-header-subtitle { display: none; }
+    .pmov-topbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .pmov-topbar-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .pmov-topbar-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    /* ── Hero banner ──────────────────────────────── */
+    .pmov-hero {
+      margin: 20px 24px 0;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #111827 0%, #1f2937 60%, #111827 100%);
+      padding: 28px 28px 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .pmov-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(249,115,22,.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .pmov-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 40px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .pmov-hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative; z-index: 1;
+      margin-bottom: 20px;
+    }
+    .pmov-hero-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(249,115,22,.9);
+      margin-bottom: 6px;
+    }
+    .pmov-hero-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      color: #fff;
+    }
+    .pmov-hero-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,.5);
+      margin-top: 6px;
+    }
+    .pmov-hero-badge {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(249,115,22,.18);
+      border: 1px solid rgba(249,115,22,.3);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fb923c;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pmov-hero-badge.cleared {
+      background: rgba(0,196,140,.15);
+      border-color: rgba(0,196,140,.3);
+      color: #34d399;
+    }
+
+    /* Progress bar in hero */
+    .pmov-hero-progress {
+      position: relative; z-index: 1;
+    }
+    .pmov-hero-progress-track {
+      height: 6px;
+      background: rgba(255,255,255,.12);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .pmov-progress-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #F97316, #FBBF24);
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+    .pmov-progress-bar-fill.cleared-fill { background: linear-gradient(90deg,#00C48C,#34d399); }
+    .pmov-hero-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255,255,255,.45);
+    }
+    .pmov-hero-progress-labels span:first-child { color: rgba(255,255,255,.7); font-weight: 600; }
+
+    /* Stat chips row in hero */
+    .pmov-hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      position: relative; z-index: 1;
+      margin-bottom: 20px;
+    }
+    .pmov-hstat {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .pmov-hstat-label {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 5px;
+    }
+    .pmov-hstat-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+      color: #fff;
+    }
+
+    /* Progress bar (legacy IDs still used by JS) */
+    .pmov-progress-bar-wrap { display: none; }
+    .pmov-progress-bar-track { display: none; }
+    .pmov-progress-bar-labels { display: none; }
+    .pmov-header-stats { display: none; }
+
+    /* ── Content grid ─────────────────────────────── */
+    .pmov-content {
+      padding: 20px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Section label ────────────────────────────── */
+    .pmov-section-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 8px 0 2px;
+    }
+
+    /* ── Action cards ─────────────────────────────── */
+    .pmov-action-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .pmov-action-card {
+      border-radius: 18px;
+      padding: 20px 18px;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+    .pmov-action-card::before {
+      content: '';
+      position: absolute;
+      top: -35px; right: -35px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,.1);
+      border-radius: 50%;
+    }
+    .pmov-action-card::after {
+      content: '';
+      position: absolute;
+      bottom: -25px; left: -15px;
+      width: 80px; height: 80px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+    }
+    .pmov-action-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 16px 40px rgba(0,0,0,.18); }
+    .pmov-action-card:active { transform: translateY(-1px) scale(1); }
+    .pmov-action-card.orange { background: linear-gradient(145deg,#F97316 0%,#EA580C 100%); color: #fff; box-shadow: 0 6px 24px rgba(249,115,22,.3); }
+    .pmov-action-card.green  { background: linear-gradient(145deg,#00C48C 0%,#009E72 100%); color: #fff; box-shadow: 0 6px 24px rgba(0,196,140,.28); }
+    .pmov-ac-icon {
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,.2);
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+      position: relative; z-index: 1;
+    }
+    .pmov-ac-label {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: .7;
+      margin-bottom: 4px;
+      position: relative; z-index: 1;
+    }
+    .pmov-ac-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.6px;
+      margin-bottom: 5px;
+      position: relative; z-index: 1;
+    }
+    .pmov-ac-desc {
+      font-size: 11px;
+      opacity: .75;
+      line-height: 1.45;
+      margin-bottom: 14px;
+      position: relative; z-index: 1;
+    }
+    .pmov-ac-btn {
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 9px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 7px 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .15s;
+      position: relative; z-index: 1;
+      letter-spacing: .3px;
+    }
+    .pmov-ac-btn:hover { background: rgba(255,255,255,.3); }
+
+    /* ── Fee breakdown table card ─────────────────── */
+    .pmov-fee-table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+    .pmov-fee-table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .pmov-fee-table-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .pmov-fee-table-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .pmov-fee-row-new {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .pmov-fee-row-new:last-child { border-bottom: none; }
+    .pmov-fee-row-new:hover { background: #FAFBFE; }
+    .pmov-fee-row-icon {
+      width: 38px; height: 38px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .pmov-fee-row-info { flex: 1; min-width: 0; }
+    .pmov-fee-row-name {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+    .pmov-fee-row-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .pmov-fee-row-right { text-align: right; flex-shrink: 0; min-width: 90px; }
+    .pmov-fee-row-bal {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .pmov-fee-row-pct-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+      width: 72px;
+      margin-left: auto;
+    }
+    .pmov-fee-row-pct-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .7s ease;
+    }
+
+    /* ── Level cards ─────────────────────────────── */
+    .pmov-level-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .pmov-level-card.is-current { border-color: var(--primary); border-width: 2px; }
+    .pmov-level-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pmov-level-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #fff; flex-shrink: 0;
+    }
+    .pmov-level-title { flex: 1; min-width: 0; }
+    .pmov-level-title strong {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 800; color: #fff;
+    }
+    .pmov-level-title small { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; display: block; }
+    .pmov-level-badge {
+      border-radius: 20px; padding: 4px 11px; font-size: 9px; font-weight: 800;
+      letter-spacing: .6px; text-transform: uppercase;
+      background: rgba(255,255,255,.2); color: #fff; white-space: nowrap;
+    }
+    .pmov-cleared-banner {
+      margin: 0 14px 14px;
+      background: var(--success-light);
+      border: 1px solid rgba(0,196,140,.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 700; color: var(--success);
+    }
+    .pmov-locked-card .pmov-level-header { opacity: .75; }
+    .pmov-locked-body {
+      padding: 12px 16px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .pmov-locked-icon {
+      width: 34px; height: 34px;
+      background: rgba(148,163,184,.1);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #94A3B8; flex-shrink: 0;
+    }
+    .pmov-locked-text strong {
+      display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px;
+    }
+    .pmov-locked-text small { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .pmov-notif-pill {
+      margin: 0 14px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 11px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    /* Loading state */
+    .pmov-loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .pmov-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    .pmov-loading p { font-size: 13px; font-weight: 500; }
+
+    /* Responsive — payments page */
+    @media (max-width: 600px) {
+      .pmov-hero { margin: 12px 12px 0; padding: 20px 18px 18px; border-radius: 16px; }
+      .pmov-hero-amount { font-size: 30px; }
+      .pmov-hero-stats { grid-template-columns: repeat(3,1fr); gap: 7px; }
+      .pmov-hstat { padding: 10px 10px; }
+      .pmov-hstat-value { font-size: 14px; }
+      .pmov-content { padding: 14px 12px 0; }
+      .pmov-action-cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .pmov-ac-amount { font-size: 18px; }
+      .pmov-topbar { padding: 0 14px; }
+      .pmov-topbar-btn span { display: none; }
     }
 
     /* ── PRINT STYLES ──────────────────────────────────── */
@@ -2118,9 +2822,7 @@
         <a href="#" data-page="payment">
           <i class="fas fa-credit-card"></i> Payments
         </a>
-        <a href="#" data-page="fee-schedule">
-          <i class="fas fa-file-invoice-dollar"></i> Fee Schedule
-        </a>
+        <!-- Fee Schedule removed -->
         <a href="#" data-page="register">
           <i class="fas fa-clipboard-check"></i> Course Register
         </a>
@@ -2315,70 +3017,7 @@
 
       </div><!-- /page-content -->
 
-      <!-- ══════ FEE SCHEDULE PAGE ══════ -->
-      <div class="fee-schedule-page" id="feeSchedulePage">
-        <div style="padding:28px;max-width:1100px;margin:0 auto;">
-          <!-- Back button -->
-          <button class="fee-schedule-back" onclick="closeFeeSchedulePage()">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-          </button>
-
-          <!-- Page header -->
-          <div class="fee-schedule-page-header">
-            <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
-              <div style="width:56px;height:56px;background:rgba(255,255,255,.18);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">
-                <i class="fas fa-file-invoice-dollar"></i>
-              </div>
-              <div>
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.3px;">Fee Schedule</div>
-                <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:3px;" id="fsPageSubtitle">Loading your fee schedule…</div>
-              </div>
-            </div>
-            <!-- Summary stats -->
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;position:relative;z-index:1;" id="fsPageStats">
-              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
-                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Total Fees</div>
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;" id="fsTotalFees">GHS 0.00</div>
-              </div>
-              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
-                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Total Paid</div>
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#86efac;" id="fsTotalPaid">GHS 0.00</div>
-              </div>
-              <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
-                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.75;margin-bottom:5px;">Outstanding</div>
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fca5a5;" id="fsOutstanding">GHS 0.00</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Payment milestone cards on fee schedule page -->
-          <div id="fsMilestoneCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;"></div>
-
-          <!-- Fee table -->
-          <div class="fs-table-wrap">
-            <div class="fs-table-header">
-              <div>
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;">Fee Breakdown</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="fsTableSubtitle">All fees for this academic year</div>
-              </div>
-              <button class="btn-ghost" onclick="openHistoryModal()"><i class="fas fa-history" style="margin-right:5px;"></i>Payment History</button>
-            </div>
-            <div class="fs-row fs-row-head">
-              <div>Fee Name</div>
-              <div>Total Amount</div>
-              <div>Paid</div>
-              <div>Balance</div>
-              <div>Action</div>
-            </div>
-            <div id="fsFeeRows">
-              <div style="padding:32px;text-align:center;color:var(--text-muted);">
-                <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;"></div>
-                Loading fee schedule…
-              </div>
-            </div>
-          </div>
-        </div>
-      </div><!-- /fee-schedule-page -->
+      <!-- Fee Schedule page removed -->
     </main>
   </div><!-- /app-shell -->
 
@@ -2454,7 +3093,33 @@
   ══════════════════════════════════════ -->
 
   <!-- Tuition Modal — Premium Redesign -->
+  <!-- ══════════════════════════════════════
+       PAY CHECKOUT PAGE (full-screen page)
+  ══════════════════════════════════════ -->
+  <div id="payCheckoutPage">
+    <!-- Top bar -->
+    <div class="co-topbar">
+      <button class="co-back-btn" onclick="closePayCheckoutPage()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="co-topbar-title" id="coTopbarTitle">Payment Checkout</div>
+      <div class="co-secure-badge">
+        <i class="fas fa-shield-alt"></i> Secure
+      </div>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="co-body" id="coBody">
+      <!-- Populated by JS -->
+      <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+        <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;"></div>
+        Loading…
+      </div>
+    </div>
+  </div>
+
   <!-- ══ PAY ALL FEES MODAL ══ -->
+
   <div class="modal-overlay" id="payAllModal" onclick="closeModalBackdrop(event,'payAllModal')">
     <div class="modal-box" style="max-width:500px;">
 
@@ -2874,31 +3539,79 @@
     </div>
   </div>
 
-  <!-- ══════ PAYMENTS OVERVIEW MODAL ══════ -->
-  <div class="modal-overlay" id="paymentsOverviewModal" onclick="closeModalBackdrop(event,'paymentsOverviewModal')">
-    <div class="modal-box" style="max-width:860px;">
-      <div class="modal-header" style="background:linear-gradient(135deg,#1C1C1C,#2d2d2d);border-radius:var(--radius) var(--radius) 0 0;padding:22px 24px 18px;margin:-24px -24px 0;">
-        <div style="display:flex;align-items:center;gap:12px;flex:1;">
-          <div style="width:44px;height:44px;background:var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="fas fa-layer-group"></i></div>
+  <!-- ══════ PAYMENTS OVERVIEW PAGE ══════ -->
+  <div class="pmov-page" id="paymentsOverviewModal">
+    <div class="pmov-wrap">
+
+      <!-- Sticky top bar -->
+      <div class="pmov-topbar">
+        <button class="pmov-back-btn" onclick="closePaymentsOverviewPage()" aria-label="Back">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="pmov-header-title" id="pmovTitle">My Payments</div>
+        <!-- hidden subtitle kept for JS compat -->
+        <span class="pmov-header-subtitle" id="pmovSubtitle" style="display:none;"></span>
+        <div class="pmov-topbar-actions">
+          <button class="pmov-topbar-btn" onclick="openHistoryModal()">
+            <i class="fas fa-history"></i> History
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero banner -->
+      <div class="pmov-hero">
+        <div class="pmov-hero-top">
           <div>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:17px;color:#fff;" id="pmovTitle">My Fee Schedule</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;" id="pmovSubtitle">All 4 levels · intake periods &amp; fee breakdown</div>
+            <div class="pmov-hero-label">Outstanding Balance</div>
+            <div class="pmov-hero-amount" id="pmovStatBal">—</div>
+            <div class="pmov-hero-sub" id="pmovHeroSub">Loading your fee summary…</div>
+          </div>
+          <div class="pmov-hero-badge" id="pmovHeroBadge">
+            <i class="fas fa-clock"></i> <span id="pmovHeroBadgeText">Pending</span>
           </div>
         </div>
-        <button class="modal-close" onclick="closeModal('paymentsOverviewModal')" style="color:#fff;background:rgba(255,255,255,.12);border:none;">&times;</button>
-      </div>
-      <div class="modal-body" style="padding-top:20px;" id="paymentsOverviewBody">
-        <div style="text-align:center;padding:32px;color:var(--text-muted);">
-          <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;"></div>
-          Loading fee schedule…
+
+        <!-- Stat chips -->
+        <div class="pmov-hero-stats" id="pmovHeaderStats">
+          <div class="pmov-hstat">
+            <div class="pmov-hstat-label">Total Required</div>
+            <div class="pmov-hstat-value" id="pmovStatReq">—</div>
+          </div>
+          <div class="pmov-hstat">
+            <div class="pmov-hstat-label">Amount Paid</div>
+            <div class="pmov-hstat-value" style="color:#34d399;" id="pmovStatPaid">—</div>
+          </div>
+          <div class="pmov-hstat">
+            <div class="pmov-hstat-label">Progress</div>
+            <div class="pmov-hstat-value" id="pmovStatPct">0%</div>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="pmov-hero-progress">
+          <div class="pmov-hero-progress-track">
+            <div class="pmov-progress-bar-fill" id="pmovProgressFill" style="width:0%;"></div>
+          </div>
+          <div class="pmov-hero-progress-labels">
+            <span id="pmovProgressLabel">0% paid</span>
+            <span id="pmovProgressRight">—</span>
+          </div>
+        </div>
+
+        <!-- Hidden compat elements for JS -->
+        <div style="display:none;">
+          <div class="pmov-progress-bar-wrap"><div class="pmov-progress-bar-track"></div><div class="pmov-progress-bar-labels"></div></div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-outline" onclick="closeModal('paymentsOverviewModal')">Close</button>
-        <button class="btn-solid" onclick="closeModal('paymentsOverviewModal');openTuitionModal();">
-          <i class="fas fa-credit-card" style="margin-right:6px;"></i>Pay Current Level
-        </button>
+
+      <!-- Main content area -->
+      <div class="pmov-content" id="paymentsOverviewBody">
+        <div class="pmov-loading">
+          <div class="pmov-spinner"></div>
+          <p>Loading fee summary…</p>
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -3118,7 +3831,7 @@
       });
       // Route actions
       if(page === 'payment')      { openPaymentsOverviewModal();        return; }
-      if(page === 'fee-schedule') { openFeeSchedulePage();              return; }
+      // Fee Schedule removed: navigation disabled
       if(page === 'register')     { registerCourses();                  return; }
       if(page === 'results')      { showResultsNotice();                return; }
       if(page === 'support')      { openModal('globalMessageModal'); showMsg('Support', 'Please contact admin via WhatsApp or email for support.'); return; }
@@ -3130,153 +3843,16 @@
     }
     window.showPage = showPage;
 
-    /* ── FEE SCHEDULE PAGE ──────────────────────────────── */
+    /* Fee Schedule feature removed — stubs to avoid runtime errors */
     function openFeeSchedulePage(){
-      const mainContent = document.querySelector('.page-content');
-      const fsPage = document.getElementById('feeSchedulePage');
-      if(!mainContent || !fsPage) return;
-      mainContent.style.display = 'none';
-      fsPage.classList.add('active');
-      renderFeeSchedulePage();
+      try{ showMsg('Feature removed', 'Fee Schedule has been removed from the application.'); }catch(e){ console.warn('Fee Schedule navigation attempted'); }
     }
     window.openFeeSchedulePage = openFeeSchedulePage;
 
-    function closeFeeSchedulePage(){
-      const mainContent = document.querySelector('.page-content');
-      const fsPage = document.getElementById('feeSchedulePage');
-      if(!mainContent || !fsPage) return;
-      mainContent.style.display = '';
-      fsPage.classList.remove('active');
-      // Reset sidebar active state
-      document.querySelectorAll('.sidebar-nav a').forEach(a => {
-        a.classList.toggle('active', a.dataset.page === 'dashboard');
-      });
-    }
+    function closeFeeSchedulePage(){ /* no-op: page removed */ }
     window.closeFeeSchedulePage = closeFeeSchedulePage;
 
-    function renderFeeSchedulePage(){
-      const schedule = _currentFeeSchedule || [];
-      const summary  = window._lastPaymentSummary || {};
-
-      // Subtitle
-      const sub = document.getElementById('fsPageSubtitle');
-      if(sub && schedule.length){
-        const s = schedule[0];
-        sub.textContent = `${s.academic_year || ''} · Level ${s.level || ''} · ${s.program || 'All Programs'}`;
-      }
-
-      // Totals
-      let grandTotal = 0, grandPaid = 0;
-      schedule.forEach(f => {
-        const n = (f.fee_name||'').toLowerCase();
-        let paid = 0;
-        if(n.includes('tuition'))    paid = Number(summary.tuitionPaid||0);
-        else if(n.includes('src'))   paid = Number(summary.srcPaid||0);
-        else if(n.includes('medical')) paid = Number(summary.medPaid||0);
-        else if(n.includes('department')||n.includes('departmental')) paid = Number(summary.deptPaid||0);
-        paid = Math.min(paid, Number(f.amount||0));
-        grandTotal += Number(f.amount||0);
-        grandPaid  += paid;
-      });
-      const grandBal = Math.max(0, grandTotal - grandPaid);
-
-      const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
-      setEl('fsTotalFees',  'GHS '+gh(grandTotal));
-      setEl('fsTotalPaid',  'GHS '+gh(grandPaid));
-      setEl('fsOutstanding','GHS '+gh(grandBal));
-
-      // Tuition/other split for milestone cards
-      const tFees     = schedule.filter(f=>(f.fee_name||'').toLowerCase().includes('tuition'));
-      const otherKeys = ['src','medical','department','departmental'];
-      const oFees     = schedule.filter(f=>{const n=(f.fee_name||'').toLowerCase();return otherKeys.some(k=>n.includes(k));});
-      const tTotal    = tFees.reduce((s,f)=>s+Number(f.amount||0),0);
-      const tPaid     = Math.min(Number(summary.tuitionPaid||0),tTotal);
-      const tBal      = Math.max(0,tTotal-tPaid);
-      const tPct      = tTotal>0?Math.min(100,Math.round((tPaid/tTotal)*100)):100;
-      const oTotal    = oFees.reduce((s,f)=>s+Number(f.amount||0),0);
-      const oPaid     = Math.min(oFees.reduce((s,f)=>{const n=(f.fee_name||'').toLowerCase();if(n.includes('src'))return s+Number(summary.srcPaid||0);if(n.includes('medical'))return s+Number(summary.medPaid||0);if(n.includes('department')||n.includes('departmental'))return s+Number(summary.deptPaid||0);return s;},0),oTotal);
-      const oBal      = Math.max(0,oTotal-oPaid);
-      const need80    = Math.max(0,Math.round(tTotal*0.8*100)/100-tPaid);
-      const met80     = tPct>=80&&oBal<=0.01;
-      const metFull   = tBal<=0.01&&oBal<=0.01;
-
-      // Milestone cards on the page
-      const mc = document.getElementById('fsMilestoneCards');
-      if(mc){
-        mc.innerHTML = `
-          <div class="milestone-card ${met80?'milestone-met':''}" onclick="${met80?'':'selectMilestone(\"80\")'}" style="cursor:${met80?'default':'pointer'};">
-            <div class="milestone-label">80% Tuition + Others</div>
-            <div class="milestone-icon">${met80?'<i class="fas fa-check-circle" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-unlock" style="font-size:24px;color:var(--primary);"></i>'}</div>
-            <div class="milestone-amt" style="font-size:18px;">${met80?'Met':'GHS '+gh(Math.max(0,need80+oBal))}</div>
-            <div class="milestone-desc">${met80?'Course registration is unlocked':'Pay to unlock course registration'}</div>
-            ${!met80?`<button class="milestone-btn" style="margin-top:10px;" onclick="event.stopPropagation();selectMilestone('80')"><i class="fas fa-unlock" style="margin-right:5px;"></i>Pay 80%</button>`:`<div class="milestone-done-badge" style="margin-top:10px;"><i class="fas fa-check"></i> Registration Unlocked</div>`}
-          </div>
-          <div class="milestone-card ${metFull?'milestone-met-full':''}" onclick="${metFull?'':'selectMilestone(\"100\")'}" style="cursor:${metFull?'default':'pointer'};">
-            <div class="milestone-label">100% Tuition + Others</div>
-            <div class="milestone-icon">${metFull?'<i class="fas fa-star" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-trophy" style="font-size:24px;color:#F59E0B;"></i>'}</div>
-            <div class="milestone-amt" style="font-size:18px;">${metFull?'All Cleared!':'GHS '+gh(Math.max(0,tBal+oBal))}</div>
-            <div class="milestone-desc">${metFull?'All fees fully settled':'Pay to fully clear all fees'}</div>
-            ${!metFull?`<button class="milestone-btn milestone-btn-full" style="margin-top:10px;" onclick="event.stopPropagation();selectMilestone('100')"><i class="fas fa-trophy" style="margin-right:5px;"></i>Pay in Full</button>`:`<div class="milestone-done-badge" style="background:var(--success-light);color:var(--success);margin-top:10px;"><i class="fas fa-star"></i> Fully Cleared</div>`}
-          </div>
-          <div class="milestone-card milestone-balance" style="cursor:default;">
-            <div class="milestone-label">Outstanding Balance</div>
-            <div class="milestone-icon">${grandBal<=0.01?'<i class="fas fa-check-circle" style="color:var(--success);font-size:26px;"></i>':'<i class="fas fa-exclamation-triangle" style="font-size:24px;color:var(--danger);"></i>'}</div>
-            <div class="milestone-amt" style="font-size:18px;color:${grandBal<=0.01?'var(--success)':'var(--danger)'};">GHS ${gh(grandBal)}</div>
-            <div class="milestone-desc">${grandBal<=0.01?'No outstanding balance':'Total remaining balance'}</div>
-            <div style="margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.6;">
-              Tuition: <strong>GHS ${gh(tBal)}</strong><br>
-              Others: <strong>GHS ${gh(oBal)}</strong>
-            </div>
-          </div>
-        `;
-      }
-
-      // Fee table rows
-      const rows = document.getElementById('fsFeeRows');
-      if(!rows) return;
-      if(!schedule.length){
-        rows.innerHTML = `<div style="padding:32px;text-align:center;color:var(--text-muted);">No fee schedule available. Please contact admin.</div>`;
-        return;
-      }
-
-      rows.innerHTML = schedule.map(f => {
-        const style = getFeeStyle(f.fee_name);
-        const n = (f.fee_name||'').toLowerCase();
-        let paid = 0;
-        if(n.includes('tuition'))    paid = Number(summary.tuitionPaid||0);
-        else if(n.includes('src'))   paid = Number(summary.srcPaid||0);
-        else if(n.includes('medical')) paid = Number(summary.medPaid||0);
-        else if(n.includes('department')||n.includes('departmental')) paid = Number(summary.deptPaid||0);
-        paid = Math.min(paid, Number(f.amount||0));
-        const bal = Math.max(0, Number(f.amount||0)-paid);
-        const fullyPaid = bal<=0.01;
-        const partial = paid>0&&!fullyPaid;
-        const isTuition = n.includes('tuition');
-
-        const statusClass = fullyPaid?'paid':partial?'partial':'unpaid';
-        const statusLabel = fullyPaid?'Paid':partial?'Partial':'Unpaid';
-        const statusColors = {paid:'background:var(--success-light);color:var(--success)',partial:'background:var(--warning-light);color:#8B6200',unpaid:'background:var(--danger-light);color:var(--danger)'};
-
-        return `<div class="fs-row">
-          <div class="fs-fee-name">
-            <div class="fs-fee-icon" style="background:${style.bg};color:${style.color};"><i class="fas ${style.icon}"></i></div>
-            <div>
-              <div style="font-weight:700;">${escapeHtml(f.fee_name)}</div>
-              <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(f.academic_year||'')} · Sem ${f.semester||1}</div>
-            </div>
-          </div>
-          <div class="fs-amount">GHS ${gh(f.amount)}</div>
-          <div class="fs-paid" style="color:${fullyPaid?'var(--success)':paid>0?'#8B6200':'var(--text-muted)'};">${paid>0?'GHS '+gh(paid):'—'}</div>
-          <div class="fs-bal" style="color:${fullyPaid?'var(--success)':bal>0?'var(--danger)':'var(--success)'};">${fullyPaid?'<i class="fas fa-check"></i> Cleared':'GHS '+gh(bal)}</div>
-          <div>
-            ${fullyPaid
-              ? `<button class="fs-pay-btn" disabled style="background:var(--success);opacity:.8;"><i class="fas fa-check"></i> Paid</button>`
-              : `<button class="fs-pay-btn" onclick="${isTuition?'openTuitionModal()':'openOtherFeesModal()'}"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>Pay</button>`
-            }
-          </div>
-        </div>`;
-      }).join('');
-    }
+    function renderFeeSchedulePage(){ /* no-op: page removed */ }
     window.renderFeeSchedulePage = renderFeeSchedulePage;
 
     /* ── BOTTOM NAV NAVIGATION ──────────────────────────── */
@@ -4183,17 +4759,15 @@
       grid.innerHTML = parts.join('');
     }
 
-    // selectMilestone: opens the correct payment modal for 80% or 100% payment
+    // selectMilestone: opens the checkout page for 80% or 100% payment
     window.selectMilestone = function(pct){
-      if(pct === '80'){
-        // Open tuition modal pre-selected to 80%
-        openTuitionModal().then ? openTuitionModal().then(()=>{ setTimeout(()=>selectTuitionPercentCard(80), 200); }) : (() => { openTuitionModal(); setTimeout(()=>selectTuitionPercentCard(80), 400); })();
+      if(window.openPayCheckoutPage){
+        window.openPayCheckoutPage(pct === '80' ? 80 : 100);
       } else {
-        // Full payment — open tuition modal pre-selected to 100%
-        openTuitionModal().then ? openTuitionModal().then(()=>{ setTimeout(()=>selectTuitionPercentCard(100), 200); }) : (() => { openTuitionModal(); setTimeout(()=>selectTuitionPercentCard(100), 400); })();
+        // fallback: try again shortly after page finishes loading
+        setTimeout(() => window.openPayCheckoutPage && window.openPayCheckoutPage(pct === '80' ? 80 : 100), 300);
       }
     };
-    window.selectMilestone = window.selectMilestone;
 
     /* ── FETCH STUDENT PROFILE ──────────────────────────── */
     async function fetchStudentProfile(){
@@ -6195,184 +6769,494 @@
     loadSavedSettings();
 
     /* ══════════════════════════════════════════════════════
-       PAYMENTS OVERVIEW MODAL — 4-LEVEL INTAKE CARDS
+       PAYMENTS OVERVIEW — PAGE
     ══════════════════════════════════════════════════════ */
-    async function openPaymentsOverviewModal(){
-      openModal('paymentsOverviewModal');
-      var body=document.getElementById('paymentsOverviewBody');
-      var subtitle=document.getElementById('pmovSubtitle');
-      if(!body) return;
-      body.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;"></div>Loading fee summary...</div>';
-      try{
-        function normLvl(r){return String(r||'').replace(/\D/g,'');}
-        var sLvl=normLvl(window.studentLevel||'')||'100';
-        var sLvlNum=parseInt(sLvl,10)||100;
-        var prog=(window.studentProgram||window.studentDept||'').toLowerCase().trim();
-        var progLabel=window.studentProgram||window.studentDept||'';
-        var yr=_academicYear||'';
-        if(subtitle) subtitle.textContent=progLabel+(yr?' \u00b7 '+yr:'')+' \u00b7 Level '+sLvl;
+    // Store totals for the footer CTA
+    window._pmovTotBal = 0;
+    window._pmovCurC   = 'var(--primary)';
 
-        /* fetch only current level fees */
-        var schRes=await supabase.from('fee_schedules')
+    function openPaymentsOverviewPage(){
+      const mainContent = document.querySelector('.page-content');
+      const page = document.getElementById('paymentsOverviewModal');
+      if(!page) return;
+      if(mainContent) mainContent.style.display = 'none';
+      page.classList.add('show');
+      document.querySelectorAll('.sidebar-nav a').forEach(a => {
+        a.classList.toggle('active', a.dataset.page === 'payment');
+      });
+      _renderPaymentsOverviewContent();
+    }
+    window.openPaymentsOverviewModal = openPaymentsOverviewPage;
+    window.openPaymentsOverviewPage  = openPaymentsOverviewPage;
+
+    function closePaymentsOverviewPage(){
+      const mainContent = document.querySelector('.page-content');
+      const page = document.getElementById('paymentsOverviewModal');
+      if(page) page.classList.remove('show');
+      if(mainContent) mainContent.style.display = '';
+      document.querySelectorAll('.sidebar-nav a').forEach(a => {
+        a.classList.toggle('active', a.dataset.page === 'dashboard');
+      });
+    }
+    window.closePaymentsOverviewPage = closePaymentsOverviewPage;
+    const _origCloseModal = window.closeModal;
+    window.closeModal = function(id){
+      if(id === 'paymentsOverviewModal'){ closePaymentsOverviewPage(); return; }
+      _origCloseModal && _origCloseModal(id);
+    };
+
+    window.pmovTriggerPay = function(){
+      closePaymentsOverviewPage();
+      setTimeout(() => openPayCheckoutPage(100), 80);
+    };
+
+    /* ══════════════════════════════════════════════════════
+       PAY CHECKOUT PAGE — replaces the old modal
+    ══════════════════════════════════════════════════════ */
+    window.openPayCheckoutPage = async function(pct){
+      const page = document.getElementById('payCheckoutPage');
+      const body = document.getElementById('coBody');
+      const titleEl = document.getElementById('coTopbarTitle');
+      if(!page || !body) return;
+
+      // Show page
+      page.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      if(titleEl) titleEl.textContent = pct === 80 ? 'Pay 80% + Other Fees' : 'Pay All Fees';
+
+      // Loading state
+      body.innerHTML = `<div style="text-align:center;padding:80px 20px;color:var(--text-muted);">
+        <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px;"></div>
+        <div style="font-size:14px;font-weight:600;">Preparing checkout…</div>
+      </div>`;
+
+      try {
+        if(!totalPayable) await loadCanonicalFeesForStudent(studentId);
+        const summary = await fetchPaymentsSummary(studentId);
+        window._lastPaymentSummary = summary;
+
+        const fees  = _currentFeeSchedule || [];
+        const tFee  = fees.find(f=>(f.fee_name||'').toLowerCase().includes('tuition'));
+        const tTotal = tFee ? Number(tFee.amount||0) : (TUITION||0);
+        const tPaid  = Number(summary.tuitionPaid||0);
+        const tBal   = Math.max(0, tTotal - tPaid);
+
+        const otherFeeItems = fees.filter(f=>{
+          const n=(f.fee_name||'').toLowerCase();
+          return ['src','medical','department','departmental'].some(k=>n.includes(k));
+        }).map(f=>{
+          const n=(f.fee_name||'').toLowerCase();
+          let paid=0;
+          if(n.includes('src'))          paid=Number(summary.srcPaid||0);
+          else if(n.includes('medical')) paid=Number(summary.medPaid||0);
+          else if(n.includes('departmental')||n.includes('department')) paid=Number(summary.deptPaid||0);
+          paid=Math.min(paid,Number(f.amount||0));
+          const outstanding=Math.max(0,Number(f.amount||0)-paid);
+          return {name:f.fee_name||'Fee', outstanding};
+        }).filter(f=>f.outstanding>0.01);
+
+        const otherTotal = otherFeeItems.reduce((s,f)=>s+f.outstanding,0);
+
+        let tuitionCharge, grandTotal, heroDesc, feeRows;
+        const dotColors = ['#F97316','#6366F1','#00C48C','#FFB800','#EF4444'];
+
+        if(pct === 80){
+          const need80 = Math.max(0, Math.round((tTotal*0.8 - tPaid)*100)/100);
+          tuitionCharge = need80;
+          grandTotal    = Math.round((need80 + otherTotal)*100)/100;
+          heroDesc      = 'Pays 80% of tuition + all outstanding other fees. Unlocks course registration.';
+          feeRows = [
+            ...(need80>0.01?[{name:'Tuition (80% instalment)', amt:need80, dot:dotColors[0]}]:[]),
+            ...otherFeeItems.map((f,i)=>({name:f.name, amt:f.outstanding, dot:dotColors[(i+1)%dotColors.length]}))
+          ];
+        } else {
+          tuitionCharge = tBal;
+          grandTotal    = Math.round((tBal + otherTotal)*100)/100;
+          heroDesc      = 'Clears 100% of tuition and all outstanding fees. Full academic clearance.';
+          feeRows = [
+            ...(tBal>0.01?[{name:'Tuition (full clearance)', amt:tBal, dot:dotColors[0]}]:[]),
+            ...otherFeeItems.map((f,i)=>({name:f.name, amt:f.outstanding, dot:dotColors[(i+1)%dotColors.length]}))
+          ];
+        }
+
+        const colorClass = pct===80 ? 'orange' : 'green';
+        const iconClass  = pct===80 ? 'fa-unlock' : 'fa-trophy';
+        const studentInitial = (window.studentName||'S').charAt(0).toUpperCase();
+
+        const feeRowsHTML = feeRows.map(r=>`
+          <div class="co-fee-row">
+            <div class="co-fee-row-left">
+              <div class="co-fee-row-dot" style="background:${r.dot};"></div>
+              <div class="co-fee-row-name">${escapeHtml(r.name)}</div>
+            </div>
+            <div class="co-fee-row-amt">GHS ${gh(r.amt)}</div>
+          </div>`).join('');
+
+        // Store for payment
+        window._checkoutTotal = grandTotal;
+        window._checkoutPct   = pct;
+        window._checkoutFeeBreakdown = feeRows.map(r=>r.name+' '+gh(r.amt)).join(', ');
+        window._checkoutFeeType = pct===80 ? '80% Tuition + Other Fees' : '100% Full Clearance';
+
+        body.innerHTML = `
+          <!-- Hero amount card -->
+          <div class="co-hero ${colorClass}">
+            <div class="co-hero-icon"><i class="fas ${iconClass}"></i></div>
+            <div class="co-hero-label">${pct===80?'80% + Other Fees':'100% Full Clearance'}</div>
+            <div class="co-hero-amount">GHS ${gh(grandTotal)}</div>
+            <div class="co-hero-desc">${heroDesc}</div>
+          </div>
+
+          <!-- Student info card -->
+          <div class="co-card">
+            <div class="co-card-header">
+              <div class="co-card-header-icon${pct===100?' green':''}">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <div>
+                <div class="co-card-title">Paying As</div>
+                <div class="co-card-subtitle">Verified student account</div>
+              </div>
+            </div>
+            <div class="co-student-row">
+              <div class="co-student-avatar">${studentInitial}</div>
+              <div>
+                <div class="co-student-name">${escapeHtml(window.studentName||'Student')}</div>
+                <div class="co-student-id">${escapeHtml(studentId||'')} · ${escapeHtml(window.studentLevel||'')} · ${escapeHtml(window.studentDept||'')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fee breakdown card -->
+          <div class="co-card">
+            <div class="co-card-header">
+              <div class="co-card-header-icon${pct===100?' green':''}">
+                <i class="fas fa-list-ul"></i>
+              </div>
+              <div>
+                <div class="co-card-title">What You're Paying</div>
+                <div class="co-card-subtitle">${feeRows.length} fee item${feeRows.length!==1?'s':''} included</div>
+              </div>
+            </div>
+            ${feeRowsHTML || '<div style="padding:16px 20px;color:var(--text-muted);font-size:13px;">No outstanding fees in this category.</div>'}
+          </div>
+
+          <!-- Total bar -->
+          <div class="co-total-bar ${colorClass}">
+            <div>
+              <div class="co-total-label">Total Amount Due</div>
+              <div class="co-total-sub">Secured via Paystack</div>
+            </div>
+            <div class="co-total-amt ${colorClass}">GHS ${gh(grandTotal)}</div>
+          </div>
+
+          <!-- Pay button -->
+          ${grandTotal > 0.01 ? `
+          <button class="co-pay-btn ${colorClass}" id="coPayBtn" onclick="triggerCheckoutPayment()">
+            <i class="fas fa-lock" style="font-size:14px;"></i>
+            Pay GHS ${gh(grandTotal)} Securely
+          </button>` : `
+          <div style="background:var(--success-light);border-radius:14px;padding:20px;text-align:center;color:var(--success);">
+            <i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;">All fees cleared!</div>
+            <div style="font-size:12px;margin-top:4px;opacity:.8;">Nothing outstanding in this category.</div>
+          </div>`}
+
+          <!-- Trust strip -->
+          <div class="co-trust-strip">
+            <i class="fas fa-shield-alt"></i>
+            Payments are 256-bit SSL encrypted and processed securely via Paystack
+          </div>
+        `;
+      } catch(e){
+        console.error('[openPayCheckoutPage]', e);
+        body.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+          <i class="fas fa-exclamation-circle" style="font-size:32px;color:var(--danger);display:block;margin-bottom:14px;"></i>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;color:var(--text);">Could not load checkout</div>
+          <div style="font-size:13px;margin-top:6px;">Please check your connection and try again.</div>
+          <button onclick="closePayCheckoutPage()" style="margin-top:20px;padding:10px 24px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;">Go Back</button>
+        </div>`;
+      }
+    };
+
+    window.closePayCheckoutPage = function(){
+      const page = document.getElementById('payCheckoutPage');
+      if(page) page.classList.remove('show');
+      document.body.style.overflow = '';
+    };
+
+    window.triggerCheckoutPayment = function(){
+      const total = window._checkoutTotal || 0;
+      if(total <= 0.01){ showToast('Nothing to pay', 'error'); return; }
+      const btn = document.getElementById('coPayBtn');
+      if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner-inline" style="width:18px;height:18px;border-width:2px;"></div> Processing…'; }
+      closePayCheckoutPage();
+      setTimeout(()=>{
+        payWithPaystack(
+          window._checkoutFeeType || 'Fee Payment',
+          total,
+          window._checkoutFeeBreakdown || ''
+        );
+      }, 120);
+    };
+
+    async function _renderPaymentsOverviewContent(){
+      const body = document.getElementById('paymentsOverviewBody');
+      if(!body) return;
+      body.innerHTML = `<div class="pmov-loading"><div class="pmov-spinner"></div><p>Loading fee summary…</p></div>`;
+
+      // Reset header stats
+      ['pmovStatReq','pmovStatPaid','pmovStatBal'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.textContent = '—';
+      });
+
+      try{
+        function normLvl(r){ return String(r||'').replace(/\D/g,''); }
+        const sLvl    = normLvl(window.studentLevel||'')||'100';
+        const sLvlNum = parseInt(sLvl,10)||100;
+        const prog    = (window.studentProgram||window.studentDept||'').toLowerCase().trim();
+        const progLabel = window.studentProgram||window.studentDept||'';
+        const yr      = _academicYear||'';
+
+        const subEl = document.getElementById('pmovSubtitle');
+        if(subEl) subEl.textContent = (progLabel||'')+(yr?' · '+yr:'')+' · Level '+sLvl;
+        const titleEl = document.getElementById('pmovTitle');
+        if(titleEl) titleEl.textContent = 'My Payments';
+
+        // Fetch fees
+        const schRes = await supabase.from('fee_schedules')
           .select('id,level,semester,academic_year,amount,program,fee_type_id,fee_types(name)')
           .eq('level',sLvl).order('academic_year',{ascending:false});
         if(schRes.error) throw schRes.error;
-        var raw=schRes.data||[];
-        var pf=raw.filter(function(f){return f.program&&(f.program||'').toLowerCase()===prog;});
-        var curFees=pf.length?pf:raw.filter(function(f){return !f.program;});
-        var seen={};
-        curFees=curFees.filter(function(f){var nm=(f.fee_types&&f.fee_types.name)?f.fee_types.name:(f.fee_type||'');if(seen[nm])return false;seen[nm]=true;return true;});
+        const raw = schRes.data||[];
+        let pf = raw.filter(f=>f.program&&(f.program||'').toLowerCase()===prog);
+        let curFees = pf.length ? pf : raw.filter(f=>!f.program);
+        const seen = {};
+        curFees = curFees.filter(f=>{
+          const nm=(f.fee_types&&f.fee_types.name)?f.fee_types.name:(f.fee_type||'');
+          if(seen[nm]) return false; seen[nm]=true; return true;
+        });
 
-        /* fetch payments */
-        var allPay=[];
-        try{var pr=await supabase.from('payments').select('*').eq('student_id',studentId).in('status',['approved']);if(!pr.error)allPay=pr.data||[];}catch(_){}
-        if(!allPay.length){try{var pr2=await supabase.from('payments').select('*').eq('student_id',studentId);allPay=pr2.data||[];}catch(_){}}
+        // Fetch payments
+        let allPay = [];
+        try{ const pr=await supabase.from('payments').select('*').eq('student_id',studentId).in('status',['approved']); if(!pr.error) allPay=pr.data||[]; }catch(_){}
+        if(!allPay.length){ try{ const pr2=await supabase.from('payments').select('*').eq('student_id',studentId); allPay=pr2.data||[]; }catch(_){} }
 
         function sumPaid(pays){
-          var t=0,s=0,m=0,d=0,a=0,o=0;
-          (pays||[]).forEach(function(p){
-            var amt=Number(p.amount||0);
-            var type=(p.fee_type||p.fee_breakdown||'').toLowerCase();
-            var parts=type.split(',').map(function(x){return x.trim();}).filter(Boolean);
-            function add(x,v){if(x.includes('tuition'))t+=v;else if(x.includes('admission'))a+=v;else if(x.includes('src'))s+=v;else if(x.includes('medical'))m+=v;else if(x.includes('departmental')||x.includes('department'))d+=v;else o+=v;}
-            if(parts.length<=1)add(type,amt);else{var sh=amt/parts.length;parts.forEach(function(x){add(x,sh);});}
+          let t=0,s=0,m=0,d=0,a=0;
+          (pays||[]).forEach(p=>{
+            const amt=Number(p.amount||0);
+            const type=(p.fee_type||p.fee_breakdown||'').toLowerCase();
+            const parts=type.split(',').map(x=>x.trim()).filter(Boolean);
+            const add=(x,v)=>{ if(x.includes('tuition'))t+=v; else if(x.includes('admission'))a+=v; else if(x.includes('src'))s+=v; else if(x.includes('medical'))m+=v; else if(x.includes('departmental')||x.includes('department'))d+=v; };
+            if(parts.length<=1) add(type,amt);
+            else { const sh=amt/parts.length; parts.forEach(x=>add(x,sh)); }
           });
-          return{tuition:t,src:s,medical:m,dept:d,admission:a,other:o,total:t+s+m+d+a+o};
+          return{tuition:t,src:s,medical:m,dept:d,admission:a,total:t+s+m+d+a};
         }
 
-        var byLvl={'100':[],'200':[],'300':[],'400':[]};
-        allPay.forEach(function(p){var lv=normLvl(p.level||p.student_level||'');if(byLvl[lv])byLvl[lv].push(p);else if(!lv&&byLvl[sLvl])byLvl[sLvl].push(p);});
-        var curPaid=sumPaid(byLvl[sLvl]);
+        const byLvl={'100':[],'200':[],'300':[],'400':[]};
+        allPay.forEach(p=>{ const lv=normLvl(p.level||p.student_level||''); if(byLvl[lv]) byLvl[lv].push(p); else if(!lv&&byLvl[sLvl]) byLvl[sLvl].push(p); });
+        let curPaid=sumPaid(byLvl[sLvl]);
         if(curPaid.total===0&&allPay.length) curPaid=sumPaid(allPay);
 
-        function getPaid(name,map,cap){var n=(name||'').toLowerCase(),p=0;
-          if(n.includes('tuition'))p=map.tuition;else if(n.includes('admission'))p=map.admission;else if(n.includes('src'))p=map.src;else if(n.includes('medical'))p=map.medical;else if(n.includes('departmental')||n.includes('department'))p=map.dept;
-          return Math.min(p,Number(cap||0));}
-        function feeIco(n){n=(n||'').toLowerCase();if(n.includes('tuition'))return 'fa-graduation-cap';if(n.includes('admission'))return 'fa-id-badge';if(n.includes('src'))return 'fa-users';if(n.includes('medical'))return 'fa-heart-pulse';if(n.includes('department'))return 'fa-building';return 'fa-receipt';}
-
-        var feeData=curFees.map(function(f){
-          var nm=(f.fee_types&&f.fee_types.name?f.fee_types.name:f.fee_type||'Unknown');
-          var req=Number(f.amount||0),paid=getPaid(nm,curPaid,req);
-          var bal=Math.max(0,req-paid),pct=req>0?Math.min(100,Math.round(paid/req*100)):100;
-          return{feeName:nm,required:req,paid:paid,balance:bal,pct:pct,cleared:bal<=0.01,icon:feeIco(nm)};
-        });
-        var totReq=feeData.reduce(function(s,f){return s+f.required;},0);
-        var totPaid=feeData.reduce(function(s,f){return s+f.paid;},0);
-        var totBal=feeData.reduce(function(s,f){return s+f.balance;},0);
-        var oPct=totReq>0?Math.min(100,Math.round(totPaid/totReq*100)):0;
-        var allClr=totBal<=0.01&&feeData.length>0;
-        var lvlC={'100':'#3B82F6','200':'#F59E0B','300':'#8B5CF6','400':'#EF4444'};
-        var curC=lvlC[sLvl]||'var(--primary,#F97316)';
-
-        /* fee line items */
-        var feeLines='';
-        if(feeData.length){
-          feeData.forEach(function(f){
-            var bc=f.cleared?'var(--success)':f.pct>=80?curC:f.pct>0?'var(--warning)':'var(--danger)';
-            var stHtml=f.cleared
-              ? '<span style="color:var(--success);font-weight:600;font-size:11px;"><i class="fas fa-check" style="margin-right:3px;"></i>Fully paid &mdash; GHS '+gh(f.required)+'</span>'
-              : f.paid>0?'<span style="color:var(--warning);font-weight:600;font-size:11px;">Partial: GHS '+gh(f.paid)+' paid</span>'
-              :'<span style="color:var(--danger);font-weight:600;font-size:11px;">Not yet paid</span>';
-            var amHtml=f.cleared
-              ? '<div style="font-weight:800;font-size:13px;color:var(--success);">GHS '+gh(f.required)+'</div><div style="font-size:10px;color:var(--success);">\u2713 Cleared</div>'
-              : '<div style="font-weight:800;font-size:13px;color:var(--danger);">GHS '+gh(f.balance)+' owed</div>'+(f.paid>0?'<div style="font-size:10px;color:var(--text-muted);">of GHS '+gh(f.required)+'</div>':'');
-            feeLines+=
-              '<div style="padding:12px;border-radius:10px;border:1.5px solid '+(f.cleared?'rgba(0,196,140,.2)':'var(--border)')+';background:'+(f.cleared?'rgba(0,196,140,.04)':'var(--surface)')+';margin-bottom:10px;">'
-              +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
-              +'<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;">'
-              +'<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;background:'+(f.cleared?'rgba(0,196,140,.12)':'rgba(0,0,0,.06)')+';color:'+(f.cleared?'var(--success)':curC)+';flex-shrink:0;">'
-              +'<i class="fas '+(f.cleared?'fa-check-circle':f.icon)+'"></i></div>'
-              +'<div style="min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--text);">'+escapeHtml(f.feeName)+'</div>'
-              +'<div style="margin-top:2px;">'+stHtml+'</div></div></div>'
-              +'<div style="text-align:right;flex-shrink:0;">'+amHtml+'</div></div></div>';
-          });
-        } else {
-          feeLines='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;"><i class="fas fa-calendar-xmark" style="font-size:22px;margin-bottom:8px;display:block;opacity:.35;"></i>No fees scheduled for Level '+sLvl+' yet</div>';
+        function getPaid(name,map,cap){ const n=(name||'').toLowerCase(); let p=0; if(n.includes('tuition'))p=map.tuition; else if(n.includes('admission'))p=map.admission; else if(n.includes('src'))p=map.src; else if(n.includes('medical'))p=map.medical; else if(n.includes('departmental')||n.includes('department'))p=map.dept; return Math.min(p,Number(cap||0)); }
+        function feeIco(n){ n=(n||'').toLowerCase(); if(n.includes('tuition'))return 'fa-graduation-cap'; if(n.includes('admission'))return 'fa-id-badge'; if(n.includes('src'))return 'fa-users'; if(n.includes('medical'))return 'fa-heart-pulse'; if(n.includes('department'))return 'fa-building'; return 'fa-receipt'; }
+        function feeColors(n){ n=(n||'').toLowerCase();
+          if(n.includes('tuition'))    return {bg:'#FFF7ED',color:'#F97316'};
+          if(n.includes('src'))        return {bg:'#FFF2EE',color:'#FF6B35'};
+          if(n.includes('medical'))    return {bg:'#E6FBF5',color:'#00C48C'};
+          if(n.includes('department')) return {bg:'#FFF8E6',color:'#FFB800'};
+          if(n.includes('admission'))  return {bg:'#EEF2FF',color:'#6366F1'};
+          return {bg:'#F3F5FA',color:'#6B7280'};
         }
 
-        /* other level cards */
-        var LVLS=['100','200','300','400'];
-        var lvlTxt={'100':'#3B82F6','200':'#F59E0B','300':'#8B5CF6','400':'#EF4444'};
-        var otherCards='';
-        LVLS.forEach(function(lv){
-          if(lv===sLvl) return;
-          var lvNum=parseInt(lv,10),isPast=lvNum<sLvlNum,isFuture=lvNum>sLvlNum;
-          var ahead=lvNum-sLvlNum;
-          if(isPast){
-            otherCards+=
-              '<div style="border-radius:16px;border:2px solid rgba(0,196,140,.3);background:var(--surface);overflow:hidden;">'
-              +'<div style="background:linear-gradient(135deg,#00C48C,#00A878);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">'
-              +'<div style="display:flex;align-items:center;gap:10px;"><i class="fas fa-check-circle" style="color:#fff;font-size:20px;"></i>'
-              +'<div><div style="font-weight:800;font-size:15px;color:#fff;">Level '+lv+'</div>'
-              +'<div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px;">Completed</div></div></div>'
-              +'<span style="background:rgba(255,255,255,.25);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;">COMPLETED</span></div>'
-              +'<div style="padding:18px;">'
-              +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">'
-              +'<div style="width:44px;height:44px;background:rgba(0,196,140,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#00C48C;flex-shrink:0;"><i class="fas fa-circle-check"></i></div>'
-              +'<div><div style="font-weight:700;font-size:15px;color:var(--text);">Fees Cleared \u2713</div>'
-              +'<div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;line-height:1.5;">You have successfully completed Level '+lv+'. All fees for this level have been fully settled and your academic record is clear.</div></div></div>'
-              +'<div style="background:rgba(0,196,140,.08);border:1px solid rgba(0,196,140,.2);border-radius:10px;padding:10px 14px;font-size:12.5px;color:#00A878;font-weight:600;text-align:center;">'
-              +'<i class="fas fa-check" style="margin-right:6px;"></i>Level '+lv+' \u2014 Fully Paid</div></div></div>';
-          } else {
-            var bodyTxt=ahead===1
-              ? 'Level '+lv+' fees will be uploaded by the Finance Office once you complete Level '+sLvl+' and advance. You will be notified when they are ready.'
-              : 'Level '+lv+' is '+ahead+' levels ahead. Fees will be made available by the Finance Office when you are closer to reaching this stage.';
-            otherCards+=
-              '<div style="border-radius:16px;border:2px solid var(--border);background:var(--surface);overflow:hidden;opacity:.72;">'
-              +'<div style="background:linear-gradient(135deg,#94A3B8,#64748B);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">'
-              +'<div style="display:flex;align-items:center;gap:10px;"><i class="fas fa-lock" style="color:#fff;font-size:18px;"></i>'
-              +'<div><div style="font-weight:800;font-size:15px;color:#fff;">Level '+lv+'</div>'
-              +'<div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px;">Not yet reached</div></div></div>'
-              +'<span style="background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;">UPCOMING</span></div>'
-              +'<div style="padding:18px;">'
-              +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">'
-              +'<div style="width:44px;height:44px;background:rgba(148,163,184,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#94A3B8;flex-shrink:0;"><i class="fas fa-hourglass-half"></i></div>'
-              +'<div><div style="font-weight:700;font-size:15px;color:var(--text);">Fees Not Available Yet</div>'
-              +'<div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;line-height:1.5;">'+bodyTxt+'</div></div></div>'
-              +'<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);">'
-              +'<i class="fas fa-bell" style="color:#94A3B8;flex-shrink:0;"></i> You will be notified when Level '+lv+' fees are published.</div></div></div>';
-          }
+        const lvlColors = {'100':'#3B82F6','200':'#F59E0B','300':'#8B5CF6','400':'#EF4444'};
+        const curC = lvlColors[sLvl]||'var(--primary)';
+
+        const feeData = curFees.map(f=>{
+          const nm=(f.fee_types&&f.fee_types.name)?f.fee_types.name:(f.fee_type||'Unknown');
+          const req=Number(f.amount||0), paid=getPaid(nm,curPaid,req);
+          const bal=Math.max(0,req-paid), pct=req>0?Math.min(100,Math.round(paid/req*100)):100;
+          return{feeName:nm,required:req,paid,balance:bal,pct,cleared:bal<=0.01,icon:feeIco(nm),colors:feeColors(nm)};
         });
 
-        /* current level card */
-        var payBtn=allClr?''
-          :'<div style="padding:14px 18px;border-top:1px solid var(--border);">'
-          +'<button onclick="closeModal(\'paymentsOverviewModal\');setTimeout(openTuitionModal,80);" '
-          +'style="width:100%;background:'+curC+';color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" '
-          +'onmouseenter="this.style.opacity=\'.88\'" onmouseleave="this.style.opacity=\'1\'">'
-          +'<i class="fas fa-credit-card"></i> Pay Level '+sLvl+' Fees &mdash; GHS '+gh(totBal)+'</button></div>';
+        const totReq  = feeData.reduce((s,f)=>s+f.required,0);
+        const totPaid = feeData.reduce((s,f)=>s+f.paid,0);
+        const totBal  = feeData.reduce((s,f)=>s+f.balance,0);
+        const oPct    = totReq>0?Math.min(100,Math.round(totPaid/totReq*100)):0;
+        const allClr  = totBal<=0.01&&feeData.length>0;
 
-        var curCard=
-          '<div style="border-radius:16px;border:2px solid '+curC+';background:var(--surface);overflow:hidden;grid-column:1/-1;">'
-          +'<div style="background:linear-gradient(135deg,'+curC+','+curC+'cc);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">'
-          +'<div style="display:flex;align-items:center;gap:12px;">'
-          +'<div style="width:42px;height:42px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;"><i class="fas fa-star"></i></div>'
-          +'<div><div style="font-weight:800;font-size:16px;color:#fff;">Level '+sLvl+' \u2014 Current Level</div>'
-          +'<div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:2px;">'+escapeHtml(progLabel)+(yr?' \u00b7 '+escapeHtml(yr):'')+'</div></div></div>'
-          +'<span style="background:rgba(255,255,255,.25);color:#fff;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;">CURRENT</span></div>'
-          +'<div style="padding:16px 18px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;">'
-          +'<div><div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Total Required</div><div style="font-weight:800;font-size:17px;color:var(--text);">GHS '+gh(totReq)+'</div></div>'
-          +'<div><div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Total Paid</div><div style="font-weight:800;font-size:17px;color:var(--success);">GHS '+gh(totPaid)+'</div></div>'
-          +'<div><div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Balance</div><div style="font-weight:800;font-size:17px;color:'+(totBal>0?'var(--danger)':'var(--success)')+';">GHS '+gh(totBal)+'</div></div>'
-          +'<div style="margin-left:auto;text-align:right;"><div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Progress</div><div style="font-weight:800;font-size:17px;color:'+curC+';">'+oPct+'%</div></div></div>'
-          +'<div style="padding:6px 18px;background:var(--bg);border-bottom:1px solid var(--border);">'
-          +'<div style="height:8px;background:rgba(0,0,0,.07);border-radius:8px;overflow:hidden;"><div style="height:100%;width:'+oPct+'%;background:'+(allClr?'var(--success)':curC)+';border-radius:8px;transition:width .8s ease;"></div></div>'
-          +'<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">'
-          +'<span>'+oPct+'% paid &middot; '+feeData.filter(function(f){return f.cleared;}).length+'/'+feeData.length+' fees cleared</span>'
-          +(allClr?'<span style="color:var(--success);font-weight:700;">\u2713 All fees cleared!</span>':'<span style="color:var(--danger);font-weight:600;">GHS '+gh(totBal)+' remaining</span>')
-          +'</div></div>'
-          +'<div style="padding:16px 18px;">'+feeLines+'</div>'+payBtn+'</div>';
+        // Compute milestone amounts for action cards
+        const tFee = feeData.find(f=>f.feeName.toLowerCase().includes('tuition'));
+        const tTotal = tFee ? tFee.required : totReq;
+        const tPaid2 = tFee ? tFee.paid : totPaid;
+        const otherBal = feeData.filter(f=>!f.feeName.toLowerCase().includes('tuition')).reduce((s,f)=>s+f.balance,0);
+        const need80 = Math.max(0, Math.round(tTotal*0.8*100)/100 - tPaid2);
+        const amt80  = Math.round((need80 + otherBal)*100)/100;
+        const amt100 = Math.round(totBal*100)/100;
+        const met80  = (tPaid2 >= Math.round(tTotal*0.8*100)/100) && otherBal<=0.01;
+        const met100 = allClr;
 
-        body.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'+curCard+otherCards+'</div>';
+        // Update header stats
+        const setTxt = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+        setTxt('pmovStatReq',  'GHS '+gh(totReq));
+        setTxt('pmovStatPaid', 'GHS '+gh(totPaid));
+        setTxt('pmovStatBal',  'GHS '+gh(totBal));
+        setTxt('pmovStatPct',  oPct+'%');
+
+        // Update hero sub-text and badge
+        const heroSub = document.getElementById('pmovHeroSub');
+        if(heroSub) heroSub.textContent = allClr
+          ? 'All fees are fully settled for this academic year.'
+          : `GHS ${gh(totPaid)} paid of GHS ${gh(totReq)} total · ${oPct}% complete`;
+        const heroBadge = document.getElementById('pmovHeroBadge');
+        const heroBadgeTxt = document.getElementById('pmovHeroBadgeText');
+        if(heroBadge && heroBadgeTxt){
+          if(allClr){
+            heroBadge.className = 'pmov-hero-badge cleared';
+            heroBadge.innerHTML = '<i class="fas fa-check-circle"></i> <span>Fully Cleared</span>';
+          } else if(met80){
+            heroBadge.className = 'pmov-hero-badge';
+            heroBadge.style.background = 'rgba(249,115,22,.18)';
+            heroBadge.innerHTML = '<i class="fas fa-unlock"></i> <span>Registered</span>';
+          } else {
+            heroBadge.className = 'pmov-hero-badge';
+            heroBadge.innerHTML = '<i class="fas fa-clock"></i> <span>Outstanding</span>';
+          }
+        }
+
+        const fill = document.getElementById('pmovProgressFill');
+        if(fill){
+          fill.style.width = oPct+'%';
+          fill.className = 'pmov-progress-bar-fill' + (allClr?' cleared-fill':'');
+        }
+        setTxt('pmovProgressLabel', oPct+'% paid · '+feeData.filter(f=>f.cleared).length+'/'+feeData.length+' fees cleared');
+        setTxt('pmovProgressRight', allClr?'✓ All cleared':'GHS '+gh(totBal)+' remaining');
+
+        // ── Build body HTML ─────────────────────────────────
+        let html = '';
+
+        // Action cards (80% and 100%)
+        if(!allClr){
+          html += `<div class="pmov-action-cards">
+            <div class="pmov-action-card orange" onclick="${met80?'':'openPayCheckoutPage(80)'}">
+              <div class="pmov-ac-icon"><i class="fas fa-unlock"></i></div>
+              <div class="pmov-ac-label">80% + Other Fees</div>
+              <div class="pmov-ac-amount">${met80?'Met ✓':'GHS '+gh(amt80)}</div>
+              <div class="pmov-ac-desc">${met80?'Registration already unlocked':'Unlocks course registration'}</div>
+              ${!met80?`<button class="pmov-ac-btn" onclick="event.stopPropagation();openPayCheckoutPage(80)"><i class="fas fa-arrow-right"></i> Pay Now</button>`:`<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> Already unlocked</div>`}
+            </div>
+            <div class="pmov-action-card green" onclick="${met100?'':'openPayCheckoutPage(100)'}">
+              <div class="pmov-ac-icon"><i class="fas fa-trophy"></i></div>
+              <div class="pmov-ac-label">100% Full Clearance</div>
+              <div class="pmov-ac-amount">${met100?'Cleared ✓':'GHS '+gh(amt100)}</div>
+              <div class="pmov-ac-desc">${met100?'All fees fully settled':'Clears all outstanding fees'}</div>
+              ${!met100?`<button class="pmov-ac-btn" onclick="event.stopPropagation();openPayCheckoutPage(100)"><i class="fas fa-arrow-right"></i> Pay All</button>`:`<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> Fully cleared</div>`}
+            </div>
+          </div>`;
+        } else {
+          html += `<div style="background:linear-gradient(135deg,#00C48C,#00A878);border-radius:16px;padding:24px 22px;color:#fff;display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+            <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"><i class="fas fa-check-circle"></i></div>
+            <div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;">All Fees Fully Cleared!</div>
+              <div style="font-size:13px;opacity:.8;">You have no outstanding balances for this academic year. You're fully registered.</div>
+            </div>
+          </div>`;
+        }
+
+        // Fee breakdown table
+        html += `<div class="pmov-fee-table-card">
+          <div class="pmov-fee-table-header">
+            <div>
+              <div class="pmov-fee-table-title">Fee Breakdown</div>
+              <div class="pmov-fee-table-sub">Level ${escapeHtml(sLvl)} · ${escapeHtml(progLabel||'All Programs')}${yr?' · '+escapeHtml(yr):''}</div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:var(--text-muted);">${feeData.length} fee${feeData.length!==1?'s':''}</span>
+          </div>`;
+
+        if(feeData.length){
+          feeData.forEach(f=>{
+            const c = f.colors;
+            html += `<div class="pmov-fee-row-new">
+              <div class="pmov-fee-row-icon" style="background:${f.cleared?'var(--success-light)':c.bg};color:${f.cleared?'var(--success)':c.color};">
+                <i class="fas ${f.cleared?'fa-check-circle':f.icon}"></i>
+              </div>
+              <div class="pmov-fee-row-info">
+                <div class="pmov-fee-row-name">${escapeHtml(f.feeName)}</div>
+                <div class="pmov-fee-row-sub">${f.cleared?'<span style="color:var(--success);font-weight:600;">Fully paid — GHS '+gh(f.required)+'</span>':'Required: GHS '+gh(f.required)+' &nbsp;·&nbsp; Paid: GHS '+gh(f.paid)}</div>
+              </div>
+              <div class="pmov-fee-row-right">
+                <div class="pmov-fee-row-bal" style="color:${f.cleared?'var(--success)':'var(--danger)'};">${f.cleared?'<i class="fas fa-check"></i>':'GHS '+gh(f.balance)}</div>
+                <div class="pmov-fee-row-pct-bar">
+                  <div class="pmov-fee-row-pct-fill" style="width:${f.pct}%;background:${f.cleared?'var(--success)':f.pct>=80?'var(--primary)':f.pct>0?'var(--warning)':'var(--danger)'};"></div>
+                </div>
+              </div>
+            </div>`;
+          });
+        } else {
+          html += `<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px;">No fees scheduled for Level ${escapeHtml(sLvl)} yet.</div>`;
+        }
+        html += `</div>`; // close fee-table-card
+
+        // Other level cards
+        const LVLS = ['100','200','300','400'];
+        const pastLvls   = LVLS.filter(lv=>parseInt(lv)<sLvlNum);
+        const futureLvls = LVLS.filter(lv=>parseInt(lv)>sLvlNum);
+
+        if(pastLvls.length){
+          html += `<div class="pmov-section-label">Completed Levels</div>`;
+          pastLvls.forEach(lv=>{
+            html += `<div class="pmov-level-card">
+              <div class="pmov-level-header" style="background:linear-gradient(135deg,#00C48C,#00A878);">
+                <div class="pmov-level-icon" style="background:rgba(255,255,255,.2);"><i class="fas fa-check-circle"></i></div>
+                <div class="pmov-level-title"><strong>Level ${escapeHtml(lv)}</strong><small>Completed</small></div>
+                <span class="pmov-level-badge">DONE</span>
+              </div>
+              <div class="pmov-cleared-banner" style="margin:12px 16px 16px;">
+                <i class="fas fa-check-circle" style="font-size:18px;flex-shrink:0;"></i> Level ${escapeHtml(lv)} fees fully paid &amp; cleared
+              </div>
+            </div>`;
+          });
+        }
+
+        if(futureLvls.length){
+          html += `<div class="pmov-section-label">Upcoming Levels</div>`;
+          futureLvls.forEach((lv,i)=>{
+            const ahead = parseInt(lv)-sLvlNum;
+            const bodyTxt = ahead===1
+              ? `Level ${lv} fees will be uploaded once you complete Level ${sLvl} and advance.`
+              : `Level ${lv} is ${ahead} levels ahead. Fees will be available when you reach this stage.`;
+            html += `<div class="pmov-level-card pmov-locked-card" style="opacity:${i===0?.85:.65};">
+              <div class="pmov-level-header" style="background:linear-gradient(135deg,#94A3B8,#64748B);">
+                <div class="pmov-level-icon" style="background:rgba(255,255,255,.18);"><i class="fas fa-lock"></i></div>
+                <div class="pmov-level-title"><strong>Level ${escapeHtml(lv)}</strong><small>Not yet reached</small></div>
+                <span class="pmov-level-badge">UPCOMING</span>
+              </div>
+              <div class="pmov-locked-body">
+                <div class="pmov-locked-icon"><i class="fas fa-hourglass-half"></i></div>
+                <div class="pmov-locked-text"><strong>Fees Not Available Yet</strong><small>${bodyTxt}</small></div>
+              </div>
+              <div class="pmov-notif-pill">
+                <i class="fas fa-bell" style="color:#94A3B8;flex-shrink:0;font-size:13px;"></i>
+                You will be notified when Level ${escapeHtml(lv)} fees are published.
+              </div>
+            </div>`;
+          });
+        }
+
+        body.innerHTML = html;
 
       }catch(e){
-        console.error('[openPaymentsOverviewModal]',e);
-        body.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fas fa-exclamation-triangle" style="font-size:32px;color:#EF4444;display:block;margin-bottom:12px;"></i><div style="font-weight:700;font-size:15px;margin-bottom:6px;">Could not load fee summary</div><div style="font-size:13px;">Please check your connection and try again.</div></div>';
+        console.error('[_renderPaymentsOverviewContent]',e);
+        body.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+          <i class="fas fa-exclamation-triangle" style="font-size:36px;color:#EF4444;display:block;margin-bottom:14px;"></i>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:var(--text);margin-bottom:8px;">Could not load fee summary</div>
+          <div style="font-size:13px;">Please check your connection and try again.</div>
+          <button onclick="_renderPaymentsOverviewContent()" style="margin-top:20px;padding:10px 22px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;">Retry</button>
+        </div>`;
       }
     }
-    window.openPaymentsOverviewModal = openPaymentsOverviewModal;
-
-
     /* ══════════════════════════════════════════════════════
        ENHANCED TUITION MODAL — % SELECTOR
     ══════════════════════════════════════════════════════ */
@@ -6541,9 +7425,9 @@
     }
     window.selectTuitionPercentCard = selectTuitionPercentCard;
 
-    // Override the old openTuitionModal
-    openTuitionModal = openTuitionModalEnhanced;
-    window.openTuitionModal = openTuitionModalEnhanced;
+    // Override the old openTuitionModal — now routes to the checkout page
+    openTuitionModal = function(){ return window.openPayCheckoutPage ? window.openPayCheckoutPage(100) : openTuitionModalEnhanced(); };
+    window.openTuitionModal = openTuitionModal;
 
     /* ══════════════════════════════════════════════════════
        INIT

@@ -3765,6 +3765,7 @@
     let totalPayable = 0, totalPaid = 0, outstandingBalance = 0;
     let _currentFeeSchedule = []; /* [{fee_type_id, fee_name, amount, academic_year, level, program}] */
     let _academicYear = null;
+    let _intakeSemester = null; /* 'January' | 'June' — stored alongside _academicYear */
 
     /* ── GUARDS ────────────────────────────────────────── */
     (function enforceLogin(){
@@ -3894,7 +3895,7 @@
       const name   = window.studentName  || 'Student';
       const level  = window.studentLevel || '–';
       const prog   = window.studentProgram || window.studentDept || '–';
-      const yr     = _academicYear || '–';
+      const yr     = (_intakeSemester && _academicYear) ? _intakeSemester+' '+_academicYear : (_academicYear || '–');
 
       if(subtitle) subtitle.textContent = `${level} · ${prog} · ${yr}`;
 
@@ -4318,16 +4319,19 @@
           studentRow.department || null
         )) || null;
 
-        // Determine academic year: pick latest available in fee_schedules
+        // Determine academic year + semester: pick latest intake period in fee_schedules
         let academicYear = null;
         try {
           const { data: yr } = await supabase.from('fee_schedules')
-            .select('academic_year').order('academic_year', { ascending: false }).limit(1).maybeSingle();
-          if(yr) academicYear = yr.academic_year;
+            .select('academic_year, semester').order('academic_year', { ascending: false }).limit(1).maybeSingle();
+          if(yr) {
+            academicYear = yr.academic_year;
+            if(yr.semester) _intakeSemester = yr.semester; // "January" or "June"
+          }
         } catch(_){}
         if(!academicYear){
           const now = new Date();
-          academicYear = `${now.getFullYear() - 1}-${now.getFullYear()}`;
+          academicYear = `${now.getFullYear()}`;
         }
         _academicYear = academicYear;
 
@@ -4350,8 +4354,10 @@
           const { data: fallback } = await supabase.from('fee_schedules')
             .select(sel).eq('level', level).order('academic_year', { ascending: false }).limit(200);
           if(fallback && fallback.length){
-            const latestYr = fallback[0].academic_year;
-            if(latestYr) _academicYear = latestYr;
+            const latestYr  = fallback[0].academic_year;
+            const latestSem = fallback[0].semester;
+            if(latestYr)  _academicYear   = latestYr;
+            if(latestSem) _intakeSemester = latestSem;
             allRows = fallback.filter(r => r.academic_year === latestYr);
           }
           if(!allRows.length) return [];
@@ -4536,7 +4542,7 @@
       }
 
       const payableSub = document.getElementById('statPayableSub');
-      if(payableSub && _academicYear) payableSub.textContent = `Academic year ${_academicYear}`;
+      if(payableSub && _academicYear) payableSub.textContent = `Intake: ${(_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–'))}`;
 
       const outSub = document.getElementById('statOutstandingSub');
       if(outSub) outSub.innerHTML = outstandingBalance <= 0 ? '<i class="fas fa-check-circle" style="color:var(--success);"></i> All cleared!' : 'Balance remaining';
@@ -4602,7 +4608,7 @@
       const feeScheduleInfo = document.getElementById('feeScheduleInfo');
       if(feeScheduleInfo){
         const s = schedule[0];
-        feeScheduleInfo.textContent = `${s.academic_year} · Level ${s.level} · ${s.program || 'All Programs'}`;
+        feeScheduleInfo.textContent = `${s.semester && s.academic_year ? s.semester+' '+s.academic_year : (s.academic_year||'–')} · Level ${s.level} · ${s.program || 'All Programs'}`;
       }
 
       // Separate fees
@@ -4684,7 +4690,7 @@
                 </div>
                 <div style="flex:1;min-width:0;">
                   <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
-                  <div class="fee-card-meta">${escapeHtml(fee.academic_year||'')} · Level ${escapeHtml(String(fee.level||''))}</div>
+                  <div class="fee-card-meta">${fee.semester && fee.academic_year ? escapeHtml(fee.semester+' '+fee.academic_year) : escapeHtml(fee.academic_year||'')} · Level ${escapeHtml(String(fee.level||''))}</div>
                 </div>
                 <div style="text-align:right;">
                   <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:var(--text);">GHS ${gh(fee.amount)}</div>
@@ -4739,7 +4745,7 @@
                 </div>
                 <div>
                   <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
-                  <div class="fee-card-meta">${escapeHtml(fee.academic_year)} · Sem ${fee.semester||1}</div>
+                  <div class="fee-card-meta">${fee.semester && fee.academic_year ? escapeHtml(fee.semester+' '+fee.academic_year) : escapeHtml(fee.academic_year||'')} </div>
                 </div>
               </div>
               <div>
@@ -4832,7 +4838,7 @@
       const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
       setEl('pillLevelText',   level || '–');
       setEl('pillProgramText', prog  || '–');
-      setEl('pillYearText',    _academicYear || '–');
+      setEl('pillYearText',    (_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–')));
 
       // Sidebar
       setEl('sb-student-name', name);
@@ -4886,7 +4892,7 @@
             <div class="info-item"><label>Level</label><div class="value">${escapeHtml(level)}</div></div>
             <div class="info-item"><label>Program</label><div class="value">${escapeHtml(prog)}</div></div>
             <div class="info-item"><label>Department</label><div class="value">${escapeHtml(dept)}</div></div>
-            <div class="info-item"><label>Academic Year</label><div class="value">${escapeHtml(_academicYear||'–')}</div></div>
+            <div class="info-item"><label>Intake Period</label><div class="value">${escapeHtml((_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–')))}</div></div>
             <div class="info-item"><label>Email</label><div class="value" style="font-size:12px;">${escapeHtml(email)}</div></div>
             <div class="info-item"><label>Phone</label><div class="value">${escapeHtml(phone)}</div></div>
           </div>
@@ -5519,7 +5525,7 @@
             { display_name:'Level',        variable_name:'level',        value: window.studentLevel||'' },
             { display_name:'Department',   variable_name:'department',   value: window.studentDept||'' },
             { display_name:'Program',      variable_name:'program',      value: window.studentProgram||'' },
-            { display_name:'Academic Year',variable_name:'academic_year',value: _academicYear||'' },
+            { display_name:'Intake Period',variable_name:'academic_year',value: (_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–')) },
           ],
           fee_type: feeType,
           fee_breakdown: feeBreakdown
@@ -5731,9 +5737,12 @@
           fee_type:      feeType,
           fee_breakdown: feeBreakdown,
           reference,
-          receipt_number: genRcptNo(),
-          date_iso:       new Date().toISOString(),
-          date_display:   new Date().toLocaleString(),
+          receipt_number:  genRcptNo(),
+          date_iso:        new Date().toISOString(),
+          date_display:    new Date().toLocaleString(),
+          academic_year:   _academicYear   || '',
+          intake_semester: _intakeSemester || '',
+          intake_period:   (_intakeSemester && _academicYear) ? (_intakeSemester + ' ' + _academicYear) : (_academicYear || ''),
         };
         window._lastReceipt = receipt;
 
@@ -5753,6 +5762,7 @@
           status:           'approved',
           source_table:     'dashboard',
           source_payload:   JSON.stringify(receipt),
+          academic_year:    receipt.academic_year   || null,
           created_at:       new Date().toISOString(),
         };
 
@@ -6006,8 +6016,8 @@
               <span class="receipt-row-value" style="font-size:12px;">${escapeHtml(dateStr)}</span>
             </div>
             <div class="receipt-row">
-              <span class="receipt-row-label">Academic Year</span>
-              <span class="receipt-row-value">${escapeHtml(String(_academicYear||'–'))}</span>
+              <span class="receipt-row-label">Intake Period</span>
+              <span class="receipt-row-value">${escapeHtml(receipt.intake_period || (_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–')))}</span>
             </div>
             <div class="receipt-row" style="border-bottom:2px solid var(--border);">
               <span class="receipt-row-label">Payment Method</span>
@@ -6142,7 +6152,7 @@
           ['Department',      receipt.department||window.studentDept||'–'],
           ['Email Address',   receipt.student_email||window.studentEmail||'–'],
           ['Phone Number',    receipt.phone||window.studentPhone||'–'],
-          ['Academic Year',   _academicYear||'–'],
+          ['Intake Period',   (_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–'))],
         ];
         studentFields.forEach(([l,v]) => { y = rowText(l, v, y); });
 
@@ -7016,7 +7026,7 @@
         const sLvlNum = parseInt(sLvl,10)||100;
         const prog    = (window.studentProgram||window.studentDept||'').toLowerCase().trim();
         const progLabel = window.studentProgram||window.studentDept||'';
-        const yr      = _academicYear||'';
+        const yr      = (_intakeSemester && _academicYear) ? _intakeSemester+' '+_academicYear : (_academicYear||'');
 
         const subEl = document.getElementById('pmovSubtitle');
         if(subEl) subEl.textContent = (progLabel||'')+(yr?' · '+yr:'')+' · Level '+sLvl;
@@ -7277,7 +7287,7 @@
 
       // Update header year
       const yrEl = document.getElementById('tuitionModalAcadYear');
-      if(yrEl) yrEl.textContent = `Academic Year ${_academicYear||'—'} · ${window.studentLevel||'—'}`;
+      if(yrEl) yrEl.textContent = `${(_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–'))} · Level ${window.studentLevel||'—'}`;
 
       // Info section
       const info = document.getElementById('tuitionInfoSection');

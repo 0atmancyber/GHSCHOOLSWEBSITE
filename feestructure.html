@@ -2075,6 +2075,48 @@ document.getElementById('scheduleForm').addEventListener('submit', async e => {
     }
 
     if (error) { showToast('Error saving: ' + error.message, true); return; }
+
+    // ── Sync fee_structure_totals with the intake year for this scope ──
+    // The DB trigger updates total_amount, but we also ensure the row exists
+    // immediately so stats and views reflect the intake period right away.
+    try {
+        const ay   = payload.academic_year || 'All';
+        const sem  = payload.semester      || 'All';
+        const lvl  = payload.level         || 'All';
+        const prog = payload.program       || 'All';
+
+        // Fetch the live scope total from fee_schedules
+        const scopeQuery = sb.from('fee_schedules').select('amount')
+            .eq('academic_year', ay)
+            .eq('semester', sem);
+        if (lvl  !== 'All') scopeQuery.eq('level',   lvl);  else scopeQuery.is('level',   null);
+        if (prog !== 'All') scopeQuery.eq('program', prog); else scopeQuery.is('program', null);
+
+        const { data: scopeRows } = await sb
+            .from('fee_schedules')
+            .select('amount')
+            .eq('academic_year', ay)
+            .eq('semester', sem)
+            .eq('level', lvl === 'All' ? null : lvl)
+            .eq('program', prog === 'All' ? null : prog);
+
+        const scopeTotal = (scopeRows || []).reduce((s, r) => s + Number(r.amount || 0), 0);
+        const feeCount   = (scopeRows || []).length;
+
+        await sb.from('fee_structure_totals').upsert({
+            academic_year: ay,
+            semester:      sem,
+            level:         lvl,
+            program:       prog,
+            total_amount:  scopeTotal,
+            fee_count:     feeCount,
+            updated_at:    now,
+        }, { onConflict: 'academic_year,semester,level,program' });
+    } catch (e) {
+        console.warn('fee_structure_totals sync warning:', e);
+        // Non-critical — the DB trigger will catch it on the next reload
+    }
+
     showToast('Fee schedule saved');
     closeModal('scheduleModal');
     loadFeeSchedules();

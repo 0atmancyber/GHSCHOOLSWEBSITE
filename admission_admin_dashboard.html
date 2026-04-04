@@ -9013,7 +9013,10 @@ await window.__sb
       if(!amount || amount<=0){ showToast('Enter a valid amount greater than 0','info'); return; }
       var bal=parseFloat(balance)||amount;
       if(amount>bal+0.01){ showToast('Amount cannot exceed balance of GHS '+gh(bal),'info'); return; }
-      _pendingPayment = { studentId, level:lvl, feeType:feeTypeKey, feeName, amount, balance:bal };
+      var _intake = (typeof levelToIntake === 'function') ? levelToIntake(lvl) : {semester:'',academic_year:''};
+      _pendingPayment = { studentId, level:lvl, feeType:feeTypeKey, feeName, amount, balance:bal,
+        intakeSemester: _intake.semester, intakeYear: _intake.academic_year,
+        intakePeriod: (_intake.semester && _intake.academic_year) ? _intake.semester+' '+_intake.academic_year : (_intake.academic_year||'') };
 
       const meta = LEVEL_META[lvl] || {};
       const s    = _mpmStudent;
@@ -9026,6 +9029,7 @@ await window.__sb
         +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:#6b7280;">Student</span><strong>'+fullName+' ('+studentId+')</strong></div>'
         +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:#6b7280;">Fee</span><strong>'+feeName+'</strong></div>'
         +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:#6b7280;">Level</span><strong>Level '+lvl+'</strong></div>'
+        +(_pendingPayment.intakePeriod ? '<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:#6b7280;">Intake Period</span><strong style="color:#1971c2;">'+_pendingPayment.intakePeriod+'</strong></div>' : '')
         +'<div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:#6b7280;">Balance</span><strong style="color:#e03131;">GHS '+gh(bal)+'</strong></div>'
         +'</div>'
         +'<div style="background:#fff5f5;border:2px solid rgba(224,49,49,.2);border-radius:12px;padding:14px;text-align:center;">'
@@ -9075,7 +9079,9 @@ await window.__sb
         payment_date:now.toISOString(), status:'approved',
         payment_coverage:'manual', coverage_percent:100,
         source_table:'admin_manual',
-        source_payload:JSON.stringify({paid_by_admin:true,admin_ref:ref,recorded_by:adminName}),
+        academic_year:pp.intakeYear||null,
+        source_payload:JSON.stringify({paid_by_admin:true,admin_ref:ref,recorded_by:adminName,
+          intake_semester:pp.intakeSemester||'',intake_year:pp.intakeYear||'',intake_period:pp.intakePeriod||''}),
         created_at:now.toISOString(),
       };
       try{
@@ -9091,13 +9097,17 @@ await window.__sb
           phone:s.phone_number_1||s.phone_number||s.phone||'',
           indexNo:s.index_number||s.index_no||'',
           date:now,
+          intakePeriod:pp.intakePeriod||'',
+          intakeSemester:pp.intakeSemester||'',
+          intakeYear:pp.intakeYear||'',
         };
         if(!_mpmPaidMap[pp.level]) _mpmPaidMap[pp.level]={};
         var fk=paidKey(pp.feeName);
         _mpmPaidMap[pp.level][fk]=(_mpmPaidMap[pp.level][fk]||0)+pp.amount;
         _mpmHistory.unshift({created_at:now.toISOString(),level:pp.level,fee_type:pp.feeName,
           amount:pp.amount,status:'approved',transaction_ref:ref,receipt_number:rcptNo,
-          payment_type:'manual',source_table:'admin_manual'});
+          payment_type:'manual',source_table:'admin_manual',
+          intake_period:pp.intakePeriod||'',academic_year:pp.intakeYear||''});
         closeMpmConfirm();
         renderMpmContent();
         generateMpmReceipt();
@@ -9151,8 +9161,9 @@ await window.__sb
         +'<div style="background:#fff5f5;border:2px solid rgba(224,49,49,.18);border-radius:13px;padding:15px;margin-bottom:14px;">'
         +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#9ca3af;margin-bottom:10px;">Payment Details</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px;">'
-        +row('Fee Type',r.feeName)+row('Method','Cash / Manual')
-        +row('Reference',r.ref)+row('Status','Approved')
+        +row('Fee Type',r.feeName)+row('Intake Period',r.intakePeriod||r.intakeYear||'—')
+        +row('Method','Cash / Manual')+row('Reference',r.ref)
+        +row('Status','Approved')
         +'</div>'
         +'<div style="text-align:center;background:linear-gradient(135deg,#e03131,#f03e3e);border-radius:10px;padding:14px;">'
         +'<div style="font-size:11px;color:rgba(255,255,255,.7);text-transform:uppercase;margin-bottom:4px;">Amount Paid</div>'
@@ -9192,6 +9203,7 @@ await window.__sb
           +'<div style="flex:1;min-width:0;">'
           +'<div style="font-weight:700;font-size:12.5px;color:#1a1f2e;">'+(p.fee_type||p.payment_type||'Payment')+'</div>'
           +'<div style="font-size:11px;color:#9ca3af;margin-top:1px;">'+date+' &middot; Ref: '+ref
+          +(p.intake_period||p.academic_year?' &middot; <span style="color:#1971c2;font-weight:700;">'+(p.intake_period||p.academic_year)+'</span>':'')
           +(isManual?' <span style="background:#e7f5ff;color:#1971c2;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;">MANUAL</span>':'')
           +'</div></div>'
           +'<div style="font-size:14px;font-weight:700;color:#2f9e44;flex-shrink:0;">+GHS '+gh(p.amount||0)+'</div>'

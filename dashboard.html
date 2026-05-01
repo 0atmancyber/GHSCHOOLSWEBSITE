@@ -6427,7 +6427,7 @@
         bar.style.width = `${pct}%`;
         bar.className = 'progress-fill';
         if (pct >= 100) bar.classList.add('full');
-        else if (pct >= 80) bar.classList.add(''); // default blue = ok
+        else if (pct >= 80) bar.classList.add('good'); // default blue = ok
         else if (pct >= 50) bar.classList.add('warn');
         else bar.classList.add('danger');
       }
@@ -7482,11 +7482,13 @@
               amount: ctx.amount,
               student_id: studentId,
               fee_type: ctx.feeType,
+              fee_breakdown: ctx.feeBreakdown,
               student_name: window.studentName,
               student_email: window.studentEmail,
               level: window.studentLevel,
               department: window.studentDept,
-              academic_year: window._academicYear
+              academic_year: window._academicYear,
+              return_url: window.location.href
             })
           });
 

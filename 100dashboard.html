@@ -55,6 +55,123 @@
       --safe-top: env(safe-area-inset-top, 0px);
     }
 
+    /* ── SCHOOL THEME OVERRIDES ── */
+    /* Media School: Red & White */
+    body.theme-media {
+      --brand: #c0111f;
+      --brand-2: #9b0e1a;
+      --brand-light: #fff0f1;
+      --brand-glow: rgba(192,17,31,0.15);
+      --border: #fecdd3;
+      --surface: #fff5f5;
+      --shadow-brand: 0 8px 24px rgba(192,17,31,0.3);
+    }
+    body.theme-media .sidebar {
+      background: linear-gradient(180deg, #4a0000 0%, #8b0000 60%, #c0111f 100%);
+    }
+    body.theme-media .hero-banner {
+      background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #c0111f 100%);
+      box-shadow: 0 8px 32px rgba(192,17,31,0.25);
+    }
+    body.theme-media .progress-bar { background: #fecdd3; }
+    body.theme-media .progress-fill { background: linear-gradient(90deg, #c0111f, #f87171); }
+    body.theme-media .topbar { border-bottom-color: #fecdd3; }
+    body.theme-media .stat-card::after { background: #c0111f; }
+    body.theme-media .action-card::after { background: #c0111f; }
+    body.theme-media .section-title::before { background: #c0111f; }
+
+    /* Fashion School: Blue & White */
+    body.theme-fashion {
+      --brand: #1a56db;
+      --brand-2: #1448b8;
+      --brand-light: #eff6ff;
+      --brand-glow: rgba(26,86,219,0.15);
+      --border: #bfdbfe;
+      --surface: #f0f6ff;
+      --shadow-brand: 0 8px 24px rgba(26,86,219,0.3);
+    }
+    body.theme-fashion .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #1e3a5f 60%, #1a56db 100%);
+    }
+    body.theme-fashion .hero-banner {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1448b8 50%, #1a56db 100%);
+      box-shadow: 0 8px 32px rgba(26,86,219,0.25);
+    }
+    body.theme-fashion .progress-bar { background: #bfdbfe; }
+    body.theme-fashion .progress-fill { background: linear-gradient(90deg, #1a56db, #60a5fa); }
+
+    /* Catering School: Yellow & White */
+    body.theme-catering {
+      --brand: #d97706;
+      --brand-2: #b45309;
+      --brand-light: #fffbeb;
+      --brand-glow: rgba(217,119,6,0.15);
+      --border: #fde68a;
+      --surface: #fffdf0;
+      --shadow-brand: 0 8px 24px rgba(217,119,6,0.3);
+    }
+    body.theme-catering .sidebar {
+      background: linear-gradient(180deg, #1c1400 0%, #78350f 60%, #d97706 100%);
+    }
+    body.theme-catering .hero-banner {
+      background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%);
+      box-shadow: 0 8px 32px rgba(217,119,6,0.25);
+    }
+    body.theme-catering .progress-bar { background: #fde68a; }
+    body.theme-catering .progress-fill { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    body.theme-catering .topbar { border-bottom-color: #fde68a; }
+    body.theme-catering .stat-card::after { background: #d97706; }
+    body.theme-catering .action-card::after { background: #d97706; }
+    body.theme-catering .section-title::before { background: #d97706; }
+
+    /* Cosmetology School: Orange & White */
+    body.theme-cosmetology {
+      --brand: #ea580c;
+      --brand-2: #c2410c;
+      --brand-light: #fff7ed;
+      --brand-glow: rgba(234,88,12,0.15);
+      --border: #fed7aa;
+      --surface: #fff8f4;
+      --shadow-brand: 0 8px 24px rgba(234,88,12,0.3);
+    }
+    body.theme-cosmetology .sidebar {
+      background: linear-gradient(180deg, #1a0a00 0%, #7c2d12 60%, #ea580c 100%);
+    }
+    body.theme-cosmetology .hero-banner {
+      background: linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #ea580c 100%);
+      box-shadow: 0 8px 32px rgba(234,88,12,0.25);
+    }
+    body.theme-cosmetology .progress-bar { background: #fed7aa; }
+    body.theme-cosmetology .progress-fill { background: linear-gradient(90deg, #ea580c, #fb923c); }
+    body.theme-cosmetology .topbar { border-bottom-color: #fed7aa; }
+    body.theme-cosmetology .stat-card::after { background: #ea580c; }
+    body.theme-cosmetology .action-card::after { background: #ea580c; }
+    body.theme-cosmetology .section-title::before { background: #ea580c; }
+
+    /* Technology School: Violet & White */
+    body.theme-technology {
+      --brand: #7c3aed;
+      --brand-2: #6d28d9;
+      --brand-light: #f5f3ff;
+      --brand-glow: rgba(124,58,237,0.15);
+      --border: #ddd6fe;
+      --surface: #f5f3ff;
+      --shadow-brand: 0 8px 24px rgba(124,58,237,0.3);
+    }
+    body.theme-technology .sidebar {
+      background: linear-gradient(180deg, #0f0520 0%, #3b0764 60%, #7c3aed 100%);
+    }
+    body.theme-technology .hero-banner {
+      background: linear-gradient(135deg, #3b0764 0%, #6d28d9 50%, #7c3aed 100%);
+      box-shadow: 0 8px 32px rgba(124,58,237,0.25);
+    }
+    body.theme-technology .progress-bar { background: #ddd6fe; }
+    body.theme-technology .progress-fill { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+    body.theme-technology .topbar { border-bottom-color: #ddd6fe; }
+    body.theme-technology .stat-card::after { background: #7c3aed; }
+    body.theme-technology .action-card::after { background: #7c3aed; }
+    body.theme-technology .section-title::before { background: #7c3aed; }
+
     /* ── FEES PAGE — plan card states ── */
     .fp-plan-card { cursor: default; }
     .fp-plan-card.fp-selected {
@@ -738,18 +855,9 @@
       margin-bottom: 24px;
     }
 
-    /* When grid is hovered, dim/blur all cards */
-    .action-grid:hover .action-card {
-      filter: blur(2px) brightness(0.88);
-      transform: scale(0.97);
-      opacity: 0.7;
-    }
-
-    /* The card being hovered pops out sharply */
-    .action-grid:hover .action-card:hover {
-      filter: blur(0) brightness(1);
+    /* The hovered card pops out cleanly — no blur on others */
+    .action-card:hover {
       transform: translateY(-6px) scale(1.03);
-      opacity: 1;
       box-shadow: 0 16px 40px rgba(37,99,235,0.2);
       border-color: var(--brand);
       z-index: 2;
@@ -779,7 +887,7 @@
       transition: background 0.25s;
     }
 
-    .action-grid:hover .action-card:hover::before { background: var(--brand-light); }
+    .action-card:hover::before { background: var(--brand-light); }
 
     .action-card:active { transform: scale(0.97) !important; }
 
@@ -794,7 +902,7 @@
       transform: scaleX(0);
       transition: transform 0.25s ease;
     }
-    .action-grid:hover .action-card:hover::after { transform: scaleX(1); }
+    .action-card:hover::after { transform: scaleX(1); }
 
     .action-card-icon {
       width: 48px; height: 48px;
@@ -1919,17 +2027,13 @@
               <span class="hero-tag"><i class="fas fa-id-card"></i> <span id="heroId">—</span></span>
             </div>
           </div>
-          <div class="hero-right">
-            <div id="heroBadge" class="payment-badge incomplete">
-             
-            </div>
+          <div class="hero-right" style="display:none;">
+            <div id="heroBadge" class="payment-badge incomplete"></div>
           </div>
         </div>
         <!-- Mobile payment status -->
-        <div class="mobile-hero-status" id="mobileHeroStatus" style="display:none;">
-          <div id="mobileHeroBadge" class="payment-badge incomplete">
-        
-          </div>
+        <div class="mobile-hero-status" id="mobileHeroStatus" style="display:none !important;">
+          <div id="mobileHeroBadge" class="payment-badge incomplete"></div>
         </div>
       </div>
 
@@ -2811,6 +2915,24 @@
     }).catch(() => {});
 
     updateInfoCards(student);
+    applySchoolTheme(student);
+  }
+
+  function applySchoolTheme(student) {
+    var school = String(student.school || student.department || '').toLowerCase();
+    var body = document.body;
+    body.classList.remove('theme-media','theme-fashion','theme-catering','theme-cosmetology','theme-technology');
+    if (school.includes('media')) {
+      body.classList.add('theme-media');
+    } else if (school.includes('fashion')) {
+      body.classList.add('theme-fashion');
+    } else if (school.includes('catering')) {
+      body.classList.add('theme-catering');
+    } else if (school.includes('cosmetology')) {
+      body.classList.add('theme-cosmetology');
+    } else if (school.includes('technology')) {
+      body.classList.add('theme-technology');
+    }
   }
 
   function clearStudentUI() {
@@ -2873,14 +2995,12 @@
           : '<i class="fas fa-circle-xmark"></i> Fees Incomplete';
       const badgeClass = status === 'approved' ? 'complete' : status === 'pending' ? 'pending' : 'incomplete';
 
-      ['heroBadge','mobileHeroBadge'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.innerHTML = badgeHtml; el.className = `payment-badge ${badgeClass}`; }
-      });
+      // Badge elements kept hidden — badges removed from hero banner
+      // ['heroBadge','mobileHeroBadge'] still updated internally for any other usage
 
-      // Show mobile badge
-      const mobileStatus = document.getElementById('mobileHeroStatus');
-      if (mobileStatus && window.innerWidth <= 768) mobileStatus.style.display = 'flex';
+      // Show mobile badge — disabled (badges removed)
+      // const mobileStatus = document.getElementById('mobileHeroStatus');
+      // if (mobileStatus && window.innerWidth <= 768) mobileStatus.style.display = 'flex';
 
     } catch(e) { console.warn('updateDashboardStats error', e); }
   }
@@ -3547,7 +3667,10 @@
   }
 
   async function payTuition(targetPercent) {
-    if (!hasPaidAdmission()) { showModalMessage('Please pay Admission Fee first.'); return; }
+    if (!hasPaidAdmission()) { showModalMessage('Please pay your Admission Fee first before paying tuition.'); return; }
+    const o = otherRemaining();
+    const otherTotal = o.src + o.dept + o.med;
+    if (otherTotal > 0) { showModalMessage('Please pay all Other Fees (SRC Dues, Departmental Dues, and Medical Dues) in full before paying tuition.\n\nRemaining other fees: ' + cedis(otherTotal)); return; }
     const t = tuitionStatus();
     const amount = targetPercent === 100 ? t.to100 : t.to80;
     if (amount <= 0) { showModalMessage(targetPercent === 100 ? 'Tuition already fully paid.' : '80% requirement already met.'); return; }
@@ -3567,7 +3690,7 @@
   }
 
   async function payOtherSelected() {
-    if (!hasPaidAdmission()) { showModalMessage('Please pay Admission Fee first.'); return; }
+    if (!hasPaidAdmission()) { showModalMessage('Please pay your Admission Fee first before paying other fees.'); return; }
     const o = otherRemaining();
     const selSrc = document.getElementById('sel_src')?.checked;
     const selDept = document.getElementById('sel_dept')?.checked;
@@ -3716,93 +3839,343 @@
     document.getElementById('level100RegForm').addEventListener('submit', async function(ev) { ev.preventDefault(); await submitLevel100CourseRegistration(); });
   })();
 
+  // ── Helper: render course checkboxes from a list of course objects or strings ──
+  function _renderCourseCheckboxes(courses, isCore) {
+    return courses.map(c => {
+      const name  = typeof c === 'string' ? c : (c.course_name || c.name || '');
+      const code  = typeof c === 'object' ? (c.course_code || '') : '';
+      const creds = typeof c === 'object' && c.credits != null ? c.credits : null;
+      const lec   = typeof c === 'object' ? (c.lecturer || '') : '';
+      const badge = isCore
+        ? `<span class="badge badge-green" style="font-size:11px;">Core</span>`
+        : '';
+      const codeBadge = code
+        ? `<span style="font-size:11px;background:#f3f4f6;color:#6b7280;border-radius:5px;padding:1px 6px;font-family:monospace;">${escapeHtml(code)}</span> `
+        : '';
+      const credBadge = creds != null
+        ? `<span style="font-size:11px;color:#9ca3af;">${creds} cr</span> `
+        : '';
+      const lecNote = lec
+        ? `<div style="font-size:11px;color:#9ca3af;margin-top:2px;"><i class="fas fa-user-tie" style="margin-right:3px;"></i>${escapeHtml(lec)}</div>`
+        : '';
+      const style = isCore
+        ? 'margin:0;background:var(--emerald-light);border-color:var(--emerald);'
+        : 'margin:0;';
+      return `<label class="other-fee-checkbox" style="${style}">
+        <input type="checkbox" name="course_option" value="${escapeHtml(name)}"${isCore ? ' checked disabled' : ''}>
+        <span style="flex:1;">
+          <div style="font-weight:600;">${escapeHtml(name)}</div>
+          <div style="margin-top:3px;">${codeBadge}${credBadge}${badge}</div>
+          ${lecNote}
+        </span>
+      </label>`;
+    }).join('');
+  }
+
+  // ── Fetch courses from course_schedules for this student ──
+  // Priority cascade (same logic as main dashboard, but level is always '100'):
+  //   Pass 1 — level + school + program + semester + year  (most specific)
+  //   Pass 2 — level + school + semester + year
+  //   Pass 3 — level + school + year
+  //   Pass 4 — level + school  (any year)
+  //   Pass 5 — level + program + semester + year
+  //   Pass 6 — level + program
+  //   Pass 7 — level only  (last resort)
+  async function _fetchCoursesForLevel100(school, program) {
+    const LEVEL = '100';
+    // Get the latest semester + year from fee_schedules (same source as fee data)
+    let latestSem = '', latestYear = '';
+    try {
+      const { data: fy } = await sb.from('fee_schedules')
+        .select('academic_year, semester')
+        .eq('level', LEVEL)
+        .order('academic_year', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (fy) { latestYear = fy.academic_year || ''; latestSem = fy.semester || ''; }
+    } catch(_) {}
+
+    async function tryFetch(sF, pF, yF, semF) {
+      let q = sb.from('course_schedules')
+        .select('id,course_code,course_name,course_type,credits,lecturer,semester,academic_year,school,program,level')
+        .eq('status', 'active')
+        .eq('level', LEVEL)
+        .order('course_type', { ascending: true })
+        .order('course_name',  { ascending: true });
+      if (sF)   q = q.ilike('school',   '%' + sF + '%');
+      if (pF)   q = q.ilike('program',  '%' + pF + '%');
+      if (semF) q = q.eq('semester',    semF);
+      if (yF)   q = q.eq('academic_year', yF);
+      const r = await q;
+      return (!r.error && r.data && r.data.length) ? r.data : [];
+    }
+
+    let rows = [];
+    if (!rows.length && school && program && latestSem && latestYear)
+      rows = await tryFetch(school, program, latestYear, latestSem);
+    if (!rows.length && school && latestSem && latestYear)
+      rows = await tryFetch(school, '', latestYear, latestSem);
+    if (!rows.length && school && latestYear)
+      rows = await tryFetch(school, '', latestYear, '');
+    if (!rows.length && school)
+      rows = await tryFetch(school, '', '', '');
+    if (!rows.length && program && latestSem && latestYear)
+      rows = await tryFetch('', program, latestYear, latestSem);
+    if (!rows.length && program)
+      rows = await tryFetch('', program, '', '');
+    if (!rows.length)
+      rows = await tryFetch('', '', '', '');
+
+    return { rows, latestSem, latestYear };
+  }
+
   async function openLevel100CourseRegisterModal() {
     try {
-      const s = detectStudentSchoolAndProgramLevel100();
+      const s    = detectStudentSchoolAndProgramLevel100();
       const { school, program } = s;
-      const sel = document.getElementById('level100CourseSelector');
-      const phoneEl = document.getElementById('reg_phone');
-      const waEl = document.getElementById('reg_whatsapp');
-      const emailEl = document.getElementById('reg_email');
+      const sel      = document.getElementById('level100CourseSelector');
+      const phoneEl  = document.getElementById('reg_phone');
+      const waEl     = document.getElementById('reg_whatsapp');
+      const emailEl  = document.getElementById('reg_email');
       const statusEl = document.getElementById('level100RegStatus');
-      try { if (currentStudent && currentStudent.phone) phoneEl.value = currentStudent.phone; } catch(e) {}
-      try { if (currentStudent && currentStudent.whatsapp) waEl.value = currentStudent.whatsapp; else if (currentStudent && currentStudent.phone) waEl.value = currentStudent.phone; } catch(e) {}
-      try { if (currentStudent && currentStudent.email) emailEl.value = currentStudent.email; } catch(e) {}
 
-      const info = DASHBOARD_SCHOOL_DATA_LEVEL100[school] || {};
-      let html = `<div style="font-weight:700;color:var(--ink);margin-bottom:10px;">${escapeHtml(school)}${program ? ' / ' + escapeHtml(program) : ''}</div>`;
-      if (info.programs && program) {
-        const opts = info.programs[program] || [];
-        html += '<div style="font-weight:600;margin-bottom:8px;font-size:13px;">Choose elective courses:</div><div style="display:flex;flex-direction:column;gap:8px;">';
-        for(const c of opts) { html += `<label class="other-fee-checkbox" style="margin:0;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> <span style="flex:1;">${escapeHtml(c)}</span></label>`; }
-        html += '</div>';
-      } else if (info.courses) {
-        html += '<div style="font-weight:600;margin-bottom:8px;font-size:13px;">Choose elective courses:</div><div style="display:flex;flex-direction:column;gap:8px;">';
-        for(const c of info.courses) { html += `<label class="other-fee-checkbox" style="margin:0;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> <span style="flex:1;">${escapeHtml(c)}</span></label>`; }
-        html += '</div>';
-      } else if (info.programs) {
-        html += '<div class="form-group"><label>Choose program:</label><select id="level100ProgramSelect"><option value="">Select program</option>';
-        for(const p of Object.keys(info.programs)) { html += `<option value="${escapeHtml(p)}" ${program===p?'selected':''}>${escapeHtml(p)}</option>`; }
-        html += '</select></div><div id="level100ProgramCourses">Choose a program to see courses</div>';
-      } else { html += '<div style="color:var(--muted);font-size:13px;">No course data for your school. Please contact the registrar.</div>'; }
+      // Pre-fill contact fields from student record
+      try { if (currentStudent && currentStudent.phone)    phoneEl.value = currentStudent.phone; } catch(e) {}
+      try { if (currentStudent && currentStudent.phone)    waEl.value    = currentStudent.phone; } catch(e) {}
+      try { if (currentStudent && currentStudent.email)    emailEl.value = currentStudent.email; } catch(e) {}
 
-      if (info.coreCourses) {
-        html += '<div class="divider"></div><div style="font-weight:600;margin-bottom:8px;font-size:13px;">Core Courses <span style="font-weight:400;color:var(--muted);">(compulsory — auto-selected)</span></div><div style="display:flex;flex-direction:column;gap:8px;">';
-        for(const cc of info.coreCourses) { html += `<label class="other-fee-checkbox" style="margin:0;background:var(--emerald-light);border-color:var(--emerald);"><input type="checkbox" name="course_option" value="${escapeHtml(cc)}" checked disabled> <span style="flex:1;">${escapeHtml(cc)}</span><span class="badge badge-green" style="font-size:11px;">Core</span></label>`; }
-        html += '</div>';
+      // Show loading state immediately and open the modal
+      sel.innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted);">'
+        + '<div style="width:28px;height:28px;border:3px solid #e5e7eb;border-top-color:var(--brand,#e03131);'
+        + 'border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;"></div>'
+        + 'Loading your course schedule…</div>';
+      statusEl.textContent = '';
+      openModal('level100CourseRegisterModal');
+
+      // ── Check for existing registration ──────────────────────────────
+      let existingReg = null;
+      try {
+        const sid = currentStudent?.student_id || currentStudent?.id;
+        if (sid) {
+          const { data: rr } = await sb.from('registrations')
+            .select('*').ilike('student_id', sid)
+            .order('created_at', { ascending: false }).limit(1);
+          if (rr && rr.length) existingReg = rr[0];
+        }
+      } catch(_) {}
+
+      // ── Fetch live courses from course_schedules ──────────────────────
+      const { rows: dbRows, latestSem, latestYear } = await _fetchCoursesForLevel100(school, program);
+
+      let coreCourses   = [];
+      let electiveCourses = [];
+      let usedDB = false;
+
+      if (dbRows.length) {
+        // Split DB rows into core and elective by course_type
+        coreCourses     = dbRows.filter(r => r.course_type === 'core');
+        electiveCourses = dbRows.filter(r => r.course_type !== 'core');
+        usedDB = true;
+      } else {
+        // ── Fallback to hardcoded school data ────────────────────────────
+        const info = DASHBOARD_SCHOOL_DATA_LEVEL100[school] || {};
+        // Determine elective list
+        let electiveNames = [];
+        if (info.programs && program && info.programs[program]) {
+          electiveNames = info.programs[program];
+        } else if (info.programs && program) {
+          // Try case-insensitive match
+          const key = Object.keys(info.programs).find(k => k.toLowerCase().includes((program||'').toLowerCase()));
+          electiveNames = key ? info.programs[key] : Object.values(info.programs)[0] || [];
+        } else if (info.courses) {
+          electiveNames = info.courses;
+        }
+        coreCourses     = (info.coreCourses || []).map(n => ({ course_name: n, course_type: 'core' }));
+        electiveCourses = electiveNames.map(n => ({ course_name: n, course_type: 'elective' }));
+      }
+
+      // ── Build the intake period label ────────────────────────────────
+      const intakePeriod = latestSem && latestYear
+        ? latestSem + ' ' + latestYear
+        : (latestYear || '');
+
+      // ── Build HTML ────────────────────────────────────────────────────
+      let html = '';
+
+      // Context header
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--ink);">
+            ${escapeHtml(school)}${program ? ' &mdash; ' + escapeHtml(program) : ''}
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+            Level 100
+            ${intakePeriod ? ' &middot; <strong>' + escapeHtml(intakePeriod) + '</strong>' : ''}
+            ${usedDB ? '' : ' <span style="font-size:11px;background:#fef3c7;color:#92400e;border-radius:4px;padding:1px 6px;">using default list</span>'}
+          </div>
+        </div>
+        <span style="font-size:11px;background:#f3f4f6;border-radius:20px;padding:3px 10px;color:#6b7280;">
+          ${coreCourses.length + electiveCourses.length} course${(coreCourses.length + electiveCourses.length) !== 1 ? 's' : ''} available
+        </span>
+      </div>`;
+
+      // Already registered banner
+      if (existingReg) {
+        const regDate = existingReg.created_at
+          ? new Date(existingReg.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+          : '';
+        const regCount = ((existingReg.courses||[]).length + (existingReg.core_courses||[]).length);
+        html += `<div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;">
+          <i class="fas fa-circle-check" style="color:#059669;font-size:16px;margin-top:1px;flex-shrink:0;"></i>
+          <div style="font-size:13px;">
+            <strong style="color:#065f46;">Already registered</strong>
+            ${regCount ? ' &mdash; ' + regCount + ' course(s) saved' : ''}
+            ${regDate ? ' on ' + regDate : ''}.
+            Submitting again will <strong>add a new record</strong>.
+          </div>
+        </div>`;
+      }
+
+      // Elective courses section
+      if (electiveCourses.length) {
+        html += '<div style="font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px;">'
+          + '<i class="fas fa-list-check" style="color:var(--brand,#e03131);margin-right:6px;"></i>Elective Courses</div>'
+          + '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">'
+          + _renderCourseCheckboxes(electiveCourses, false)
+          + '</div>';
+      }
+
+      // Core courses section
+      if (coreCourses.length) {
+        html += '<div class="divider"></div>'
+          + '<div style="font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px;">'
+          + '<i class="fas fa-lock" style="color:#059669;margin-right:6px;"></i>'
+          + 'Core Courses <span style="font-weight:400;font-size:11px;">(compulsory — auto-selected)</span></div>'
+          + '<div style="display:flex;flex-direction:column;gap:8px;">'
+          + _renderCourseCheckboxes(coreCourses, true)
+          + '</div>';
+      }
+
+      if (!coreCourses.length && !electiveCourses.length) {
+        html += '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">'
+          + '<i class="fas fa-book-open" style="font-size:24px;display:block;margin-bottom:8px;opacity:.4;"></i>'
+          + 'No courses found for your school and level.<br>Please contact the Registrar\'s Office.</div>';
       }
 
       sel.innerHTML = html;
-      const progSel = document.getElementById('level100ProgramSelect');
-      if (progSel) {
-        progSel.addEventListener('change', function() {
-          const p = this.value;
-          const out = document.getElementById('level100ProgramCourses');
-          if (!p) { out.innerHTML = 'Choose a program to view courses'; return; }
-          const opts = info.programs[p] || [];
-          let ohtml = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">';
-          for(const c of opts) ohtml += `<label class="other-fee-checkbox" style="margin:0;"><input type="checkbox" name="course_option" value="${escapeHtml(c)}"> <span style="flex:1;">${escapeHtml(c)}</span></label>`;
-          ohtml += '</div>';
-          if (info.coreCourses && info.coreCourses.length) {
-            ohtml += '<div class="divider"></div><div style="font-weight:600;margin-bottom:8px;font-size:13px;">Core Courses</div><div style="display:flex;flex-direction:column;gap:8px;">';
-            for(const cc of info.coreCourses) { ohtml += `<label class="other-fee-checkbox" style="margin:0;background:var(--emerald-light);border-color:var(--emerald);"><input type="checkbox" name="course_option" value="${escapeHtml(cc)}" checked disabled> <span style="flex:1;">${escapeHtml(cc)}</span><span class="badge badge-green" style="font-size:11px;">Core</span></label>`; }
-            ohtml += '</div>';
-          }
-          out.innerHTML = ohtml;
-        });
-      }
-      statusEl.textContent = '';
-      openModal('level100CourseRegisterModal');
-    } catch(err) { console.error('openLevel100CourseRegisterModal error', err); showModalMessage('Could not open course registration.'); }
+
+      // Store intake info for use during submission
+      sel.dataset.intakeSem  = latestSem  || '';
+      sel.dataset.intakeYear = latestYear || '';
+
+    } catch(err) {
+      console.error('openLevel100CourseRegisterModal error', err);
+      showModalMessage('Could not open course registration. Please try again.');
+    }
   }
 
   async function submitLevel100CourseRegistration() {
+    const submitBtn = document.getElementById('level100RegSubmit');
+    const statusEl  = document.getElementById('level100RegStatus');
     try {
-      const phone = (document.getElementById('reg_phone').value || '').trim();
+      const phone    = (document.getElementById('reg_phone').value    || '').trim();
       const whatsapp = (document.getElementById('reg_whatsapp').value || '').trim();
-      const email = (document.getElementById('reg_email').value || '').trim();
-      const checked = Array.from(document.querySelectorAll('#level100CourseSelector input[name="course_option"]:checked')).map(i => i.value);
-      if (!phone || !whatsapp) { showModalMessage('Please provide both phone and WhatsApp numbers.'); return; }
-      if (!Array.isArray(checked) || checked.length === 0) { showModalMessage('Please select at least one course.'); return; }
+      const email    = (document.getElementById('reg_email').value    || '').trim();
+
+      if (!phone || !whatsapp) {
+        showModalMessage('Please provide both phone and WhatsApp numbers.');
+        return;
+      }
+
+      // Separate core (disabled checkboxes) from elective (enabled, checked)
+      const allChecked = Array.from(
+        document.querySelectorAll('#level100CourseSelector input[name="course_option"]:checked')
+      ).map(i => i.value);
+      const coreChecked = Array.from(
+        document.querySelectorAll('#level100CourseSelector input[name="course_option"]:checked[disabled]')
+      ).map(i => i.value);
+      const electiveChecked = Array.from(
+        document.querySelectorAll('#level100CourseSelector input[name="course_option"]:checked:not([disabled])')
+      ).map(i => i.value);
+
+      if (!allChecked.length) {
+        showModalMessage('Please select at least one course.'); return;
+      }
+
+      // Retrieve intake period stored on the selector element during load
+      const sel         = document.getElementById('level100CourseSelector');
+      const intakeSem   = sel.dataset.intakeSem  || '';
+      const intakeYear  = sel.dataset.intakeYear || '';
+
       const sdet = detectStudentSchoolAndProgramLevel100();
+      const studentId = currentStudent?.student_id || currentStudent?.id || null;
+
       const payload = {
-        student_id: currentStudent?.student_id || currentStudent?.id || null,
-        level: currentStudent?.level || null,
-        school: sdet.school, program: sdet.program || null, courses: checked,
-        contact_phone: phone, contact_whatsapp: whatsapp, contact_email: email || null,
-        status: 'pending', created_at: new Date().toISOString()
+        student_id:      studentId,
+        student_name:    currentStudent?.name   || '',
+        student_email:   currentStudent?.email  || email || null,
+        level:           '100',
+        school:          sdet.school,
+        program:         sdet.program || null,
+        courses:         electiveChecked,          // elective selections only
+        core_courses:    coreChecked,              // core courses in separate field
+        contact_phone:   phone,
+        contact_whatsapp: whatsapp,
+        contact_email:   email || null,
+        academic_year:   intakeYear || null,
+        semester:        intakeSem  || null,
+        status:          'pending',
+        source_payload:  JSON.stringify({
+          intake_period: intakeSem && intakeYear ? intakeSem + ' ' + intakeYear : intakeYear,
+          registered_via: '100dashboard',
+        }),
+        created_at:      new Date().toISOString(),
+        updated_at:      new Date().toISOString(),
       };
-      const submitBtn = document.getElementById('level100RegSubmit');
-      const statusEl = document.getElementById('level100RegStatus');
+
       submitBtn.disabled = true; submitBtn.style.opacity = '0.7';
       statusEl.textContent = 'Submitting registration…';
+
+      // Check if student already has a registration and update instead of inserting
       let saved = false; let lastErr = null;
-      try { const { data, error } = await sb.from('registrations').insert([payload]); if (error) { lastErr = error; throw error; } saved = true; } catch(e) { lastErr = e; }
-      if (!saved) { console.warn('Could not save registration:', lastErr); statusEl.textContent = 'Could not save. Please try again.'; submitBtn.disabled = false; submitBtn.style.opacity = '1'; return; }
-      statusEl.style.color = 'var(--emerald)'; statusEl.textContent = 'Registration saved successfully.';
-      try { await fetch('/send-confirmation', { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } }); } catch(e) {}
-      setTimeout(() => { closeModal('level100CourseRegisterModal'); showModalMessage('Registration submitted successfully!'); }, 700);
-    } catch(err) { console.error('submitLevel100CourseRegistration error', err); showModalMessage('Registration failed. See console for details.'); try { document.getElementById('level100RegSubmit').disabled = false; document.getElementById('level100RegSubmit').style.opacity = '1'; } catch(e) {} }
+      try {
+        const { data: existing } = await sb.from('registrations')
+          .select('id').ilike('student_id', studentId || '__none__').limit(1);
+
+        if (existing && existing.length) {
+          // Update existing registration
+          const { error } = await sb.from('registrations')
+            .update({ ...payload, updated_at: new Date().toISOString() })
+            .eq('id', existing[0].id);
+          if (error) { lastErr = error; throw error; }
+        } else {
+          // Insert new registration
+          const { error } = await sb.from('registrations').insert([payload]);
+          if (error) { lastErr = error; throw error; }
+        }
+        saved = true;
+      } catch(e) { lastErr = e; }
+
+      if (!saved) {
+        console.warn('Could not save registration:', lastErr);
+        statusEl.style.color = 'var(--rose,#e03131)';
+        statusEl.textContent = 'Could not save. Please try again.';
+        submitBtn.disabled = false; submitBtn.style.opacity = '1';
+        return;
+      }
+
+      statusEl.style.color = 'var(--emerald)';
+      statusEl.textContent = 'Registration saved successfully.';
+      setTimeout(() => {
+        closeModal('level100CourseRegisterModal');
+        showModalMessage('Registration submitted successfully! The admin will review and approve your courses.');
+      }, 700);
+
+    } catch(err) {
+      console.error('submitLevel100CourseRegistration error', err);
+      showModalMessage('Registration failed. Please try again or contact the Registrar.');
+      try { submitBtn.disabled = false; submitBtn.style.opacity = '1'; } catch(e) {}
+    }
   }
 
   /* -------------- STUDENT DATA FETCHING -------------- */
@@ -3875,12 +4248,14 @@
   }
 
   // Full display names for school_selected codes from newstudents table
+  // These MUST exactly match the keys in DASHBOARD_SCHOOL_DATA_LEVEL100
+  // AND the `school` column values in course_schedules
   const SCHOOL_FULL_NAMES = {
-    'MEDIA': 'GH Media School',
-    'FASHION': 'GH Fashion School',
-    'CATERING': 'GH Catering School',
-    'COSMETOLOGY': 'GH Cosmetology School',
-    'TECHNOLOGY': 'GH Technology School'
+    'MEDIA':        'Media School',
+    'FASHION':      'School of Fashion',
+    'CATERING':     'Catering School',
+    'COSMETOLOGY':  'Cosmetology School',
+    'TECHNOLOGY':   'School of Technology'
   };
 
   function formatStudentData(studentData) {
@@ -4533,6 +4908,47 @@
         </div>
       </div>
 
+      <!-- ══ FEES BREAKDOWN TABLE ══ -->
+      <div id="feesBreakdownSection" style="margin-bottom:32px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:38px;height:38px;background:var(--brand-light);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--brand);flex-shrink:0;"><i class="fas fa-table-list"></i></div>
+          <div>
+            <h2 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0;">Your Fee Breakdown</h2>
+            <p style="font-size:12px;color:var(--muted);margin:2px 0 0;">A complete summary of all fees and your current payment status.</p>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-xs);">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+            <thead>
+              <tr style="background:var(--brand);color:#fff;">
+                <th style="padding:12px 18px;text-align:left;font-weight:700;letter-spacing:.3px;">Fee Type</th>
+                <th style="padding:12px 18px;text-align:right;font-weight:700;">Amount (GHS)</th>
+                <th style="padding:12px 18px;text-align:right;font-weight:700;">Paid (GHS)</th>
+                <th style="padding:12px 18px;text-align:right;font-weight:700;">Balance (GHS)</th>
+                <th style="padding:12px 18px;text-align:center;font-weight:700;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="feesBreakdownBody">
+              <!-- populated by _fpRenderBreakdown() -->
+            </tbody>
+            <tfoot>
+              <tr style="background:var(--surface);border-top:2px solid var(--border);">
+                <td style="padding:13px 18px;font-weight:800;color:var(--ink);">TOTAL</td>
+                <td id="fbTotalAmt"  style="padding:13px 18px;text-align:right;font-weight:800;color:var(--ink);">—</td>
+                <td id="fbTotalPaid" style="padding:13px 18px;text-align:right;font-weight:800;color:var(--emerald);">—</td>
+                <td id="fbTotalBal"  style="padding:13px 18px;text-align:right;font-weight:800;color:var(--rose);">—</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <!-- Payment order notice -->
+        <div style="margin-top:12px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:11px 16px;display:flex;gap:10px;align-items:flex-start;">
+          <i class="fas fa-circle-exclamation" style="color:#d97706;font-size:14px;margin-top:2px;flex-shrink:0;"></i>
+          <div style="font-size:12.5px;color:#78350f;line-height:1.6;"><strong>Payment Order:</strong> You must pay the <strong>Admission Fee</strong> first. Once admission is cleared, pay <strong>all Other Fees</strong> (SRC, Departmental, Medical) in full before tuition is unlocked.</div>
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;">
 
         <!-- Plan 1: Admission Only -->
@@ -4789,6 +5205,68 @@ function _fpDeselectAll() {
   }
 }
 
+/* ── Render the fees breakdown table ─────────────── */
+function _fpRenderBreakdown() {
+  try {
+    var f   = _fpGetFees();
+    var o   = typeof otherRemaining   === 'function' ? otherRemaining()   : { src:f.src, dept:f.dept, med:f.med };
+    var t   = typeof tuitionStatus    === 'function' ? tuitionStatus()    : { paid:0, remaining:f.tuition };
+    var adm = typeof hasPaidAdmission === 'function' ? hasPaidAdmission() : false;
+
+    /* Compute paid amounts from remaining */
+    var admPaid    = adm ? f.admission : 0;
+    var admBal     = f.admission - admPaid;
+    var srcPaid    = f.src  - (o.src  || 0);
+    var deptPaid   = f.dept - (o.dept || 0);
+    var medPaid    = f.med  - (o.med  || 0);
+    var tuitionPaid= (t && t.paid != null) ? t.paid : 0;
+    var tuitionBal = f.tuition - tuitionPaid;
+
+    function statusBadge(paid, total) {
+      if (total <= 0) return '<span style="font-size:11px;background:#f1f5f9;color:#94a3b8;padding:3px 10px;border-radius:20px;font-weight:600;">N/A</span>';
+      if (paid >= total - 0.005) return '<span style="font-size:11px;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-check" style="margin-right:3px;"></i>Paid</span>';
+      if (paid > 0) return '<span style="font-size:11px;background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-clock" style="margin-right:3px;"></i>Partial</span>';
+      return '<span style="font-size:11px;background:#ffe4e6;color:#9f1239;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-xmark" style="margin-right:3px;"></i>Unpaid</span>';
+    }
+
+    function N(v){ return Number(v||0); }
+    function fmt(v){ return N(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+    var rows = [
+      { label:'Admission Fee',      icon:'fa-door-open',        color:'var(--brand)',   amt:f.admission,  paid:admPaid,   bal:admBal },
+      { label:'SRC Dues',           icon:'fa-users',            color:'var(--violet)',  amt:f.src,        paid:srcPaid,   bal:o.src||0 },
+      { label:'Departmental Dues',  icon:'fa-building',         color:'var(--sky)',     amt:f.dept,       paid:deptPaid,  bal:o.dept||0 },
+      { label:'Medical Levy',       icon:'fa-stethoscope',      color:'var(--emerald)', amt:f.med,        paid:medPaid,   bal:o.med||0 },
+      { label:'Tuition Fee',        icon:'fa-graduation-cap',   color:'var(--amber)',   amt:f.tuition,    paid:tuitionPaid, bal:Math.max(0,tuitionBal) }
+    ];
+
+    var html = '';
+    var totalAmt = 0, totalPaid = 0, totalBal = 0;
+    rows.forEach(function(r, idx) {
+      totalAmt  += N(r.amt);
+      totalPaid += N(r.paid);
+      totalBal  += N(r.bal);
+      var bg = idx % 2 === 0 ? '#ffffff' : 'var(--surface)';
+      html += '<tr style="background:'+bg+';border-bottom:1px solid var(--border);">'
+        + '<td style="padding:12px 18px;"><div style="display:flex;align-items:center;gap:9px;">'
+        + '<div style="width:30px;height:30px;border-radius:8px;background:'+r.color.replace('var(--','').replace(')','')+'11;background:color-mix(in srgb,'+r.color+' 14%,transparent);display:flex;align-items:center;justify-content:center;font-size:13px;color:'+r.color+';flex-shrink:0;">'
+        + '<i class="fas '+r.icon+'"></i></div>'
+        + '<span style="font-weight:600;color:var(--ink);">'+r.label+'</span></div></td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--ink-3);">'+(r.amt > 0 ? fmt(r.amt) : '—')+'</td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--emerald);">'+(r.paid > 0 ? fmt(r.paid) : (r.amt > 0 ? '0.00' : '—'))+'</td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:700;color:'+(r.bal > 0.005 ? 'var(--rose)' : 'var(--emerald)')+';">'+(r.amt > 0 ? fmt(r.bal) : '—')+'</td>'
+        + '<td style="padding:12px 18px;text-align:center;">'+statusBadge(r.paid, r.amt)+'</td>'
+        + '</tr>';
+    });
+
+    var tbody = document.getElementById('feesBreakdownBody');
+    if (tbody) tbody.innerHTML = html;
+    _fpSet('fbTotalAmt',  fmt(totalAmt));
+    _fpSet('fbTotalPaid', fmt(totalPaid));
+    _fpSet('fbTotalBal',  fmt(totalBal));
+  } catch(e) { console.warn('[breakdown]', e); }
+}
+
 function _fpPopulate() {
   var f = _fpGetFees();
   var other     = f.src + f.dept + f.med;
@@ -4812,6 +5290,8 @@ function _fpPopulate() {
   /* Refresh button labels with live amounts */
   _fpDeselectAll();
   window._fpSelectedPlan = 0;
+  /* Render breakdown table */
+  _fpRenderBreakdown();
 }
 
 async function openFeesPage() {
@@ -4891,6 +5371,27 @@ function fpPay(planNum) {
   var amount = _fpGetAmount(planNum);
   if (amount <= 0) { if (typeof showModalMessage === 'function') showModalMessage('No amount due for this plan.'); return; }
 
+  /* ── Payment order enforcement ─────────────── */
+  var admPaid = typeof hasPaidAdmission === 'function' && hasPaidAdmission();
+
+  /* Plans 2, 3, 4, 5 all require admission first */
+  if (planNum !== 1 && !admPaid) {
+    if (typeof showModalMessage === 'function') showModalMessage('Please pay your Admission Fee (Plan 1) first before proceeding to any other payment plan.');
+    _fpDeselectAll(); window._fpSelectedPlan = 0;
+    return;
+  }
+
+  /* Plans 4 & 5 include tuition — other fees must be fully cleared first */
+  if (planNum === 4 || planNum === 5) {
+    var o = typeof otherRemaining === 'function' ? otherRemaining() : null;
+    if (o && (o.src + o.dept + o.med) > 0) {
+      var rem = o.src + o.dept + o.med;
+      if (typeof showModalMessage === 'function') showModalMessage('Please pay all Other Fees (SRC Dues, Departmental Dues, and Medical Levy) in full before paying tuition.\n\nRemaining: GHS ' + rem.toFixed(2));
+      _fpDeselectAll(); window._fpSelectedPlan = 0;
+      return;
+    }
+  }
+
   /* Plan 1 uses the existing feeModal (admission-only step) */
   if (planNum === 1) {
     if (typeof openModal === 'function') openModal('feeModal');
@@ -4936,8 +5437,9 @@ function fpPay(planNum) {
                 loadPayments().then(function() {
                   if (typeof updatePaymentStatusDisplay === 'function') updatePaymentStatusDisplay();
                   if (typeof updateDashboardStats === 'function') updateDashboardStats();
-                  /* Refresh paid-state badges on fees page */
+                  /* Refresh paid-state badges and breakdown table on fees page */
                   _fpRefreshPaidState();
+                  _fpRenderBreakdown();
                 });
               }
             })

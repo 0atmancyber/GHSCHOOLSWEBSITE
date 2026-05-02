@@ -6333,51 +6333,37 @@
       if (!sid) return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, rows: [] };
       try {
         let payments = [];
-        // Primary: by student_id + approved status
         try {
           const { data, error } = await supabase.from('payments').select('*')
             .eq('student_id', sid).in('status', ['approved']);
           if (!error) payments = data || [];
         } catch (_) { }
 
-        // Fallback: no status filter
-        if (!payments.length) {
-          try {
-            const { data } = await supabase.from('payments').select('*').eq('student_id', sid);
-            if (data && data.length) payments = data;
-          } catch (_) { }
-        }
-
-        // Fallback: by email
-        if (!payments.length && window.studentEmail) {
-          try {
-            const { data } = await supabase.from('payments').select('*').ilike('student_email', window.studentEmail).limit(200);
-            if (data && data.length) payments = data;
-          } catch (_) { }
-        }
-
         let tuitionPaid = 0, srcPaid = 0, medPaid = 0, deptPaid = 0, admissionPaid = 0, total = 0;
+
         (payments || []).forEach(p => {
+          // Identify if this is a "Credit Source" row (The raw bank deposit)
+          // We exclude it because the actual "Payments" are recorded in the split rows.
+          let payload = {};
+          try {
+            payload = (typeof p.source_payload === 'string') ? JSON.parse(p.source_payload) : (p.source_payload || {});
+          } catch (e) { }
+
+          // CRITICAL: Skip the raw ECOBANK record so it doesn't double-count
+          if (payload && payload.bank === 'ECOBANK') return;
+
           const amt = Number(p.amount || 0);
           total += amt;
           const type = (p.fee_type || p.fee_breakdown || '').toLowerCase();
 
-          // BUG FIX 4: A combined payment like "SRC Dues, Medical Dues" contains multiple
-          // fee keywords. The old else-if chain only matched the FIRST keyword found,
-          // leaving the remaining categories uncredited (showing them as unpaid).
-          // Fix: split on commas and credit each named category proportionally by its
-          // schedule amount; for simple single-fee payments the old logic still applies.
           const parts = type.split(',').map(s => s.trim()).filter(Boolean);
           if (parts.length <= 1) {
-            // Single-fee payment — simple keyword match
             if (type.includes('tuition')) tuitionPaid += amt;
             else if (type.includes('admission')) admissionPaid += amt;
             else if (type.includes('src')) srcPaid += amt;
             else if (type.includes('medical')) medPaid += amt;
             else if (type.includes('departmental') || type.includes('department')) deptPaid += amt;
-            // else: unclassified payment still counts in total
           } else {
-            // Multi-fee combined payment — allocate proportionally using schedule amounts
             const schedule = _currentFeeSchedule || [];
             const matchedFees = [];
             parts.forEach(part => {
@@ -9035,10 +9021,10 @@
     };
 
     /* ══════════════════════════════════════════════════════
-       BANK VALIDATION — Payment via ECOBANK validation
+       STABILIZED BANK VALIDATION LOGIC 
     ══════════════════════════════════════════════════════ */
+
     window.switchPaymentTab = async function (tab) {
-      const tabSelector = document.getElementById('pmovTabSelector');
       const regularBody = document.getElementById('paymentsOverviewBody');
       const bankBody = document.getElementById('bankValidationBody');
       const tabRegularBtn = document.getElementById('pmovTabRegular');
@@ -9054,7 +9040,6 @@
         bankBody.style.display = '';
         tabRegularBtn.classList.remove('active');
         tabBankBtn.classList.add('active');
-        // Render bank validation card when switching to this tab
         await renderBankValidationCard();
       }
     };
@@ -9063,50 +9048,37 @@
       const body = document.getElementById('bankValidationBody');
       if (!body) return;
 
-      body.innerHTML = `<div style="text-align:center;padding:40px 20px;"><div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px;"></div>Loading bank validations…</div>`;
+      body.innerHTML = `<div class="pmov-loading"><div class="pmov-spinner"></div><p>Searching for valid ECOBANK records...</p></div>`;
 
       try {
-        // Fetch unused ECOBANK validations
-        const { data, error } = await supabase.from('payments')
-          .select('id, amount, transaction_ref, payment_date, source_payload, ecobank_validation_status')
+        // Query using JSONB containment for bank and text status for usage
+        const { data: validations, error } = await supabase.from('payments')
+          .select('id, amount, transaction_ref, payment_date')
           .eq('student_id', studentId)
           .eq('ecobank_validation_status', 'unused')
+          .eq('status', 'approved')
+          .contains('source_payload', { bank: 'ECOBANK' })
           .order('payment_date', { ascending: false });
 
         if (error) throw error;
 
-        // Filter for ECOBANK only
-        const ecoValidations = (data || []).filter(v => {
-          try {
-            const payload = JSON.parse(v.source_payload || '{}');
-            return payload.bank === 'ECOBANK';
-          } catch (_) { return false; }
-        });
-
-        if (ecoValidations.length === 0) {
+        if (!validations || validations.length === 0) {
           body.innerHTML = `
             <div class="bv-no-validations">
-              <div class="bv-no-validations-icon"><i class="fas fa-inbox"></i></div>
-              <div style="font-weight:700;margin-bottom:4px;">No Available Validations</div>
-              <small>You don't have any unused bank validations at this time.</small>
-            </div>
-          `;
-          // Hide tab selector if no validations
-          const tabSelector = document.getElementById('pmovTabSelector');
-          if (tabSelector) tabSelector.style.display = 'none';
+              <div class="bv-no-validations-icon"><i class="fas fa-search-dollar"></i></div>
+              <div style="font-weight:700;margin-bottom:4px;">No Available Credit</div>
+              <small>No unused ECOBANK validations found for ID: ${studentId}</small>
+            </div>`;
+          document.getElementById('pmovTabSelector').style.display = 'none';
           return;
         }
 
-        // Show tab selector
-        const tabSelector = document.getElementById('pmovTabSelector');
-        if (tabSelector) tabSelector.style.display = 'flex';
+        document.getElementById('pmovTabSelector').style.display = 'flex';
 
-        // Build validation options
-        const options = ecoValidations.map(v => {
+        const options = validations.map(v => {
           const date = v.payment_date ? new Date(v.payment_date).toLocaleDateString() : 'N/A';
-          const ref = v.transaction_ref ? v.transaction_ref.slice(-5) : 'N/A';
-          const amt = Number(v.amount || 0);
-          return `<option value="${v.id}">GHS ${gh(amt)} · Ref: ...${ref} · ${date}</option>`;
+          const ref = v.transaction_ref ? v.transaction_ref.slice(-6) : 'N/A';
+          return `<option value="${v.id}" data-amount="${v.amount}" data-ref="${v.transaction_ref}">GHS ${gh(v.amount)} · Ref: ...${ref} · ${date}</option>`;
         }).join('');
 
         body.innerHTML = `
@@ -9114,284 +9086,224 @@
             <div class="bv-card-header">
               <div class="bv-card-header-icon"><i class="fas fa-university"></i></div>
               <div class="bv-card-header-text">
-                <strong>Bank Validation Payment</strong>
-                <small>Use ECOBANK validation to process fees</small>
+                <strong>Bank Validation Manager</strong>
+                <small>Allocate ECOBANK credit to your fees</small>
               </div>
             </div>
             <div class="bv-card-body">
-              
-              <!-- Validation selector -->
               <div class="bv-form-group">
-                <label class="bv-form-label">Select Bank Validation</label>
+                <label class="bv-form-label">Available ECOBANK Credit</label>
                 <div class="bv-select">
                   <select id="bvValidationSelect" onchange="updateBankValidationFeeList(this.value)">
-                    <option value="">Choose a validation…</option>
+                    <option value="">Select a validation...</option>
                     ${options}
                   </select>
                 </div>
               </div>
-              
-              <!-- Fee checkboxes (hidden until validation selected) -->
-              <div id="bvFeeSection" style="display:none;">
+              <div id="bvFeeSection" style="display:none; margin-top:15px;">
                 <div class="bv-form-group">
-                  <label class="bv-form-label">Select Fees to Pay</label>
-                  <div class="bv-checkbox-list" id="bvCheckboxList">
-                    <!-- Populated by updateBankValidationFeeList() -->
-                  </div>
+                  <label class="bv-form-label">Select Fees to Apply Credit To</label>
+                  <div class="bv-checkbox-list" id="bvCheckboxList"></div>
                 </div>
-                
-                <!-- Allocation summary -->
-                <div class="bv-allocation-summary" id="bvAllocationSummary" style="display:none;">
-                  <div class="bv-alloc-header">Allocation Summary</div>
+                <div class="bv-allocation-summary" id="bvAllocationSummary" style="display:none; margin-top:15px;">
+                  <div class="bv-alloc-header">Distribution Preview</div>
                   <div id="bvAllocationRows"></div>
                 </div>
-                
-                <!-- Submit button -->
-                <button class="bv-submit-btn" id="bvSubmitBtn" disabled onclick="processBankValidation()">
-                  <i class="fas fa-check-circle"></i> Process Payment
+                <button class="bv-submit-btn" id="bvSubmitBtn" disabled onclick="processBankValidation()" style="width:100%; margin-top:15px;">
+                  <i class="fas fa-check-double"></i> Process Fee Allocation
                 </button>
               </div>
-              
             </div>
-          </div>
-        `;
+          </div>`;
       } catch (e) {
         console.error('[renderBankValidationCard]', e);
-        body.innerHTML = `
-          <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
-            <i class="fas fa-exclamation-triangle" style="font-size:32px;color:var(--danger);margin-bottom:12px;"></i>
-            <div style="font-weight:700;margin-bottom:4px;">Could not load validations</div>
-            <small>Please check your connection and try again.</small>
-            <button onclick="renderBankValidationCard()" style="margin-top:16px;padding:8px 16px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;">Retry</button>
-          </div>
-        `;
+        body.innerHTML = `<div class="empty-state"><p>Error scanning bank records. Please try again.</p></div>`;
       }
     };
 
     window.updateBankValidationFeeList = async function (validationId) {
-      if (!validationId) {
-        document.getElementById('bvFeeSection').style.display = 'none';
-        return;
-      }
+      const section = document.getElementById('bvFeeSection');
+      if (!validationId) { section.style.display = 'none'; return; }
 
       try {
-        // Get validation details
-        const { data: validation, error: valError } = await supabase.from('payments')
-          .select('*')
-          .eq('id', validationId)
-          .single();
+        const select = document.getElementById('bvValidationSelect');
+        const valAmount = parseFloat(select.options[select.selectedIndex].dataset.amount);
 
-        if (valError) throw valError;
+        // Fetch current paid amounts to determine TRUE outstanding balances
+        const summary = await fetchPaymentsSummary(studentId);
 
-        const validationAmount = Number(validation.amount || 0);
-
-        // Fetch fee schedule for current level
-        const { data: feeSchedule, error: feeError } = await supabase.from('fee_schedules')
-          .select('amount, fee_types(name)')
-          .eq('level', window.studentLevel || '100')
-          .eq('academic_year', window._academicYear || '')
-          .order('fee_type_id', { ascending: true });
-
-        if (feeError) throw feeError;
-
-        // Map fee types to amounts
-        const feeMap = {
-          'tuition': 0,
-          'src': 0,
-          'medical': 0,
-          'departmental': 0,
-          'admission': 0
+        const balances = {
+          tuition: Math.max(0, TUITION - (summary.tuitionPaid || 0)),
+          src: Math.max(0, FEE_SRC - (summary.srcPaid || 0)),
+          medical: Math.max(0, FEE_MEDICAL - (summary.medPaid || 0)),
+          departmental: Math.max(0, FEE_DEPT - (summary.deptPaid || 0))
         };
 
-        (feeSchedule || []).forEach(f => {
-          const name = (f.fee_types?.name || '').toLowerCase();
-          const amt = Number(f.amount || 0);
-          if (name.includes('tuition')) feeMap.tuition = amt;
-          else if (name.includes('src')) feeMap.src = amt;
-          else if (name.includes('medical')) feeMap.medical = amt;
-          else if (name.includes('departmental') || name.includes('department')) feeMap.departmental = amt;
-          else if (name.includes('admission')) feeMap.admission = amt;
-        });
-
-        // Build checkboxes
         const feeLabels = [
-          { key: 'tuition', label: 'Tuition Fees' },
-          { key: 'src', label: 'SRC Dues' },
-          { key: 'medical', label: 'Medical Dues' },
-          { key: 'departmental', label: 'Departmental Dues' },
-          { key: 'admission', label: 'Admissions Fees' }
+          { key: 'src', label: 'SRC Dues', icon: 'fa-users' },
+          { key: 'medical', label: 'Medical Dues', icon: 'fa-heart-pulse' },
+          { key: 'departmental', label: 'Dept Dues', icon: 'fa-building' },
+          { key: 'tuition', label: 'Tuition Fees', icon: 'fa-graduation-cap' }
         ];
 
-        const checkboxHTML = feeLabels.map(f => `
-          <div class="bv-checkbox-item">
-            <input type="checkbox" name="bvFee" value="${f.key}" onchange="updateBankValidationSummary('${validationId}')">
-            <label class="bv-checkbox-label">
-              <span>${f.label}</span>
-              <span class="bv-checkbox-amount">GHS ${gh(feeMap[f.key] || 0)}</span>
-            </label>
-          </div>
-        `).join('');
+        const html = feeLabels.map(f => {
+          const bal = balances[f.key];
+          if (bal <= 0.01) return '';
+          return `
+            <div class="bv-checkbox-item">
+              <input type="checkbox" name="bvFee" value="${f.key}" id="chk_${f.key}" onchange="updateBankValidationSummary()">
+              <label class="bv-checkbox-label" for="chk_${f.key}">
+                <span><i class="fas ${f.icon}" style="width:20px; opacity:0.6"></i> ${f.label}</span>
+                <span class="bv-checkbox-amount">Balance: GHS ${gh(bal)}</span>
+              </label>
+            </div>`;
+        }).join('');
 
-        document.getElementById('bvCheckboxList').innerHTML = checkboxHTML;
-        document.getElementById('bvFeeSection').style.display = '';
+        document.getElementById('bvCheckboxList').innerHTML = html || '<p style="padding:10px; font-size:12px; color:var(--success)">Your current fees are already cleared!</p>';
+        section.style.display = '';
 
-        // Store fee map for allocation calculations
-        window._bvFeeMap = feeMap;
+        window._bvBalances = balances;
+        window._bvValidationAmount = valAmount;
         window._bvValidationId = validationId;
-        window._bvValidationAmount = validationAmount;
-
-      } catch (e) {
-        console.error('[updateBankValidationFeeList]', e);
-        showToast('Error loading fees', 'error');
-      }
+        updateBankValidationSummary();
+      } catch (e) { console.error(e); }
     };
 
-    window.updateBankValidationSummary = function (validationId) {
-      const checked = Array.from(document.querySelectorAll('input[name="bvFee"]:checked'))
-        .map(cb => cb.value);
+    window.updateBankValidationSummary = function () {
+      const checked = Array.from(document.querySelectorAll('input[name="bvFee"]:checked')).map(cb => cb.value);
+      const summaryDiv = document.getElementById('bvAllocationSummary');
+      const btn = document.getElementById('bvSubmitBtn');
 
       if (checked.length === 0) {
-        document.getElementById('bvAllocationSummary').style.display = 'none';
-        document.getElementById('bvSubmitBtn').disabled = true;
+        summaryDiv.style.display = 'none';
+        btn.disabled = true;
         return;
       }
 
-      const feeMap = window._bvFeeMap || {};
-      const validationAmount = window._bvValidationAmount || 0;
-
-      // Allocate: non-tuition fees first, tuition gets remainder
-      let remaining = validationAmount;
+      let remaining = window._bvValidationAmount;
       const allocation = {};
-      const feeOrder = ['src', 'medical', 'departmental', 'admission', 'tuition'];
+      const priority = ['src', 'medical', 'departmental', 'tuition'];
 
-      feeOrder.forEach(feeType => {
-        if (checked.includes(feeType)) {
-          const required = feeMap[feeType] || 0;
-          const toAllocate = Math.min(required, remaining);
-          allocation[feeType] = toAllocate;
-          remaining -= toAllocate;
+      priority.forEach(key => {
+        if (checked.includes(key)) {
+          const owed = window._bvBalances[key];
+          // Tuition absorbs remainder; others take only what is owed
+          const take = (key === 'tuition') ? remaining : Math.min(owed, remaining);
+          if (take > 0.01) {
+            allocation[key] = take;
+            remaining -= take;
+          }
         }
       });
 
-      // Build allocation display
-      const labels = {
-        'tuition': 'Tuition Fees',
-        'src': 'SRC Dues',
-        'medical': 'Medical Dues',
-        'departmental': 'Departmental Dues',
-        'admission': 'Admissions Fees'
-      };
-
+      let html = '';
       let totalAllocated = 0;
-      const allocationHTML = Object.entries(allocation)
-        .filter(([_, amt]) => amt > 0)
-        .map(([feeType, amt]) => {
-          totalAllocated += amt;
-          return `
-            <div class="bv-alloc-row">
-              <span class="bv-alloc-row-label">→ ${labels[feeType]}</span>
-              <span class="bv-alloc-row-amount">GHS ${gh(amt)}</span>
-            </div>
-          `;
-        }).join('');
+      Object.entries(allocation).forEach(([key, amt]) => {
+        totalAllocated += amt;
+        html += `
+          <div class="bv-alloc-row">
+            <span class="bv-alloc-row-label">→ ${key.toUpperCase()}</span>
+            <span class="bv-alloc-row-amount">GHS ${gh(amt)}</span>
+          </div>`;
+      });
 
-      document.getElementById('bvAllocationRows').innerHTML = `
-        ${allocationHTML}
-        <div class="bv-alloc-total">
-          <span>Total Allocated</span>
-          <span class="bv-alloc-total-amount">GHS ${gh(totalAllocated)} / GHS ${gh(validationAmount)}</span>
-        </div>
-      `;
+      document.getElementById('bvAllocationRows').innerHTML = html + `
+        <div class="bv-alloc-total" style="border-top:1px solid #ddd; margin-top:5px; padding-top:5px; font-weight:800;">
+          <span>Total Applied</span>
+          <span class="bv-alloc-total-amount">GHS ${gh(totalAllocated)}</span>
+        </div>`;
 
-      document.getElementById('bvAllocationSummary').style.display = '';
-      document.getElementById('bvSubmitBtn').disabled = false;
-
-      // Store allocation for processing
-      window._bvAllocation = allocation;
+      summaryDiv.style.display = '';
+      btn.disabled = totalAllocated <= 0;
+      window._currentAllocation = allocation;
     };
 
     window.processBankValidation = async function () {
       const btn = document.getElementById('bvSubmitBtn');
+      const allocation = window._currentAllocation;
       const validationId = window._bvValidationId;
-      const allocation = window._bvAllocation || {};
-      const checked = Array.from(document.querySelectorAll('input[name="bvFee"]:checked'))
-        .map(cb => cb.value);
+      const select = document.getElementById('bvValidationSelect');
+      const originalRef = select.options[select.selectedIndex].dataset.ref;
 
-      if (!validationId || checked.length === 0) {
-        showToast('Please select fees to pay', 'error');
-        return;
-      }
+      if (!confirm('This validation will be marked as used and applied to the selected fees. Proceed?')) return;
 
       btn.disabled = true;
-      btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid #fff;border-top:2px solid transparent;border-radius:50%;animation:spin .6s linear infinite;"></div> Processing…';
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
 
       try {
-        // Get validation transaction ref
-        const { data: validation } = await supabase.from('payments')
-          .select('transaction_ref, source_payload')
+        // STEP 1: ATOMIC LOCK (Update source record status to 'used' first)
+        const { data: lockResult, error: lockError } = await supabase.from('payments')
+          .update({ ecobank_validation_status: 'used' })
           .eq('id', validationId)
-          .single();
+          .eq('ecobank_validation_status', 'unused') // Concurrency check
+          .select();
 
-        if (!validation) throw new Error('Validation not found');
+        if (lockError || !lockResult.length) {
+          throw new Error("This validation has already been used or is no longer available.");
+        }
 
-        const txnRef = validation.transaction_ref;
+        // STEP 2: CREATE INDIVIDUAL PAYMENT RECORDS (Child Rows)
+        const newRows = [];
+        Object.entries(allocation).forEach(([feeType, amt]) => {
+          // Generate unique identifiers to satisfy UNIQUE constraints in the schema
+          const uniqueRef = `BV-SPLIT-${originalRef.slice(0, 5)}-${feeType.toUpperCase()}-${Math.floor(Math.random() * 10000)}`;
+          const uniqueRcpt = `R-${genRcptNo()}`;
 
-        // Prepare payment rows
-        const paymentRows = [];
-
-        Object.entries(allocation).forEach(([feeType, amount]) => {
-          if (amount > 0.01) {
-            paymentRows.push({
-              student_id: studentId,
-              student_name: window.studentName || '',
-              student_email: window.studentEmail || '',
-              department: window.studentDept || '',
-              level: window.studentLevel || '100',
-              amount: Math.round(amount * 100) / 100,
-              phone: window.studentPhone || '',
-              fee_type: feeType.toUpperCase(),
-              fee_breakdown: feeType.toUpperCase(),
-              payment_coverage: 'BANK_VALIDATION',
-              coverage_percent: Math.round((amount / window._bvValidationAmount) * 100),
-              transaction_ref: txnRef,
-              receipt_number: null,
-              payment_date: new Date().toISOString(),
-              status: 'approved',
-              source_table: 'payments',
-              source_payload: JSON.stringify({ bank: 'ECOBANK', validation_id: validationId }),
-              academic_year: window._academicYear || '',
-              ecobank_validation_status: 'used'
-            });
-          }
+          newRows.push({
+            student_id: studentId,
+            student_name: window.studentName,
+            student_email: window.studentEmail,
+            department: window.studentDept,
+            level: window.studentLevel,
+            amount: Math.round(amt * 100) / 100,
+            fee_type: feeType.toUpperCase(),
+            fee_breakdown: `Applied from Bank Validation: ${originalRef}`,
+            transaction_ref: uniqueRef,
+            receipt_number: uniqueRcpt,
+            status: 'approved',
+            payment_date: new Date().toISOString(),
+            source_table: 'payments_validation_split',
+            // IMPORTANT: We do NOT use {"bank": "ECOBANK"} here to avoid query collisions
+            source_payload: {
+              validation_source: 'ECOBANK', // Changed key to avoid lookup filter
+              parent_record_id: validationId,
+              original_reference: originalRef,
+              split_date: new Date().toISOString()
+            },
+            academic_year: _academicYear,
+            // Ensure these child rows are never treated as unused validations
+            ecobank_validation_status: 'used'
+          });
         });
 
-        // Insert payment rows
-        const { error: insertError } = await supabase.from('payments')
-          .insert(paymentRows);
+        const { error: insertError } = await supabase.from('payments').insert(newRows);
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Critical Failure: Lock set but inserts failed.", insertError);
+          // Note: In a production environment, you might want a server-side RPC to handle this atomically
+          throw new Error("Validation applied, but fee records failed to create. Please contact Finance with Ref: " + originalRef);
+        }
 
-        // Mark validation as used
-        await supabase.from('payments')
-          .update({ ecobank_validation_status: 'used' })
-          .eq('id', validationId);
+        showToast('Bank credit applied successfully!', 'success');
 
-        showToast('Payment processed successfully!', 'success');
+        // STEP 3: REFRESH DATA & UI
+        await refreshTotalsFromDB();
 
-        // Refresh dashboard
-        setTimeout(async () => {
-          await _renderPaymentsOverviewContent();
-          // Switch back to regular tab
-          await switchPaymentTab('regular');
-        }, 500);
+        // Clear bank selection UI
+        document.getElementById('bvValidationSelect').value = "";
+        document.getElementById('bvFeeSection').style.display = 'none';
+
+        // Switch user back to the main payment tab to see updated progress
+        await switchPaymentTab('regular');
 
       } catch (e) {
         console.error('[processBankValidation]', e);
-        showToast('Error processing payment: ' + (e.message || 'Unknown error'), 'error');
+        showToast(e.message || 'Processing error', 'error');
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> Process Payment';
+        btn.innerHTML = `<i class="fas fa-check-double"></i> Process Fee Allocation`;
       }
     };
+
 
     /* ══════════════════════════════════════════════════════
        PAY CHECKOUT PAGE — replaces the old modal
@@ -9743,6 +9655,17 @@
       });
 
       try {
+        // Check for unused bank validations early
+        const { data: validations } = await supabase.from('payments')
+          .select('id')
+          .eq('student_id', studentId)
+          .eq('ecobank_validation_status', 'unused')
+          .limit(1);
+
+        const hasValidations = (validations || []).length > 0;
+        const tabSelector = document.getElementById('pmovTabSelector');
+        if (tabSelector) tabSelector.style.display = hasValidations ? 'flex' : 'none';
+
         function normLvl(r) { return String(r || '').replace(/\D/g, ''); }
         const sLvl = normLvl(window.studentLevel || '') || '100';
         const sLvlNum = parseInt(sLvl, 10) || 100;
@@ -9777,6 +9700,15 @@
         function sumPaid(pays) {
           let t = 0, s = 0, m = 0, d = 0, a = 0;
           (pays || []).forEach(p => {
+            // Check if this record is a raw validation credit
+            let payload = {};
+            try {
+              payload = (typeof p.source_payload === 'string') ? JSON.parse(p.source_payload) : (p.source_payload || {});
+            } catch (e) { }
+
+            // CRITICAL: Skip the raw ECOBANK record
+            if (payload && payload.bank === 'ECOBANK') return;
+
             const amt = Number(p.amount || 0);
             const type = (p.fee_type || p.fee_breakdown || '').toLowerCase();
             const parts = type.split(',').map(x => x.trim()).filter(Boolean);

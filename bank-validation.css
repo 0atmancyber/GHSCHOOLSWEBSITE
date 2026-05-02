@@ -1,0 +1,132 @@
+/* bank-validation.css */
+.bv-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.bv-modal-overlay.active {
+    display: flex;
+}
+
+.bv-modal-box {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    animation: bv-slideUp 0.3s ease-out;
+}
+
+@keyframes bv-slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.bv-modal-header {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bv-modal-body {
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.bv-select-group, .bv-fee-group {
+    margin-bottom: 20px;
+}
+
+.bv-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #6B7280;
+    margin-bottom: 8px;
+}
+
+.bv-select {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    font-weight: 600;
+    outline: none;
+}
+
+.bv-fee-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #F3F4F6;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.bv-fee-item:hover { background: #F9FAFB; }
+
+.bv-fee-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #6366F1;
+}
+
+.bv-summary-box {
+    background: #F5F3FF;
+    border: 1px solid #DDD6FE;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.bv-btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #F97316;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+}
+
+.bv-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.bv-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.bv-loader {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #6366F1;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: bv-spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes bv-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

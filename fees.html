@@ -3,198 +3,1008 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fees Page</title>
-   <link rel="icon" type="image/png" href="images/favicon.png" />
+  <title>Fees Structure – GH Schools</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #cc0000;
+      --red-dark: #990000;
+      --red-light: #fff0f0;
+      --gold: #f1c40f;
+      --dark: #1a1a1a;
+      --text: #2d2d2d;
+      --muted: #666;
+      --bg: #f5f4f2;
+      --card: #ffffff;
+      --border: #e8e0d8;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 36px rgba(204,0,0,0.14);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HERO HEADER ── */
+    .hero {
+      background: linear-gradient(135deg, #1a0000 0%, #cc0000 60%, #8b0000 100%);
+      padding: 70px 20px 90px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: #fff;
+      line-height: 1.15;
+      position: relative;
+    }
+    .hero h1 span {
+      color: var(--gold);
+    }
+    .hero-sub {
+      color: rgba(255,255,255,0.75);
+      margin-top: 14px;
+      font-size: 1rem;
+      font-weight: 300;
+    }
+    .hero-wave {
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 860px;
+      margin: -20px auto 60px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── ACCORDION CARDS ── */
+    .accordion {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      border: 1px solid var(--border);
+    }
+    .accordion:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-1px);
+    }
+    .accordion.open {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .acc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 26px;
+      cursor: pointer;
+      gap: 16px;
+      user-select: none;
+    }
+    .acc-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .acc-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--red-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    .accordion.open .acc-icon {
+      background: var(--red);
+      color: #fff;
+    }
+    .acc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--dark);
+      font-weight: 700;
+    }
+    .acc-chevron {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: transform 0.35s ease, background 0.3s, color 0.3s;
+    }
+    .accordion.open .acc-chevron {
+      transform: rotate(180deg);
+      background: var(--red);
+      color: #fff;
+    }
+
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .accordion.open .acc-body {
+      max-height: 2000px;
+    }
+    .acc-inner {
+      padding: 0 26px 26px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    /* ── TABLES ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+    thead tr {
+      background: linear-gradient(90deg, var(--red-dark), var(--red));
+      color: #fff;
+    }
+    thead th {
+      padding: 13px 16px;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+    thead th:first-child { border-radius: 8px 0 0 8px; }
+    thead th:last-child  { border-radius: 0 8px 8px 0; }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--red-light); }
+    tbody td {
+      padding: 13px 16px;
+      color: var(--text);
+    }
+    tbody td:last-child {
+      font-weight: 600;
+      color: var(--red-dark);
+    }
+    .free-badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+    }
+    .varied-badge {
+      display: inline-block;
+      background: #fff8e1;
+      color: #f57f17;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .student-badge {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1565c0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* ── POLICY CARDS ── */
+    .policy-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .policy-card {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--red);
+    }
+    .policy-card strong {
+      display: block;
+      color: var(--red-dark);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .policy-card p {
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+    .policy-card em {
+      color: var(--red);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background-color: #1a1a1a;
+      color: #ddd;
+      padding: 50px 30px 30px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: space-between;
+    }
+    .footer-brand { flex: 1 1 280px; min-width: 250px; }
+    .footer-brand-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .footer-brand-top img {
+      width: 65px;
+      height: auto;
+      object-fit: contain;
+    }
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .footer-sub { font-size: 0.82rem; color: #999; margin-top: 2px; }
+    .footer-phone { color: #ccc; font-size: 0.88rem; margin-top: 10px; }
+    .footer-phone i { color: var(--gold); margin-right: 6px; }
+    .footer-socials { margin-top: 16px; display: flex; gap: 14px; }
+    .footer-socials a {
+      color: #999;
+      font-size: 1rem;
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+    .footer-socials a:hover { color: var(--gold); }
+    .footer-col { flex: 1 1 130px; min-width: 120px; }
+    .footer-col h4 {
+      color: var(--gold);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 8px; }
+    .footer-col ul li a {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      border-top: 1px solid #333;
+      padding-top: 18px;
+      text-align: center;
+      color: #555;
+      font-size: 0.8rem;
+    }
+
+    /* ── FLOATING BUTTONS ── */
+    .btn-home {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--dark);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: background 0.2s, transform 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-home:hover { background: var(--red); transform: translateY(-2px); }
+
+    .btn-wa {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #25d366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.5rem;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-wa:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.5); }
+
+    /* ── SUMMARY STRIP ── */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+    .strip-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px 18px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .strip-card .amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--red);
+      line-height: 1;
+    }
+    .strip-card .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .acc-header { padding: 18px 18px; }
+      .acc-inner { padding: 16px 18px 20px; }
+      .hero { padding: 50px 20px 70px; }
+    }
+
+    /* ── POSTERS SECTION ── */
+    .posters-section {
+      max-width: 1100px;
+      margin: 0 auto 70px;
+      padding: 0 20px;
+    }
+    .posters-section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .posters-section-header .section-badge {
+      display: inline-block;
+      background: var(--red-light);
+      color: var(--red);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(204,0,0,0.15);
+      margin-bottom: 14px;
+    }
+    .posters-section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      color: var(--dark);
+      line-height: 1.2;
+    }
+    .posters-section-header h2 span { color: var(--red); }
+    .posters-section-header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    /* Tab buttons */
+    .poster-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .poster-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .poster-tab i { font-size: 0.9rem; }
+    .poster-tab:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--red-light);
+    }
+    .poster-tab.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(204,0,0,0.3);
+    }
+
+    /* Poster display */
+    .poster-display {
+      position: relative;
+    }
+    .poster-panel {
+      display: none;
+      animation: fadeInUp 0.4s ease;
+    }
+    .poster-panel.active { display: block; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .poster-card {
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .poster-card-top {
+      width: 100%;
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .poster-school-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--dark);
+      font-weight: 700;
+    }
+    .poster-school-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      background: var(--red-light);
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .poster-img-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+      background: linear-gradient(160deg, #f9f7f5 0%, #f0ece8 100%);
+    }
+    .poster-img-wrap img {
+      max-width: 420px;
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+      transition: transform 0.4s ease;
+    }
+    .poster-img-wrap img:hover {
+      transform: scale(1.02);
+    }
+    .poster-card-bottom {
+      width: 100%;
+      padding: 18px 24px;
+      background: #fafafa;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .poster-caption {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .poster-caption strong { color: var(--dark); }
+    .poster-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--dark);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .poster-download:hover { background: var(--red); transform: translateY(-1px); }
+
+    /* Nav arrows */
+    .poster-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .poster-arrow {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .poster-arrow:hover {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+    .poster-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .poster-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .poster-dot.active {
+      background: var(--red);
+      transform: scale(1.3);
+    }
+
+    @media (max-width: 600px) {
+      .poster-tab { padding: 8px 14px; font-size: 0.78rem; }
+      .poster-card-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .poster-card-bottom { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
-<body style="margin:0; padding:20px; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f9f9f9; color:#333;">
+<body>
 
-  <!-- Page Title -->
-  <div style="text-align:center; margin-bottom:30px;">
-    <h1 style="font-size:2.5rem; color:#cc0000;">Tuition & Fees</h1>
-
-
-    <!-- Currency Switcher -->
-    
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">GH SCHOOLS · Accra</div>
+    <h1>Fees Structure<br/><span>For New Students</span></h1>
+    <p class="hero-sub">Tap any section below to expand details</p>
+    <svg class="hero-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60">
+      <path fill="#f5f4f2" d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z"/>
+    </svg>
   </div>
 
-  <!-- Fee Sections with Collapsible Behavior -->
-  <div style="max-width:800px; margin:auto;">
+  <!-- MAIN -->
+  <main>
 
-    <!-- Tuition Fees Section -->
-    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.972);">
-      <h2 style="margin:0; color:#cc0000;">Tuition Fees (Per Semester)</h2>
-      <div style="margin-top:15px; display:none;">
-        <table style="width:100%; border-collapse:collapse; text-align:left;">
-          <thead>
-            <tr style="background:#cc0000; color:white;">
-              <th style="padding:10px;">Programme</th>
-              <th style="padding:10px;">Ghanaian Students</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td style="padding:10px;">School of Media</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
-            <tr><td style="padding:10px;">School of Technology</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
-            <tr><td style="padding:10px;">School of Cosmetology</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
-            <tr><td style="padding:10px;">School of Catering</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
-            <tr><td style="padding:10px;">School of Fashion</td><td class="ghc" style="padding:10px;">GHC 2,550</td></tr>
-          </tbody>
-        </table>
+    <!-- Summary Strip -->
+    <div class="summary-strip">
+      <div class="strip-card">
+        <div class="amount">GHC 200</div>
+        <div class="label">Admission Form</div>
+      </div>
+      <div class="strip-card">
+        <div class="amount">GHC 800</div>
+        <div class="label">Admission Fee</div>
+      </div>
+      <div class="strip-card">
+        <div class="amount">GHC 3,250</div>
+        <div class="label">Tuition / Semester</div>
+      </div>
+      <div class="strip-card">
+        <div class="amount">GHC 2,500</div>
+        <div class="label">Hostel (Optional)</div>
       </div>
     </div>
 
-    <!-- Admission & School Fee Policies -->
-    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.971);">
-      <h2 style="margin:0; color:#cc0000;">Admission & School Fees Policy</h2>
-      <div style="margin-top:15px; display:none;">
-        <p><strong>Admission Fee:</strong> All admitted students are required to pay a one-time, non-refundable admission fee of <strong>GHC 600</strong> within <strong>14 days</strong> of receiving their admission letter to secure their admission slot. Students will receive student numbers upon payment.</p>
-        <p><strong>School Fees:</strong> Students must pay <strong>50%</strong> of tuition before registration, <strong>70%</strong> before mid-semester to receive a 70% Fees Card, and <strong>100%</strong> before semester end to get a Full Fees Card required for end-of-semester exams. No card = No exam.</p>
-        <p><strong>Flexible Payment:</strong> Students with genuine challenges may request to be placed on the <em>Flex-Digital-Accounts</em> installment plan by contacting the finance office.</p>
+    <!-- Accordion: Tuition Fees -->
+    <div class="accordion" id="acc1">
+      <div class="acc-header" onclick="toggle('acc1')">
+        <div class="acc-header-left">
+          <div class="acc-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div class="acc-title">Tuition Fees (Per Semester)</div>
+        </div>
+        <div class="acc-chevron"><i class="fas fa-chevron-down"></i></div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <table>
+            <thead>
+              <tr><th>School</th><th>Fees Per Semester</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>GH Media School</td><td>GHC 3,250</td></tr>
+              <tr><td>GH Cosmetology School</td><td>GHC 3,250</td></tr>
+              <tr><td>GH Fashion School</td><td>GHC 3,250</td></tr>
+              <tr><td>GH Catering School</td><td>GHC 3,250</td></tr>
+              <tr><td>GH Technology School</td><td>GHC 3,250</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Fee Breakdown Table -->
-    <div onclick="toggleSection(this)" style="background:white; margin-bottom:15px; padding:20px; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0, 0, 0, 0.968);">
-      <h2 style="margin:0; color:#cc0000;">GH Media School Items & Fees</h2>
-      <div style="margin-top:15px; display:none;">
-        <table style="width:100%; border-collapse:collapse; text-align:left;">
-          <thead>
-            <tr style="background:#cc0000; color:white;">
-              <th style="padding:10px;">S/N</th>
-              <th style="padding:10px;">Item</th>
-              <th style="padding:10px;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td style="padding:10px;">1</td><td>Admission Form</td><td>GHC 100</td></tr>
-            <tr><td style="padding:10px;">2</td><td>Admission Fees</td><td>GHC 600</td></tr>
-            <tr><td style="padding:10px;">3</td><td>School Fees (Per Semester)</td><td>GHC 2,250</td></tr>
-            <tr><td style="padding:10px;">4</td><td>SRC Dues (Per Semester)</td><td>GHC 50</td></tr>
-            <tr><td style="padding:10px;">5</td><td>Hostel Facility (Optional)</td><td>GHC 1,500</td></tr>
-            <tr><td style="padding:10px;">6</td><td>School Lacoste / Branded Apron</td><td>Free</td></tr>
-            <tr><td style="padding:10px;">7</td><td>Matriculation Fee</td><td>Free</td></tr>
-            <tr><td style="padding:10px;">8</td><td>School Practical Lab Coat</td><td>Free</td></tr>
-            <tr><td style="padding:10px;">9</td><td>Start-up Kits</td><td>Free</td></tr>
-            <tr><td style="padding:10px;">10</td><td>School ID Card</td><td>Free</td></tr>
-            <tr><td style="padding:10px;">11</td><td>Textbook(s)/Pamphlet</td><td>Varied</td></tr>
-            <tr><td style="padding:10px;">12</td><td>School Uniform</td><td>GHC 120</td></tr>
-            <tr><td style="padding:10px;">13</td><td>Practical Items</td><td>Purchased by Students</td></tr>
-            <tr><td style="padding:10px;">14</td><td>External GES Exams</td><td>To be Paid by Students</td></tr>
-          </tbody>
-        </table>
+    <!-- Accordion: Uniform Requirements -->
+    <div class="accordion" id="acc2">
+      <div class="acc-header" onclick="toggle('acc2')">
+        <div class="acc-header-left">
+          <div class="acc-icon"><i class="fas fa-tshirt"></i></div>
+          <div class="acc-title">Uniform Requirements for CFC</div>
+        </div>
+        <div class="acc-chevron"><i class="fas fa-chevron-down"></i></div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <table>
+            <thead>
+              <tr><th>School</th><th>Uniform Cost</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>GH Cosmetology School</td><td>GHC 420</td></tr>
+              <tr><td>GH Fashion School</td><td>GHC 350</td></tr>
+              <tr><td>GH Catering School</td><td>GHC 500</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Floating Back to Home Button -->
-  <a href="index.html" style="position:fixed; bottom:20px; left:20px; z-index:1000; text-decoration:none;">
-    <button style="padding:12px 20px; font-size:1rem; background-color:#cc0000; color:#fff; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0, 0, 0, 0.972);">
-      ← Back to Home
-    </button>
+    <!-- Accordion: Policy -->
+    <div class="accordion" id="acc3">
+      <div class="acc-header" onclick="toggle('acc3')">
+        <div class="acc-header-left">
+          <div class="acc-icon"><i class="fas fa-file-contract"></i></div>
+          <div class="acc-title">Admission & School Fees Policy</div>
+        </div>
+        <div class="acc-chevron"><i class="fas fa-chevron-down"></i></div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <div class="policy-grid">
+            <div class="policy-card">
+              <strong>Admission Fee</strong>
+              <p>All admitted students must pay a one-time, <em>non-refundable</em> admission fee of <em>GHC 800</em> within <em>14 days</em> of receiving their admission letter to secure their slot. Student numbers are issued upon payment.</p>
+            </div>
+            <div class="policy-card">
+              <strong>School Fees</strong>
+              <p>Students must pay <em>80%</em> of tuition before registration and <em>100%</em> before the semester ends to receive a Full Fees Card, which is required for end-of-semester exams. <em>No card = No exam.</em></p>
+            </div>
+            <div class="policy-card">
+              <strong>Flexible Payment</strong>
+              <p>Students with genuine financial challenges may request the <em>Flex-Digital-Accounts</em> installment plan by contacting the finance office directly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion: Full Breakdown -->
+    <div class="accordion" id="acc4">
+      <div class="acc-header" onclick="toggle('acc4')">
+        <div class="acc-header-left">
+          <div class="acc-icon"><i class="fas fa-list-ul"></i></div>
+          <div class="acc-title">GH Schools — Full Items & Fees Breakdown</div>
+        </div>
+        <div class="acc-chevron"><i class="fas fa-chevron-down"></i></div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Item</th><th>Price</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Admission Form</td><td>GHC 200</td></tr>
+              <tr><td>2</td><td>Admission Fee</td><td>GHC 800</td></tr>
+              <tr><td>3</td><td>School Fees (Per Semester)</td><td>GHC 3,250</td></tr>
+              <tr><td>4</td><td>SRC Dues (Per Semester)</td><td>GHC 50</td></tr>
+              <tr><td>5</td><td>Departmental Dues</td><td>GHC 50</td></tr>
+              <tr><td>6</td><td>Medicals</td><td>GHC 100</td></tr>
+              <tr><td>7</td><td>Hostel Facility (Optional)</td><td>GHC 2,500</td></tr>
+              <tr><td>8</td><td>School Lacoste / Branded Apron</td><td><span class="free-badge">FREE</span></td></tr>
+              <tr><td>9</td><td>Matriculation Fee</td><td><span class="free-badge">FREE</span></td></tr>
+              <tr><td>10</td><td>School Practical Lab Coat</td><td><span class="free-badge">FREE</span></td></tr>
+              <tr><td>11</td><td>School ID Card</td><td><span class="free-badge">FREE</span></td></tr>
+              <tr><td>12</td><td>Textbook(s) / Pamphlet</td><td><span class="varied-badge">VARIED</span></td></tr>
+              <tr><td>13</td><td>School Uniform</td><td>GHC 150</td></tr>
+              <tr><td>14</td><td>Practical Items</td><td><span class="student-badge">BY STUDENT</span></td></tr>
+              <tr><td>15</td><td>External GES Exams</td><td><span class="student-badge">BY STUDENT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- COST ELEMENT POSTERS -->
+  <section class="posters-section">
+    <div class="posters-section-header">
+      <div class="section-badge"><i class="fas fa-images"></i> &nbsp;Official Fee Sheets</div>
+      <h2>June – July <span>Admissions 2026</span><br/>Cost Element Posters</h2>
+      <p>Download or view the official fee breakdown poster for each school below.</p>
+    </div>
+
+    <div class="poster-tabs">
+      <button class="poster-tab active" onclick="showPoster(0)" id="tab-0"><i class="fas fa-microchip"></i> Technology</button>
+      <button class="poster-tab" onclick="showPoster(1)" id="tab-1"><i class="fas fa-utensils"></i> Catering</button>
+      <button class="poster-tab" onclick="showPoster(2)" id="tab-2"><i class="fas fa-spa"></i> Cosmetology</button>
+      <button class="poster-tab" onclick="showPoster(3)" id="tab-3"><i class="fas fa-cut"></i> Fashion</button>
+      <button class="poster-tab" onclick="showPoster(4)" id="tab-4"><i class="fas fa-film"></i> Media</button>
+    </div>
+
+    <div class="poster-display">
+      <div class="poster-panel active" id="poster-0">
+        <div class="poster-card">
+          <div class="poster-card-top">
+            <div class="poster-school-name">GH Technology School</div>
+            <div class="poster-school-tag">Tech</div>
+          </div>
+          <div class="poster-img-wrap">
+            <img src="images/tech fees.jpeg" alt="GH Technology School Cost Element – June/July 2026" />
+          </div>
+          <div class="poster-card-bottom">
+            <div class="poster-caption"><strong>GH Technology School</strong> — June/July Admissions 2026 fee sheet</div>
+            <a href="images/tech fees.jpeg" download class="poster-download"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="poster-panel" id="poster-1">
+        <div class="poster-card">
+          <div class="poster-card-top">
+            <div class="poster-school-name">GH Catering School</div>
+            <div class="poster-school-tag">Catering</div>
+          </div>
+          <div class="poster-img-wrap">
+            <img src="images/catering fees.jpeg" alt="GH Catering School Cost Element – June/July 2026" />
+          </div>
+          <div class="poster-card-bottom">
+            <div class="poster-caption"><strong>GH Catering School</strong> — June/July Admissions 2026 fee sheet</div>
+            <a href="images/catering fees.jpeg" download class="poster-download"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="poster-panel" id="poster-2">
+        <div class="poster-card">
+          <div class="poster-card-top">
+            <div class="poster-school-name">GH Cosmetology School</div>
+            <div class="poster-school-tag">Cosmetology</div>
+          </div>
+          <div class="poster-img-wrap">
+            <img src="images/cosmetology fees.jpeg" alt="GH Cosmetology School Cost Element – June/July 2026" />
+          </div>
+          <div class="poster-card-bottom">
+            <div class="poster-caption"><strong>GH Cosmetology School</strong> — June/July Admissions 2026 fee sheet</div>
+            <a href="images/cosmetology fees.jpeg" download class="poster-download"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="poster-panel" id="poster-3">
+        <div class="poster-card">
+          <div class="poster-card-top">
+            <div class="poster-school-name">GH Fashion School</div>
+            <div class="poster-school-tag">Fashion</div>
+          </div>
+          <div class="poster-img-wrap">
+            <img src="images/fashion fees.jpeg" alt="GH Fashion School Cost Element – June/July 2026" />
+          </div>
+          <div class="poster-card-bottom">
+            <div class="poster-caption"><strong>GH Fashion School</strong> — June/July Admissions 2026 fee sheet</div>
+            <a href="images/fashion fees.jpeg" download class="poster-download"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="poster-panel" id="poster-4">
+        <div class="poster-card">
+          <div class="poster-card-top">
+            <div class="poster-school-name">GH Media School</div>
+            <div class="poster-school-tag">Media</div>
+          </div>
+          <div class="poster-img-wrap">
+            <img src="images/media fees.jpeg" alt="GH Media School Cost Element – June/July 2026" />
+          </div>
+          <div class="poster-card-bottom">
+            <div class="poster-caption"><strong>GH Media School</strong> — June/July Admissions 2026 fee sheet</div>
+            <a href="images/media fees.jpeg" download class="poster-download"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster-nav">
+      <div class="poster-arrow" onclick="stepPoster(-1)"><i class="fas fa-chevron-left"></i></div>
+      <div class="poster-dots">
+        <div class="poster-dot active" onclick="showPoster(0)" id="dot-0"></div>
+        <div class="poster-dot" onclick="showPoster(1)" id="dot-1"></div>
+        <div class="poster-dot" onclick="showPoster(2)" id="dot-2"></div>
+        <div class="poster-dot" onclick="showPoster(3)" id="dot-3"></div>
+        <div class="poster-dot" onclick="showPoster(4)" id="dot-4"></div>
+      </div>
+      <div class="poster-arrow" onclick="stepPoster(1)"><i class="fas fa-chevron-right"></i></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-top">
+          <img src="images/GH Schools.png" alt="GH Schools Logo" />
+          <div>
+            <div class="footer-name">GH SCHOOLS</div>
+            <div class="footer-sub">GH SCHOOLS, Accra</div>
+            <div class="footer-sub">Scholarship with Professionalism</div>
+          </div>
+        </div>
+        <p class="footer-phone"><i class="fas fa-phone"></i> +233 20 462 2250 / +233 27 762 2250</p>
+        <p class="footer-phone" style="margin-top:4px;"><i class="fas fa-phone-alt"></i> Landline: +233 30 242 4909</p>
+        <div class="footer-socials">
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>University</h4>
+        <ul>
+          <li><a href="#">About GH Schools</a></li>
+          <li><a href="#">Our History</a></li>
+          <li><a href="#">Governance</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Policies & Regulations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Academics</h4>
+        <ul>
+          <li><a href="#">Academic Affairs</a></li>
+          <li><a href="#">Schools & Faculties</a></li>
+          <li><a href="#">Fees Schedule</a></li>
+          <li><a href="#">Academic Calendar</a></li>
+          <li><a href="#">Graduation</a></li>
+          <li><a href="#">Graduation List</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Student</h4>
+        <ul>
+          <li><a href="#">Students Portal</a></li>
+          <li><a href="#">Student Services</a></li>
+          <li><a href="#">Freshmen Guidelines</a></li>
+          <li><a href="#">The SRC</a></li>
+          <li><a href="#">Hostels</a></li>
+          <li><a href="#">Sports & Recreation</a></li>
+          <li><a href="#">Counseling Unit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 GH SCHOOLS, Accra. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Floating Buttons -->
+  <a href="index.html" class="btn-home">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+  <a href="https://wa.me/233539816189" target="_blank" class="btn-wa" title="Chat on WhatsApp">
+    <i class="fab fa-whatsapp"></i>
   </a>
 
-  <!-- WhatsApp Icon -->
-  <div style="position:fixed; bottom:20px; right:20px; z-index:100;">
-    <a href="https://wa.me/233539816189" target="_blank">
-      <img src="your-image-path/whatsapp-icon.png" alt="WhatsApp (+233539816189)" style="width:60px; height:60px;">
-    </a>
-  </div>
-
-  <!-- JavaScript -->
   <script>
-    function toggleSection(el) {
-      const content = el.querySelector('div');
-      const allSections = document.querySelectorAll('div[onclick]');
-      allSections.forEach(section => {
-        const inner = section.querySelector('div');
-        if (section !== el) inner.style.display = 'none';
-      });
-      content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    function toggle(id) {
+      const acc = document.getElementById(id);
+      const isOpen = acc.classList.contains('open');
+      document.querySelectorAll('.accordion').forEach(a => a.classList.remove('open'));
+      if (!isOpen) acc.classList.add('open');
     }
 
-    function switchCurrency(currency) {
-      const ghcElements = document.querySelectorAll('.ghc');
-      const usdElements = document.querySelectorAll('.usd');
+    let currentPoster = 0;
+    const totalPosters = 5;
 
-      ghcElements.forEach(el => el.style.display = currency === 'GHC' ? 'inline' : 'none');
-      usdElements.forEach(el => el.style.display = currency === 'USD' ? 'inline' : 'none');
+    function showPoster(index) {
+      document.querySelectorAll('.poster-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.poster-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.poster-dot').forEach(d => d.classList.remove('active'));
+      document.getElementById('poster-' + index).classList.add('active');
+      document.getElementById('tab-' + index).classList.add('active');
+      document.getElementById('dot-' + index).classList.add('active');
+      currentPoster = index;
+    }
+
+    function stepPoster(dir) {
+      let next = (currentPoster + dir + totalPosters) % totalPosters;
+      showPoster(next);
     }
   </script>
-
 </body>
-
-
-
-<footer style="background-color: #222; color: #ddd; padding: 40px 20px 30px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; line-height: 1.6; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; max-width: 1200px; margin: 0 auto;">
-  
-  <!-- Logo and Contact -->
-  <div style="flex: 1 1 300px; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <img src="images/GH Schools.png" alt="GH Schools Logo" style="width: 75px; height: auto; object-fit: contain;" />
-      <div>
-        <h2 style="font-size: 22px; margin-bottom: 5px; color: #f1c40f; letter-spacing: 1.2px;">GH SCHOOLS</h2>
-        <p style="font-size: 13px; color: #bbb;">GH SCHOOLS COLLEGE, Accra</p>
-        <p style="font-size: 13px; color: #bbb;">Scholarship with Professionalism</p>
-      </div>
-    </div>
-
-    <div>
-      <p style="margin-bottom: 8px;"><i class="fas fa-phone" style="color: #f1c40f; margin-right: 8px;"></i> +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909</p>
-    </div>
-
-    <div style="margin-top: 10px;">
-      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-twitter"></i></a>
-      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-facebook-f"></i></a>
-      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-instagram"></i></a>
-      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-linkedin-in"></i></a>
-      <a href="#" style="color: #ddd; margin-right: 15px; font-size: 20px; text-decoration: none;"><i class="fab fa-youtube"></i></a>
-    </div>
-  </div>
-
-  <!-- Column 1 -->
-  <div style="flex: 1 1 150px; min-width: 140px;">
-    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">University</h4>
-    <ul style="list-style: none; padding-left: 0;">
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">About GH SCHOOLS</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Our History</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Governance</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Leadership</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Policies & Regulations</a></li>
-    </ul>
-  </div>
-
- 
-
-  <!-- Column 3 -->
-  <div style="flex: 1 1 150px; min-width: 140px;">
-    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Academics</h4>
-    <ul style="list-style: none; padding-left: 0;">
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Affairs</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Schools & Faculties</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Fees Schedule</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Academic Calendar</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Centres of Excellence</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Graduation List</a></li>
-    </ul>
-  </div>
-
-  <!-- Column 4 -->
-  <div style="flex: 1 1 150px; min-width: 140px;">
-    <h4 style="color: #f1c40f; font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; font-weight: 600;">Student</h4>
-    <ul style="list-style: none; padding-left: 0;">
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Students Portal</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Student Services</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Freshmen Guidelines</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">The SRC</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Hostels</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Sports & Recreation</a></li>
-      <li><a href="#" style="color: #ccc; text-decoration: none; font-size: 14px;">Counseling Unit</a></li>
- 
-    </ul>
-  </div>
-
-</footer>
-
-
-
 </html>

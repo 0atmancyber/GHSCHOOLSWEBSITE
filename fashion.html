@@ -3,965 +3,314 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GH Media School - Admissions</title>
-   <link rel="icon" type="image/png" href="images/favicon.png" />
-
+  <title>GH Fashion School – GH Schools</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
-  <!-- Use FA 6 (includes fa-balloon) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-<!-- Or use FA 5 (if balloon doesn't work) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --gold:    #1A6FBF;
+      --gold-lt: #4D9FE0;
+      --dark:    #0A1F3D;
+      --dark2:   #0F2A52;
+      --dark3:   #163366;
+      --cream:   #F0F6FF;
+      --text:    #1A2E4A;
+      --white:   #ffffff;
+      --accent:  #0D4A8B;
+      --nav-h:   72px;
     }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff;
-      color: #111;
+    .top-bar { background: var(--dark); color: #ccc; display: flex; justify-content: space-between; align-items: center; padding: 8px 40px; font-size: 12.5px; }
+    .top-left { display: flex; align-items: center; gap: 24px; }
+    .donate-link a { color: var(--gold-lt); text-decoration: none; font-weight: 600; transition: color 0.25s; }
+    .donate-link a:hover { color: var(--white); }
+    .top-right { display: flex; align-items: center; gap: 20px; }
+    .social-icons a { color: #999; font-size: 14px; margin-right: 10px; text-decoration: none; transition: color 0.25s; }
+    .social-icons a:hover { color: var(--gold); }
+    .contact-info { display: flex; gap: 20px; color: #aaa; }
+    .contact-info span { display: flex; align-items: center; gap: 5px; }
+    .lang-select { background: var(--dark2); border: 1px solid #333; color: #bbb; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+    .top-login { color: var(--dark); background: var(--gold); padding: 5px 14px; border-radius: 4px; font-weight: 700; font-size: 12px; text-decoration: none; transition: background 0.25s; white-space: nowrap; }
+    .top-login:hover { background: var(--gold-lt); }
+    .search-bar { position: relative; }
+    .search-bar input { background: var(--dark2); border: 1px solid #333; color: #ccc; padding: 5px 14px 5px 34px; border-radius: 20px; font-size: 12px; width: 140px; transition: width 0.3s, border-color 0.3s; outline: none; }
+    .search-bar input:focus { width: 200px; border-color: var(--gold); }
+    .search-bar i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #666; font-size: 12px; }
+
+    header { background: var(--white); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: var(--nav-h); border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 900; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo img { height: 52px; width: auto; }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-text strong { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--dark); }
+    .logo-text small { font-size: 10px; color: var(--gold); letter-spacing: 0.14em; font-weight: 600; text-transform: uppercase; }
+    .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--dark); padding: 8px; background: none; border: none; }
+    nav.nav-container { display: flex; align-items: center; }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-item { position: relative; }
+    .nav-item > a { text-decoration: none; color: var(--text); font-size: 13px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 10px 14px; display: flex; align-items: center; gap: 5px; transition: color 0.25s; }
+    .nav-item > a:hover { color: var(--gold); }
+    .nav-item > a i.fa-angle-down { font-size: 10px; transition: transform 0.25s; }
+    .nav-item:hover > a i.fa-angle-down { transform: rotate(180deg); }
+    .dropdown { display: none; position: absolute; top: calc(100% + 8px); left: 0; background: var(--white); border-top: 3px solid var(--gold); box-shadow: 0 12px 40px rgba(0,0,0,0.12); min-width: 210px; border-radius: 0 0 6px 6px; overflow: hidden; z-index: 999; }
+    .nav-item:hover .dropdown { display: block; }
+    .dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 18px; color: var(--text); text-decoration: none; font-size: 13px; border-bottom: 1px solid #f0ede8; transition: background 0.2s, color 0.2s, padding-left 0.2s; }
+    .dropdown a:last-child { border-bottom: none; }
+    .dropdown a:hover { background: var(--cream); color: var(--gold); padding-left: 24px; }
+    .dropdown a i { color: var(--gold); width: 16px; text-align: center; }
+    .pay-btn { background: var(--accent); color: var(--white) !important; padding: 9px 20px !important; border-radius: 5px !important; font-weight: 700 !important; transition: background 0.25s !important; margin-left: 8px; }
+    .pay-btn:hover { background: #a0380f !important; }
+
+    .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - var(--nav-h) - 40px); max-height: 780px; }
+    .hero-image-wrap { position: relative; overflow: hidden; }
+    .hero-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 8s ease; }
+    .hero-image-wrap:hover img { transform: scale(1.04); }
+
+    /* Slider styles (same as media page) */
+    .hero-slider { position: relative; overflow: hidden; height: 100%; }
+    .hero-slider .slides { position: relative; width: 100%; height: 100%; }
+    .hero-slider .slides img { width: 100%; height: 100%; object-fit: cover; display: none; transition: opacity 450ms ease, transform 8s ease; }
+    .hero-slider .slides img.active { display: block; opacity: 1; }
+    .hero-slider .slides img.next, .hero-slider .slides img.prev { display: block; opacity: 0; }
+    .hero-slider .hero-image-overlay { position: absolute; inset: 0; pointer-events: none; }
+    .hero-slider .hero-badge { position: absolute; left: 18px; bottom: 18px; background: var(--gold); color: var(--dark); font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 2px; }
+    .hero-slider .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; display:flex;align-items:center;justify-content:center;cursor:pointer }
+    .hero-slider .slider-btn:hover { background: rgba(0,0,0,0.6); }
+    .hero-slider .slider-prev { left: 12px; }
+    .hero-slider .slider-next { right: 12px; }
+    .hero-slider .slider-dots { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; display:flex;gap:8px }
+    .hero-slider .slider-dots button { width:10px;height:10px;border-radius:50%;border:none;background:rgba(255,255,255,0.5);cursor:pointer }
+    .hero-slider .slider-dots button.active { background:#fff }
+    .hero-image-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,13,13,0.35) 0%, transparent 60%); }
+    .hero-badge { position: absolute; top: 32px; left: 32px; background: var(--gold); color: var(--dark); font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 2px; }
+    .hero-content { background: var(--dark); padding: 60px 56px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .hero-content::before { content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(200,150,62,0.12) 0%, transparent 70%); }
+    .school-label { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .school-label::before { content: ''; display: inline-block; width: 36px; height: 2px; background: var(--gold); }
+    .hero-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(32px, 3.5vw, 48px); color: var(--white); line-height: 1.15; margin-bottom: 24px; }
+    .hero-content h1 span { color: var(--gold); }
+    .hero-content p.tagline { color: #aaa; font-size: 15px; line-height: 1.7; margin-bottom: 36px; }
+    .courses-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 16px; }
+    .course-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
+    .course-list li { display: flex; align-items: center; gap: 14px; background: var(--dark2); border: 1px solid #2d2d2d; border-left: 3px solid var(--gold); padding: 13px 18px; border-radius: 4px; color: #e0e0e0; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.25s, border-left-color 0.25s, transform 0.25s; }
+    .course-list li:hover { background: var(--dark3); border-left-color: var(--gold-lt); transform: translateX(4px); color: var(--white); }
+    .course-list li i { color: var(--gold); font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary { background: var(--gold); color: var(--dark); padding: 13px 30px; border-radius: 5px; font-weight: 800; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: background 0.25s, transform 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); padding: 13px 28px; border-radius: 5px; font-weight: 600; font-size: 13px; text-decoration: none; border: 1px solid #444; transition: border-color 0.25s, color 0.25s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    .stats-strip { background: var(--gold); padding: 28px 40px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .stat-item { text-align: center; }
+    .stat-item .num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--white); display: block; line-height: 1; }
+    .stat-item .lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-top: 4px; display: block; }
+    .stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.3); }
+
+    .contact-strip { background: var(--dark2); padding: 28px 40px; display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; }
+    .contact-strip .citem { display: flex; align-items: center; gap: 12px; color: #ccc; font-size: 14px; }
+    .contact-strip .citem i { color: var(--gold); font-size: 20px; }
+    .contact-strip .citem strong { color: var(--white); display: block; font-size: 15px; }
+
+    .footer { background: var(--dark); color: #aaa; padding: 60px 40px 0; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; }
+    .footer-brand .brand-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .footer-brand .brand-logo img { height: 48px; width: auto; }
+    .footer-brand h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); }
+    .footer-brand h2 span { color: var(--gold); }
+    .footer-brand .tagline { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); display: block; margin-top: 2px; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 20px; color: #888; }
+    .footer-phones { list-style: none; }
+    .footer-phones li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #aaa; margin-bottom: 8px; }
+    .footer-phones li i { color: var(--gold); font-size: 12px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+    .footer-social a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #aaa; text-decoration: none; font-size: 14px; transition: border-color 0.25s, color 0.25s, background 0.25s; }
+    .footer-social a:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,150,62,0.08); }
+    .footer-col h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #222; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: #888; text-decoration: none; font-size: 13px; transition: color 0.2s, padding-left 0.2s; display: inline-block; }
+    .footer-col ul li a:hover { color: var(--gold); padding-left: 4px; }
+    .footer-bottom { grid-column: 1 / -1; border-top: 1px solid #1e1e1e; margin-top: 20px; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #555; }
+
+    .mobile-nav { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 1000; flex-direction: column; overflow-y: auto; padding: 30px; }
+    .mobile-nav.active { display: flex; }
+    .mobile-nav-close { align-self: flex-end; background: none; border: none; color: var(--white); font-size: 28px; cursor: pointer; margin-bottom: 30px; }
+    .mobile-nav .mob-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 36px; }
+    .mobile-nav .mob-logo img { height: 46px; }
+    .mobile-nav .mob-logo span { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); }
+    .mob-nav-group { border-bottom: 1px solid #1e1e1e; padding-bottom: 16px; margin-bottom: 16px; }
+    .mob-group-title { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px; }
+    .mob-nav-link { display: flex; align-items: center; gap: 10px; color: #ccc; text-decoration: none; font-size: 15px; padding: 8px 0; border-bottom: 1px solid #1a1a1a; transition: color 0.2s; }
+    .mob-nav-link:hover { color: var(--gold); }
+    .mob-nav-link i { color: var(--gold); width: 18px; }
+    .mob-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+
+    @media (max-width: 1024px) { .footer { grid-template-columns: 1fr 1fr 1fr; } .footer-brand { grid-column: 1 / -1; } }
+    @media (max-width: 860px) {
+      .top-bar { padding: 8px 20px; }
+      .top-bar .contact-info, .top-bar .lang-select, .top-bar .search-bar { display: none; }
+      header { padding: 0 20px; }
+      .hamburger { display: flex; align-items: center; }
+      nav.nav-container { display: none; }
+      .hero { grid-template-columns: 1fr; max-height: none; }
+      .hero-image-wrap { height: 280px; }
+      .hero-slider { height: 280px; }
+      .hero-content { padding: 40px 28px; }
+      .stats-strip { padding: 24px 20px; }
+      .stat-divider { display: none; }
+      .contact-strip { flex-direction: column; gap: 20px; padding: 28px 20px; }
+      .footer { grid-template-columns: 1fr 1fr; padding: 40px 20px 0; }
+      .footer-brand { grid-column: 1 / -1; }
     }
-
-    .top-bar {
-  background: #000;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  font-size: 14px;
-  flex-wrap: nowrap;
-  position: relative;
-  user-select: none;
-}
-
-.top-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.donate-link a {
-  color: #f1f1f0;
-  background-color: #222;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-.donate-link a:hover {
-  background-color: #f1c40f;
-  color: #000;
-}
-
-.hamburger {
-  display: none;
-  font-size: 28px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.top-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  font-size: 13px;
-  flex-wrap: nowrap;
-}
-
-.social-icons a {
-  color: white;
-  font-size: 18px;
-  margin-right: 12px;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-.social-icons a:hover {
-  color: #f1c40f;
-}
-
-.contact-info {
-  display: flex;
-  gap: 15px;
-  white-space: nowrap;
-}
-
-.lang-select {
-  background: #222;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-}
-
-.top-login {
-  color: #000;
-  background: #f1c40f;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-  white-space: nowrap;
-}
-.top-login:hover {
-  background-color: #d6b600;
-  color: #000;
-}
-
-.search-bar input {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  width: 160px;
-  transition: width 0.3s ease;
-}
-.search-bar input:focus {
-  width: 220px;
-}
-
-/* Responsive */
-@media (max-width: 860px) {
-  .top-bar {
-    flex-wrap: wrap;
-    padding: 12px 15px;
-  }
-
-  .hamburger {
-    display: block;
-    margin-left: 10px;
-  }
-
-  .top-right {
-    display: none;
-    flex-direction: column;
-    background: #111;
-    position: absolute;
-    top: 48px;
-    right: 0;
-    width: 100%;
-    padding: 15px 20px;
-    box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-    border-radius: 0 0 6px 6px;
-    gap: 15px;
-    z-index: 1000;
-  }
-
-  .top-right.show {
-    display: flex;
-  }
-
-  .social-icons {
-    justify-content: flex-start;
-  }
-
-  .social-icons a {
-    font-size: 22px;
-    margin-right: 20px;
-  }
-
-  .contact-info {
-    flex-direction: column;
-    gap: 6px;
-    font-size: 14px;
-  }
-
-  .lang-select {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  .top-login {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-    border-radius: 6px;
-  }
-
-  .search-bar input {
-    width: 100%;
-    font-size: 16px;
-  }
-}
-
-    
-  header {
-  background: #f7f5f5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 25px;
-  border-bottom: 1px solid #eee;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  flex-wrap: nowrap; /* Prevent wrap */
-  gap: 40px;
-}
-
-.nav-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 1;
-}
-
-
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo img {
-      height: 80px;
-      width: 75px;
-    }
-
-    .logo-text {
-      display: flex;
-      color: #000;
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 15px;
-      line-height: 1.2;
-    }
-
- 
-
-.nav-links {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  font-size: 15px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.nav-item {
-  position: relative;
-}
-
-.nav-links > .nav-item > a {
-  text-decoration: none;
-  color: #000;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.nav-links > .nav-item > a::after {
-  content: '\25BE';
-  font-size: 0.5em;
-  margin-left: 4px;
-}
-
-.dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #fff;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  z-index: 999;
-  width: 200px;
-}
-
-.dropdown a {
-  display: block;
-  padding: 12px 16px;
-  color: #050101;
-  text-decoration: none;
-  font-weight: normal;
-  font-size: 14px;
-  background: white;
-}
-
-.dropdown a:hover {
-  background-color: #800000;
-  color: #fff;
-}
-
-.nav-item:hover .dropdown {
-  display: block;
-}
-
-.apply-button {
-  background: #d60000;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  font-weight: bold;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-/* Responsive Styles */
-@media (max-width: 860px) {
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    background: #fff;
-    width: 100%;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    padding: 20px 0;
-    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
-    z-index: 999;
-  }
-
-  .nav-links.show {
-    display: flex;
-  }
-
-  .nav-links > .nav-item > a {
-    color: #000;
-    width: 100%;
-    display: block;
-    padding: 12px 20px;
-  }
-
-  .dropdown {
-    position: static;
-    border: none;
-    box-shadow: none;
-    background: #f9f9f9;
-    margin-left: 20px;
-    width: auto;
-  }
-
-  .dropdown a {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
-  .hamburger {
-    display: block;
-    font-size: 26px;
-    cursor: pointer;
-    margin-left: auto;
-  }
-
-  @media (max-width: 860px) {
-  .dropdown a:hover {
-    background-color: #d60000 !important;
-    color: #fff !important;
-  }
-}
-
-}
-
-
-    .hero {
-      display: flex;
-      flex-wrap: wrap;
-      background: #f0f0f0;
-      padding: 40px 20px;
-      justify-content: center;
-      align-items: stretch;
-    }
-
-    .hero-left, .hero-right {
-      flex: 1;
-      min-width: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-   .hero-left img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  transition: transform 0.6s ease, box-shadow 0.6s ease;
-}
-
-.hero-left img:hover {
-  transform: scale(1.05) rotate(-1deg);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-    .hero-left img {
-  transition: transform 0.9s ease;
-}
-
-.hero-left img:hover {
-  transform: scale(1.05);
-}
-
-
-    .hero-right {
-      background: #03ccf9;
-      padding: 40px;
-      color: rgb(9, 1, 1);
-      border-radius: 20px;
-      margin-left: 20px;
-      text-align: center;
-    }
-
-    .hero-right h2 {
-      font-size: 28px;
-      background: rgb(0, 0, 0);
-      color: #f3f1f7;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .hero-right ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .hero-right ul li {
-      background: #050407;
-       color: #f3f1f7;
-      margin: 10px 0;
-      padding: 14px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: transform 0.3s ease, background 0.3s ease;
-      cursor: pointer;
-      animation: fadeInUp 0.6s ease forwards;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .hero-right ul li:hover {
-      transform: scale(1.05);
-      background: #74658d96;
-    }
-
-    .hero-right ul li i {
-      margin-right: 12px;
-      font-size: 18px;
-      animation: pulse 1.5s infinite;
-    }
-
-    .tooltip {
-      position: absolute;
-      background: #fff;
-      color: #000;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      display: none;
-      white-space: nowrap;
-    }
-
-    .hero-right ul li:hover .tooltip {
-      display: block;
-    }
-
-    .apply-button-secondary {
-      margin-top: 20px;
-      background: #050504;
-      color: #f7f7f8;
-      padding: 10px 25px;
-      border: none;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-
-    .apply-button-secondary:hover {
-      background: #e9d204;
-    }
-
-    .contact-box {
-  background: #fff;
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 10px;
-  color: #222;
-  font-size: 18px;
-  font-weight: 700;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  line-height: 1.8;
- 
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.contact-box strong {
-  font-size: 16px;
-  color: #040404;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.contact-box p {
-  margin: 6px 0;
-   text-align: center;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-
-@media (max-width: 768px) {
-  .hero {
-    flex-direction: column;
-    padding: 20px 10px;
-    align-items: center;
-  }
-
-  .hero-left,
-  .hero-right {
-    width: 100%;
-    min-width: 100%;
-    margin: 0 auto;
-  }
-
-  .hero-left img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
-  }
-
-  .hero-right {
-    margin-top: 20px;
-    padding: 20px;
-    text-align: center;
-  }
-
-  .hero-right h2 {
-    font-size: 22px;
-    padding: 10px;
-  }
-
-  .hero-right ul {
-    padding-left: 0;
-  }
-
-  .hero-right ul li {
-    font-size: 15px;
-    padding: 12px;
-    margin: 8px 0;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .apply-button-secondary {
-    font-size: 14px;
-    padding: 10px 20px;
-    margin-top: 15px;
-  }
-
-  .contact-box {
-    font-size: 14px;
-    padding: 15px;
-    margin-top: 20px;
-    line-height: 1.6;
-  }
-
-  .contact-box p {
-    display: flex;
-    flex-direction: row;
-    gap: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1e294f;
-      color: #cbd5e1;
-    }
-
-    .footer {
-      background-color: #050505;
-      padding: 50px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 30px;
-      color: #cbd5e1;
-    }
-
-    .footer-logo-section {
-      flex: 1 1 250px;
-    }
-
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .footer-logo img {
-      width: 60px;
-    }
-
-    .footer-logo-text h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: white;
-    }
-
-    .footer-logo-text p {
-      margin: 4px 0;
-      font-size: 0.9rem;
-      color: #d1d5db;
-    }
-
-    .footer-contact {
-      font-size: 0.9rem;
-      margin-top: 20px;
-    }
-
-    .footer-contact p {
-      margin: 6px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .footer-contact i {
-      color: #ffc107;
-      width: 18px;
-    }
-
-    .footer-social {
-      margin-top: 20px;
-    }
-
-    .footer-social a {
-      margin-right: 12px;
-      font-size: 1.2rem;
-      color: #cbd5e1;
-      transition: color 0.3s;
-    }
-
-    .footer-social a:hover {
-      color: white;
-    }
-
-    .footer-column {
-      flex: 1 1 180px;
-    }
-
-    .footer-column h4 {
-      color: white;
-      margin-bottom: 15px;
-    }
-
-    .footer-column ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .footer-column li {
-      margin-bottom: 10px;
-    }
-
-    .footer-column a {
-      color: #cbd5e1;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: color 0.3s;
-    }
-
-    .footer-column a:hover {
-      color: #ffffff;
-    }
-
-    @media (max-width: 768px) {
-      .footer {
-        flex-direction: column;
-        padding: 30px 15px;
-      }
-
-      .footer-column,
-      .footer-logo-section {
-        flex: 1 1 100%;
-      }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-
-
-    @keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-}
-
-.hero-left img {
-  animation: float 4s ease-in-out infinite;
-}
-
-
-    .contact-box {
-      background: white;
-      margin-top: 20px;
-      padding: 15px;
-      color: #000;
-      font-size: 14px;
-      border-radius: 10px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 992px) {
-      .hero {
-        flex-direction: column;
-      }
-
-      .hero-right {
-        margin-left: 0;
-        margin-top: 30px;
-      }
-    }
+    @media (max-width: 520px) { .footer { grid-template-columns: 1fr; } .hero-content h1 { font-size: 28px; } }
   </style>
 </head>
 <body>
- <div class="top-bar">
-  <div class="top-left">
-    <div class="donate-link"><a href="donate.html">Donate to GH</a></div>
-    <div class="hamburger" aria-label="Toggle menu" onclick="document.querySelector('.top-right').classList.toggle('show')">☰</div>
-  </div>
-  <div class="top-right">
-    <div class="social-icons">
-      <a href="https://www.facebook.com/ghschoolsofficial"><i class="fab fa-facebook-f"></i></a>
-      <a href="#"><i class="fab fa-twitter"></i></a>
-      <a href="#"><i class="fab fa-instagram"></i></a>
+
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="donate-link"><a href="donate.html"><i class="fas fa-heart"></i> Donate to GH</a></div>
     </div>
-    <div class="contact-info">
-      <span>Email: info@central.edu.gh</span>
-      <span>Phone: +233 30 123 4567</span>
-    </div>
-    <select class="lang-select" aria-label="Select Language">
-      <option>EN</option>
-      <option>FR</option>
-    </select>
-    <a class="top-login" href="results portal.html">Student Portal</a>
-    <div class="search-bar">
-      <input type="text" placeholder="Search..." aria-label="Search" />
+    <div class="top-right">
+      <div class="social-icons">
+        <a href="https://www.facebook.com/ghschoolsofficial" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      </div>
+      <div class="contact-info">
+        <span><i class="fas fa-envelope"></i> enquiry@ghschools.edu.gh</span>
+        <span><i class="fas fa-phone"></i> +233 30 123 4567</span>
+      </div>
+      <select class="lang-select" aria-label="Select Language"><option value="en">EN</option><option value="fr">FR</option></select>
+      <a class="top-login" href="signup.html">Student Portal</a>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search…" aria-label="Search" /></div>
     </div>
   </div>
-</div>
 
   <header>
-    <div class="logo">
-      <a href="index.html"><img src="images/GH Schools.png" alt="Logo"></a>
-      <div class="logo-text">
-        <strong>GH SCHOOLS</strong>
-        <small>TRAIN • PRACTICE • ACHIEVE</small>
-      </div>
-    </div>
-
-   <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</div>
-
-<nav class="nav-container">
-  <div class="nav-links">
-    <div class="nav-item">
-      <a href="about.html">ABOUT GH</a>
-      <div class="dropdown">
-        <a href="about.html">Mission</a>
-        <a href="about.html">Vision</a>
-        <a href="about.html">Leadership</a>
-        <a href="about.html">History</a>
-        <a href="e-resource.html">Accreditation</a>
-      </div>
-    </div>
-
-    <div class="nav-item">
-      <a href="#">ADMISSIONS</a>
-      <div class="dropdown">
-        <a href="admission.HTML">Apply</a>
-        <a href="reqirement.html">Requirements</a>
-        <a href="fees.html">Fees</a>
-        <a href="schorlarship.html">Scholarships</a>
-        <a href="faq.html">FAQ</a>
-      </div>
-    </div>
-
-    <div class="nav-item">
-      <a href="results portal.html">STUDENT RESOURCES</a>
-      <div class="dropdown">
-        <a href="results portal.html">Calendar</a>
-        <a href="">Results</a>
-        <a href="">Timetable</a>
-        <a href="library.html">Library</a>
-        <a href="">Student Support</a>
-      </div>
-    </div>
-
-    <div class="nav-item">
-      <a href="#">SCHOOLS</a>
-      <div class="dropdown">
-        <a href="media.html">Media</a>
-        <a href="fashion.html">Fashion</a>
-        <a href="catering.html">Catering</a>
-        <a href="cosme.html">Cosmetology</a>
-        <a href="tech.html">Technology</a>
-      </div>
-    </div>
-
-    <div class="nav-item">
-      <a href="">PROJECTS</a>
-      <div class="dropdown">
-        <a href="student projects.html">Students projects</a>
-          <a href="school productions.html">School productions</a>
+    <a href="index.html" class="logo">
+      <img src="images/GH Schools.png" alt="GH Schools Logo">
+      <div class="logo-text"><strong>GH SCHOOLS</strong><small>Train • Practise • Achieve</small></div>
+    </a>
+    <button class="hamburger" onclick="document.getElementById('mobileNav').classList.add('active')" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+    <nav class="nav-container" aria-label="Main navigation">
+      <ul class="nav-links">
+        <li class="nav-item"><a href="#">ABOUT <i class="fas fa-angle-down"></i></a><div class="dropdown"><a href="about.html"><i class="fas fa-bullseye"></i> Mission</a><a href="about.html"><i class="fas fa-eye"></i> Vision</a><a href="about.html"><i class="fas fa-user-tie"></i> Leadership</a><a href="about.html"><i class="fas fa-history"></i> History</a><a href="e-resource.html"><i class="fas fa-certificate"></i> Accreditation</a></div></li>
+        <li class="nav-item"><a href="#">ADMISSIONS <i class="fas fa-angle-down"></i></a><div class="dropdown"><a href="admission.html"><i class="fas fa-edit"></i> Apply</a><a href="requirement.html"><i class="fas fa-list-check"></i> Requirements</a><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a><a href="scholarship.html"><i class="fas fa-gift"></i> Scholarships</a><a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a></div></li>
+        <li class="nav-item"><a href="#">STUDENT LIFE <i class="fas fa-angle-down"></i></a><div class="dropdown"><a href="signup.html"><i class="fas fa-door-open"></i> Students Portal</a><a href="signup.html"><i class="fas fa-graduation-cap"></i> Results</a><a href="#"><i class="fas fa-calendar-alt"></i> Timetable</a><a href="calendar.html"><i class="fas fa-book-reader"></i> Academic Calendar</a><a href="#"><i class="fas fa-hands-helping"></i> Student Support</a><a href="#"><i class="fas fa-users"></i> The SRC</a><a href="hostels.html"><i class="fas fa-hotel"></i> Hostels</a><a href="#"><i class="fas fa-university"></i> Campus Life</a></div></li>
+        <li class="nav-item"><a href="#">COURSES <i class="fas fa-angle-down"></i></a><div class="dropdown"><a href="media.html"><i class="fas fa-video"></i> GH Media School</a><a href="fashion.html"><i class="fas fa-tshirt"></i> GH Fashion School</a><a href="catering.html"><i class="fas fa-utensils"></i> GH Catering School</a><a href="cosme.html"><i class="fas fa-spa"></i> GH Cosmetology School</a><a href="tech.html"><i class="fas fa-laptop-code"></i> GH Technology School</a><a href="short-courses.html"><i class="fas fa-clock"></i> Short Courses</a></div></li>
+        <li class="nav-item"><a href="#">PROJECTS <i class="fas fa-angle-down"></i></a><div class="dropdown"><a href="student-projects.html"><i class="fas fa-project-diagram"></i> Student Projects</a></div></li>
         
-      </div>
-    </div>
-    <a class="apply-button" href="signup.html"> PAY FEES </a>
-  </div>
-</nav>
-
+      </ul>
+    </nav>
   </header>
-<!-- Hamburger Button -->
 
-
+  <div id="mobileNav" class="mobile-nav" role="dialog" aria-label="Mobile navigation">
+    <button class="mobile-nav-close" onclick="document.getElementById('mobileNav').classList.remove('active')" aria-label="Close"><i class="fas fa-times"></i></button>
+    <div class="mob-logo"><img src="images/GH Schools.png" alt="GH Schools"><span>GH SCHOOLS</span></div>
+    <div class="mob-nav-group"><div class="mob-group-title">About</div><a href="about.html" class="mob-nav-link"><i class="fas fa-bullseye"></i> Mission</a><a href="about.html" class="mob-nav-link"><i class="fas fa-eye"></i> Vision</a></div>
+    <div class="mob-nav-group"><div class="mob-group-title">Admissions</div><a href="admission.html" class="mob-nav-link"><i class="fas fa-edit"></i> Apply Now</a><a href="fees.html" class="mob-nav-link"><i class="fas fa-money-bill-wave"></i> Fees</a></div>
+    <div class="mob-nav-group"><div class="mob-group-title">Courses</div><a href="media.html" class="mob-nav-link"><i class="fas fa-video"></i> Media School</a><a href="fashion.html" class="mob-nav-link"><i class="fas fa-tshirt"></i> Fashion School</a><a href="catering.html" class="mob-nav-link"><i class="fas fa-utensils"></i> Catering School</a><a href="cosme.html" class="mob-nav-link"><i class="fas fa-spa"></i> Cosmetology School</a></div>
+    <div class="mob-actions"><a href="signup.html" class="btn-primary"><i class="fas fa-credit-card"></i> Pay Fees</a><a href="admission.html" class="btn-outline"><i class="fas fa-pen"></i> Apply Now</a></div>
+  </div>
 
   <section class="hero">
-   <div class="hero-left" data-aos="fade-right">
-  <img src="images/fashion.webp" alt="Student">
-</div>
-<div class="hero-right" data-aos="fade-left">
+    <div class="hero-slider" data-aos="fade-right" data-aos-duration="900">
+      <div class="slides">
+        <img src="images/fash.jpg" alt="GH Fashion 1" class="active">
+        <img src="images/682A9889.jpg" alt="GH Fashion 2">
+        <img src="images/101A9652.jpg" alt="GH Fashion 3">
+         <img src="images/fashion.webp" alt="GH Fashion 3">
+      </div>
+      <div class="hero-image-overlay"></div>
 
-    <div class="hero-right">
-      <h2>OUR COURSES</h2>
-      <ul>
-  <li><i class="fas fa-pencil-ruler"></i> Fashion Design & Illustrations</li>
-  <li><i class="fas fa-cut"></i> Garment Construction</li>
-  <li><i class="fas fa-hat-wizard"></i> Millinery & Accessories</li>
-  <li><i class="fas fa-cogs"></i> Machinery Textile Design</li>
-  <li><i class="fas fa-drafting-compass"></i> Pattern & Drafting</li>
-</ul>
-
-   <button class="apply-button-secondary" onclick="document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' })"><a href="admission.HTML" style="color: #cbd5e1; text-decoration:none">Apply Now</a></button>
-
+      <button class="slider-btn slider-prev" aria-label="Previous slide">‹</button>
+      <button class="slider-btn slider-next" aria-label="Next slide">›</button>
+      <div class="slider-dots" aria-hidden="false"></div>
+    </div>
+    <div class="hero-content" data-aos="fade-left" data-aos-duration="900" data-aos-delay="100">
+      <span class="school-label">School of Fashion &amp; Design</span>
+      <h1>Design Tomorrow's <span>Fashion Icons</span> Today</h1>
+      <p class="tagline">
+        Develop your unique creative voice through hands-on training in garment construction,
+        pattern making, and the business of fashion — led by industry professionals.
+      </p>
+      <p class="courses-title">Our Programmes</p>
+      <ul class="course-list">
+        <li>Fashion Design &amp; Illustration</li>
+        <li>Garment Construction</li>
+        <li>Millinery &amp; Accessories</li>
+        <li>Machinery &amp; Textile Design</li>
+        <li>Pattern Making &amp; Drafting</li>
+      </ul>
+      <div class="hero-actions">
+        <a href="admission.html" class="btn-primary"><i class="fas fa-pen-nib"></i> Apply Now</a>
+        <a href="fees.html" class="btn-outline"><i class="fas fa-file-alt"></i> View Fees</a>
+      </div>
     </div>
   </section>
 
+  <div class="stats-strip" data-aos="fade-up">
+    <div class="stat-item"><span class="num">300+</span><span class="lbl">Graduates Yearly</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="num">3</span><span class="lbl">Departments</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="num">10+</span><span class="lbl">Design Exhibitions</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="num">90%</span><span class="lbl">Employment Rate</span></div>
+  </div>
 
+  <div class="contact-strip" data-aos="fade-up">
+    <div class="citem"><i class="fas fa-phone-alt"></i><div><strong>+233 303 958 571</strong><span>+233 303 937 542</span></div></div>
+    <div class="citem"><i class="fas fa-envelope"></i><div><strong>enquiry@ghschools.edu.gh</strong><span>Mon–Fri, 8am–5pm</span></div></div>
+    <div class="citem"><i class="fas fa-map-marker-alt"></i><div><strong>GH SCHOOLS</strong><span>Accra, Ghana</span></div></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <div class="brand-logo"><img src="images/GH Schools.png" alt="GH Schools Logo"><div><h2>GH <span>Schools</span></h2><span class="tagline">Train • Practise • Achieve</span></div></div>
+      <p>GH SCHOOLS, Accra — providing world-class vocational and professional training since 2004.</p>
+      <ul class="footer-phones"><li><i class="fas fa-phone"></i> +233 303 958 571</li><li><i class="fas fa-phone"></i> +233 303 937 542</li><li><i class="fas fa-phone"></i> +233 208 381 583</li></ul>
+      <div class="footer-social"><a href="https://www.facebook.com/ghschoolsofficial" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a><a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a><a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a></div>
+    </div>
+    <div class="footer-col"><h4>About</h4><ul><li><a href="about.html">Mission</a></li><li><a href="about.html">Vision</a></li><li><a href="about.html">Leadership</a></li><li><a href="about.html">History</a></li><li><a href="e-resource.html">Accreditation</a></li></ul></div>
+    <div class="footer-col"><h4>Admissions</h4><ul><li><a href="admission.html">Apply</a></li><li><a href="requirement.html">Requirements</a></li><li><a href="fees.html">Fees</a></li><li><a href="scholarship.html">Scholarships</a></li><li><a href="faq.html">FAQ</a></li></ul></div>
+    <div class="footer-col"><h4>Student Life</h4><ul><li><a href="signup.html">Student Portal</a></li><li><a href="#">Timetable</a></li><li><a href="calendar.html">Academic Calendar</a></li><li><a href="hostels.html">Hostels</a></li><li><a href="#">Campus Life</a></li><li><a href="#">The SRC</a></li></ul></div>
+    <div class="footer-col"><h4>Courses</h4><ul><li><a href="media.html">GH Media School</a></li><li><a href="fashion.html">GH Fashion School</a></li><li><a href="catering.html">GH Catering School</a></li><li><a href="cosme.html">GH Cosmetology School</a></li><li><a href="tech.html">GH Technology School</a></li><li><a href="short-courses.html">Short Courses</a></li></ul></div>
+    <div class="footer-bottom"><span>&copy; 2025 GH Schools. All rights reserved.</span><span>Made with <i class="fas fa-heart" style="color:var(--gold)"></i> in Ghana</span></div>
+  </footer>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-  AOS.init();
-</script>
-
+  <script>AOS.init({ once: true, offset: 60 });</script>
+  <script>
+    (function(){
+      const slider = document.querySelector('.hero-slider');
+      if(!slider) return;
+      const slides = Array.from(slider.querySelectorAll('.slides img'));
+      const prevBtn = slider.querySelector('.slider-prev');
+      const nextBtn = slider.querySelector('.slider-next');
+      const dotsWrap = slider.querySelector('.slider-dots');
+      let idx = slides.findIndex(s => s.classList.contains('active')) || 0;
+      let timer = null;
+      function goTo(n){ slides.forEach((s,i)=>{ s.classList.remove('active','next','prev'); if(i===n) s.classList.add('active'); }); idx = n; updateDots(); }
+      function next(){ goTo((idx+1) % slides.length); }
+      function prev(){ goTo((idx-1+slides.length) % slides.length); }
+      function start(){ if(timer) clearInterval(timer); timer=setInterval(next,4500); }
+      function stop(){ if(timer) clearInterval(timer); timer=null; }
+      slides.forEach((s,i)=>{ const b=document.createElement('button'); b.type='button'; b.addEventListener('click',()=>{ goTo(i); stop(); start(); }); dotsWrap.appendChild(b); });
+      function updateDots(){ Array.from(dotsWrap.children).forEach((b,i)=>{ b.classList.toggle('active', i===idx); }); }
+      nextBtn && nextBtn.addEventListener('click', ()=>{ next(); stop(); start(); });
+      prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); stop(); start(); });
+      document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight') next(); if(e.key==='ArrowLeft') prev(); });
+      updateDots(); start();
+    })();
+  </script>
 </body>
-<footer class="footer">
-  <!-- Logo and Contact -->
-  <div class="footer-logo-section">
-    <div class="footer-logo">
-      <img src="images/GH Schools.png" alt="UPSA Logo" />
-      <div class="footer-logo-text">
-        <h2>GH SCHOOLS</h2>
-          <p>GH SCHOOLS COLLEGE, Accra</p>
-        <p>Scholarship with Professionalism</p>
-      </div>
-    </div>
-
-    <div class="footer-contact">
-      <p><i class="fas fa-phone"></i> +233 303 958 571</p>
-      <p><i class="fas fa-phone"></i> +233 303 937 542</p>
-      <p><i class="fas fa-phone"></i> +233 208 381 583</p>
-     
-    </div>
-
-    <div class="footer-social">
-      <a href="#"><i class="fab fa-twitter"></i></a>
-      <a href="#"><i class="fab fa-facebook-f"></i></a>
-      <a href="#"><i class="fab fa-instagram"></i></a>
-      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-      <a href="#"><i class="fab fa-youtube"></i></a>
-    </div>
-  </div>
-
-  <!-- Column 1 -->
-  <div class="footer-column">
-    <h4>University</h4>
-    <ul>
-      <li><a href="#">About GH SCHOOLS</a></li>
-      <li><a href="#">Our History</a></li>
-      <li><a href="#">Governance</a></li>
-      <li><a href="#">Leadership</a></li>
-      <li><a href="#">Policies & Regulations</a></li>
-      
-    </ul>
-  </div>
-
-  
-
-  <!-- Column 3 -->
-  <div class="footer-column">
-    <h4>Academics</h4>
-    <ul>
-      <li><a href="#">Academic Affairs</a></li>
-      <li><a href="#">Schools & Faculties</a></li>
-      <li><a href="#">Fees Schedule</a></li>
-      <li><a href="#">Academic Calendar</a></li>
-      <li><a href="#">Centres of Excellence</a></li>
-      <li><a href="#">Graduation</a></li>
-      <li><a href="#">Graduation List</a></li>
-    </ul>
-  </div>
-
-  <!-- Column 4 -->
-  <div class="footer-column">
-    <h4>Student</h4>
-    <ul>
-      <li><a href="#">Students Portal</a></li>
-      <li><a href="#">Student Services</a></li>
-      <li><a href="#">Freshmen Guidelines</a></li>
-      <li><a href="#">The SRC</a></li>
-      <li><a href="#">Hostels</a></li>
-      <li><a href="#">Sports & Recreation</a></li>
-      <li><a href="#">Counseling Unit</a></li>
-    
-    </ul>
-  </div>
-</footer>
-
 </html>

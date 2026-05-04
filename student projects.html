@@ -3,478 +3,1362 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>students projects</title>
+  <title>Student Projects — GH Schools</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <link rel="icon" type="image/png" href="images/favicon.png" />
-    <script>
-  function toggleMenu() {
-    const navLinks = document.getElementById('navLinks');
-    navLinks.classList.toggle('show');
-  }
-</script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --red: #b00000;
+      --red-dark: #7a0000;
+      --red-light: #e60000;
+      --black: #0d0d0d;
+      --white: #fafafa;
+      --grey: #1a1a1a;
+      --muted: #888;
+      --card-bg: #141414;
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f9f9f9;
-      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
     }
 
+    /* ===== HEADER ===== */
     header {
+      background: var(--red);
+      padding: 0 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 30px;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
+      position: fixed;
+      top: 0; left: 0; right: 0;
       z-index: 1000;
+      height: 72px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-
-    .logo img {
-      height: 60px;
-    }
-
-    .apply-now-btn {
-      background-color: #b00000;
-      color: white;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: 0.3s;
-    }
-    .apply-now-btn a{
-        text-decoration: none;
-        color: #fff;
-    }
-
-    .apply-now-btn:hover {
-      background-color: #a00000;
-    }
-
-    .hero {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      background: url('https://www.transparenttextures.com/patterns/gplay.png') center/cover no-repeat;
-      padding: 60px 30px;
-    }
-
-    .hero-left {
-      flex: 1 1 480px;
-      max-width: 600px;
-    }
-
-    .hero-left h1 {
-      font-size: 48px;
-      color: #000;
-      margin-bottom: 20px;
-      font-weight: 800;
-    }
-
-    .hero-left p {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.6;
-      margin-bottom: 30px;
-    }
-
-    .hero-left p a {
-      color: #b00000;
-      font-weight: 600;
       text-decoration: none;
-    }
-
-    .cta-buttons {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-red {
-      background-color: #b00000;
       color: white;
-      font-weight: bold;
-      padding: 14px 22px;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
     }
 
-    .btn-red a{
-        color: #fff;
-        text-decoration: none;
+    .logo img { height: 52px; width: auto; }
+
+    .logo-text strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
     }
 
-    .btn-outline {
-      background-color: white;
-      color: #b00000;
-      font-weight: bold;
-      padding: 14px 22px;
-      border-radius: 10px;
-      border: 2px solid #b00000;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .hero-right {
-      flex: 1 1 300px;
-      text-align: center;
-    }
-
-    .hero-right img {
-      max-width: 80%;
-      height: auto;
-      border-radius: 10px;
-    }
-
-    @media (max-width: 768px) {
-      .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 40px 20px;
-      }
-
-      .hero-left h1 {
-        font-size: 36px;
-      }
-
-      .cta-buttons {
-        justify-content: center;
-      }
-    }
-
-
-
-header {
-      background: #b00000;
-      color: white;
-      padding: 15px 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      flex-wrap: wrap;
-    }
-
-    .logo {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .logo img {
-      height: 80px;
-      width: 75px;
-    }
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      font-size: 15px;
-      line-height: 1.2;
+    .logo-text small {
+      font-size: 9px;
+      letter-spacing: 3px;
+      opacity: 0.8;
     }
 
     .menu-toggle {
       display: none;
-      font-size: 22px;
-      background: #fff;
-      color: #b00000;
+      background: rgba(255,255,255,0.15);
       border: none;
+      color: white;
+      font-size: 22px;
       padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    .nav-container {
+    nav {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 6px;
     }
 
     .nav-links {
       display: flex;
-      gap: 15px;
-      font-size: 15px;
-      position: relative;
-      flex-wrap: wrap;
-    }
-
-    .nav-links > div {
-      position: relative;
+      align-items: center;
+      gap: 2px;
+      list-style: none;
     }
 
     .nav-links a {
       text-decoration: none;
-      color: white;
-      font-weight: bold;
-      padding: 8px;
-    }
-
-    .nav-links a::after {
-      content: '\25BE';
-      font-size: 0.5em;
-      margin-left: 4px;
-    }
-
-   
-
-
-    .dropdown a {
-      display: block;
-      padding: 10px;
-      white-space: nowrap;
-      color: white;
-    }
-
-    .dropdown a:hover {
-      background-color: #f6f1f1;
-      color: #e70a0a;
+      color: rgba(255,255,255,0.85);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 8px 12px;
       border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .nav-links > div:hover .dropdown {
-      display: block;
+    .nav-links a:hover, .nav-links a.active {
+      background: rgba(255,255,255,0.15);
+      color: white;
     }
 
     .apply-button {
-      background: #030303;
-      color: rgb(248, 248, 248);
-      padding: 8px 16px;
-      border: none;
-      font-weight: bold;
-      width: 100px;
-      height: 40px;
-      border-radius: 5px;
+      background: var(--black);
+      color: white;
+      padding: 9px 18px;
+      border-radius: 6px;
       text-decoration: none;
       font-size: 13px;
-      white-space: nowrap;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+      transition: background 0.2s;
     }
 
-    /* ============ MOBILE STYLES ============== */
+    .apply-button:hover { background: #333; }
+
     @media (max-width: 768px) {
-      .nav-container {
-        width: 100%;
+      .menu-toggle { display: block; }
+      nav {
+        position: absolute;
+        top: 72px; left: 0; right: 0;
+        background: var(--red-dark);
         flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        background-color: #b00000;
-        width: 100%;
+        align-items: stretch;
         padding: 10px 0;
-      }
-
-      .nav-links.show {
-        display: flex;
-      }
-
-      .nav-links > div {
-        width: 100%;
-      }
-
-      .nav-links a {
-        display: block;
-        width: 100%;
-        padding: 12px 20px;
-      }
-
-      .nav-links a::after {
-        float: right;
-      }
-
-      .dropdown {
-        position: static;
-        box-shadow: none;
-        background: #800000;
-        padding-left: 20px;
         display: none;
       }
-
-      .nav-links .has-dropdown.active .dropdown {
-        display: block;
-      }
-
-      .menu-toggle {
-        display: block;
-      }
+      nav.open { display: flex; }
+      .nav-links { flex-direction: column; gap: 0; }
+      .nav-links a { padding: 14px 24px; border-radius: 0; }
+      .apply-button { margin: 10px 24px; text-align: center; }
     }
 
+    /* ===== HERO ===== */
+    .hero {
+      margin-top: 72px;
+      padding: 80px 40px 60px;
+      text-align: center;
+      background: linear-gradient(160deg, #1a0000 0%, var(--black) 60%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: 'PROJECTS';
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 18vw, 220px);
+      color: rgba(176,0,0,0.06);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: 10px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--red);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 8vw, 80px);
+      letter-spacing: 3px;
+      line-height: 1;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .hero h1 span { color: var(--red-light); }
+
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 36px;
+      font-size: 15px;
+      color: #aaa;
+      line-height: 1.7;
+    }
+
+    /* ===== SCHOOL NAV TABS ===== */
+    .tabs-wrapper {
+      background: var(--grey);
+      border-bottom: 1px solid #2a2a2a;
+      position: sticky;
+      top: 72px;
+      z-index: 900;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      justify-content: center;
+    }
+
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #666;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0 20px;
+      height: 64px;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .tab-btn svg {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+      opacity: 0.45;
+      stroke: currentColor;
+      transition: opacity 0.22s ease;
+    }
+
+    .tab-btn:hover { color: #ccc; }
+    .tab-btn:hover svg { opacity: 0.75; }
+    .tab-btn.active { color: var(--red-light); border-bottom-color: var(--red-light); }
+    .tab-btn.active svg { opacity: 1; }
+
+    /* ===== SCHOOL SECTIONS ===== */
+    .school-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 70px 30px;
+      display: none;
+    }
+
+    .school-section.visible { display: block; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 6vw, 56px);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .section-title span {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.4em;
+      color: var(--red-light);
+      letter-spacing: 1px;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      max-width: 520px;
+      font-size: 14px;
+      color: #888;
+      line-height: 1.7;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    /* ===== VIDEO GRID ===== */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .video-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #222;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .video-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--red);
+      box-shadow: 0 12px 40px rgba(176,0,0,0.25);
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 62%;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+
+    .video-wrapper video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.55);
+      transition: filter 0.3s;
+    }
+
+    .video-card:hover .video-wrapper video { filter: brightness(0.75); }
+
+    /* Placeholder shown when no video src */
+    .video-placeholder {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #1c1c1c 0%, #111 100%);
+      color: #444;
+      transition: background 0.3s;
+    }
+
+    .video-card:hover .video-placeholder {
+      background: linear-gradient(135deg, #1f0000 0%, #140000 100%);
+      color: #666;
+    }
+
+    .video-placeholder svg {
+      width: 40px; height: 40px;
+      opacity: 0.5;
+    }
+
+    .video-placeholder span {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Play overlay */
+    .play-overlay {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px; height: 50px;
+      background: rgba(176,0,0,0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .video-card:hover .play-overlay { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+
+    .play-overlay svg { width: 18px; height: 18px; fill: white; margin-left: 3px; }
+
+    .card-info {
+      padding: 16px;
+    }
+
+    .card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--red-light);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .card-hint {
+      font-size: 11px;
+      color: #555;
+    }
+
+    /* ===== DIVIDER ===== */
+    .section-divider {
+      border: none;
+      border-top: 1px solid #1f1f1f;
+      margin: 0;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      text-align: center;
+      padding: 80px 30px;
+      background: linear-gradient(160deg, #110000, var(--black));
+    }
+
+    .cta-section h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      color: #888;
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--red);
+      color: white;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--red-light); transform: translateY(-2px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      border: 1.5px solid #333;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: #666; transform: translateY(-2px); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #080808;
+      text-align: center;
+      padding: 30px;
+      color: #444;
+      font-size: 13px;
+      border-top: 1px solid #1a1a1a;
+    }
+
+    footer strong { color: var(--red); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .school-section.visible .video-card {
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .school-section.visible .video-card:nth-child(1) { animation-delay: 0.05s; }
+    .school-section.visible .video-card:nth-child(2) { animation-delay: 0.1s; }
+    .school-section.visible .video-card:nth-child(3) { animation-delay: 0.15s; }
+    .school-section.visible .video-card:nth-child(4) { animation-delay: 0.2s; }
+
+    @media (max-width: 600px) {
+      .section-header { flex-direction: column; align-items: center; }
+      .video-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+
+    /* ===== VIDEO MODAL ===== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+      animation: modalFadeIn 0.22s ease both;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .modal-box {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 820px;
+      max-height: 72vh;
+      overflow: hidden;
+      position: relative;
+      animation: modalSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    }
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(36px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-video-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 42%; /* reduced height for a shorter modal */
+      background: #000;
+      max-height: 68vh;
+      overflow: hidden;
+    }
+    .modal-video-wrap video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+
+    /* Placeholder when no video src */
+    .modal-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+      color: #333;
+    }
+    .modal-placeholder svg { width: 56px; height: 56px; }
+    .modal-placeholder p {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .modal-info {
+      padding: 22px 28px 26px;
+      border-top: 1px solid #1e1e1e;
+    }
+    .modal-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--red-light);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 1.5px;
+      color: white;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+    .modal-desc {
+      font-size: 13.5px;
+      color: #777;
+      line-height: 1.7;
+      max-width: 620px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      width: 36px;
+      height: 36px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      background: var(--red);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 600px) {
+      .modal-box { border-radius: 12px; }
+      .modal-info { padding: 16px 18px 20px; }
+      .modal-title { font-size: 22px; }
+    }
   </style>
 </head>
 <body>
 
+<!-- ===== HEADER ===== -->
 <header>
-  <div class="logo">
-    <a href="index.html">
-      <img src="images/GH Schools.png" alt="GH Logo">
-    </a>
+  <a href="index.html" class="logo">
+    <img src="images/GH Schools.png" alt="GH Schools Logo">
     <div class="logo-text">
       <strong>GH SCHOOLS</strong>
-      <small>TRAIN• PRACTICE •ACHIEVE</small>
+      <small>TRAIN • PRACTISE • ACHIEVE</small>
     </div>
-      <!-- MENU BUTTON -->
-  <button class="menu-toggle" onclick="toggleMenu()">
-  ☰ 
-</button>
+  </a>
 
-  </div>
+  <button class="menu-toggle" onclick="document.querySelector('nav').classList.toggle('open')" aria-label="Toggle menu">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
 
-
-
-  
-<nav class="nav-container">
-      <div class="nav-links" id="navLinks">
-        <div><a href="">MEDIA SCH</a><div class="dropdown">
-          
-
-        </div></div>
-        <div><a href="cosmetology projects.html">COSMETLOGY SCH</a><div class="dropdown">
-          
-         
-        </div></div>
-        <div><a href="fashion project.html">FASHION SCH</a><div class="dropdown">
-          
-        </div></div>
-        <div><a href="catering project.html">CATERING SCH</a><div class="dropdown">
-          
-        </div></div>
-     <div class="nav-item">
-      <a href="tech projects.html">TECH SCH</a>
-      
-        <a href="admission.HTML" class="apply-button">Apply Now!</a>
-      </div>
-    </nav>
+  <nav id="mainNav">
+    <ul class="nav-links">
+      <li><a href="student_projects.html" class="active">MEDIA SCH</a></li>
+      <li><a href="cosmetology projects.html">COSMETOLOGY SCH</a></li>
+      <li><a href="fashion project.html">FASHION SCH</a></li>
+      <li><a href="catering project.html">CATERING SCH</a></li>
+      <li><a href="tech projects.html">TECH SCH</a></li>
+    </ul>
+    <a href="admission.HTML" class="apply-button">Apply Now!</a>
+  </nav>
 </header>
 
 
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-badge">GH Schools — Class Work</div>
+  <h1>Student <span>Projects</span></h1>
+  <p>Showcasing outstanding work across all five schools — from short films and digital campaigns to runway looks, gourmet dishes, and software builds.</p>
+</section>
 
- <section style="padding: 60px 20px; text-align: center; margin-top:60px;">
-    <h2 style="font-size: 2rem; margin-bottom: 10px;">Media school  Projects</h2>
-    <p style="max-width: 700px; margin: 0 auto 40px; font-size: 1rem; color: #444;">
-     Showcasing student-led productions, short films, documentaries, digital storytelling, and campus journalism that reflect creativity, critical thinking, and technical skills in modern media.
-    </p>
 
-    <!-- Video Cards Grid -->
-    <div style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: 0 auto 40px;
-    ">
-      <!-- Card 1 -->
-      <div style="position: relative; overflow: hidden; border-radius: 8px;">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
-          <source src="videos/eco.mp4" type="video/mp4">
+<!-- ===== SCHOOL TABS ===== -->
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <!-- Media: clapperboard / film icon -->
+    <button class="tab-btn active" onclick="showSection('media', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="14" rx="2"/>
+        <path d="M2 10h20"/>
+        <path d="M7 6V2M17 6V2"/>
+        <path d="M7 2h2M13 2h2"/>
+      </svg>
+      Media
+    </button>
+    <!-- Cosmetology: sparkle / beauty wand icon -->
+    <button class="tab-btn" onclick="showSection('cosmetology', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        <circle cx="12" cy="12" r="4"/>
+      </svg>
+      Cosmetology
+    </button>
+    <!-- Fashion: scissors / hanger icon -->
+    <button class="tab-btn" onclick="showSection('fashion', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.5 18.5 12 12 3.5 18.5"/>
+        <path d="M12 12V6"/>
+        <circle cx="12" cy="4.5" r="1.5"/>
+        <path d="M3.5 18.5a2 2 0 1 0 2 2M18.5 18.5a2 2 0 1 0 2 2"/>
+      </svg>
+      Fashion
+    </button>
+    <!-- Catering: utensils / dome cover icon -->
+    <button class="tab-btn" onclick="showSection('catering', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11a9 9 0 0 1 18 0"/>
+        <path d="M2 11h20"/>
+        <path d="M12 11V6"/>
+        <path d="M5 20h14"/>
+        <path d="M5 17h14"/>
+      </svg>
+      Catering
+    </button>
+    <!-- Tech: monitor / code icon -->
+    <button class="tab-btn" onclick="showSection('tech', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+        <path d="M8 10l-2 2 2 2M16 10l2 2-2 2"/>
+      </svg>
+      Tech
+    </button>
+  </div>
+</div>
+
+
+<!-- ===================================================
+     MEDIA SCHOOL
+     To add videos: replace the src="" inside each <source> tag
+     e.g.  <source src="videos/eco.mp4" type="video/mp4">
+===================================================== -->
+<section class="school-section visible" id="section-media">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><span>School of</span> Media</h2>
+    </div>
+  </div>
+  <p class="section-desc">Student-led productions, short films, documentaries, digital storytelling, and campus journalism that reflect creativity and technical skills in modern media.</p>
+
+  <div class="video-grid">
+
+    <!-- MEDIA CARD 1 — JMA Projects -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" with your video file path e.g. src="videos/jma.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
         </video>
-        <div style="
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          padding: 10px;
-          background: rgba(0,0,0,0.5);
-          color: white;
-          font-weight: bold;
-          font-size: 1rem;
-          text-align: center;
-        ">JMA PROJECTS</div>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
-
-      <!-- Card 2 -->
-      <div style="position: relative; overflow: hidden; border-radius: 8px;">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
-          <source src="videos/forest.mp4" type="video/mp4">
-        </video>
-        <div style="
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          padding: 10px;
-          background: rgba(0,0,0,0.5);
-          color: white;
-          font-weight: bold;
-          font-size: 1rem;
-          text-align: center;
-        ">JMS PROJECTS</div>
-      </div>
-
-      <!-- Card 3 -->
-      <div style="position: relative; overflow: hidden; border-radius: 8px;">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
-          <source src="videos/parks.mp4" type="video/mp4">
-        </video>
-        <div style="
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          padding: 10px;
-          background: rgba(0,0,0,0.5);
-          color: white;
-          font-weight: bold;
-          font-size: 1rem;
-          text-align: center;
-        ">MMP PROJECTS</div>
-      </div>
-
-      <!-- Card 4 -->
-      <div style="position: relative; overflow: hidden; border-radius: 8px;">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5);">
-          <source src="videos/water.mp4" type="video/mp4">
-        </video>
-        <div style="
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          padding: 10px;
-          background: rgba(0,0,0,0.5);
-          color: white;
-          font-weight: bold;
-          font-size: 1rem;
-          text-align: center;
-        ">TFP PROJECTS</div>
+      <div class="card-info">
+        <div class="card-label">Media School</div>
+        <div class="card-title">JMA Projects</div>
+        <div class="card-hint">Journalism & Media Arts</div>
       </div>
     </div>
 
-    <!-- Call to Action Button -->
-    <a href="#" style="
-      padding: 12px 25px;
-      background-color: #222;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
-    " onmouseover="this.style.backgroundColor='#000'" onmouseout="this.style.backgroundColor='#222'">
-      BECOME A STUDENT
-    </a>
-  </section>
+    <!-- MEDIA CARD 2 — JMS Projects -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" with your video file path e.g. src="videos/jms.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Media School</div>
+        <div class="card-title">JMS Projects</div>
+        <div class="card-hint">Journalism and  Media Studies</div>
+      </div>
+    </div>
+
+    <!-- MEDIA CARD 3 — MMP Projects -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" with your video file path e.g. src="videos/mmp.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Media School</div>
+        <div class="card-title">MMP Projects</div>
+        <div class="card-hint">Multimedia Production</div>
+      </div>
+    </div>
+
+    <!-- MEDIA CARD 4 — TFP Projects -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" with your video file path e.g. src="videos/tfp.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Media School</div>
+        <div class="card-title">TFP Projects</div>
+        <div class="card-hint">Television & Film Production</div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
 
+<!-- ===================================================
+     COSMETOLOGY SCHOOL
+     To add videos: replace src="" in each <source> tag
+===================================================== -->
+<section class="school-section" id="section-cosmetology">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><span>School of</span> Cosmetology</h2>
+    </div>
+  </div>
+  <p class="section-desc">Haircare transformations, skincare techniques, nail artistry, and makeup masterclasses created by our cosmetology students.</p>
+
+  <div class="video-grid">
+
+    <!-- COSMETOLOGY CARD 1 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/cosm-hair.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Cosmetology</div>
+        <div class="card-title">Hair Styling Projects</div>
+        <div class="card-hint">Cuts, coloring & treatments</div>
+      </div>
+    </div>
+
+    <!-- COSMETOLOGY CARD 2 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/cosm-makeup.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Cosmetology</div>
+        <div class="card-title">Makeup Artistry</div>
+        <div class="card-hint">Editorial & bridal looks</div>
+      </div>
+    </div>
+
+    <!-- COSMETOLOGY CARD 3 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/cosm-nails.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Cosmetology</div>
+        <div class="card-title">Nail Artistry</div>
+        <div class="card-hint">Designs, gel & extensions</div>
+      </div>
+    </div>
+
+    <!-- COSMETOLOGY CARD 4 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/cosm-skin.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Cosmetology</div>
+        <div class="card-title">Skincare Routines</div>
+        <div class="card-hint">Facials & skin treatments</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===================================================
+     FASHION SCHOOL
+     To add videos: replace src="" in each <source> tag
+===================================================== -->
+<section class="school-section" id="section-fashion">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><span>School of</span> Fashion</h2>
+    </div>
+  </div>
+  <p class="section-desc">Runway showcases, garment construction, textile design, and fashion photography captured by our creative fashion students.</p>
+
+  <div class="video-grid">
+
+    <!-- FASHION CARD 1 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/fashion-runway.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Fashion School</div>
+        <div class="card-title">Runway Show</div>
+        <div class="card-hint">Student collection showcase</div>
+      </div>
+    </div>
+
+    <!-- FASHION CARD 2 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/fashion-design.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Fashion School</div>
+        <div class="card-title">Garment Construction</div>
+        <div class="card-hint">Pattern cutting & sewing</div>
+      </div>
+    </div>
+
+    <!-- FASHION CARD 3 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/fashion-textile.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Fashion School</div>
+        <div class="card-title">Textile & Print Design</div>
+        <div class="card-hint">Fabric dyeing & prints</div>
+      </div>
+    </div>
+
+    <!-- FASHION CARD 4 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/fashion-styling.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Fashion School</div>
+        <div class="card-title">Fashion Styling</div>
+        <div class="card-hint">Editorial shoots & lookbooks</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===================================================
+     CATERING SCHOOL
+     To add videos: replace src="" in each <source> tag
+===================================================== -->
+<section class="school-section" id="section-catering">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><span>School of</span> Catering</h2>
+    </div>
+  </div>
+  <p class="section-desc">Culinary creations, plating masterclasses, pastry arts, and event catering showcased by our talented catering students.</p>
+
+  <div class="video-grid">
+
+    <!-- CATERING CARD 1 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/catering-gourmet.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Catering School</div>
+        <div class="card-title">Gourmet Cuisine</div>
+        <div class="card-hint">Fine dining preparations</div>
+      </div>
+    </div>
+
+    <!-- CATERING CARD 2 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/catering-pastry.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Catering School</div>
+        <div class="card-title">Pastry & Baking</div>
+        <div class="card-hint">Cakes, bread & desserts</div>
+      </div>
+    </div>
+
+    <!-- CATERING CARD 3 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/catering-plating.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Catering School</div>
+        <div class="card-title">Plating Techniques</div>
+        <div class="card-hint">Presentation & garnishing</div>
+      </div>
+    </div>
+
+    <!-- CATERING CARD 4 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/catering-events.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Catering School</div>
+        <div class="card-title">Event Catering</div>
+        <div class="card-hint">Buffet & banquet setups</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===================================================
+     TECH SCHOOL
+     To add videos: replace src="" in each <source> tag
+===================================================== -->
+<section class="school-section" id="section-tech">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><span>School of</span> Technology</h2>
+    </div>
+  </div>
+  <p class="section-desc">Software builds, app demos, hardware projects, and digital innovations developed by our tech school students.</p>
+
+  <div class="video-grid">
+
+    <!-- TECH CARD 1 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/tech-app.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Tech School</div>
+        <div class="card-title">App Development</div>
+        <div class="card-hint">Mobile & web applications</div>
+      </div>
+    </div>
+
+    <!-- TECH CARD 2 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/tech-hardware.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Tech School</div>
+        <div class="card-title">Hardware & Electronics</div>
+        <div class="card-hint">IoT & circuit projects</div>
+      </div>
+    </div>
+
+    <!-- TECH CARD 3 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/tech-design.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Tech School</div>
+        <div class="card-title">UI/UX Design</div>
+        <div class="card-hint">Prototypes & case studies</div>
+      </div>
+    </div>
+
+    <!-- TECH CARD 4 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <!-- ✏️ ADD VIDEO: replace src="" e.g. src="videos/tech-network.mp4" -->
+        <video autoplay muted loop playsinline>
+          <source src="" type="video/mp4">
+        </video>
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 8 5 4-5 4V8z"/></svg>
+          <span>Add Video</span>
+        </div>
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Tech School</div>
+        <div class="card-title">Networking & Cyber</div>
+        <div class="card-hint">Security & infrastructure</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+  <h2>Ready to Create?</h2>
+  <p>Join GH Schools and build a portfolio that speaks for itself — across any discipline you choose.</p>
+  <div class="cta-btns">
+    <a href="admission.HTML" class="btn-primary">Apply Now</a>
+    <a href="index.html" class="btn-secondary">Learn More</a>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 <strong>GH Schools</strong> — Train • Practise • Achieve
+</footer>
+
+
+<!-- ===== VIDEO MODAL ===== -->
+<div class="modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Video player">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+        <line x1="1" y1="1" x2="13" y2="13"/>
+        <line x1="13" y1="1" x2="1" y2="13"/>
+      </svg>
+    </button>
+
+    <div class="modal-video-wrap">
+      <video id="modalVideo" controls playsinline>
+        <source id="modalVideoSrc" src="" type="video/mp4">
+      </video>
+      <div class="modal-placeholder" id="modalPlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2.5"/>
+          <path d="m10 8 5 4-5 4V8z"/>
+        </svg>
+        <p>No video added yet</p>
+      </div>
+    </div>
+
+    <div class="modal-info">
+      <div class="modal-label" id="modalLabel"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ===== TAB SWITCHING ===== */
+  function showSection(id, btn) {
+    document.querySelectorAll('.school-section').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('visible');
+    btn.classList.add('active');
+    document.querySelector('.tabs-wrapper').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ===== CARD PLACEHOLDER LOGIC ===== */
+  document.querySelectorAll('.video-wrapper').forEach(wrapper => {
+    const video = wrapper.querySelector('video');
+    const placeholder = wrapper.querySelector('.video-placeholder');
+    if (video) {
+      video.addEventListener('loadeddata', () => {
+        if (placeholder) placeholder.style.display = 'none';
+      });
+      const source = video.querySelector('source');
+      if (source && !source.getAttribute('src')) {
+        video.style.display = 'none';
+      }
+    }
+  });
+
+  /* ===== VIDEO MODAL ===== */
+  const modal       = document.getElementById('videoModal');
+  const modalVideo  = document.getElementById('modalVideo');
+  const modalSrc    = document.getElementById('modalVideoSrc');
+  const modalPH     = document.getElementById('modalPlaceholder');
+  const modalLabel  = document.getElementById('modalLabel');
+  const modalTitle  = document.getElementById('modalTitle');
+  const modalDesc   = document.getElementById('modalDesc');
+  const modalClose  = document.getElementById('modalClose');
+
+  function openModal(card) {
+    // Gather info from the card
+    const label  = card.querySelector('.card-label')?.textContent || '';
+    const title  = card.querySelector('.card-title')?.textContent || '';
+    const hint   = card.querySelector('.card-hint')?.textContent  || '';
+    const source = card.querySelector('video source');
+    const src    = source ? source.getAttribute('src') : '';
+
+    // Populate modal
+    modalLabel.textContent = label;
+    modalTitle.textContent = title;
+    modalDesc.textContent  = hint;
+
+    if (src) {
+      modalSrc.setAttribute('src', src);
+      modalVideo.load();
+      modalVideo.style.display = 'block';
+      modalPH.style.display    = 'none';
+      modalVideo.play().catch(() => {});
+    } else {
+      modalSrc.setAttribute('src', '');
+      modalVideo.style.display = 'none';
+      modalPH.style.display    = 'flex';
+    }
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modalVideo.pause();
+    modalVideo.currentTime = 0;
+    modalSrc.setAttribute('src', '');
+    document.body.style.overflow = '';
+  }
+
+  // Attach click to every card
+  document.querySelectorAll('.video-card').forEach(card => {
+    card.addEventListener('click', () => openModal(card));
+  });
+
+  // Close on button / backdrop click
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
 
 </body>
 </html>

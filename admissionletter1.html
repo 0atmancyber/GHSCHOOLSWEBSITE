@@ -550,7 +550,7 @@
     </div>
 
     <div class="contact">
-      <span>0302 424909</span><span>0204 622250</span><span>0577 622250</span><span>0544 62250</span><span>admissions@ghschools.online</span>
+      <span>0302 424909</span><span>0204 622250</span><span>0577 622250</span><span>0274 622250</span><span>admissions@ghschools.online</span>
     </div>
 
     <div class="programs" id="programBar"></div>
@@ -575,12 +575,12 @@
         </p>
 
         <p id="p2">
-          Our tuition is heavily hands-on, as such a lot of commitment is needed from you for the program, you have chosen to pursue.
+          Our tuition is heavily hands-on, as such a lot of commitment is needed from you for the programme, you have chosen to pursue.
         </p>
 
         <p id="p3">
           The admission fee is <strong id="admFeeWords">Eight Hundred Cedis (GHC 800.00)</strong> which is
-          non-refundable and the tuition fee per semester is <strong id="tuitionFeeWords">Two thousand five hundred fifty Cedis (GHC 2,550)</strong>.
+          non-refundable and the tuition fee per semester is <strong id="tuitionFeeWords">Three thousand two hundred fifty Cedis (GHC 3,250)</strong>.
           Payment of <strong>full admission fee i.e. GHC 800</strong> and <strong>80%</strong> of the <strong>school fees</strong>
           secures your admission offer.
         </p>
@@ -591,7 +591,7 @@
 
         <p id="p5">
           We congratulate you on this admission and expect that you will exhibit a high level of maturity, discipline and dedication
-          throughout the period of this program in our school.
+          throughout the period of this programme in our school.
         </p>
 
         <p id="p6">
@@ -647,7 +647,7 @@
           
           <div class="fee-item">
             <span>Tuition Fee (80% of first semester):</span>
-            <span id="modalTuitionFee">GHC 2,040.00</span>
+            <span id="modalTuitionFee">GHC 2,600.00</span>
           </div>
           
           <div class="fee-item">
@@ -667,7 +667,7 @@
           
           <div class="fee-total">
             <span>Total Due:</span>
-            <span id="modalTotalFee">GHC 3,020.00</span>
+            <span id="modalTotalFee">GHC 3,580.00</span>
           </div>
         </div>
 
@@ -677,7 +677,7 @@
           <ul style="padding-left: 20px; margin: 10px 0;">
             <li>Your admission is provisional until full payment is received</li>
             <li>Payment must be made within 7 days to secure your spot</li>
-            <li>After payment, send proof to <strong>0544 622250</strong> with your name and admission number</li>
+            <li>After payment, send proof to <strong>0274 622250</strong> with your name and admission number</li>
             <li>You will receive confirmation within 24 hours of payment verification</li>
           </ul>
         </div>
@@ -779,8 +779,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   ============================ */
   const SCHOOLS = {
     FASHION:      { display:'GH FASHION SCHOOL',      email:'ghfashionschool@gmail.com',   cbt:'CBT IN FASHION',      programs:['Pattern Drafting','Garment Construction','Clothing And Textiles','Millinery & Accessories','Fashion Design'], logo:'images/fashiom.png',  prefix:'GHFS', color:'#0a7bff' },
-    CATERING:     { display:'GH CATERING SCHOOL',     email:'ghcateringschool@gmail.com',  cbt:'CBT IN CATERING',     programs:['Food & Beverage Production','Pastry, Cake, and Sugar Craft','Balloon, Floral Decoration and Event Management','Catering Service Management','Hotel, Tourism & Hospitality Management'],     logo:'images/caterig.png', prefix:'GHCS', color:'#f5d300' },
-    COSMETOLOGY:  { display:'GH COSMETOLOGY SCHOOL',  email:'ghcosmetologyschool@gmail.com',cbt:'CBT IN COSMETOLOGY', programs:['Make-up Artistry','Nail Technology','Body Therapy','Hair Technology','Salon and Spa Management'],                            logo:'images/cosme.png',   prefix:'GHCM', color:'#ff6600' },
+    CATERING:     { display:'GH CATERING SCHOOL',     email:'ghcateringschool@gmail.com',  cbt:'CBT IN CATERING',     programs:['Food & Beverage Production','Pastry, Cake, and Sugar Craft','Balloon, Floral Decoration and Event Management','Catering Service Management','Hotel, Tourism & Hospitality Management'],     logo:'images/caterig.png', prefix:'CAS', color:'#f5d300' },
+    COSMETOLOGY:  { display:'GH COSMETOLOGY SCHOOL',  email:'ghcosmetologyschool@gmail.com',cbt:'CBT IN COSMETOLOGY', programs:['Make-up Artistry','Nail Technology','Body Therapy','Hair Technology','Salon and Spa Management'],                            logo:'images/cosme.png',   prefix:'CS', color:'#ff6600' },
     MEDIA:        { display:'GH MEDIA SCHOOL',        email:'ghmediaschool@gmail.com',     cbt:'CBT IN MEDIA',        programs:['Journalism And Media Art','Journalism And Media Studies','TV & Film Production','Multimedia Production'],                                        logo:'images/Gh Media School.png', prefix:'GHMS', color:'#ff0000' },
     TECHNOLOGY:   { display:'GH TECHNOLOGY SCHOOL',   email:'ghtechnologyschool@gmail.com',cbt:'CBT IN TECHNOLOGY',   programs:['Computer Hardware','Computer Software','Computer Networking','Broadcast Technology','Security Systems'],                                           logo:'images/tech.png',    prefix:'GHTS', color:'#8a2be2' }
   };
@@ -819,30 +819,36 @@ document.addEventListener('DOMContentLoaded', async () => {
      Generate sequential admission number
      Format: {PREFIX}{SEQUENTIAL_NUMBER} (e.g., GHTS001, GHTS002, etc.)
   =========================== */
-  async function generateAdmissionNumber(schoolPrefix) {
+  async function generateAdmissionNumber(schoolPrefix, programType) {
+    // Build the effective prefix based on program type:
+    //   Diploma      → e.g. GHFSD, GHCSD, GHCMD, GHMSD, GHTSD
+    //   Certificate  → e.g. GHFSC, GHCSC, GHCMC, GHMSC, GHTSC
+    const typeSuffix = programType === 'diploma' ? 'D' : 'C';
+    const effectivePrefix = `${schoolPrefix}${typeSuffix}`;
+
     try {
-      // Get the latest admission number for this school
+      // Get the latest admission number for this school + program type
       const { data: latestRecord, error } = await supabaseClient
         .from('newstudents')
         .select('student_id, admission_number')
-        .or(`student_id.ilike.%${schoolPrefix}%,admission_number.ilike.%${schoolPrefix}%`)
+        .or(`student_id.ilike.${effectivePrefix}%,admission_number.ilike.${effectivePrefix}%`)
         .order('created_at', { ascending: false })
         .limit(1);
 
       if (error) {
         console.warn('Error fetching latest admission number:', error);
-        return `${schoolPrefix}001`; // Fallback to first number
+        return `${effectivePrefix}001`; // Fallback to first number
       }
 
       if (!latestRecord || latestRecord.length === 0) {
-        return `${schoolPrefix}001`; // First admission for this school
+        return `${effectivePrefix}001`; // First admission for this school + type
       }
 
       // Extract the sequential number and increment
       const latestNumber = latestRecord[0].student_id || latestRecord[0].admission_number;
       
-      // Extract the numeric part after prefix
-      const prefixLength = schoolPrefix.length;
+      // Extract the numeric part after effectivePrefix
+      const prefixLength = effectivePrefix.length;
       const numericPart = latestNumber.substring(prefixLength);
       
       let nextNumber;
@@ -853,10 +859,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       
       // Format with leading zeros (001, 002, etc.)
-      return `${schoolPrefix}${nextNumber.toString().padStart(3, '0')}`;
+      return `${effectivePrefix}${nextNumber.toString().padStart(3, '0')}`;
     } catch (err) {
       console.error('Error generating admission number:', err);
-      return `${schoolPrefix}001`; // Fallback
+      return `${effectivePrefix}001`; // Fallback
     }
   }
 
@@ -903,10 +909,13 @@ async function populateLetterFromRecord(rec) {
     const schoolKeyRaw = (rec.school_selected || rec.school || rec.school_selected_value || '').toString().toUpperCase();
     const SCHOOL = (SCHOOLS[schoolKeyRaw] || SCHOOLS.FASHION);
 
-    // Generate or use existing admission number
+    // Determine program type FIRST so the student ID prefix can reflect it
+    const programType = determineProgramTypeForRecord(rec);
+
+    // Generate or use existing admission number (now includes D/C suffix in prefix)
     let admissionNo = rec.student_id;
     if (!admissionNo) {
-      admissionNo = await generateAdmissionNumber(SCHOOL.prefix);
+      admissionNo = await generateAdmissionNumber(SCHOOL.prefix, programType);
     }
 
     // Basic mapped values
@@ -916,9 +925,6 @@ async function populateLetterFromRecord(rec) {
     const programDurationText = programDurationRaw.includes('ONE') ? 'ONE (1)' : 
                                (programDurationRaw.includes('TWO') ? 'TWO (2)' : 
                                (rec.programDuration || 'TWO (2)').toString());
-
-    // Use the improved program type decision function
-    const programType = determineProgramTypeForRecord(rec);
 
     // Determine chosen course (from checkbox selections) and inject into DOM
     const chosenRaw = (rec.course_type || '').toString();
@@ -958,7 +964,7 @@ async function populateLetterFromRecord(rec) {
 
     // fees (unchanged)
     setText('admFeeWords', `${numberToWords(800)} Cedis (GHC 800.00)`);
-    setText('tuitionFeeWords', `${numberToWords(2550)} Cedis (GHC 2550.00)`);
+    setText('tuitionFeeWords', `${numberToWords(3250)} Cedis (GHC 3,250.00)`);
     setText('admissionsPhone', rec.phone_number || rec.phone || localStorage.getItem('admissions_phone') || '0274622250');
 
     // Salutation by gender (unchanged)
@@ -1009,7 +1015,7 @@ async function populateLetterFromRecord(rec) {
         localStorage.setItem('selected_school', schoolKeyRaw || 'FASHION');
         localStorage.setItem('program_duration', programDurationText);
         localStorage.setItem('admission_fee', 800);
-        localStorage.setItem('tuition_fee', 2550);
+        localStorage.setItem('tuition_fee', 3250);
         localStorage.setItem('student_gender', gender || '');
     } catch (e) {
         // ignore
@@ -1123,7 +1129,7 @@ async function populateLetterFromRecord(rec) {
   // Update modal with actual fee amounts
   function updateModalFees() {
     const admFee = localStorage.getItem('admission_fee') || 800;
-    const tuitionFee = localStorage.getItem('tuition_fee') || 2550;
+    const tuitionFee = localStorage.getItem('tuition_fee') || 3250;
     const tuitionEightyPercent = Math.floor(tuitionFee * 0.8);
     
     // Calculate total with additional dues
@@ -1292,94 +1298,191 @@ async function populateLetterFromRecord(rec) {
   });
 
   /* ===========================
-     Enhanced PDF Download Function
-  =========================== */
-  function downloadAdmissionLetter() {
-    const element = document.getElementById('page');
-    const safeName = (localStorage.getItem('admitted_full_name') || 'STUDENT_NAME').replace(/[^a-z0-9]/gi, "_").toUpperCase();
-    const admissionNumber = localStorage.getItem('admission_number') || '';
-    const filename = `Admission_Letter_${safeName}_${admissionNumber}.png`;
-
-    // Save original actions display so we can restore it
-    const actionsEl = document.querySelector('.actions');
-    const prevActionsDisplay = actionsEl ? actionsEl.style.display : '';
-
-    // UI feedback
-    const originalText = downloadBtn.textContent;
-    downloadBtn.textContent = 'Generating image...';
-    downloadBtn.disabled = true;
-
-    // Temporarily hide actions on the live DOM to avoid any flash
-    if (actionsEl) actionsEl.style.display = 'none';
-
-    // compute full dimensions to capture entire content
-    const elWidth = element.scrollWidth || element.offsetWidth || 210 * 3.78;
-    const elHeight = element.scrollHeight || element.offsetHeight || 297 * 3.78;
-
-    // Use html2canvas to capture as an image. Use onclone to ensure cloned doc also hides actions.
-    window.html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      width: elWidth,
-      height: elHeight,
-      windowWidth: Math.max(elWidth, document.documentElement.clientWidth),
-      windowHeight: Math.max(elHeight, document.documentElement.clientHeight),
-      scrollY: 0,
-      onclone: function(clonedDoc) {
-        const a = clonedDoc.querySelector('.actions');
-        if (a) a.style.display = 'none';
-        const page = clonedDoc.querySelector('.page');
-        if (page) {
-          page.style.boxShadow = 'none';
-          page.style.margin = '0';
-          page.style.width = '100%';
-          page.style.minHeight = 'auto';
-          page.style.overflow = 'visible';
-        }
-        clonedDoc.documentElement.style.height = 'auto';
-        clonedDoc.body.style.height = 'auto';
-        clonedDoc.body.style.overflow = 'visible';
-      }
-    }).then(function(canvas) {
-      // restore actions display
-      if (actionsEl) actionsEl.style.display = prevActionsDisplay;
-
-      // Convert canvas to blob and trigger download
-      if (canvas.toBlob) {
-        canvas.toBlob(function(blob) {
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 150);
-        }, 'image/png', 1.0);
-      } else {
-        // fallback for older browsers
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
-    }).catch(function(err) {
-      console.error('Error generating image:', err);
-      if (actionsEl) actionsEl.style.display = prevActionsDisplay;
-      alert('Failed to generate image. See console for details.');
-    }).finally(function() {
-      downloadBtn.textContent = originalText;
-      downloadBtn.disabled = false;
-    });
-  }
-
-  /* ===========================
      Button Event Listeners
   =========================== */
   const downloadBtn = document.getElementById('downloadBtn');
   const paymentBtn = document.getElementById('paymentBtn');
+
+  /* ===========================
+     PDF Download Function
+     Uses html2pdf to produce a proper A4 PDF.
+
+     Root-cause fix for SecurityError / tainted canvas:
+       Any <img> whose src is a local file:// path taints the canvas the
+       moment html2canvas draws it, and toDataURL() is then blocked by the
+       browser. We solve this by converting EVERY image to a base64 data URL
+       via a temporary <canvas> BEFORE html2pdf ever runs. That way no
+       external resource is fetched during the render, and the canvas stays
+       clean.
+  =========================== */
+
+  /**
+   * Load one image and return its base64 data URL.
+   * Falls back to an empty transparent PNG on any error so we never block.
+   */
+  function imgToDataURL(src) {
+    return new Promise(function(resolve) {
+      if (!src || src.startsWith('data:')) { resolve(src); return; }
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        try {
+          const c = document.createElement('canvas');
+          c.width  = img.naturalWidth  || img.width  || 1;
+          c.height = img.naturalHeight || img.height || 1;
+          c.getContext('2d').drawImage(img, 0, 0);
+          resolve(c.toDataURL('image/png'));
+        } catch(e) {
+          // Canvas still tainted (e.g. SVG with foreignObject) — skip image
+          resolve('');
+        }
+      };
+      img.onerror = function() { resolve(''); };
+      // Cache-bust to encourage CORS header on servers; harmless locally
+      img.src = src + (src.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+    });
+  }
+
+  /**
+   * Replace every <img> src inside `root` with a base64 data URL.
+   * Returns a promise that resolves when all images are converted.
+   */
+  function inlineAllImages(root) {
+    const imgs = Array.from(root.querySelectorAll('img'));
+    return Promise.all(imgs.map(function(img) {
+      const src = img.getAttribute('src') || '';
+      return imgToDataURL(src).then(function(dataUrl) {
+        if (dataUrl) img.src = dataUrl;
+      });
+    }));
+  }
+
+  function downloadAdmissionLetter() {
+    if (typeof window.html2pdf === 'undefined') {
+      alert('PDF library not yet loaded. Please wait a moment and try again.');
+      return;
+    }
+
+    const element = document.getElementById('page');
+    if (!element) {
+      alert('Could not find the letter. Please refresh and try again.');
+      return;
+    }
+
+    // Build filename
+    const safeName = (localStorage.getItem('admitted_full_name') || 'STUDENT')
+                       .replace(/[^a-z0-9]/gi, '_').toUpperCase();
+    const admissionNo = (localStorage.getItem('student_id') || localStorage.getItem('studentId') || '')
+                          .replace(/[^a-z0-9]/gi, '_').toUpperCase();
+    const filename = `Admission_Letter_${safeName}${admissionNo ? '_' + admissionNo : ''}.pdf`;
+
+    // Hide UI chrome
+    const hideSelectors = ['.actions', '#paymentModal', '#helpModal'];
+    const hidden = [];
+    hideSelectors.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(el) {
+        hidden.push({ el: el, prev: el.style.display });
+        el.style.display = 'none';
+      });
+    });
+
+    const originalText = downloadBtn.textContent;
+    downloadBtn.textContent = '⏳ Generating PDF…';
+    downloadBtn.disabled = true;
+
+    function restore() {
+      hidden.forEach(function(o) { o.el.style.display = o.prev; });
+      downloadBtn.textContent = originalText;
+      downloadBtn.disabled    = false;
+    }
+
+    // ── KEY STEP: inline all images as base64 first ──────────────────────
+    inlineAllImages(element).then(function() {
+
+      const opt = {
+        margin:      0,
+        filename:    filename,
+        image:       { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale:           2,
+          useCORS:         true,
+          allowTaint:      false,   // must be false when images are already inlined
+          logging:         false,
+          backgroundColor: '#ffffff',
+          scrollX:         0,
+          scrollY:         0,
+          windowWidth:     794,
+          onclone: function(clonedDoc) {
+            // Fix absolute-positioned header blocks so they flow in print order
+            const clonedPage = clonedDoc.getElementById('page');
+            if (clonedPage) {
+              clonedPage.style.boxShadow = 'none';
+              clonedPage.style.margin    = '0';
+              clonedPage.style.width     = '794px';
+              clonedPage.style.minHeight = 'unset';
+              clonedPage.style.overflow  = 'visible';
+            }
+            ['.masthead', '.contact', '.programs'].forEach(function(sel) {
+              const el = clonedDoc.querySelector(sel);
+              if (el) {
+                el.style.position = 'relative';
+                el.style.top      = 'unset';
+                el.style.left     = 'unset';
+                el.style.right    = 'unset';
+              }
+            });
+            const inner = clonedDoc.querySelector('.inner');
+            if (inner) inner.style.paddingTop = '20px';
+
+            // Hide chrome in clone
+            ['.actions', '#paymentModal', '#helpModal'].forEach(function(sel) {
+              clonedDoc.querySelectorAll(sel).forEach(function(el) {
+                el.style.display = 'none';
+              });
+            });
+
+            clonedDoc.documentElement.style.height = 'auto';
+            clonedDoc.body.style.height    = 'auto';
+            clonedDoc.body.style.overflow  = 'visible';
+            clonedDoc.body.style.background = '#fff';
+
+            // Images in the clone also need to be inlined (html2canvas clones
+            // the DOM internally; copy the already-inlined src values across)
+            const origImgs  = element.querySelectorAll('img');
+            const cloneImgs = clonedDoc.querySelectorAll('img');
+            origImgs.forEach(function(orig, i) {
+              if (cloneImgs[i] && orig.src.startsWith('data:')) {
+                cloneImgs[i].src = orig.src;
+              }
+            });
+          }
+        },
+        jsPDF: {
+          unit:        'mm',
+          format:      'a4',
+          orientation: 'portrait',
+          compress:    true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      window.html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(restore)
+        .catch(function(err) {
+          console.error('PDF generation error:', err);
+          restore();
+          alert('PDF generation failed.\n\nAlternative: press Ctrl+P (or Cmd+P on Mac) → "Save as PDF" in the print dialog.');
+        });
+
+    }).catch(function(err) {
+      console.error('Image inlining error:', err);
+      restore();
+      alert('Could not prepare images for PDF. Try Ctrl+P → Save as PDF instead.');
+    });
+  }
 
   // Download PDF button - enhanced version
   if (downloadBtn) {

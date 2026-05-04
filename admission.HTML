@@ -3,1131 +3,1517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <title>GH Schools — Online Application Portal</title>
+  <title>GH Schools — Apply Now | 2025/2026 Admissions</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
-  <link rel="icon" type="image/png" href="images/favicon.png" />
   <style>
     :root {
-      --crimson: #b00000;
-      --crimson-deep: #7a0000;
-      --crimson-light: #d63031;
-      --gold: #f1c40f;
-      --gold-light: #ffeaa7;
-      --ink: #0d0d0d;
-      --white: #ffffff;
-      --off-white: #fafaf8;
-      --slate: #f4f1ed;
-      --text-muted: #6b6560;
-      --card-shadow: 0 8px 40px rgba(0,0,0,0.10);
-      --card-shadow-hover: 0 20px 60px rgba(176,0,0,0.18);
+      --red: #D90000;
+      --red-deep: #A00000;
+      --red-bright: #FF2020;
+      --gold: #FFC107;
+      --gold-soft: #FFD54F;
+      --gold-deep: #E6A800;
+      --green: #006B3F;
+      --green-bright: #009E5C;
+      --green-light: #00C46F;
+      --black-star: #1A1A1A;
+      --ink: #0D0D0D;
+      --surface: #F9F6F0;
+      --surface2: #FFF8E8;
+      --white: #FFFFFF;
+      --muted: #888580;
+      --card-bg: #FFFFFF;
+      --ghana-gradient: linear-gradient(135deg, var(--red) 0%, var(--gold) 50%, var(--green) 100%);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-
-    img { max-width: 100%; height: auto; display: block; }
-
+    html { scroll-behavior: smooth; font-size: 16px; }
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
+      background: var(--surface);
       color: var(--ink);
       overflow-x: hidden;
     }
 
-    /* ===== NOISE OVERLAY ===== */
-    body::before {
-      content: '';
+    /* ============ CUSTOM CURSOR ============ */
+    .cursor-dot {
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
       position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
+      z-index: 99999;
+      transition: transform 0.1s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      width: 38px; height: 38px;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      transition: all 0.15s ease;
+      opacity: 0.6;
     }
 
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(135deg, #8a0000 0%, #b00000 50%, #c0392b 100%);
-      color: white;
-      padding: 0 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* ============ GHANA STRIPE TOP ============ */
+    .ghana-stripe {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 1000;
-      height: 72px;
-      flex-wrap: wrap;
-      box-shadow: 0 4px 32px rgba(176,0,0,0.35);
-      border-bottom: 2px solid rgba(241,196,15,0.4);
+      height: 4px;
+      background: linear-gradient(90deg, var(--red) 33.3%, var(--gold) 33.3% 66.6%, var(--green) 66.6%);
+      z-index: 9999;
     }
 
-    header::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    /* ============ HEADER ============ */
+    header {
+      position: fixed;
+      top: 4px; left: 0; right: 0;
+      z-index: 900;
+      padding: 0 48px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s;
+    }
+    header.scrolled {
+      background: rgba(10,10,10,0.99);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.5);
     }
 
     .logo {
       display: flex;
-      gap: 12px;
       align-items: center;
+      gap: 12px;
       text-decoration: none;
     }
-    .logo img {
-      max-height: 48px;
-      width: auto;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-    .logo-text strong {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      letter-spacing: 2px;
-      color: var(--gold);
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    .logo-text small {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.75);
-      font-weight: 500;
-    }
-
-    .menu-toggle {
-      display: none;
-      font-size: 14px;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-      font-family: 'DM Sans', sans-serif;
-      letter-spacing: 1px;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    .menu-toggle:hover { background: rgba(255,255,255,0.25); }
-
-    .nav-container {
+    .logo-badge {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--red), var(--gold), var(--green));
+      border-radius: 12px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+      animation: logoPulse 4s ease-in-out infinite;
+    }
+    .logo-badge::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+    }
+    @keyframes logoPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,193,7,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(255,193,7,0); }
+    }
+    .logo-text strong {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 1.5px;
+      display: block;
+      line-height: 1;
+    }
+    .logo-text small {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      font-weight: 500;
     }
 
     .nav-links {
       display: flex;
-      gap: 2px;
-      font-size: 13px;
-      position: relative;
-      flex-wrap: wrap;
       align-items: center;
+      gap: 4px;
     }
-
-    .nav-links > div {
-      position: relative;
-    }
-
+    .nav-links > div { position: relative; }
     .nav-links a {
+      color: rgba(255,255,255,0.7);
       text-decoration: none;
-      color: rgba(255,255,255,0.9);
+      font-size: 13px;
       font-weight: 600;
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 8px;
-      letter-spacing: 0.5px;
-      font-size: 12.5px;
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      letter-spacing: 0.3px;
     }
-
-    .nav-links > div > a::after {
-      content: '▾';
-      font-size: 0.75em;
-      opacity: 0.7;
-    }
-
-    .nav-links a:hover {
-      color: var(--gold);
-      background: rgba(255,255,255,0.1);
-    }
+    .nav-links > div > a::after { content: '▾'; font-size: 0.7em; opacity: 0.6; }
+    .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
 
     .dropdown {
       display: none;
       position: absolute;
-      background: var(--ink);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-      padding: 8px;
       top: calc(100% + 8px);
       left: 0;
-      font-size: 13px;
-      border-radius: 12px;
-      z-index: 10;
-      min-width: 200px;
+      background: #141414;
       border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 8px;
+      min-width: 200px;
+      z-index: 100;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
-
-    .dropdown a {
-      display: block;
-      padding: 10px 14px;
-      white-space: nowrap;
-      color: rgba(255,255,255,0.85) !important;
-      border-radius: 8px;
-      font-weight: 400 !important;
-      font-size: 13px;
-      letter-spacing: 0;
-    }
-    .dropdown a:hover {
-      background: var(--crimson) !important;
-      color: white !important;
-    }
+    .dropdown a { display: block; padding: 10px 14px; border-radius: 8px; white-space: nowrap; font-weight: 400 !important; font-size: 13px; }
+    .dropdown a:hover { background: var(--green) !important; color: white !important; }
     .nav-links > div:hover .dropdown { display: block; }
 
-    .apply-button {
-      background: linear-gradient(135deg, var(--gold) 0%, #f39c12 100%);
-      color: var(--ink) !important;
-      padding: 9px 20px;
-      border: none;
-      font-weight: 700 !important;
-      border-radius: 50px;
-      text-decoration: none !important;
+    .nav-apply-btn {
+      background: linear-gradient(135deg, var(--red), var(--red-deep)) !important;
+      color: white !important;
+      font-weight: 800 !important;
+      padding: 9px 20px !important;
+      border-radius: 50px !important;
       font-size: 12.5px !important;
-      white-space: nowrap;
       letter-spacing: 0.5px;
-      box-shadow: 0 4px 16px rgba(241,196,15,0.35);
+      box-shadow: 0 4px 20px rgba(217,0,0,0.4);
       transition: all 0.2s !important;
-      margin-left: 8px;
     }
-    .apply-button:hover {
-      transform: translateY(-1px) !important;
-      box-shadow: 0 8px 24px rgba(241,196,15,0.5) !important;
-      background: linear-gradient(135deg, #ffeaa7, var(--gold)) !important;
-      color: var(--ink) !important;
+    .nav-apply-btn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 30px rgba(217,0,0,0.6) !important;
+      background: linear-gradient(135deg, var(--red-bright), var(--red)) !important;
     }
-    .apply-button::after { display: none !important; }
+    .nav-apply-btn::after { display: none !important; }
 
-    @media (max-width: 768px) {
-      header { padding: 0 20px; height: auto; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
-      .nav-container { width: 100%; flex-direction: column; align-items: flex-start; }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        background: var(--crimson-deep);
-        width: 100%;
-        padding: 12px;
-        border-radius: 0 0 12px 12px;
-        gap: 4px;
-      }
-      .nav-links.show { display: flex; }
-      .nav-links > div { width: 100%; }
-      .nav-links a { display: block; width: 100%; padding: 12px 16px; border-radius: 8px; }
-      .nav-links a::after { float: right; }
-      .dropdown { position: static; box-shadow: none; background: rgba(0,0,0,0.3); padding-left: 20px; display: none; border: none; }
-      .nav-links .has-dropdown.active .dropdown { display: block; }
-      .menu-toggle { display: block; }
-      .hero { margin-top: 80px; }
+    .hamburger {
+      display: none;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
     }
 
-    /* ===== HERO ===== */
+    @media (max-width: 860px) {
+      header { padding: 0 20px; }
+      .nav-links { display: none; flex-direction: column; position: fixed; top: 74px; left: 0; right: 0; background: #0a0a0a; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); gap: 4px; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 16px; }
+      .dropdown { position: static; box-shadow: none; background: rgba(255,255,255,0.05); border: none; }
+      .hamburger { display: block; }
+    }
+
+    /* ============ HERO ============ */
     .hero {
-      margin-top: 72px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      padding: 80px 60px;
-      background: linear-gradient(135deg, #1a0000 0%, #2d0000 40%, #1a0000 100%);
+      min-height: 100vh;
+      background: var(--ink);
       position: relative;
       overflow: hidden;
-      min-height: 520px;
+      display: flex;
+      align-items: center;
+      padding: 130px 60px 80px;
     }
 
-    .hero::before {
-      content: '';
+    /* Animated diagonal stripes background */
+    .hero-stripes {
       position: absolute;
       inset: 0;
-      background: 
-        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(176,0,0,0.4) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(241,196,15,0.08) 0%, transparent 60%);
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 60px,
+        rgba(255,193,7,0.015) 60px,
+        rgba(255,193,7,0.015) 61px
+      );
+      animation: stripeShift 20s linear infinite;
+    }
+    @keyframes stripeShift {
+      0% { background-position: 0 0; }
+      100% { background-position: 120px 120px; }
     }
 
-    .hero-pattern {
+    /* Flag-colored orbs */
+    .orb {
       position: absolute;
-      inset: 0;
-      background-image: 
-        repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 0, transparent 50%);
-      background-size: 30px 30px;
+      border-radius: 50%;
+      filter: blur(90px);
+      animation: orbFloat 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .orb-1 { width: 560px; height: 560px; background: radial-gradient(circle, rgba(217,0,0,0.4), transparent 70%); top: -120px; right: -120px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,107,63,0.25), transparent 70%); bottom: -80px; left: -60px; animation-delay: 3s; }
+    .orb-3 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(255,193,7,0.18), transparent 70%); top: 35%; left: 28%; animation-delay: 6s; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(24px, -36px) scale(1.06); }
+      66% { transform: translate(-18px, 22px) scale(0.94); }
     }
 
-    .hero-badge {
+    /* Flying stars (Ghana flag black star motif) */
+    .star-particle {
+      position: absolute;
+      color: var(--gold);
+      font-size: 14px;
+      opacity: 0;
+      animation: starFly 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes starFly {
+      0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0); }
+      15% { opacity: 0.7; }
+      85% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-280px) rotate(360deg) scale(1.4); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 60px;
+    }
+
+    .hero-left { flex: 1 1 550px; max-width: 640px; }
+
+    .hero-eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(241,196,15,0.15);
-      border: 1px solid rgba(241,196,15,0.4);
+      gap: 10px;
+      background: rgba(255,193,7,0.1);
+      border: 1px solid rgba(255,193,7,0.35);
       color: var(--gold);
-      padding: 6px 16px;
+      padding: 8px 20px;
       border-radius: 50px;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      margin-bottom: 24px;
+      margin-bottom: 30px;
+      animation: fadeUp 0.6s ease both;
     }
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
+    .live-dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: var(--gold);
-      animation: pulse 2s infinite;
+      background: var(--green-light);
+      animation: livePulse 1.5s ease-in-out infinite;
+      box-shadow: 0 0 0 0 rgba(0,196,111,0.5);
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    .hero-left {
-      flex: 1 1 480px;
-      max-width: 620px;
-      position: relative;
-      z-index: 2;
+    @keyframes livePulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,196,111,0.5); }
+      50% { transform: scale(0.8); box-shadow: 0 0 0 6px rgba(0,196,111,0); }
     }
 
-    .hero-left h4 {
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-
-    .hero-left h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(32px, 4vw, 54px);
-      color: var(--white);
-      margin-bottom: 24px;
+    .hero-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(36px, 4.5vw, 68px);
       font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -1px;
+      color: white;
+      line-height: 1.0;
+      margin-bottom: 28px;
+      letter-spacing: -2px;
+      animation: fadeUp 0.7s 0.1s ease both;
     }
-
-    .hero-left h1 span {
-      color: var(--gold);
+    .hero-title .accent-red { color: var(--red); display: block; }
+    .hero-title .accent-gold { color: var(--gold); display: block; }
+    .hero-title .accent-green {
+      color: var(--green-light);
+      display: block;
+      -webkit-text-stroke: 1px var(--green-light);
+    }
+    .hero-title .outline-text {
+      -webkit-text-stroke: 2px rgba(255,255,255,0.25);
+      color: transparent;
       display: block;
     }
 
-    .hero-left p {
-      font-size: 15px;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.8;
-      margin-bottom: 36px;
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.9;
+      margin-bottom: 44px;
       max-width: 500px;
+      font-weight: 400;
+      animation: fadeUp 0.7s 0.2s ease both;
     }
 
-    .hero-left p a {
-      color: var(--gold);
-      font-weight: 600;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(241,196,15,0.4);
-      transition: border-color 0.2s;
-    }
-    .hero-left p a:hover { border-color: var(--gold); }
-
-    .cta-buttons {
+    .hero-ctas {
       display: flex;
       gap: 16px;
       flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.3s ease both;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--crimson-light), var(--crimson-deep));
-      color: white;
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 17px 34px;
+      border-radius: 50px;
       font-weight: 700;
-      padding: 14px 28px;
-      border-radius: 50px;
-      border: none;
       font-size: 14px;
-      cursor: pointer;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 8px 32px rgba(176,0,0,0.5);
-      transition: all 0.3s;
-      font-family: 'DM Sans', sans-serif;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
       letter-spacing: 0.3px;
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 16px 48px rgba(176,0,0,0.6);
-      color: white;
-    }
-
-    .btn-ghost {
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.9);
-      font-weight: 600;
-      padding: 14px 28px;
-      border-radius: 50px;
-      border: 1.5px solid rgba(255,255,255,0.25);
-      font-size: 14px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s;
       font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      border: none;
+      position: relative;
+      overflow: hidden;
     }
-    .btn-ghost:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.5);
+    .btn-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50px;
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .btn-hero:hover::before { transform: translateX(0); }
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--red), var(--red-deep));
+      color: white;
+      box-shadow: 0 8px 40px rgba(217,0,0,0.5);
+    }
+    .btn-hero-primary:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(217,0,0,0.65);
+      color: white;
+    }
+    .btn-hero-secondary {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.85);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(255,255,255,0.13);
+      border-color: var(--green-bright);
       transform: translateY(-2px);
       color: white;
     }
 
-    .hero-right {
-      flex: 1 1 300px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .hero-right img {
-      max-width: 380px;
-      width: 100%;
-      border-radius: 20px;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
-      animation: float 5s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-14px) scale(1.02); }
-    }
-
-    /* hero stats */
+    /* Ghana flag divider on hero stats */
     .hero-stats {
       display: flex;
-      gap: 40px;
-      margin-top: 48px;
-      padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      gap: 44px;
+      margin-top: 56px;
+      padding-top: 40px;
+      position: relative;
+      animation: fadeUp 0.7s 0.4s ease both;
     }
-    .stat { display: flex; flex-direction: column; }
-    .stat-number {
-      font-family: 'Playfair Display', serif;
+    .hero-stats::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red) 33.3%, var(--gold) 33.3% 66.6%, var(--green) 66.6%);
+      border-radius: 3px;
+    }
+    .h-stat { display: flex; flex-direction: column; gap: 4px; }
+    .h-stat-num {
+      font-family: 'Unbounded', sans-serif;
       font-size: 28px;
       font-weight: 900;
       color: var(--gold);
       line-height: 1;
     }
-    .stat-label {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      margin-top: 4px;
+    .h-stat-label { font-size: 11px; color: rgba(255,255,255,0.38); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+
+    /* Hero card */
+    .hero-right {
+      flex: 0 0 560px;
+      position: relative;
+      z-index: 999;
+      margin-top: -180px;
+      margin-left: -120px;
+      animation: fadeUp 0.7s 0.2s ease both;
+      transform: translateZ(0);
     }
 
-    @media (max-width: 768px) {
-      .hero { padding: 48px 24px; flex-direction: column; }
-      .hero-right { order: -1; margin-bottom: 32px; }
-      .hero-right img { max-width: 280px; }
-      .hero-stats { gap: 24px; }
-      .stat-number { font-size: 22px; }
+    .hero-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      padding: 20px 30px;
+      backdrop-filter: blur(12px);
+      animation: floatCard 7s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 18px 46px rgba(0,0,0,0.12);
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--gold), var(--green), var(--gold), var(--red));
+      background-size: 300% 100%;
+      animation: flagShimmer 4s linear infinite;
+    }
+    @keyframes flagShimmer { 0%{background-position:0% 0%} 100%{background-position:300% 0%} }
+    @keyframes floatCard {
+      0%,100%{transform:translateY(0) rotate(0.5deg)}
+      50%{transform:translateY(-18px) rotate(-0.5deg)}
     }
 
-    /* ===== TOAST ===== */
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--ink);
+    .hero-card-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
       color: white;
-      padding: 14px 28px;
-      border-radius: 50px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      z-index: 10000;
+      margin-bottom: 8px;
+    }
+    .hero-card-sub { font-size: 12px; color: rgba(255,255,255,0.38); margin-bottom: 12px; font-weight: 500; letter-spacing: 0.5px; }
+
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .step-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.78);
+      font-size: 12px;
       font-weight: 600;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      max-width: 90%;
-      text-align: center;
-      border-left: 4px solid var(--crimson);
-      pointer-events: none;
+      animation: stepPop 0.2s ease both;
+      line-height: 1.12;
+      padding-right: 6px;
+    }
+    .step-list li:nth-child(1) { animation-delay: 0.4s; }
+    .step-list li:nth-child(2) { animation-delay: 0.55s; }
+    .step-list li:nth-child(3) { animation-delay: 0.7s; }
+    @keyframes stepPop {
+      from { opacity: 0; transform: translateX(-14px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      flex-shrink: 0;
+      font-family: 'Unbounded', sans-serif;
+      transition: all 0.15s;
+    }
+    .step-num-1, .step-num-2, .step-num-3, .step-num-4, .step-num-5, .step-num-6, .step-num-7 {
+      background: rgba(217,0,0,0.18);
+      border: 1.5px solid rgba(217,0,0,0.4);
+      color: #ffffff;
+    }
+
+    .card-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--red), var(--red-deep));
+      color: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 6px 18px rgba(217,0,0,0.28);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .card-cta:hover { transform: translateY(-3px); box-shadow: 0 14px 44px rgba(217,0,0,0.6); color: white; }
+
+    .fee-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(0,107,63,0.1);
+      border: 1px solid rgba(0,196,111,0.25);
+      color: var(--green-light);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .hero { padding: 110px 24px 60px; }
+      .hero-content { flex-direction: column; gap: 40px; }
+      .hero-right { flex: none; width: 100%; max-width: 460px; margin-top: 0; margin-left: 0; }
+      .hero-stats { gap: 24px; }
+    }
+
+    /* ============ SCROLLING TICKER ============ */
+    .ticker-wrap {
+      background: linear-gradient(90deg, var(--green-bright), var(--green));
+      padding: 13px 0;
+      overflow: hidden;
       white-space: nowrap;
+      position: relative;
     }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
-
-    /* ===== MAIN CONTENT WRAPPER ===== */
-    .main-wrapper {
-      max-width: 1160px;
-      margin: 0 auto;
-      padding: 80px 40px;
+    .ticker-wrap::before, .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
     }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--green), transparent); }
+    .ticker-wrap::after { right: 0; background: linear-gradient(-90deg, var(--green), transparent); }
+    .ticker-inner {
+      display: inline-flex;
+      gap: 60px;
+      animation: tickerScroll 28s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.5px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .ticker-star { color: var(--gold); font-size: 12px; }
+    @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* Section titles */
+    /* ============ SECTION COMMONS ============ */
+    .section-header { text-align: center; margin-bottom: 70px; }
+    .pill-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,107,63,0.1);
+      border: 1px solid rgba(0,107,63,0.3);
+      color: var(--green-bright);
+      padding: 7px 18px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
     .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(28px, 3vw, 40px);
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(28px, 3.5vw, 48px);
       font-weight: 900;
       color: var(--ink);
-      margin-bottom: 8px;
-      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
     }
-    .section-sub {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 48px;
+    .section-sub { font-size: 15.5px; color: var(--muted); max-width: 520px; margin: 0 auto; line-height: 1.8; }
+
+    /* ============ STEPS SECTION ============ */
+    .steps-section {
+      padding: 110px 60px;
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
     }
-    .label-pill {
-      display: inline-block;
-      background: rgba(176,0,0,0.08);
-      color: var(--crimson);
-      font-size: 11px;
-      font-weight: 700;
+    .steps-section::before {
+      content: '★';
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      font-size: 360px;
+      color: rgba(255,193,7,0.04);
+      font-family: serif;
+      animation: slowSpin 40s linear infinite;
+    }
+    @keyframes slowSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+    .steps-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+    /* Connecting line */
+    .steps-grid::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red), var(--gold), var(--green));
+      z-index: 0;
+    }
+
+    .step-card {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      padding: 36px 24px 30px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    }
+    .step-card:nth-child(1)::before { background: var(--red); }
+    .step-card:nth-child(2)::before { background: var(--gold); }
+    .step-card:nth-child(3)::before { background: var(--green); }
+    .step-card:nth-child(4)::before { background: linear-gradient(90deg, var(--red), var(--gold), var(--green)); }
+    .step-card:hover::before { transform: scaleX(1); }
+    .step-card:hover { transform: translateY(-10px); box-shadow: 0 24px 60px rgba(0,0,0,0.12); }
+
+    .step-number {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      display: block;
+      margin-bottom: 16px;
+      line-height: 1;
+      opacity: 0.08;
+      position: absolute;
+      top: 16px; right: 20px;
+    }
+    .step-card:nth-child(1) .step-number { color: var(--red); }
+    .step-card:nth-child(2) .step-number { color: var(--gold-deep); }
+    .step-card:nth-child(3) .step-number { color: var(--green); }
+    .step-card:nth-child(4) .step-number { color: var(--green); }
+
+    .step-icon-wrap {
+      width: 64px; height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 20px;
+      transition: all 0.3s;
+    }
+    .step-card:nth-child(1) .step-icon-wrap { background: rgba(217,0,0,0.1); color: var(--red); border: 1.5px solid rgba(217,0,0,0.2); }
+    .step-card:nth-child(2) .step-icon-wrap { background: rgba(255,193,7,0.12); color: var(--gold-deep); border: 1.5px solid rgba(255,193,7,0.3); }
+    .step-card:nth-child(3) .step-icon-wrap { background: rgba(0,107,63,0.1); color: var(--green-bright); border: 1.5px solid rgba(0,107,63,0.2); }
+    .step-card:nth-child(4) .step-icon-wrap { background: rgba(0,107,63,0.1); color: var(--green-bright); border: 1.5px solid rgba(0,107,63,0.2); }
+    .step-card:hover .step-icon-wrap {
+      transform: rotate(-8deg) scale(1.1);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+    }
+
+    .step-card h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    .step-card p { font-size: 13px; color: var(--muted); line-height: 1.75; }
+
+    @media (max-width: 860px) {
+      .steps-section { padding: 70px 20px; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid::after { display: none; }
+    }
+    @media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
+
+    /* ============ PROGRAMS SECTION ============ */
+    .programs-section {
+      padding: 110px 60px;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+    }
+    .programs-section::before {
+      content: 'APPLY';
+      position: absolute;
+      bottom: -40px;
+      right: -30px;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 180px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.022);
+      letter-spacing: -6px;
+      pointer-events: none;
+    }
+    .programs-section .section-title { color: white; }
+    .programs-section .section-sub { color: rgba(255,255,255,0.4); }
+    .programs-section .pill-label {
+      background: rgba(255,193,7,0.1);
+      border-color: rgba(255,193,7,0.3);
+      color: var(--gold);
+    }
+
+    .programs-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .prog-card {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      overflow: hidden;
+      transition: all 0.45s cubic-bezier(0.16,1,0.3,1);
+      position: relative;
+    }
+    .prog-card:hover {
+      border-color: rgba(255,193,7,0.4);
+      background: rgba(255,255,255,0.055);
+      transform: translateY(-8px);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.4);
+    }
+
+    .prog-img-wrap {
+      position: relative;
+      height: 240px;
+      overflow: hidden;
+    }
+    .prog-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+      filter: brightness(0.7) saturate(1.1);
+    }
+    .prog-card:hover .prog-img-wrap img { transform: scale(1.08); }
+    .prog-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(13,13,13,0.8) 0%, transparent 60%);
+    }
+
+    .prog-badge-tag {
+      position: absolute;
+      top: 18px; left: 18px;
+      background: var(--red);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 5px 14px;
       border-radius: 50px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(176,0,0,0.15);
+      box-shadow: 0 4px 16px rgba(217,0,0,0.5);
     }
-
-    /* ===== PROGRAM CARDS ===== */
-    .programs-section { padding: 80px 40px; background: var(--off-white); }
-
-    .programs-grid {
-      max-width: 1160px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    .program-card {
-      display: flex;
-      background: var(--white);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--card-shadow);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      border: 1px solid rgba(0,0,0,0.04);
-    }
-
-    .program-card:hover {
-      box-shadow: var(--card-shadow-hover);
-      transform: translateY(-4px);
-    }
-
-    .program-card.reverse { flex-direction: row-reverse; }
-
-    .program-image-wrap {
-      flex: 0 0 380px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .program-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s ease;
-    }
-    .program-card:hover .program-image-wrap img { transform: scale(1.05); }
-
-    .program-image-wrap::after {
-      content: '';
+    .prog-duration {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(176,0,0,0.3) 0%, transparent 60%);
-      pointer-events: none;
+      top: 18px; right: 18px;
+      background: rgba(0,0,0,0.55);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 50px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,193,7,0.35);
     }
 
-    .program-badge {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: var(--crimson);
+    .prog-body { padding: 32px 30px 28px; }
+    .prog-icon {
+      width: 52px; height: 52px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 20px;
+      margin-bottom: 18px;
+      background: rgba(255,193,7,0.12);
+      border: 1.5px solid rgba(255,193,7,0.25);
+      transition: all 0.3s;
+    }
+    .prog-card:hover .prog-icon { transform: rotate(-8deg) scale(1.08); background: rgba(255,193,7,0.2); }
+    .prog-body h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
       color: white;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .prog-body p { font-size: 13.5px; color: rgba(255,255,255,0.48); line-height: 1.8; margin-bottom: 24px; }
+
+    .prog-fee {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .prog-fee .amount {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .prog-fee .label { font-size: 12px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; }
+
+    .intake-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .intake-tag {
       padding: 6px 14px;
       border-radius: 50px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      z-index: 2;
-      box-shadow: 0 4px 16px rgba(176,0,0,0.4);
-    }
-    .program-card.reverse .program-badge { left: auto; right: 20px; }
-
-    .program-content {
-      flex: 1;
-      padding: 48px 52px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .program-icon {
-      width: 56px; height: 56px;
-      background: linear-gradient(135deg, rgba(176,0,0,0.1), rgba(176,0,0,0.05));
-      border: 1.5px solid rgba(176,0,0,0.15);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      font-size: 22px;
-      color: var(--crimson);
-    }
-
-    .program-content h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      color: var(--ink);
-      margin-bottom: 16px;
-      font-weight: 700;
-    }
-
-    .program-content p {
-      font-size: 14.5px;
-      color: var(--text-muted);
-      line-height: 1.8;
-      margin-bottom: 24px;
-    }
-
-    .program-price-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .price-tag {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-    .price-label {
       font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .intake-pills {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-    }
-    .intake-pill {
-      padding: 8px 18px;
-      border-radius: 50px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
+      font-weight: 700;
       transition: all 0.2s;
     }
-    .intake-pill.filled {
-      background: var(--crimson);
-      color: white;
-      box-shadow: 0 4px 16px rgba(176,0,0,0.3);
-    }
-    .intake-pill.outlined {
-      background: transparent;
-      color: var(--crimson);
-      border: 2px solid var(--crimson);
-    }
-    .intake-pill:hover { transform: translateY(-1px); }
+    .intake-tag.active { background: var(--green); color: white; box-shadow: 0 4px 16px rgba(0,107,63,0.4); }
+    .intake-tag.ghost { background: transparent; color: rgba(255,255,255,0.45); border: 1.5px solid rgba(255,255,255,0.15); }
 
-    .program-cta {
+    .prog-apply-btn {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: linear-gradient(135deg, var(--crimson-light), var(--crimson-deep));
+      background: linear-gradient(135deg, var(--red), var(--red-deep));
       color: white;
       padding: 14px 28px;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 14px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 13.5px;
       text-decoration: none;
-      box-shadow: 0 6px 24px rgba(176,0,0,0.35);
       transition: all 0.3s;
-      font-family: 'DM Sans', sans-serif;
-      width: fit-content;
+      box-shadow: 0 6px 24px rgba(217,0,0,0.4);
     }
-    .program-cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(176,0,0,0.5);
-      color: white;
+    .prog-apply-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 44px rgba(217,0,0,0.6); color: white; }
+    .prog-apply-btn i { transition: transform 0.3s; }
+    .prog-apply-btn:hover i { transform: translateX(5px); }
+
+    @media (max-width: 860px) {
+      .programs-section { padding: 70px 20px; }
+      .programs-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 900px) {
-      .program-card, .program-card.reverse { flex-direction: column; }
-      .program-image-wrap { flex: 0 0 240px; }
-      .program-content { padding: 32px 28px; }
-      .programs-section { padding: 60px 20px; }
-    }
-
-    /* ===== FAQ SECTION ===== */
-    .faq-section {
-      background: var(--ink);
-      padding: 100px 40px;
+    /* ============ STATS SECTION ============ */
+    .stats-section {
+      padding: 90px 60px;
       position: relative;
       overflow: hidden;
+      background: var(--ink);
     }
-
-    .faq-section::before {
-      content: '';
+    .stats-ghana-bg {
       position: absolute;
-      top: -100px; right: -100px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(176,0,0,0.2) 0%, transparent 70%);
-      pointer-events: none;
+      inset: 0;
+      display: flex;
     }
+    .stats-stripe { flex: 1; }
+    .stats-stripe-r { background: rgba(217,0,0,0.12); }
+    .stats-stripe-g { background: rgba(255,193,7,0.08); }
+    .stats-stripe-gr { background: rgba(0,107,63,0.12); }
 
-    .faq-inner {
-      max-width: 800px;
+    .stats-inner {
+      max-width: 1100px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
       position: relative;
       z-index: 1;
     }
 
-    .faq-section .section-title { color: var(--white); }
-    .faq-section .section-sub { color: rgba(255,255,255,0.5); }
-    .faq-section .label-pill {
-      background: rgba(241,196,15,0.1);
-      color: var(--gold);
-      border-color: rgba(241,196,15,0.2);
-    }
-
-    .faq-item {
+    .stat-item {
+      text-align: center;
       background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      margin-bottom: 12px;
-      overflow: hidden;
+      border-radius: 20px;
+      padding: 36px 24px;
+      border: 1px solid rgba(255,255,255,0.07);
       transition: all 0.3s;
+    }
+    .stat-item:hover { transform: translateY(-6px); background: rgba(255,255,255,0.07); }
+    .stat-num {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 900;
+      color: white;
+      display: block;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .stat-item:nth-child(1) .stat-num { color: #FF6060; }
+    .stat-item:nth-child(2) .stat-num { color: var(--gold); }
+    .stat-item:nth-child(3) .stat-num { color: var(--green-light); }
+    .stat-item:nth-child(4) .stat-num { color: var(--gold); }
+    .stat-suffix { }
+    .stat-lbl { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+
+    @media (max-width: 768px) {
+      .stats-section { padding: 60px 20px; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    }
+
+    /* ============ FEATURES ============ */
+    .features-section {
+      padding: 110px 60px;
+      background: var(--surface2);
+      position: relative;
+      overflow: hidden;
+    }
+    .features-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,107,63,0.06), transparent);
+    }
+
+    .features-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 22px;
+      padding: 38px 30px;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .feature-card:nth-child(1)::after, .feature-card:nth-child(4)::after { background: var(--red); }
+    .feature-card:nth-child(2)::after, .feature-card:nth-child(5)::after { background: var(--gold-deep); }
+    .feature-card:nth-child(3)::after, .feature-card:nth-child(6)::after { background: var(--green); }
+    .feature-card:hover::after { transform: scaleX(1); }
+    .feature-card:hover { transform: translateY(-8px); box-shadow: 0 20px 55px rgba(0,0,0,0.1); }
+
+    .feat-icon {
+      width: 58px; height: 58px;
+      background: linear-gradient(135deg, rgba(217,0,0,0.08), rgba(217,0,0,0.03));
+      border: 1.5px solid rgba(217,0,0,0.14);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--red);
+      margin-bottom: 24px;
+      transition: all 0.3s;
+    }
+    .feature-card:nth-child(2) .feat-icon, .feature-card:nth-child(5) .feat-icon {
+      background: rgba(255,193,7,0.1);
+      border-color: rgba(255,193,7,0.25);
+      color: var(--gold-deep);
+    }
+    .feature-card:nth-child(3) .feat-icon, .feature-card:nth-child(6) .feat-icon {
+      background: rgba(0,107,63,0.08);
+      border-color: rgba(0,107,63,0.2);
+      color: var(--green-bright);
+    }
+    .feature-card:hover .feat-icon {
+      transform: scale(1.12) rotate(-6deg);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    .feature-card h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -0.4px;
+    }
+    .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.78; }
+
+    @media (max-width: 860px) {
+      .features-section { padding: 70px 20px; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* ============ STUDENT LIFE BANNER ============ */
+    .student-banner {
+      padding: 70px 60px;
+      background: linear-gradient(135deg, var(--red-deep) 0%, var(--red) 40%, var(--gold-deep) 70%, var(--green) 100%);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .student-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .student-banner-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .student-banner h2 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(26px, 3.5vw, 48px);
+      font-weight: 900;
+      color: white;
+      margin-bottom: 16px;
+      letter-spacing: -1.5px;
+    }
+    .student-banner p { color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.8; margin-bottom: 36px; }
+    .student-banner-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-banner-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: var(--red-deep);
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .btn-banner-primary:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+    .btn-banner-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.4);
+      transition: all 0.3s;
+    }
+    .btn-banner-secondary:hover { background: rgba(255,255,255,0.25); border-color: white; transform: translateY(-3px); }
+
+    /* ============ FAQ SECTION ============ */
+    .faq-section {
+      background: var(--ink);
+      padding: 110px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .faq-section::after {
+      content: '?';
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      transform: translateY(-50%);
+      font-family: 'Unbounded', sans-serif;
+      font-size: 300px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.015);
+      pointer-events: none;
+      line-height: 1;
+    }
+    .faq-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+    .faq-section .section-title { color: white; }
+    .faq-section .section-sub { color: rgba(255,255,255,0.38); }
+    .faq-section .pill-label { background: rgba(217,0,0,0.1); border-color: rgba(217,0,0,0.3); color: #FF8080; }
+
+    .faq-list { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
       cursor: pointer;
+      transition: all 0.3s;
     }
-
-    .faq-item:hover {
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(176,0,0,0.4);
-    }
-
-    .faq-item.open {
-      background: rgba(176,0,0,0.1);
-      border-color: rgba(176,0,0,0.4);
-    }
-
-    .faq-question {
+    .faq-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,193,7,0.3); }
+    .faq-item.open { background: rgba(255,193,7,0.06); border-color: rgba(255,193,7,0.35); }
+    .faq-q {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 22px 28px;
-      font-size: 15px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.9);
+      padding: 22px 26px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.88);
       gap: 16px;
       user-select: none;
     }
-
-    .faq-question-text { flex: 1; }
-
-    .faq-toggle {
+    .faq-icon {
       width: 32px; height: 32px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
       justify-content: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
       flex-shrink: 0;
-      color: var(--crimson-light);
-      font-size: 13px;
       transition: all 0.3s;
     }
-    .faq-item.open .faq-toggle {
-      background: var(--crimson);
-      color: white;
+    .faq-item.open .faq-icon {
+      background: var(--gold);
+      color: var(--ink);
       transform: rotate(180deg);
     }
-
-    .faq-answer {
-      padding: 0 28px;
-      font-size: 14.5px;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.8;
+    .faq-a {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.4s ease, padding 0.3s ease;
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.85;
+      padding: 0 26px;
     }
-    .faq-item.open .faq-answer {
-      max-height: 200px;
-      padding: 0 28px 22px;
-    }
+    .faq-item.open .faq-a { max-height: 220px; padding: 0 26px 22px; }
 
-    /* ===== CHAT ===== */
-    .chat-button {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: linear-gradient(135deg, var(--crimson-light), var(--crimson-deep));
-      color: white;
-      border: none;
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      font-size: 22px;
-      cursor: pointer;
-      z-index: 1000;
-      box-shadow: 0 8px 32px rgba(176,0,0,0.5);
-      transition: all 0.3s;
+    @media (max-width: 768px) { .faq-section { padding: 70px 20px; } }
+
+    /* ============ FOOTER ============ */
+    footer {
+      background: #050505;
+      color: #ccc;
+      padding: 80px 60px 40px;
+      font-size: 14px;
+      line-height: 1.7;
+      position: relative;
+      overflow: hidden;
+    }
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red) 33.3%, var(--gold) 33.3% 66.6%, var(--green) 66.6%);
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 60px;
+      margin-bottom: 56px;
+    }
+    .footer-brand { flex: 1 1 280px; min-width: 240px; }
+    .footer-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .footer-logo-badge {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--red), var(--gold), var(--green));
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: white;
     }
-    .chat-button:hover { transform: scale(1.1); box-shadow: 0 16px 48px rgba(176,0,0,0.6); }
+    .footer-logo-text h2 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      font-weight: 900;
+    }
+    .footer-logo-text p { font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing: 1px; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.9; margin-bottom: 24px; max-width: 280px; }
+    .footer-socials { display: flex; gap: 10px; }
+    .footer-socials a {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .footer-socials a:hover { background: var(--green-bright); border-color: var(--green-bright); color: white; transform: translateY(-4px); }
+    .footer-col { flex: 1 1 130px; min-width: 120px; }
+    .footer-col h4 {
+      font-family: 'Unbounded', sans-serif;
+      color: var(--gold);
+      font-size: 11px;
+      margin-bottom: 18px;
+      letter-spacing: 2px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 8px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: white; }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.22);
+    }
+    @media (max-width: 768px) { footer { padding: 60px 20px 32px; } }
+
+    /* ============ CHAT ============ */
+    .chat-btn {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      background: linear-gradient(135deg, var(--green), var(--green-bright));
+      color: white;
+      border: none;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 800;
+      box-shadow: 0 8px 36px rgba(0,107,63,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .chat-btn:hover { transform: scale(1.15); box-shadow: 0 16px 50px rgba(0,107,63,0.7); }
+    .chat-ping {
+      position: absolute;
+      top: -4px; right: -4px;
+      width: 14px; height: 14px;
+      background: var(--gold);
+      border-radius: 50%;
+      border: 2px solid #050505;
+      animation: chatPing 2s ease-out infinite;
+    }
+    @keyframes chatPing { 0%{transform:scale(1);opacity:1} 70%{transform:scale(2.2);opacity:0} 100%{transform:scale(1);opacity:0} }
 
     .chat-box {
       display: none;
       position: fixed;
-      bottom: 92px;
-      right: 24px;
+      bottom: 104px; right: 30px;
       width: 340px;
-      background: var(--white);
-      border-radius: 20px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
-      z-index: 1000;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.22);
+      z-index: 800;
       overflow: hidden;
-      animation: chatSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       border: 1px solid rgba(0,0,0,0.06);
+      animation: chatSlide 0.4s cubic-bezier(0.16,1,0.3,1) both;
     }
-
-    @keyframes chatSlideIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .chat-header {
-      background: linear-gradient(135deg, var(--crimson), var(--crimson-deep));
-      color: white;
+    @keyframes chatSlide { from{opacity:0;transform:translateY(24px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+    .chat-head {
+      background: linear-gradient(135deg, var(--green), var(--green-bright));
       padding: 16px 20px;
-      font-weight: 700;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: 'DM Sans', sans-serif;
     }
-
-    .chat-header-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .chat-head-info { display: flex; align-items: center; gap: 12px; }
     .chat-avatar {
-      width: 36px; height: 36px;
+      width: 38px; height: 38px;
       background: rgba(255,255,255,0.2);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 18px;
     }
+    .chat-head-text strong { display: block; font-size: 14px; font-weight: 800; color: white; }
+    .chat-head-text span { font-size: 12px; color: rgba(255,255,255,0.75); }
+    .chat-close { background: rgba(255,255,255,0.18); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .chat-close:hover { background: rgba(255,255,255,0.3); }
+    .chat-msgs { height: 240px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .bot-msg { background: #F4F4F4; border-radius: 14px 14px 14px 4px; padding: 10px 14px; font-size: 13px; max-width: 85%; color: #333; line-height: 1.5; }
+    .user-msg { background: var(--green); color: white; border-radius: 14px 14px 4px 14px; padding: 10px 14px; font-size: 13px; max-width: 85%; align-self: flex-end; }
+    .wa-link { display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 700; margin-top: 4px; }
+    .chat-inp { display: flex; border-top: 1px solid rgba(0,0,0,0.07); }
+    .chat-inp input { flex: 1; border: none; padding: 14px 16px; font-size: 13.5px; outline: none; font-family: 'DM Sans', sans-serif; }
+    .chat-inp button { background: var(--green); border: none; color: white; width: 48px; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+    .chat-inp button:hover { background: var(--green-bright); }
 
-    .chat-header-text strong { font-size: 14px; display: block; }
-    .chat-header-text span { font-size: 11px; opacity: 0.8; }
-
-    .chat-header button {
-      background: rgba(255,255,255,0.15);
-      border: none;
-      font-size: 16px;
+    /* ============ STICKY WHATSAPP ============ */
+    .sticky-wa {
+      position: fixed;
+      bottom: 102px; right: 30px;
+      width: 48px; height: 48px;
+      background: #25D366;
       color: white;
-      cursor: pointer;
-      width: 30px; height: 30px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
+      font-size: 22px;
+      text-decoration: none;
+      z-index: 799;
+      box-shadow: 0 6px 24px rgba(37,211,102,0.45);
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
-    .chat-header button:hover { background: rgba(255,255,255,0.25); }
+    .sticky-wa:hover { transform: scale(1.15) translateY(-3px); box-shadow: 0 12px 40px rgba(37,211,102,0.6); color: white; }
 
-    .chat-messages {
-      padding: 16px;
-      height: 260px;
-      overflow-y: auto;
-      font-size: 13.5px;
-      background: #f8f6f4;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-track { background: transparent; }
-    .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
-
-    .bot-message {
-      background: var(--white);
-      padding: 10px 14px;
-      border-radius: 4px 16px 16px 16px;
-      max-width: 82%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      animation: msgIn 0.3s ease;
-      color: var(--ink);
-      line-height: 1.5;
-    }
-
-    .user-message {
-      background: var(--crimson);
+    /* ============ TOAST ============ */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(14px);
+      background: var(--ink);
       color: white;
-      padding: 10px 14px;
-      border-radius: 16px 4px 16px 16px;
-      max-width: 82%;
-      margin-left: auto;
-      animation: msgIn 0.3s ease;
-      line-height: 1.5;
-    }
-
-    @keyframes msgIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .chat-input {
-      border-top: 1px solid rgba(0,0,0,0.06);
-      display: flex;
-      background: var(--white);
-      padding: 10px;
-      gap: 8px;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1.5px solid rgba(0,0,0,0.1);
+      padding: 14px 30px;
       border-radius: 50px;
-      outline: none;
-      font-size: 13.5px;
-      font-family: 'DM Sans', sans-serif;
-      transition: border-color 0.2s;
-    }
-    .chat-input input:focus { border-color: var(--crimson); }
-
-    .chat-input button {
-      background: var(--crimson);
-      color: white;
-      border: none;
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-size: 14px;
-      transition: all 0.2s;
-    }
-    .chat-input button:hover { background: var(--crimson-deep); }
-
-    .whatsapp-button {
-      background: #25d366;
-      color: white;
-      padding: 10px 16px;
-      text-align: center;
-      border-radius: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
       font-weight: 600;
-      font-size: 13px;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      background: #080808;
-      color: #ddd;
-      padding: 80px 60px 40px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .footer-inner {
-      max-width: 1160px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 60px;
-      margin-bottom: 60px;
-    }
-
-    .footer-brand { flex: 1 1 300px; min-width: 260px; }
-
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .footer-logo img { width: 64px; height: auto; object-fit: contain; }
-    .footer-logo-text h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      color: var(--gold);
-      letter-spacing: 2px;
-      margin-bottom: 2px;
-    }
-    .footer-logo-text p { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
-
-    .footer-desc {
-      font-size: 13.5px;
-      color: rgba(255,255,255,0.45);
-      line-height: 1.8;
-      margin-bottom: 24px;
-      max-width: 280px;
-    }
-
-    .footer-social {
-      display: flex;
-      gap: 10px;
-    }
-    .footer-social a {
-      width: 38px; height: 38px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,0.6);
-      font-size: 15px;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .footer-social a:hover {
-      background: var(--crimson);
-      border-color: var(--crimson);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    .footer-col { flex: 1 1 140px; min-width: 130px; }
-    .footer-col h4 {
-      font-family: 'Playfair Display', serif;
-      color: var(--gold);
-      font-size: 14px;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-      font-weight: 700;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 8px; }
-    .footer-col ul li a {
-      color: rgba(255,255,255,0.45);
-      text-decoration: none;
-      font-size: 13.5px;
-      transition: color 0.2s;
-    }
-    .footer-col ul li a:hover { color: white; }
-
-    .footer-bottom {
-      max-width: 1160px;
-      margin: 0 auto;
-      padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.3);
-    }
-
-    @media (max-width: 768px) {
-      footer { padding: 60px 24px 32px; }
-      .footer-inner { gap: 40px; }
-      .main-wrapper { padding: 60px 20px; }
-      .faq-section { padding: 60px 20px; }
-    }
-
-    /* ===== SCROLL REVEAL ===== */
-    .reveal {
+      z-index: 9999;
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      border-left: 4px solid var(--green);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ============ SCROLL REVEAL ============ */
+    .reveal { opacity: 0; transform: translateY(38px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
 
+    /* ===== Disable decorative flying/animated elements ===== */
+    /* Hide purely decorative floating elements */
+    .orb, .orb-1, .orb-2, .orb-3,
+    .star-particle,
+    .confetti-wrap,
+    .conf-item,
+    .cursor-dot,
+    .cursor-ring {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+      display: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Disable animations on UI elements but keep them visible */
+    .step-list li,
+    .hero-card,
+    .logo-badge,
+    .hero-badge,
+    .btn-hero::before,
+    .hero-stripes,
+    .chat-ping {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+      display: block !important;
+    }
+
+    /* Remove animation-induced visual effects */
+    @keyframes logoPulse { }
+    @keyframes stripeShift { }
+    @keyframes orbFloat { }
+    @keyframes starFly { }
+    @keyframes floatCard { }
+    @keyframes flagShimmer { }
+    @keyframes stepPop { }
+    /* Re-enable the scrolling ticker specifically (overrides global disables) */
+    .ticker-inner {
+      display: inline-flex !important;
+      gap: 60px;
+      animation: tickerScroll 28s linear infinite !important;
+    }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============ FLOATING EMOJI CONFETTI ============ */
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 9990; overflow: hidden; }
+    .conf-item {
+      position: absolute;
+      font-size: 22px;
+      opacity: 0;
+      animation: confettiFall linear infinite;
+    }
+    @keyframes confettiFall {
+      0% { opacity: 0; transform: translateY(-60px) rotate(0deg) scale(0); }
+      10% { opacity: 1; }
+      90% { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(110vh) rotate(720deg) scale(1.2); }
+    }
   </style>
 </head>
 <body>
 
+<!-- Ghana top stripe -->
+<div class="ghana-stripe"></div>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Confetti container -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
 <!-- ===== HEADER ===== -->
-<header>
-  <a class="logo" href="index.html">
-    <img src="images/GH Schools.png" alt="GH Schools Logo">
+<header id="mainHeader">
+  <a href="index.html" class="logo">
+    <div class="logo-badge"><img src="images/GH Schools.png" alt="GH Logo" style="width:100%;height:100%;object-fit:contain;display:block"></div>
     <div class="logo-text">
       <strong>GH SCHOOLS</strong>
-      <small>Train · Practice · Achieve</small>
+      <small>Train · Practise · Achieve</small>
     </div>
   </a>
 
-  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation">☰ Menu</button>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">☰ Menu</button>
 
-  <nav class="nav-container">
+  <nav>
     <div class="nav-links" id="navLinks">
       <div class="has-dropdown">
         <a href="about.html">About GH</a>
         <div class="dropdown">
-          <a href="about.html">Mission</a>
-          <a href="about.html">Vision</a>
+          <a href="about.html">Mission &amp; Vision</a>
+          <a href="about.html">Leadership</a>
           <a href="e-resource.html">Accreditation</a>
         </div>
       </div>
       <div class="has-dropdown">
         <a href="admission.HTML">Admissions</a>
         <div class="dropdown">
-          <a href="admission.HTML">Apply</a>
-          <a href="admission.HTML">How to Apply</a>
+          <a href="admission.HTML">Apply Now</a>
           <a href="reqirement.html">Entry Requirements</a>
-          <a href="schorlarship.html">Fees & Scholarships</a>
+          <a href="schorlarship.html">Fees &amp; Scholarships</a>
           <a href="faq.html">FAQ</a>
         </div>
       </div>
       <div class="has-dropdown">
-        <a href="resource.html">Student Resources</a>
+        <a href="resource.html">Students</a>
         <div class="dropdown">
           <a href="signup.html">Student Portal</a>
           <a href="e-resource.html">Academic Calendar</a>
@@ -1144,420 +1530,608 @@
           <a href="tech.html">School of Technology</a>
         </div>
       </div>
-      <div class="has-dropdown">
-        <a href="">Projects</a>
-        <div class="dropdown">
-          <a href="student projects.html">Students Projects</a>
-          <a href="school productions.html">School Productions</a>
-        </div>
-      </div>
-      <a href="landingpage.html" class="apply-button">Apply Now ✦</a>
+      <a href="landingpage.html" class="nav-apply-btn">Apply Now ✦</a>
     </div>
   </nav>
 </header>
 
 <!-- ===== HERO ===== -->
 <section class="hero">
-  <div class="hero-pattern"></div>
+  <div class="hero-stripes"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-  <div class="hero-left">
-    <div class="hero-badge">
-      <i class="fas fa-star" style="font-size:9px;"></i>
-      2025 / 2026 Admissions Open
-    </div>
-    <h4>GH Schools College, Accra</h4>
-    <h1>
-      Online Application
-      <span>Portal</span>
-    </h1>
-    <p>
-      Begin your journey today — fill out the online admission form and complete your payment directly on our secure platform.
-      No e-voucher required.
-      <a href="#">Download Application Instructions →</a>
-    </p>
+  <!-- Star particles -->
+  <div class="star-particle" style="left:8%;top:80%;animation-delay:0s;animation-duration:7s;">★</div>
+  <div class="star-particle" style="left:20%;top:70%;animation-delay:1.5s;animation-duration:8s;">⭐</div>
+  <div class="star-particle" style="left:40%;top:85%;animation-delay:0.7s;animation-duration:6s;">★</div>
+  <div class="star-particle" style="left:62%;top:75%;animation-delay:2.2s;animation-duration:7.5s;">🌟</div>
+  <div class="star-particle" style="left:78%;top:82%;animation-delay:1s;animation-duration:8.5s;">★</div>
+  <div class="star-particle" style="left:90%;top:72%;animation-delay:3s;animation-duration:6.5s;">⭐</div>
+  <div class="star-particle" style="left:52%;top:90%;animation-delay:0.3s;animation-duration:5.5s;color:#D90000;">★</div>
+  <div class="star-particle" style="left:15%;top:60%;animation-delay:4s;animation-duration:9s;color:#009E5C;">★</div>
 
-    <div class="cta-buttons">
-      <a href="landingpage.html" class="btn-primary">
-        <i class="fas fa-file-alt"></i>
-        Apply Online Now
-      </a>
-      <a href="reqirement.html" class="btn-ghost">
-        <i class="fas fa-info-circle"></i>
-        View Requirements
-      </a>
-    </div>
-
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-number">5+</span>
-        <span class="stat-label">Schools</span>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <span class="live-dot"></span>
+        May-Aug 2026 Admissions Now Open
       </div>
-      <div class="stat">
-        <span class="stat-number">GHC 150</span>
-        <span class="stat-label">Application Fee</span>
+      <h1 class="hero-title">
+        <span class="accent-red">Your Future</span>
+        <span class="accent-gold">Starts Here</span>
+        <span class="">GH Schools</span>
+      </h1>
+      <p class="hero-sub">
+        Fill out the online admission form and complete your payment directly on our secure platform.
+        No e-voucher required. No stress. Just your future — starting today.
+      </p>
+      <div class="hero-ctas">
+        <a href="landingpage.html" class="btn-hero btn-hero-primary">
+          <i class="fas fa-rocket"></i>
+          Apply Online Now
+        </a>
+        <a href="reqirement.html" class="btn-hero btn-hero-secondary">
+          <i class="fas fa-book-open"></i>
+          View Requirements
+        </a>
       </div>
-      <div class="stat">
-        <span class="stat-number">100%</span>
-        <span class="stat-label">Online Process</span>
+      <div class="hero-stats">
+        <div class="h-stat">
+          <span class="h-stat-num">5</span>
+          <span class="h-stat-label">Schools</span>
+        </div>
+        <div class="h-stat">
+          <span class="h-stat-num">GHC 200</span>
+          <span class="h-stat-label">Form Fee</span>
+        </div>
+        <div class="h-stat">
+          <span class="h-stat-num">100%</span>
+          <span class="h-stat-label">Online Process</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="hero-right">
-    <img src="images/apply.jpg" alt="Student applying online" loading="eager">
+    <div class="hero-right">
+      <div class="hero-card">
+        <h3 class="hero-card-title">How to Apply</h3>
+        <p class="hero-card-sub">3 easy steps to get started</p>
+        <ul class="step-list">
+          <li>
+            <span class="step-num step-num-1">1</span>
+            Purchase and collect application form (online or at front desk)
+          </li>
+          <li>
+            <span class="step-num step-num-2">2</span>
+            Fill and return completed forms with documents
+          </li>
+          <li>
+            <span class="step-num step-num-3">3</span>
+            Schedule placement date
+          </li>
+          <li>
+            <span class="step-num step-num-4">4</span>
+            Receive Admission Letter if successful
+          </li>
+          <li>
+            <span class="step-num step-num-5">5</span>
+            Pay Admission &amp; School Fees
+          </li>
+          <li>
+            <span class="step-num step-num-6">6</span>
+            Attend Orientation
+          </li>
+          <li>
+            <span class="step-num step-num-7">7</span>
+            Participate in Matriculation
+          </li>
+        </ul>
+        <a href="landingpage.html" class="card-cta">
+          <i class="fas fa-file-alt"></i>
+          Start My Application
+        </a>
+       
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- Toast notification -->
+<!-- ===== TICKER ===== -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-star">★</span> GH Schools — 2025/2026 Admissions Open</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> School of Media · Fashion · Catering · Cosmetology · Technology</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> Application Fee: GHC 200 — Paid Online</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> No E-Voucher Required</span>
+
+    <!-- repeat to ensure continuous scroll -->
+    <span class="ticker-item"><span class="ticker-star">★</span> GH Schools — 2025/2026 Admissions Open</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> School of Media · Fashion · Catering · Cosmetology · Technology</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> Application Fee: GHC 200 — Paid Online</span>
+    <span class="ticker-item"><span class="ticker-star">★</span> No E-Voucher Required</span>
+  </div>
+</div>
+
+<!-- Toast -->
 <div id="restrictionToast" class="toast">
-  <i class="fas fa-lock" style="margin-right: 8px;"></i>
+  <i class="fas fa-lock" style="margin-right:8px;color:var(--gold);"></i>
   Please apply first to access this section.
 </div>
 
+<!-- ===== HOW TO APPLY STEPS ===== -->
+<section class="steps-section">
+  <div class="section-header reveal">
+    <div class="pill-label"><i class="fas fa-map-signs" style="margin-right:6px;"></i>The Process</div>
+    <h2 class="section-title">Your Application Journey</h2>
+    <p class="section-sub">Simple, fast, and fully online. From click to campus in just a few steps.</p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card reveal reveal-delay-1">
+      <span class="step-number">01</span>
+      <div class="step-icon-wrap"><i class="fas fa-user-edit"></i></div>
+      <h3>Fill Your Details</h3>
+      <p>Enter your personal information, choose your school and program, and upload your documents.</p>
+    </div>
+    <div class="step-card reveal reveal-delay-2">
+      <span class="step-number">02</span>
+      <div class="step-icon-wrap"><i class="fas fa-graduation-cap"></i></div>
+      <h3>Pick Your Program</h3>
+      <p>Select between our 1-Year ICC Certificate or 2-Year CTVET Diploma across 5 departments.</p>
+    </div>
+    <div class="step-card reveal reveal-delay-3">
+      <span class="step-number">03</span>
+      <div class="step-icon-wrap"><i class="fas fa-credit-card"></i></div>
+      <h3>Pay Application Fee</h3>
+      <p>Pay the GHC 200 application fee securely online. No e-voucher. No bank visits required.</p>
+    </div>
+    <div class="step-card reveal reveal-delay-4">
+      <span class="step-number">04</span>
+      <div class="step-icon-wrap"><i class="fas fa-check-circle"></i></div>
+      <h3>Get Your Offer</h3>
+      <p>Receive your admissions response and begin your journey as a GH Schools student.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ===== PROGRAMS ===== -->
 <section class="programs-section">
-  <div style="max-width: 1160px; margin: 0 auto 56px; padding: 0 0;">
-    <div class="label-pill reveal">Our Programs</div>
-    <h2 class="section-title reveal reveal-delay-1">Choose Your Path</h2>
-    <p class="section-sub reveal reveal-delay-2">Industry-aligned programs designed to transform your career trajectory.</p>
+  <div class="section-header reveal" style="margin-bottom:64px;">
+    <div class="pill-label"><i class="fas fa-layer-group" style="margin-right:6px;"></i>Our Programs</div>
+    <h2 class="section-title">Choose Your Path</h2>
+    <p class="section-sub">Industry-aligned programs designed to launch your career at full speed.</p>
   </div>
 
   <div class="programs-grid">
-
-    <!-- ICC Card -->
-    <div class="program-card reveal">
-      <div class="program-image-wrap">
-        <span class="program-badge">Certificate</span>
+    <!-- ICC -->
+    <div class="prog-card reveal reveal-delay-1">
+      <div class="prog-img-wrap">
         <img src="images/Abigail-Ashley-431x406.jpg" alt="ICC Certificate Program">
+        <div class="prog-img-overlay"></div>
+        <span class="prog-badge-tag">Certificate</span>
+        <span class="prog-duration">1 Year</span>
       </div>
-      <div class="program-content">
-        <div class="program-icon">
-          <i class="fas fa-certificate"></i>
+      <div class="prog-body">
+        <div class="prog-icon"><i class="fas fa-certificate"></i></div>
+        <h3>COC — 1 Year Certificate</h3>
+        <p>Enroll in our industry-recognized certificate program and take the next decisive step in your career. Hands-on experience, real-world projects, and personalized mentorship from day one.</p>
+        <div class="prog-fee">
+          <span class="amount">GHC 200</span>
+          <span class="label">Application Fee</span>
         </div>
-        <h2>ICC — 1 Year Certificate</h2>
-        <p>
-          Enroll in our industry-recognized certificate program and take the next decisive step in your career.
-          Our curriculum is crafted by professionals to deliver hands-on experience and practical skills that
-          employers genuinely value — through expert instruction, real-world projects, and personalized mentorship.
-        </p>
-
-        <div class="program-price-row">
-          <span class="price-tag">GHC 150</span>
-          <span class="price-label">Application Fee</span>
+        <div class="intake-tags">
+          <span class="intake-tag active"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>2026 May - August</span>
+         
         </div>
-
-        <div class="intake-pills">
-          <span class="intake-pill filled"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>2025/2026 August</span>
-          <span class="intake-pill outlined">2026 June</span>
-        </div>
-
-        <a href="landingpage.html" class="program-cta">
+        <a href="landingpage.html" class="prog-apply-btn">
           <i class="fas fa-arrow-right"></i>
           Apply for this Program
         </a>
       </div>
     </div>
 
-    <!-- Diploma Card -->
-    <div class="program-card reverse reveal">
-      <div class="program-image-wrap">
-        <span class="program-badge">Diploma</span>
+    <!-- Diploma -->
+    <div class="prog-card reveal reveal-delay-2">
+      <div class="prog-img-wrap">
         <img src="images/gettyimages-2149827150-612x612.jpg" alt="CTVET Diploma Program">
+        <div class="prog-img-overlay"></div>
+        <span class="prog-badge-tag">Diploma</span>
+        <span class="prog-duration">2 Years</span>
       </div>
-      <div class="program-content">
-        <div class="program-icon">
-          <i class="fas fa-award"></i>
+      <div class="prog-body">
+        <div class="prog-icon"><i class="fas fa-award"></i></div>
+        <h3>CTVET Diploma — 2 Years</h3>
+        <p>Launch a bold new career with our prestigious Diploma Program — flexible, career-driven, and designed to equip you with real-world experience to thrive in today's job market.</p>
+        <div class="prog-fee">
+          <span class="amount">GHC 200</span>
+          <span class="label">Application Fee</span>
         </div>
-        <h2>CTVET Diploma — 2 Years</h2>
-        <p>
-          Upgrade your skills or launch a bold new career with our prestigious Diploma Program — a flexible,
-          career-driven pathway designed to equip students with the tools, knowledge, and real-world experience
-          to thrive in today's fast-changing job market. Graduate with confidence, competence, and an extensive professional network.
-        </p>
-
-        <div class="program-price-row">
-          <span class="price-tag">GHC 150</span>
-          <span class="price-label">Application Fee</span>
+        <div class="intake-tags">
+          <span class="intake-tag active"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>2026 May-August</span>
         </div>
-
-        <div class="intake-pills">
-          <span class="intake-pill filled"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>2025/2026 August</span>
-        </div>
-
-        <a href="landingpage.html" class="program-cta">
+        <a href="landingpage.html" class="prog-apply-btn">
           <i class="fas fa-arrow-right"></i>
           Apply for this Program
         </a>
       </div>
     </div>
+  </div>
+</section>
 
+<!-- ===== STATS ===== -->
+<section class="stats-section">
+  <div class="stats-ghana-bg">
+    <div class="stats-stripe stats-stripe-r"></div>
+    <div class="stats-stripe stats-stripe-g"></div>
+    <div class="stats-stripe stats-stripe-gr"></div>
+  </div>
+  <div class="stats-inner">
+    <div class="stat-item reveal">
+      <span class="stat-num" data-target="2000"><span>0</span><span class="stat-suffix">+</span></span>
+      <span class="stat-lbl">Students Enrolled</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <span class="stat-num" data-target="5"><span>0</span></span>
+      <span class="stat-lbl">Departments</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <span class="stat-num" data-target="95"><span>0</span><span class="stat-suffix">%</span></span>
+      <span class="stat-lbl">Graduate Employment</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <span class="stat-num" data-target="10"><span>0</span><span class="stat-suffix">+</span></span>
+      <span class="stat-lbl">Years of Excellence</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features-section">
+  <div class="section-header reveal">
+    <div class="pill-label"><i class="fas fa-star" style="margin-right:6px;"></i>Why GH Schools</div>
+    <h2 class="section-title">Built for Student Success</h2>
+    <p class="section-sub">Everything about GH Schools is designed to get you career-ready, fast.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feat-icon"><i class="fas fa-laptop"></i></div>
+      <h3>100% Online Application</h3>
+      <p>Apply from anywhere in Ghana — no travel, no queues, no stress. The entire process is digital and secure.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feat-icon"><i class="fas fa-hands-helping"></i></div>
+      <h3>Practical Training</h3>
+      <p>Learn by doing. Every program is structured around real-world projects and industry-standard tools.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-3">
+      <div class="feat-icon"><i class="fas fa-briefcase"></i></div>
+      <h3>Career Placement Support</h3>
+      <p>GH Schools actively connects graduates with employers. Our 95% employment rate speaks for itself.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feat-icon"><i class="fas fa-award"></i></div>
+      <h3>Accredited Certificates</h3>
+      <p>Both ICC and CTVET Diploma programs are fully accredited and recognized across Ghana and beyond.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feat-icon"><i class="fas fa-users"></i></div>
+      <h3>Vibrant Community</h3>
+      <p>Join a campus bursting with creative energy — events, competitions, and student clubs all year round.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-3">
+      <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3>Secure &amp; Transparent</h3>
+      <p>Your data and payment are always safe. No hidden fees. No e-voucher. Just a clear, honest process.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STUDENT LIFE BANNER ===== -->
+<section class="student-banner">
+  <div class="student-banner-inner reveal">
+    <h2>Ready to Join 2,000+ Students? </h2>
+    <p>GH Schools is where Ghana's next generation of professionals begin. Don't miss the 2026 May intake — seats are filling fast.</p>
+    <div class="student-banner-btns">
+      <a href="landingpage.html" class="btn-banner-primary">
+        <i class="fas fa-rocket"></i>
+        Apply Now — GHC 200
+      </a>
+      <a href="https://wa.me/233544622250" class="btn-banner-secondary" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        Chat on WhatsApp
+      </a>
+    </div>
   </div>
 </section>
 
 <!-- ===== FAQ ===== -->
 <section class="faq-section">
   <div class="faq-inner">
-    <div class="label-pill reveal">Got Questions?</div>
-    <h2 class="section-title reveal reveal-delay-1">Frequently Asked Questions</h2>
-    <p class="section-sub reveal reveal-delay-2">Everything you need to know about admissions and enrollment.</p>
-
-    <div class="faq-item open reveal reveal-delay-1" onclick="toggleFaqNew(this)">
-      <div class="faq-question">
-        <span class="faq-question-text">Where can I get the GH Schools application e-voucher?</span>
-        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
-      </div>
-      <div class="faq-answer">
-        You can visit any nearby bank office to purchase our application e-voucher. However, our online portal now accepts direct payment — no e-voucher needed!
-      </div>
+    <div class="section-header reveal">
+      <div class="pill-label"><i class="fas fa-question-circle" style="margin-right:6px;"></i>Got Questions?</div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-sub">Everything you need to know about admissions and enrollment at GH Schools.</p>
     </div>
 
-    <div class="faq-item reveal reveal-delay-1" onclick="toggleFaqNew(this)">
-      <div class="faq-question">
-        <span class="faq-question-text">How much does the application fee cost?</span>
-        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
+    <div class="faq-list">
+      <div class="faq-item open reveal reveal-delay-1" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Where can I get the GH Schools application e-voucher?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          Great news — you don't need an e-voucher! GH Schools now accepts direct payment through our secure online portal. Simply apply, pay GHC 200 online, and you're done.
+        </div>
       </div>
-      <div class="faq-answer">
-        The application fee is <strong>GHC 150</strong>, paid securely through our online portal. No additional e-voucher is required.
+      <div class="faq-item reveal reveal-delay-1" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>How much does the application fee cost?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          The application fee is <strong style="color:var(--gold);">GHC 200</strong>, paid securely through our online portal. No additional e-voucher or bank visit is required.
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-2" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>Can I revisit my application after submitting it online?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          Yes! You can revisit and edit your application before the deadline. Simply log back into the portal with your credentials to make any changes you need.
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-2" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>What do I do if I have difficulty logging in?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          Contact our support team or visit the admissions office directly. You can also reach us on WhatsApp at <strong style="color:var(--gold);">+233 54 462 2250</strong> for quick assistance.
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-3" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>If I have D7 in English or Mathematics, can I still be admitted?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          You may still be considered for our ICC or Diploma programs, or may be required to retake WASSCE. We encourage you to apply — our admissions team will personally assess your eligibility.
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-3" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          <span>What programs does GH Schools offer?</span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <div class="faq-a">
+          GH Schools offers the 1-Year ICC Certificate and 2-Year CTVET Diploma across 5 schools: Media, Fashion, Catering, Cosmetology, and Technology. Each program is hands-on and career-focused.
+        </div>
       </div>
     </div>
-
-    <div class="faq-item reveal reveal-delay-2" onclick="toggleFaqNew(this)">
-      <div class="faq-question">
-        <span class="faq-question-text">Can I revisit my application after submitting it online?</span>
-        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
-      </div>
-      <div class="faq-answer">
-        Yes! You can revisit and edit your application before the deadline. Simply log back into the portal with your credentials to make any changes.
-      </div>
-    </div>
-
-    <div class="faq-item reveal reveal-delay-2" onclick="toggleFaqNew(this)">
-      <div class="faq-question">
-        <span class="faq-question-text">What do I do if I have difficulty logging in?</span>
-        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
-      </div>
-      <div class="faq-answer">
-        Contact our support team or visit the admissions office directly for assistance. You can also reach us on WhatsApp at +233 539 816 189.
-      </div>
-    </div>
-
-    <div class="faq-item reveal reveal-delay-3" onclick="toggleFaqNew(this)">
-      <div class="faq-question">
-        <span class="faq-question-text">If I have D7 in English and Mathematics, can I still be admitted?</span>
-        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
-      </div>
-      <div class="faq-answer">
-        You may be considered for a Diploma program or may be required to retake WASSCE. We encourage you to apply and our admissions team will assess your eligibility personally.
-      </div>
-    </div>
-
   </div>
 </section>
 
 <!-- ===== CHAT BUTTON ===== -->
-<button class="chat-button" onclick="toggleChat()" aria-label="Open chat support">
+<button class="chat-btn" onclick="toggleChat()" aria-label="Open chat">
   <i class="fas fa-comment-dots"></i>
+  <span class="chat-ping"></span>
 </button>
 
 <!-- ===== CHAT BOX ===== -->
 <div class="chat-box" id="chatBox">
-  <div class="chat-header">
-    <div class="chat-header-info">
+  <div class="chat-head">
+    <div class="chat-head-info">
       <div class="chat-avatar">🎓</div>
-      <div class="chat-header-text">
+      <div class="chat-head-text">
         <strong>GH Schools Support</strong>
         <span>● Online now</span>
       </div>
     </div>
-    <button onclick="toggleChat()" aria-label="Close chat">✕</button>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
   </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input">
-    <input type="text" id="chatInput" placeholder="Type your message…" onkeypress="if(event.key==='Enter') sendMessage()" />
-    <button onclick="sendMessage()" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-inp">
+    <input type="text" id="chatInput" placeholder="Type your message…" onkeypress="if(event.key==='Enter') sendChat()">
+    <button onclick="sendChat()" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
   </div>
 </div>
+
+<!-- ===== STICKY WHATSAPP ===== -->
+<a href="https://wa.me/233544622250" class="sticky-wa" target="_blank" rel="noopener" title="WhatsApp GH Schools">
+  <i class="fab fa-whatsapp"></i>
+</a>
 
 <!-- ===== FOOTER ===== -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="footer-logo">
-        <img src="images/GH Schools.png" alt="GH Schools Logo">
+        <div class="footer-logo-badge"><img src="images/GH Schools.png" alt="GH Logo" style="width:100%;height:100%;object-fit:contain;display:block"></div>
         <div class="footer-logo-text">
           <h2>GH SCHOOLS</h2>
-          <p>Scholarship with Professionalism</p>
+          <p>Train · Practise · Achieve</p>
         </div>
       </div>
-      <p class="footer-desc">GH Schools College, Accra — empowering the next generation of professionals through world-class vocational training.</p>
-      <div class="footer-social">
+      <p class="footer-desc">GH Schools, Accra — empowering the next generation of professionals through world-class vocational training across five dynamic departments.</p>
+      <div class="footer-socials">
+        <a href="https://www.facebook.com/ghschoolsofficial" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://wa.me/2332404622250" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
       </div>
     </div>
 
     <div class="footer-col">
-      <h4>University</h4>
+      <h4>GH Schools</h4>
       <ul>
-        <li><a href="#">About GH Schools</a></li>
-        <li><a href="#">Our History</a></li>
-        <li><a href="#">Governance</a></li>
-        <li><a href="#">Leadership</a></li>
-        <li><a href="#">Policies & Regulations</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="about.html">Our History</a></li>
+        <li><a href="about.html">Leadership</a></li>
+        <li><a href="e-resource.html">Accreditation</a></li>
       </ul>
     </div>
 
     <div class="footer-col">
       <h4>Admissions</h4>
       <ul>
-        <li><a href="#">Diploma</a></li>
-        <li><a href="#">Distance Learning</a></li>
-        <li><a href="#">Short Courses</a></li>
+        <li><a href="admission.HTML">Apply Now</a></li>
+        <li><a href="reqirement.html">Requirements</a></li>
+        <li><a href="fees.html">Fees</a></li>
+        <li><a href="schorlarship.html">Scholarships</a></li>
+        <li><a href="short-courses.html">Weekend Programs</a></li>
       </ul>
     </div>
 
     <div class="footer-col">
       <h4>Academics</h4>
       <ul>
-        <li><a href="#">Academic Affairs</a></li>
-        <li><a href="#">Schools & Faculties</a></li>
-        <li><a href="#">Fees Schedule</a></li>
-        <li><a href="#">Academic Calendar</a></li>
-        <li><a href="#">Graduation</a></li>
+        <li><a href="media.html">School of Media</a></li>
+        <li><a href="fashion.html">School of Fashion</a></li>
+        <li><a href="catering.html">School of Catering</a></li>
+        <li><a href="cosme.html">School of Cosmetology</a></li>
+        <li><a href="tech.html">School of Technology</a></li>
       </ul>
     </div>
 
     <div class="footer-col">
-      <h4>Student</h4>
+      <h4>Students</h4>
       <ul>
-        <li><a href="#">Students Portal</a></li>
-        <li><a href="#">Student Services</a></li>
-        <li><a href="#">Freshmen Guidelines</a></li>
+        <li><a href="signup.html">Student Portal</a></li>
+        <li><a href="resource.html">Student Services</a></li>
+        <li><a href="#">Freshmen Guide</a></li>
         <li><a href="#">The SRC</a></li>
-        <li><a href="#">Sports & Recreation</a></li>
-        <li><a href="#">Counseling Unit</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
       </ul>
     </div>
   </div>
 
   <div class="footer-bottom">
-    <span>© 2025 GH Schools College, Accra. All rights reserved.</span>
-    <span>Scholarship with Professionalism</span>
+    <span>© 2025 <strong>GH Schools</strong>, Accra. All rights reserved.</span>
+    <span>Train · Practise · Achieve</span>
   </div>
 </footer>
 
 <script>
-  // ===== SCROLL REVEAL =====
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
+  // ===== CUSTOM CURSOR (disabled) =====
+  (function(){
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot) dot.style.display = 'none';
+    if (ring) ring.style.display = 'none';
+  })();
 
-  // ===== TOAST =====
-  function showRestrictionToast() {
-    const toast = document.getElementById('restrictionToast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 4000);
+  // ===== HEADER SCROLL =====
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ===== NAV TOGGLE =====
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
   }
 
-  // ===== MENU TOGGLE =====
-  function toggleMenu() {
-    const nav = document.getElementById('navLinks');
-    const btn = document.querySelector('.menu-toggle');
-    if (!nav) return;
-    nav.classList.toggle('show');
-    if (btn) btn.setAttribute('aria-expanded', nav.classList.contains('show') ? 'true' : 'false');
+  // ===== SCROLL REVEAL =====
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // ===== ANIMATED COUNTERS =====
+  function animateCount(el, target, duration = 1600) {
+    const numSpan = el.querySelector('span');
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { numSpan.textContent = target; clearInterval(timer); return; }
+      numSpan.textContent = Math.floor(start);
+    }, 16);
+  }
+  const statObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const target = parseInt(e.target.getAttribute('data-target'));
+        animateCount(e.target, target);
+        statObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num[data-target]').forEach(el => statObs.observe(el));
+
+  // ===== FAQ =====
+  function toggleFaq(item) {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ===== TOAST =====
+  function showToast() {
+    const t = document.getElementById('restrictionToast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
   }
 
   // ===== NAV RESTRICTION =====
   document.addEventListener('DOMContentLoaded', function () {
-    const navLinks = document.querySelectorAll('.nav-links a, .dropdown a');
-    const allowedLinks = ['index.html', 'landingpage.html', '#', 'admission.HTML'];
-    navLinks.forEach(link => {
+    const allowed = ['index.html', 'landingpage.html', '#', 'admission.HTML', ''];
+    document.querySelectorAll('.nav-links a, .dropdown a').forEach(link => {
       link.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        const isAllowed = allowedLinks.some(allowed => href === allowed);
-        if (!isAllowed) {
-          e.preventDefault();
-          showRestrictionToast();
-        } else {
-          const nav = document.getElementById('navLinks');
-          if (nav && nav.classList.contains('show')) nav.classList.remove('show');
-        }
+        const href = this.getAttribute('href') || '';
+        if (!allowed.some(a => href === a)) { e.preventDefault(); showToast(); }
+        else { document.getElementById('navLinks').classList.remove('open'); }
       });
     });
   });
 
   // ===== CHAT =====
-  let step = 0;
-  let userName = '';
-  const chatMessages = document.getElementById('chatMessages');
-
+  let chatStep = 0, chatUser = '';
+  const chatMsgs = document.getElementById('chatMsgs');
   function toggleChat() {
     const box = document.getElementById('chatBox');
-    box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-    if (box.style.display === 'block' && step === 0) startChat();
+    const isVisible = box.style.display === 'block';
+    box.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible && chatStep === 0) { setTimeout(() => addBot("Hello! 👋 Welcome to GH Schools. What's your name?"), 400); }
   }
-
-  function startChat() {
-    addBotMessage("Hello! 👋 Welcome to GH Schools. What's your name?");
+  function sendChat() {
+    const inp = document.getElementById('chatInput');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    addUser(msg);
+    inp.value = '';
+    setTimeout(() => handleBot(msg), 600);
   }
-
-  function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    if (!message) return;
-    addUserMessage(message);
-    input.value = '';
-    setTimeout(() => handleBotResponse(message), 600);
-  }
-
-  function handleBotResponse(message) {
-    if (step === 0) {
-      userName = message;
-      addBotMessage(`Nice to meet you, ${userName}! 😊 How are you doing today?`);
-      step = 1;
-    } else if (step === 1) {
-      addBotMessage(`Glad to hear that, ${userName}! What can I help you with today?`);
-      step = 2;
-    } else if (step === 2) {
-      addBotMessage(`Got it, ${userName}. Let me connect you with our team! ✅`);
-      addBotMessage(`<a href="https://wa.me/233539816189" target="_blank" class="whatsapp-button"><i class="fab fa-whatsapp"></i> Chat on WhatsApp (+233 539 816 189)</a>`);
-      step = 3;
+  function handleBot(msg) {
+    if (chatStep === 0) { chatUser = msg; addBot(`Nice to meet you, ${chatUser}! 😊 How are you doing?`); chatStep = 1; }
+    else if (chatStep === 1) { addBot(`Great! What can I help you with, ${chatUser}?`); chatStep = 2; }
+    else if (chatStep === 2) {
+      addBot('Got it! Let me connect you with our admissions team. ✅');
+      const wa = document.createElement('a');
+      wa.href = 'https://wa.me/233544622250'; wa.target = '_blank'; wa.className = 'wa-link';
+      wa.innerHTML = '<i class="fab fa-whatsapp"></i> Chat on WhatsApp';
+      chatMsgs.appendChild(wa); chatMsgs.scrollTop = chatMsgs.scrollHeight; chatStep = 3;
     }
   }
-
-  function addBotMessage(text) {
-    const msg = document.createElement('div');
-    msg.className = 'bot-message';
-    msg.innerHTML = text;
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  function addBot(text) {
+    const d = document.createElement('div'); d.className = 'bot-msg'; d.innerHTML = text;
+    chatMsgs.appendChild(d); chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+  function addUser(text) {
+    const d = document.createElement('div'); d.className = 'user-msg'; d.textContent = text;
+    chatMsgs.appendChild(d); chatMsgs.scrollTop = chatMsgs.scrollHeight;
   }
 
-  function addUserMessage(text) {
-    const msg = document.createElement('div');
-    msg.className = 'user-message';
-    msg.textContent = text;
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  // ===== CONFETTI STARS (disabled) =====
+  const confEmojis = ['★', '⭐', '🌟', '✨', '🎓', '📚', '🎉', '🏆'];
+  const confColors = ['#D90000', '#FFC107', '#006B3F', '#FF6060', '#FFD54F', '#00C46F'];
+  function spawnConfetti() {
+    // disabled: no-op
+    return;
   }
-
-  // ===== NEW FAQ TOGGLE =====
-  function toggleFaqNew(item) {
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
+  // confetti spawning disabled
 </script>
 
 </body>

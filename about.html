@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About — GH SCHOOLS COLLEGE</title>
+  <title>About — GH SCHOOLS</title>
   <style>
     :root {
       --brand: #b00000;
@@ -119,9 +119,10 @@
 /* Dangling Animation for Text */
 .hero h1,
 .hero p {
-  display: inline-block;
+  display: block;
   transform-origin: top center;
   animation: dangle 3s ease-in-out infinite;
+  margin: 0 auto;
 }
 
 .hero h1 {
@@ -194,7 +195,7 @@
 
     /* Footer */
     footer.site-footer { background: #222; color: #ddd; padding: 48px 0; }
-    .footer-grid { display: grid; gap: 28px; grid-template-columns: repeat(4, minmax(160px, 1fr)); }
+    .footer-grid { display: grid; gap: 28px; grid-template-columns: repeat(5, minmax(160px, 1fr)); }
     .footer-brand { display: grid; gap: 16px; }
     .footer-brand .brandline { display: flex; align-items: center; gap: 12px; }
     .footer-brand img { width: 64px; height: auto; }
@@ -288,8 +289,8 @@
       <a class="brand" href="index.html">
         <img src="images/GH Schools.png" alt="GH Schools Logo" />
         <span class="title">
-          <strong>GH SCHOOLS COLLEGE</strong>
-          <small>TRAIN • PRACTICE • ACHIEVE</small>
+          <strong>GH SCHOOLS</strong>
+          <small>TRAIN • PRACTISE • ACHIEVE</small>
         </span>
       </a>
 
@@ -333,13 +334,7 @@
             <a href="tech.html">School of Technology</a>
           </div>
         </div>
-        <div class="nav-item">
-          <a class="nav-link" href="e-resource.html">Library <span class="chev">▾</span></a>
-          <div class="dropdown" role="menu">
-            <a href="#">Library Hours</a>
-            <a href="#">Borrowing Policy</a>
-          </div>
-        </div>
+       
         <a class="apply-btn" href="admission.html">Apply Now</a>
       </nav>
 
@@ -405,14 +400,13 @@
   <!-- Hero -->
   <section class="hero" role="img" aria-label="Campus background">
     <div class="inner container">
-      <h1>About GH SCHOOLS COLLEGE</h1>
-      <p>World-class hands-on technical and vocational education in Ghana</p>
+      
     </div>
   </section>
 
   <!-- Main -->
   <main id="main" class="page">
-    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Sidebar Menu</button>
+  
     <div class="container grid">
       <!-- Sidebar TOC (desktop) -->
       <aside class="toc" aria-label="On this page">
@@ -439,7 +433,7 @@
           <a href="#principles">Principles of Module Design</a>
           <a href="#quality-policy">Quality Management Policy</a>
           <a href="#philosophy">The Philosophy</a>
-          <a href="#administration">Administration</a>
+      
         </nav>
       </aside>
 
@@ -447,76 +441,102 @@
       <div class="content">
         <section id="institution" class="card">
           <h2>Institution</h2>
-          <p>GH SCHOOLS COLLEGE is dedicated to competency-based training across technical disciplines, blending industry with academia. We bring real-world practice into the classroom through state-of-the-art facilities and experienced faculty.</p>
+          <p>GH SCHOOLS is dedicated to competency-based training across technical disciplines, blending industry with academia. We bring real-world practice into the classroom through state-of-the-art facilities and experienced faculty.</p>
         </section>
 
         <section id="management-board" class="card">
           <h2>The Management Board</h2>
-          <p>The Management Board is the highest executive body responsible for strategic planning and policy-making to achieve the overall objectives of the institution. It meets quarterly and includes the chairman, the registrar, the heads of schools, and the rector.</p>
+          <p>The Management Board is the highest decision-making body responsible for strategic planning and policy-making to achieve the overall objectives of the institution. It meets weekly and consists of the Rectorate,the registrar and the heads of various directorates. <br> Its extended management includes the various departmental heads in the decision making process.</p>
+       <h2><span style="color: rgb(135, 6, 6);">Rectorates</span></h2>
 
           <!-- People cards (add actual images at /images/management/...) -->
-          <div class="people-grid" style="margin-top: 16px;">
-            <article class="person">
-              <img class="avatar" src="images/dr_kofi_osei_kusi.jpg" alt="Board Chairperson" />
-              <div>
-                <h4>Board Chairperson</h4>
-                <span class="role">Management Board</span>
-              </div>
-            </article>
-            <article class="person">
+          <!-- First row: single featured card -->
+          <div class="people-grid" style="margin-top: 16px; grid-template-columns: 1fr; justify-items: center;">
+            <article class="person" style="justify-self: center; max-width: 250px; width:100%; min-height: 100px; display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 10px;">
               <img class="avatar" src="images/LESLIe.png" alt="Rector" />
               <div>
                 <h4>Rector</h4>
-                <span class="role">Academic & Executive Leadership</span>
+                <span class="role">Executive Leadership</span>
               </div>
             </article>
+          </div>
+
+          <!-- Second row: three equal cards -->
+          <div class="people-grid" style="margin-top: 16px; grid-template-columns: repeat(3, 1fr);">
             <article class="person">
-              <img class="avatar" src="images/Mr. Confidence Aglobi-Tetteh.jpg" alt="Registrar" />
+              <img class="avatar" src="images/0E0A8131.jpg" alt="Registrar" />
+              <div>
+                <h4>Deputy Rector (Academics)</h4>
+                <span class="role">Director of Academics</span>
+              </div>
+            </article>
+
+            <article class="person">
+              <img class="avatar" src="images/101A8121.jpg" alt="Deputy Rector (Academics)" />
+              <div>
+                <h4>Deputy Rector (Monitoring & Supervision)</h4>
+                <span class="role">Director of Quality Control</span>
+              </div>
+            </article>
+
+            <article class="person">
+              <img class="avatar" src="images/0E0A8145.jpg" alt="Deputy Rector (Monitoring & Supervision)" />
               <div>
                 <h4>Registrar</h4>
-                <span class="role">Administration & Records</span>
+                <span class="role">Records, Admissions, Exams & Certification</span>
               </div>
             </article>
-           
+          </div>
+
         </section>
 
         <section id="head-of-schools" class="card">
-          <h2>Head of Schools</h2>
+          <h2>Directorates</h2>
           <p>Each school is headed by a director with overall responsibility for academic and administrative activities.</p>
           <div class="people-grid" style="margin-top: 16px;">
             <article class="person">
-              <img class="avatar" src="images/Mr. Dromo Apenten.jpg" alt="Head, School of Media" />
+              <img class="avatar" src="images/GMS_0977.jpg" alt="Head, School of Media" />
               <div>
-                <h4>Head, School of Media</h4>
-                <span class="role">Media & Communication</span>
+                <h4>Director of Student Affairs</h4>
+               
               </div>
             </article>
             <article class="person">
-              <img class="avatar" src="images/heads/fashion.jpg" alt="Head, School of Fashion" />
+              <img class="avatar" src="images/0E0A8141.jpg" alt="Head, School of Fashion" />
               <div>
-                <h4>Head, School of Fashion</h4>
-                <span class="role">Design & Style</span>
+                <h4>Director of Finance</h4>
+              
               </div>
             </article>
             <article class="person">
-              <img class="avatar" src="images/heads/catering.jpg" alt="Head, School of Catering" />
+              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Head, School of Catering" />
               <div>
-                <h4>Head, School of Catering</h4>
-                <span class="role">Hospitality & Culinary Arts</span>
+                <h4>Director of Communications</h4>
+              
               </div>
             </article>
             <article class="person">
-              <img class="avatar" src="images/heads/cosmetology.jpg" alt="Head, School of Cosmetology" />
+              <img class="avatar" src="images/0E0A8178.jpg" alt="Head, School of Cosmetology" />
               <div>
-                <h4>Head, School of Cosmetology</h4>
-                <span class="role">Beauty & Wellness</span>
+                <h4>Director of Productions</h4>
+              
               </div>
             </article>
             <article class="person">
               <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
               <div>
-                <h4>Head, School of Technology</h4>
-                <span class="role">ICT & Innovation</span>
+                <h4>Director of Facilities & Logistics</h4>
+             
+              </div>
+            </article>
+
+
+             </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
+              <div>
+                <h4>Director of Legal Affairs</h4>
+             
               </div>
             </article>
           </div>
@@ -530,34 +550,35 @@
               <div>
                 <h4>Registrar</h4>
                 <span class="role">Records, Admissions, Exams & Certification</span>
-                <p style="margin-top:8px">The Registrar is the chief administrative officer responsible for record keeping, admissions, examinations, and certification.</p>
+                <p style="margin-top:8px">The Registrar is a senior administrative officer responsible for managing the institution’s records, regulatory compliance, core administrative processes, and ensuring that everything
+                   from admissions to certification runs accurately, legally, and efficiently.</p>
               </div>
             </article>
           </div>
         </section>
 
         <section id="students-affairs" class="card">
-          <h2>The Students Affairs Directorate</h2>
+          <h2> Student Affairs Directorate</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/Vincent Sackitey.jpg" alt="Director, Students Affairs" />
+              <img class="avatar" src="images/GMS_0977.jpg" alt="Director, Students Affairs" />
               <div>
-                <h4>Director, Students Affairs</h4>
-                <span class="role">Discipline, Welfare & Activities</span>
+                <h4>Director of Student Affairs (Dean of Students)</h4>
+                <span class="role">The Dean of Students is responsible for student welfare, discipline, engagement, and overall campus experience, ensuring that learners thrive both personally and professionally in the creative  environment.</span>
               </div>
             </article>
           </div>
-          <p style="margin-top:12px">This directorate handles student discipline, welfare and co-curricular activities.</p>
+         
         </section>
 
         <section id="finance-directorate" class="card">
           <h2>Finance Directorate</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/directorates/finance.jpg" alt="Finance Director" />
+              <img class="avatar" src="images/0E0A8141.jpg" alt="Finance Director" />
               <div>
-                <h4>Finance Director</h4>
-                <span class="role">Budget, Payroll, Audit & Financial Administration</span>
+                <h4> Director of Finance</h4>
+                <span class="role">The Director of Finance is responsible for financial planning, control, and sustainability, ensuring the school operates efficiently while supporting high-quality training and infrastructure.</span>
               </div>
             </article>
           </div>
@@ -567,23 +588,24 @@
           <h2>Academic Affairs Directorate</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/Mr. Clifford Ladzekpo.jpg" alt="Director, Academic Affairs" />
+              <img class="avatar" src="images/0E0A8131.jpg" alt="Director, Academic Affairs" />
               <div>
-                <h4>Director, Academic Affairs</h4>
-                <span class="role">Program Design, Planning & Implementation</span>
+                <h4>Director of Academic Affairs</h4>
+                <span class="role">The Director of Academic Affairs oversees the design, delivery, and continuous improvement of all academic programs, 
+                  ensuring they align with industry standards and produce job-ready professionals.</span>
               </div>
             </article>
           </div>
         </section>
 
         <section id="students-production" class="card">
-          <h2>Students Production Directorate</h2>
+          <h2>Production Directorate</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images//Mr. Dromo Apenten.jpg" alt="Director, Students Production" />
+              <img class="avatar" src="images/0E0A8178.jpg" alt="Director, Students Production" />
               <div>
-                <h4>Director, Students Production</h4>
-                <span class="role">Practical Projects & Productions</span>
+                <h4>Director of Productions</h4>
+                <span class="role">The Director of Productions oversees all practical  production activities, ensuring students gain real-world experience while maintaining professional standards across all content created by the school.</span>
               </div>
             </article>
           </div>
@@ -595,21 +617,21 @@
             <article class="person">
               <img class="avatar" src="images/directorates/marketing.jpg" alt="Marketing Director" />
               <div>
-                <h4>Marketing Director</h4>
-                <span class="role">School Promotion & Student Recruitment</span>
+                <h4> Director of Marketing</h4>
+                <span class="role">The Director of Marketing is responsible for brand positioning and public visibility, ensuring the school attracts the right audience and maintains a strong presence in Ghana’s technical and vocational education.</span>
               </div>
             </article>
           </div>
         </section>
 
         <section id="communication-directorate" class="card">
-          <h2>Communication Directorate</h2>
+          <h2>Communications Directorate</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/directorates/communications.jpg" alt="Director, Communications" />
+              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Director, Communications" />
               <div>
-                <h4>Director, Communications</h4>
-                <span class="role">Public Relations & Media</span>
+                <h4>Director of Communications</h4>
+                <span class="role">The Director of Communications is responsible for managing information, messaging, and institutional voice, ensuring clear, consistent, and professional communication internally and externally.</span>
               </div>
             </article>
           </div>
@@ -622,7 +644,7 @@
               <img class="avatar" src="images/Mr. Ebenezer Ocran.jpg" alt="HR Director" />
               <div>
                 <h4>HR Director</h4>
-                <span class="role">Staff Recruitment, Training & Welfare</span>
+                <span class="role">The Human Resource Director is responsible for managing staff recruitment, welfare, performance, and organisational culture, ensuring that GH Schools is staffed with competent, motivated, and well-supported personnel.</span>
               </div>
             </article>
           </div>
@@ -632,10 +654,10 @@
           <h2>Office of the Chancellor</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/dr_kofi_osei_kusi.jpg" alt="Chancellor" />
+              <img class="avatar" src="images/dr kusi.webp" alt="Chancellor" />
               <div>
                 <h4>Chancellor</h4>
-                <span class="role">Institutional Governance & Policy</span>
+                <span class="role">The Chancellor is the highest ceremonial and strategic authority of GH Schools, providing overall leadership direction, institutional credibility, and long-term vision for growth and sustainability.</span>
               </div>
             </article>
           </div>
@@ -645,10 +667,10 @@
           <h2>Office of the Rector</h2>
           <div class="people-grid" style="margin-top: 8px;">
             <article class="person">
-              <img class="avatar" src="images/LESLIe.png" alt="Rector" />
+              <img class="avatar" src="images/Mr. Leslie Addo Listowell.jpg" alt="Rector" />
               <div>
                 <h4>Rector</h4>
-                <span class="role">Academic & Administrative Leadership</span>
+                <span class="role">The Rector is the chief executive and academic administrator of GH Schools, responsible for the day-to-day management of the institution, ensuring that academic, production, and administrative systems operate efficiently and cohesively.</span>
               </div>
             </article>
           </div>
@@ -665,11 +687,11 @@
 
         <section id="objective" class="card">
           <h2>Objective</h2>
-          <p>We do this through proximal learning where industry is brought closer to the learner, coupled with tuition based on sound academic standards and industrial practice with hands-on experience using State-of-The-Art equipment, and facilitated by well-qualified faculty with focus on mastery and measured outcomes.</p>
+          <p>We do this through proximal learning, where industry is brought closer to the learner. This is coupled with tuition based on sound academic standards and industrial practice with hands-on experience using state-of-the-art equipment, and facilitated by well-qualified faculty with focus on mastery and measured outcomes.</p>
         </section>
 
         <section id="values" class="card">
-          <h2>Our Values (3Ps)</h2>
+          <h2>Values (3Ps)</h2>
           <ul>
             <li><strong>Passionate</strong></li>
             <li><strong>Professionalism</strong></li>
@@ -678,13 +700,13 @@
         </section>
 
         <section id="strategy" class="card">
-          <h2>The Strategy</h2>
+          <h2>Strategy</h2>
           <p>The plan is to transform lives and give our students hope through hands-on technical and vocational education to make them better people with employable skill sets and also cause them to be competent, relevant and competitive in the market place.</p>
         </section>
 
         <section id="quality" class="card">
           <h2>Quality Assurance</h2>
-          <p>Our learning environment demonstrates that quality is happening; facilities and equipment that meet industrial standards are used in training. Quality assurance mechanisms like industrial practices, technological changes, and verification systems build confidence among learners and stakeholders.</p>
+          <p>Our learning environment demonstrates that quality is happening; facilities and equipment that meet industrial standards are used in training. Quality assurance mechanisms like industrial practices, technological advancements, and verification systems build confidence among learners and stakeholders.</p>
         </section>
 
         <section id="pillars" class="card">
@@ -713,45 +735,15 @@
 
         <section id="quality-policy" class="card">
           <h2>Quality Management Policy</h2>
-          <p>We are committed to excellence in education, recognizing each student’s uniqueness. Our programs focus on personal development, individualized instruction, hands-on training, safe and conducive learning environments, and exposure to real industry experiences.</p>
+          <p>We are committed to excellence in education, recognising each student’s uniqueness. Our programs focus on personal development, individualised instruction, hands-on training, safe and conducive learning environments, and exposure to real industry experiences.</p>
         </section>
 
         <section id="philosophy" class="card">
-          <h2>The Philosophy</h2>
+          <h2>Philosophy</h2>
           <p>Our philosophy is based on proximal learning, bridging education and industry through state-of-the-art equipment, academic excellence, and industry best practices to produce graduates with measurable outcomes and real-world readiness.</p>
         </section>
 
-        <section id="administration" class="card">
-          <h2>Administration</h2>
-          <h3 style="color:var(--brand);margin:6px 0 8px">The Management Board</h3>
-          <p>The management board is an ad-hoc board whose professional membership is drawn from the pool of the Heads of Departments (HODs). This board is a key decision-making entity within the schools that holds meetings—sometimes bi-weekly—on matters affecting the day-to-day affairs of the schools.</p>
-          <p>Intermittently, the board deliberates on progressive and consultative decisions based on detailed reports furnished by the HODs. These are reviewed critically for feasibility and implementation, resulting in practical resolutions for school development.</p>
-          <p>One uncontestable fact about the GH Schools Management Board is their commitment to accountability—they conduct calculated reviews of every facilitator’s performance, creating a culture of excellence and responsibility.</p>
-
-          <h3 style="color:var(--brand);margin:16px 0 8px">School Governance Structure</h3>
-          <ul>
-            <li>Chancellor – Supreme institutional figurehead</li>
-            <li>Rector – Chair of the Management Board and Chief Executive Officer</li>
-            <li>Vice Rector – Academic and Research Oversight</li>
-            <li>Heads of Departments (HODs) – Operational management</li>
-            <li>Deans of Schools – Academic leadership and student support</li>
-            <li>Registrar – Student records and administration</li>
-            <li>Finance Officer – Budgeting and expenditure management</li>
-            <li>Quality Assurance Officer – Monitoring academic and operational standards</li>
-          </ul>
-
-          <h3 style="color:var(--brand);margin:16px 0 8px">Roles of the Board</h3>
-          <ul>
-            <li>Review academic and administrative policies</li>
-            <li>Ensure staff accountability and performance</li>
-            <li>Evaluate student performance and support systems</li>
-            <li>Oversee infrastructure and resource development</li>
-            <li>Implement and monitor strategic initiatives</li>
-            <li>Engage with stakeholders and industry partners</li>
-          </ul>
-
-          <p style="margin-top:10px">Through collaboration, transparency, and firm leadership, the Administration ensures GH SCHOOLS provides world-class vocational and technical education rooted in discipline, innovation, and practical excellence.</p>
-        </section>
+        
       </div>
     </div>
   </main>
@@ -765,47 +757,61 @@
     <div class="container footer-grid">
       <section class="footer-brand">
         <div class="brandline">
-          <img src="images/GH Schools.png" alt="GH Schools Logo" />
+         
           <div>
-            <h3>GH SCHOOLS</h3>
-            <p style="margin:0;color:#fffdfd">GH SCHOOLS COLLEGE, Accra</p>
-            <p style="margin:0;color:#fbfafa">Scholarship with Professionalism</p>
+            <img src="images/GH Schools.png" alt="GH Schools Logo" style="margin-left: 30px;">
+           
           </div>
         </div>
         <div>
           <p style="margin:0 0 4px">+233 303 958 571</p>
-          <p style="margin:0 0 4px">+233 303 937 542</p>
+          <p style="margin:0 0 4px">+233 544 622 250</p>
+            <p style="margin:0 0 4px">+233 277 622 250</p>
+          <p style="margin:0 0 4px">+233 204 622 250</p>
         </div>
       </section>
 
       <section class="footer-col">
-        <h4>University</h4>
+        <h4>About GH</h4>
         <ul>
-          <li><a href="#">About GH SCHOOLS</a></li>
-          <li><a href="#">Our History</a></li>
-          <li><a href="#">Governance</a></li>
-          <li><a href="#">Leadership</a></li>
-          <li><a href="#">Policies & Regulations</a></li>
+          <li><a href="#vision-mission">Mission & Vision</a></li>
+          <li><a href="#quality">Quality Assurance</a></li>
+          <li><a href="e-resource.html">Accreditation</a></li>
         </ul>
       </section>
 
       <section class="footer-col">
         <h4>Admissions</h4>
         <ul>
-          
-          <li><a href="#">Diploma programs</a></li>
-          <li><a href="admission.HTML">Apply</a></li>
-          <li><a href="#">noe year programs </a></li>
+          <li><a href="admission.html">Apply</a></li>
+          <li><a href="admission.html#how">How to Apply</a></li>
+          <li><a href="reqirement.html">Entry Requirements</a></li>
+          <li><a href="schorlarship.html">Fees & Scholarships</a></li>
+          <li><a href="faq.html">FAQ</a></li>
         </ul>
       </section>
 
       <section class="footer-col">
-        <h4>Academics</h4>
+        <h4>Student</h4>
         <ul>
-          <li><a href="#">Academic Affairs</a></li>
-          <li><a href="#">Schools & Faculties</a></li>
-          <li><a href="#">Fees Schedule</a></li>
-          <li><a href="#">Academic Calendar</a></li>
+          <li><a href="results portal.html">Student Portal</a></li>
+          <li><a href="resource.html#calendar">Academic Calendar</a></li>
+          <li><a href="resource.html#timetable">Timetable</a></li>
+          <li><a href="resource.html#results">Exam Results</a></li>
+          <li><a href="resource.html#support">Student Support</a></li>
+          <li><a href="resource.html#registration">Course Registration</a></li>
+        </ul>
+      </section>
+
+      <section class="footer-col">
+        <h4>Schools</h4>
+        <ul>
+          <li><a href="media.html">GH Media School</a></li>
+             <li><a href="cosme.html">GH Cosmetology School</a></li>
+          <li><a href="fashion.html">GH Fashion School</a></li>
+          <li><a href="catering.html">GH Catering School</a></li>
+       
+          <li><a href="tech.html">GH Technology School</a></li>
         </ul>
       </section>
     </div>

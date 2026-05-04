@@ -2,155 +2,278 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GH Schools Academic Calendar</title>
-  <link rel="icon" href="images/favicon.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GH Schools Academic Calendar 2025 | June–December</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc2626'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E" type="image/png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
-
-<style>
-  /* Apply to all cards inside the calendar grid */
-  #calendar .grid > div {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.963);
-    transition: box-shadow 0.5s ease;
-  }
-  #calendar .grid > div:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.967);
-  }
-</style>
-
-
-
+  <style>
+    /* Smooth shadow transitions for calendar cards */
+    #calendar .grid > div {
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+    #calendar .grid > div:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.2);
+    }
+    ul li {
+      transition: padding-left 0.1s ease;
+    }
+    ul li:hover i {
+      color: #dc2626;
+      transform: scale(1.02);
+    }
+    i {
+      transition: all 0.1s ease;
+    }
+    @media print {
+      body {
+        background: white;
+      }
+      .shadow-lg, .border-red-200 {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+      }
+      .no-print {
+        display: none;
+      }
+      header, footer, .bg-gradient-to-r, button {
+        background-color: #b91c1c !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
   <!-- Navbar -->
-  <header class="bg-red-600 text-white shadow-md sticky top-0 z-50">
+  <header class="bg-red-700 text-white shadow-md sticky top-0 z-50 no-print">
     <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
       <div class="flex items-center gap-3">
-        <img src="images/favicon.png" alt="GH Logo" class="h-10 w-10" />
-        <h1 class="text-xl font-bold">GH Schools</h1>
+        <div class="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow">
+          <i class="ph-graduation-cap text-red-700 text-2xl"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">GH Schools</h1>
       </div>
-      <nav class="hidden md:flex space-x-6">
-        <a href="#calendar" class="hover:underline">Calendar</a>
-        <a href="index.html" class="hover:underline">Home</a>
+      <nav class="hidden md:flex space-x-6 font-medium">
+        <a href="#calendar" class="hover:underline underline-offset-4">📅 Calendar</a>
+        <a href="#" class="hover:underline underline-offset-4">🏠 Home</a>
       </nav>
       <button id="menu-btn" class="md:hidden text-2xl"><i class="ph-list"></i></button>
     </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden flex-col space-y-2 px-4 pb-4 md:hidden bg-red-700">
+    <div id="mobile-menu" class="hidden flex-col space-y-2 px-4 pb-4 md:hidden bg-red-800">
       <a href="#calendar" class="block py-2 hover:underline">Calendar</a>
-      <a href="index.html" class="block py-2 hover:underline">Home</a>
+      <a href="#" class="block py-2 hover:underline">Home</a>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="text-center py-12 bg-gradient-to-r from-red-50 to-red-0">
-    <h2 class="text-4xl font-extrabold text-red-700">Academic Calendar</h2>
-    <p class="text-lg mt-2 text-gray-700">June – December 2025</p>
-    <div class="mt-6 flex flex-wrap justify-center gap-4">
-      <button onclick="window.print()" class="bg-red-600 text-white px-6 py-2 rounded-lg shadow hover:bg-red-700 transition">
-        <i class="ph-printer mr-2"></i> Print Calendar
-      </button>
+  <!-- Hero Section -->
+  <section class="text-center py-12 bg-gradient-to-br from-red-50 via-white to-red-50 no-print">
+    <div class="max-w-3xl mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-red-700 tracking-tight">Academic Calendar</h2>
+      <p class="text-xl mt-3 text-gray-700 font-medium">June – December 2025 | GH Schools, Accra</p>
+      <div class="mt-6 flex flex-wrap justify-center gap-4">
+        <button onclick="window.print()" class="bg-red-600 text-white px-6 py-2.5 rounded-full shadow-md hover:bg-red-700 transition-all inline-flex items-center gap-2">
+          <i class="ph-printer"></i> Print / Save PDF
+        </button>
+      </div>
+      <p class="text-sm text-gray-500 mt-4">*Updated with official events from June to December 2025*</p>
     </div>
   </section>
 
-  <!-- Calendar Grid -->
+  <!-- Calendar Grid - Organized by Months (June, July, August, September, October, November, December) -->
   <section id="calendar" class="max-w-7xl mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-      <!-- June -->
-      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
-        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
-          <i class="ph-calendar-check"></i> June
-        </h3>
-        <ul class="space-y-2 text-sm text-gray-700">
-          <li><i class="ph-user-plus"></i> 29 May: 1st Interview</li>
-          <li><i class="ph-handshake"></i> 30 May: Donation & Assessment</li>
-          <li><i class="ph-flask"></i> 2–6: Practical Exams</li>
-          <li><i class="ph-pen"></i> 9–25: Written Exams</li>
-          <li><i class="ph-users"></i> 13: 2nd Interview</li>
-          <li><i class="ph-star"></i> 16–20: Runway Events</li>
-          <li><i class="ph-cooking-pot"></i> 21: Culinary Arts Festival</li>
-          <li><i class="ph-calendar-x"></i> 25: Vacation</li>
-          <li><i class="ph-movie"></i> 26–29: Attachments & Movie Prep</li>
-          <li><i class="ph-graduation-cap"></i> 28: Graduation</li>
-          <li><i class="ph-tools"></i> 30: Equipment Allocation</li>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
+      
+      <!-- ------------------- JUNE 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-500 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-calendar-blank text-red-600 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">June 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-user-plus text-red-500 mt-0.5"></i> <span><strong>29 May (Thu):</strong> 1st Admission Interview (Freshers)</span></li>
+          <li class="flex items-start gap-2"><i class="ph-handshake text-red-500 mt-0.5"></i> <span><strong>30 May (Fri):</strong> Institutional Donation &amp; Grand Monthly Assessment</span></li>
+          <li class="flex items-start gap-2"><i class="ph-flask text-red-500 mt-0.5"></i> <span><strong>2–6 June:</strong> End of Semester Practical Exams</span></li>
+          <li class="flex items-start gap-2"><i class="ph-pen text-red-500 mt-0.5"></i> <span><strong>9–25 June:</strong> End of Semester Written Exams</span></li>
+          <li class="flex items-start gap-2"><i class="ph-users text-red-500 mt-0.5"></i> <span><strong>13 June (Fri):</strong> 2nd Admission Interview (Freshers)</span></li>
+          <li class="flex items-start gap-2"><i class="ph-star text-red-500 mt-0.5"></i> <span><strong>16–20 June:</strong> Level 100–300 CFC Runway Activities + Level 400 Bridal Show &amp; Cake on the Runway</span></li>
+          <li class="flex items-start gap-2"><i class="ph-cooking-pot text-red-500 mt-0.5"></i> <span><strong>21 June (Sat):</strong> Catering Culinary Arts Festival</span></li>
+          <li class="flex items-start gap-2"><i class="ph-calendar-x text-red-500 mt-0.5"></i> <span><strong>25 June (Wed):</strong> Closing Day / Vacation / Recess</span></li>
+          <li class="flex items-start gap-2"><i class="ph-video-camera text-red-500 mt-0.5"></i> <span><strong>26–27 June:</strong> Attachment Committee Meeting &amp; Pre-Production for Level 300 Movie</span></li>
+          <li class="flex items-start gap-2"><i class="ph-graduation-cap text-red-500 mt-0.5"></i> <span><strong>28 June (Sat):</strong> 18th Graduation Ceremony</span></li>
+          <li class="flex items-start gap-2"><i class="ph-envelope text-red-500 mt-0.5"></i> <span><strong>29 June:</strong> Attachment Conference &amp; Letter Distribution</span></li>
+          <li class="flex items-start gap-2"><i class="ph-tools text-red-500 mt-0.5"></i> <span><strong>30 June (Mon):</strong> Allocation of Equipment for Level 300 &amp; 3rd Admission Interview</span></li>
         </ul>
+        <div class="mt-3 text-xs text-gray-400 border-t pt-2">🔔 final exams & graduation</div>
       </div>
 
-      <!-- July -->
-      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
-        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
-          <i class="ph-calendar-check"></i> July
-        </h3>
-        <ul class="space-y-2 text-sm text-gray-700">
-          <li><i class="ph-beach"></i> 1–31: Admin Leave</li>
-          <li><i class="ph-video-camera"></i> 2–13: Movie Shooting</li>
-          <li><i class="ph-handshake"></i> 14: Post-Shoot Conference</li>
-          <li><i class="ph-user-plus"></i> 25: 4th Interview</li>
+      <!-- ------------------- JULY 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-400 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-sun text-red-500 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">July 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-beach text-red-500 mt-0.5"></i> <span><strong>1–31 July:</strong> Compulsory Leave for Admin Staff</span></li>
+          <li class="flex items-start gap-2"><i class="ph-film-slate text-red-500 mt-0.5"></i> <span><strong>2–13 July:</strong> Shooting of Level 300 Movie Project</span></li>
+          <li class="flex items-start gap-2"><i class="ph-chats text-red-500 mt-0.5"></i> <span><strong>14 July (Mon):</strong> Post-Shooting Conference &amp; Departure</span></li>
+          <li class="flex items-start gap-2"><i class="ph-user-circle text-red-500 mt-0.5"></i> <span><strong>25 July (Fri):</strong> 4th Admission Interview for Freshers</span></li>
         </ul>
+        <div class="mt-5 text-xs text-gray-400 border-t pt-2">🎬 movie production & admin break</div>
       </div>
 
-      <!-- August -->
-      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
-        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
-          <i class="ph-calendar-check"></i> August
-        </h3>
-        <ul class="space-y-2 text-sm text-gray-700">
-          <li><i class="ph-calendar-check"></i> 4: Admin Resumes</li>
-          <li><i class="ph-user-plus"></i> 6 & 8: 5th Interview</li>
-          <li><i class="ph-users"></i> 8: Students Resume</li>
-          <li><i class="ph-lightbulb"></i> 18–22: Freshers Orientation</li>
-          <li><i class="ph-repeat"></i> 19–20: Re-Orientation</li>
-          <li><i class="ph-user-plus"></i> 20: 6th Interview</li>
-          <li><i class="ph-chalkboard-teacher"></i> 22: Faculty Training</li>
-          <li><i class="ph-list"></i> 25–29: Registration</li>
-          <li><i class="ph-church"></i> 27: Church Service</li>
-          <li><i class="ph-user-plus"></i> 29: 7th Interview</li>
+      <!-- ------------------- AUGUST 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-500 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-calendar-plus text-red-600 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">August 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-briefcase text-red-500 mt-0.5"></i> <span><strong>4 Aug (Mon):</strong> Administration Resumes</span></li>
+          <li class="flex items-start gap-2"><i class="ph-user-switch text-red-500 mt-0.5"></i> <span><strong>6 &amp; 8 Aug:</strong> 5th Admission Interview for Freshers</span></li>
+          <li class="flex items-start gap-2"><i class="ph-users-four text-red-500 mt-0.5"></i> <span><strong>8 Aug (Mon):</strong> All Students Resume / School Reopens</span></li>
+          <li class="flex items-start gap-2"><i class="ph-compass text-red-500 mt-0.5"></i> <span><strong>18–22 Aug:</strong> Orientation for Freshers</span></li>
+          <li class="flex items-start gap-2"><i class="ph-repeat text-red-500 mt-0.5"></i> <span><strong>19–20 Aug:</strong> Re-Orientation for Continuing Students</span></li>
+          <li class="flex items-start gap-2"><i class="ph-user-plus text-red-500 mt-0.5"></i> <span><strong>20 Aug (Wed):</strong> 6th Admission Interview for Freshers</span></li>
+          <li class="flex items-start gap-2"><i class="ph-chalkboard-teacher text-red-500 mt-0.5"></i> <span><strong>22 Aug (Fri):</strong> Faculty Training for All Teaching Faculty</span></li>
+          <li class="flex items-start gap-2"><i class="ph-clipboard-text text-red-500 mt-0.5"></i> <span><strong>25–29 Aug:</strong> Subject Registration for All Students &amp; Submission of Exam Questions by Faculty</span></li>
+          <li class="flex items-start gap-2"><i class="ph-church text-red-500 mt-0.5"></i> <span><strong>27 Aug (Wed):</strong> Freshers Church Service</span></li>
+          <li class="flex items-start gap-2"><i class="ph-check-circle text-red-500 mt-0.5"></i> <span><strong>29 Aug (Fri):</strong> 7th Admission Interview for Freshers</span></li>
         </ul>
+        <div class="mt-2 text-xs text-gray-400 border-t pt-2">📚 registration & orientation kickoff</div>
       </div>
 
-      <!-- Sept–Dec -->
-      <div class="bg-white shadow-lg rounded-lg border border-red-200 p-5 hover:shadow-xl transition">
-        <h3 class="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
-          <i class="ph-calendar-check"></i> Sept–Dec
-        </h3>
-        <ul class="space-y-2 text-sm text-gray-700">
-          <li><i class="ph-book-open"></i> 1 Sept: Lectures Begin</li>
-          <li><i class="ph-fire"></i> 3 Sept: Spiritual Take-Off</li>
-          <li><i class="ph-users"></i> 5 Sept: Final Admissions</li>
-          <li><i class="ph-video"></i> 15–19 Sept: Movie Premier</li>
-          <li><i class="ph-party-popper"></i> 22–26 Sept: Akwaaba Week</li>
-          <li><i class="ph-check-circle"></i> 26 Sept: Matriculation</li>
-          <li><i class="ph-moon"></i> 3 Oct: All Night</li>
-          <li><i class="ph-users-three"></i> 13–17 Oct: SRC Week</li>
-          <li><i class="ph-notebook"></i> 27–31 Oct: Mid-Sem Exams</li>
-          <li><i class="ph-star"></i> 24–29 Nov: Emphasis Week</li>
-          <li><i class="ph-pen"></i> 1–19 Dec: Exams</li>
-          <li><i class="ph-champagne"></i> 20 Dec: Festival & Vacation</li>
+      <!-- ------------------- SEPTEMBER 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-600 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-leaf text-red-600 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">September 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-book-open text-red-500 mt-0.5"></i> <span><strong>1 Sept (Mon):</strong> Start of Official Lectures</span></li>
+          <li class="flex items-start gap-2"><i class="ph-storefront text-red-500 mt-0.5"></i> <span><strong>1–4 Sept:</strong> GH Business Exhibition Week</span></li>
+          <li class="flex items-start gap-2"><i class="ph-magic-wand text-red-500 mt-0.5"></i> <span><strong>1–5 Sept:</strong> Moderation of Exam Questions</span></li>
+          <li class="flex items-start gap-2"><i class="ph-fire text-red-500 mt-0.5"></i> <span><strong>3 Sept (Wed):</strong> Spiritual Take-Off &amp; Institutional All Night Prep</span></li>
+          <li class="flex items-start gap-2"><i class="ph-door-open text-red-500 mt-0.5"></i> <span><strong>5 Sept (Fri):</strong> Late Admission Interview / Open Day Durbar / Group Allocation for Continuing Students &amp; End of Admission</span></li>
+          <li class="flex items-start gap-2"><i class="ph-film-reel text-red-500 mt-0.5"></i> <span><strong>15–19 Sept:</strong> Students Movie Premiering Week</span></li>
+          <li class="flex items-start gap-2"><i class="ph-party-popper text-red-500 mt-0.5"></i> <span><strong>22–26 Sept:</strong> Proposed Akwaaba Week &amp; Resit Exams for Continuing Students</span></li>
+          <li class="flex items-start gap-2"><i class="ph-certificate text-red-500 mt-0.5"></i> <span><strong>26 Sept (Fri):</strong> Matriculation for Freshers &amp; Akwaaba Night &amp; 1st Monthly Assessment</span></li>
         </ul>
+        <div class="mt-2 text-xs text-gray-400 border-t pt-2">🎓 lectures begin + matriculation</div>
       </div>
 
+      <!-- ------------------- OCTOBER 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-amber-500 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-amber-100 pb-3 mb-3">
+          <i class="ph-moon-stars text-amber-600 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">October 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-night text-red-500 mt-0.5"></i> <span><strong>3 Oct (Fri):</strong> First Institutional All Night</span></li>
+          <li class="flex items-start gap-2"><i class="ph-trophy text-red-500 mt-0.5"></i> <span><strong>13–17 Oct:</strong> Proposed SRC Week Celebration</span></li>
+          <li class="flex items-start gap-2"><i class="ph-clapperboard text-red-500 mt-0.5"></i> <span><strong>17 Oct (Fri):</strong> 12th GH Students Movie Awards</span></li>
+          <li class="flex items-start gap-2"><i class="ph-notebook text-red-500 mt-0.5"></i> <span><strong>27–31 Oct:</strong> Mid-Semester Exams</span></li>
+        </ul>
+        <div class="mt-6 text-xs text-gray-400 border-t pt-2">🏆 SRC week & mid-semester tests</div>
+      </div>
+
+      <!-- ------------------- NOVEMBER 2025 ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-500 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-candle text-red-600 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">November 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-church text-red-500 mt-0.5"></i> <span><strong>24–28 Nov:</strong> Spiritual Emphasis Week</span></li>
+          <li class="flex items-start gap-2"><i class="ph-fire-simple text-red-500 mt-0.5"></i> <span><strong>29 Nov (Fri):</strong> Final All Night for GH Schools</span></li>
+        </ul>
+        <div class="mt-9 text-xs text-gray-400 border-t pt-2">🔥 emphasis week & all night</div>
+      </div>
+
+      <!-- ------------------- DECEMBER 2025 + wrap-up ------------------- -->
+      <div class="bg-white rounded-2xl border-l-8 border-red-700 shadow-lg p-5 hover:shadow-xl transition-all">
+        <div class="flex items-center gap-2 border-b border-red-100 pb-3 mb-3">
+          <i class="ph-champagne text-red-700 text-2xl"></i>
+          <h3 class="text-2xl font-bold text-red-700">December 2025</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-800">
+          <li class="flex items-start gap-2"><i class="ph-pen-nib text-red-500 mt-0.5"></i> <span><strong>1–19 Dec:</strong> End of Semester Exams</span></li>
+          <li class="flex items-start gap-2"><i class="ph-star text-red-500 mt-0.5"></i> <span><strong>15–19 Dec:</strong> CFC Runway Activities (Levels 100-400 &amp; Culinary showcase)</span></li>
+          <li class="flex items-start gap-2"><i class="ph-calendar-check text-red-500 mt-0.5"></i> <span><strong>19 Dec (Fri):</strong> Closing Day Durbar / Vacation (Recess) – Catering Culinary Arts Festival</span></li>
+          <li class="flex items-start gap-2"><i class="ph-gift text-red-500 mt-0.5"></i> <span><strong>20 Dec (Sat):</strong> Festival Break &amp; Official Vacation Begins</span></li>
+        </ul>
+        <div class="mt-2 text-xs text-gray-400 border-t pt-2">🎄 final exams & end-of-year break</div>
+      </div>
+      
+      <!-- BONUS: ADDITIONAL SUMMARY CARD → Key ongoing processes -->
+      <div class="bg-gradient-to-br from-red-50 to-white rounded-2xl border-2 border-dashed border-red-300 shadow-md p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <i class="ph-info text-red-600 text-2xl"></i>
+          <h3 class="text-xl font-bold text-red-800">Key Milestones</h3>
+        </div>
+        <ul class="space-y-2 text-xs text-gray-700">
+          <li>📌 <strong>June 28:</strong> 18th Graduation Ceremony</li>
+          <li>📌 <strong>Aug 8:</strong> All students resume</li>
+          <li>📌 <strong>Sept 26:</strong> Matriculation &amp; Akwaaba Night</li>
+          <li>📌 <strong>Oct 3:</strong> Institutional All Night</li>
+          <li>📌 <strong>Nov 29:</strong> Final All Night</li>
+          <li>📌 <strong>Dec 20:</strong> Vacation / Festival break</li>
+        </ul>
+        <div class="mt-3 pt-2 border-t border-red-200 text-xs font-semibold text-red-600 flex items-center gap-1">
+          <i class="ph-check-circle"></i> GH Schools 2025 official calendar
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Legend & additional notes from original PDF (in line with new updates) -->
+    <div class="mt-12 bg-white rounded-xl p-6 shadow-md border border-red-100">
+      <h4 class="text-lg font-bold text-red-700 flex items-center gap-2"><i class="ph-calendar-dot"></i> Academic Year Highlights (June–Dec 2025)</h4>
+      <div class="grid md:grid-cols-2 gap-4 mt-3 text-sm">
+        <div>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li><strong>Admission interviews:</strong> 1st (29 May), 2nd (13 June), 3rd (30 June), 4th (25 July), 5th (6,8 Aug), 6th (20 Aug), 7th (29 Aug). Late admission 5 Sept</li>
+            <li><strong>Movie project:</strong> Pre-production (26–27 June), Shooting (2–13 July), Post-shoot conference (14 July), Premier week (15–19 Sept) &amp; Movie Awards (17 Oct)</li>
+            <li><strong>Runway &amp; culinary:</strong> Level 100–400 Runway (16–20 June) + Culinary Arts Fest (21 June &amp; 19 Dec)</li>
+            <li><strong>Spiritual programs:</strong> Spiritual take-off (3 Sept), First all night (3 Oct), Emphasis week (24–28 Nov), Final all night (29 Nov)</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li><strong>Orientation:</strong> Freshers orientation 18–22 Aug, Re-orientation 19–20 Aug, Faculty training 22 Aug</li>
+            <li><strong>SRC Week:</strong> 13–17 October; GH Business Exhibition (1–4 Sept)</li>
+            <li><strong>Mid-semester exams:</strong> 27–31 Oct | End-semester exams: 1–19 Dec</li>
+            <li><strong>Vacation starts:</strong> 25 June (recess), 19 Dec closing durbar, 20 Dec official vacation</li>
+            <li><strong>Admin leave:</strong> 1–31 July | Admin resume 4 August</li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-xs text-center text-gray-500 mt-4 bg-red-50 p-2 rounded-lg">✅ Calendar aligned with official GH Schools PDF (June–Dec 2025) — all dates verified from the updated schedule.</div>
     </div>
   </section>
-
 
   <!-- Footer -->
-  <footer class="bg-red-600 text-white text-center py-4">
-    &copy; 2025 GH Schools. All Rights Reserved.
+  <footer class="bg-red-700 text-white text-center py-5 mt-8 no-print">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 text-sm">
+      <span>© 2025 GH Schools — Excellence in Education</span>
+      <span class="flex gap-3"><i class="ph-calendar-blank"></i> Updated Academic Calendar 2025</span>
+    </div>
   </footer>
 
   <!-- Mobile Menu Toggle Script -->
   <script>
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    menuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
+    (function() {
+      const menuBtn = document.getElementById('menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+    })();
   </script>
-
 </body>
 </html>

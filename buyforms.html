@@ -39,365 +39,428 @@
       --gray: #f5f5f5;
       --dark-gray: #777;
     }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      background: #f0f0f0;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      color: var(--light);
+      padding: 24px 16px;
     }
-    
+
     .container {
-      display: flex;
-      max-width: 900px;
       width: 100%;
+      max-width: 460px;
       background: var(--light);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 0.8s ease-out;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      padding: 40px 36px 36px;
+      animation: fadeIn 0.5s ease-out;
     }
-    
-    .info-section {
-      flex: 1;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      padding: 40px 30px;
+
+    /* Top accent bar */
+    .container::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 4px 4px 0 0;
+      margin: -40px -36px 32px;
+    }
+
+    .form-header {
+      margin-bottom: 28px;
+      text-align: center;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      color: var(--secondary);
-    }
-    
-    .form-section {
-      flex: 1;
-      padding: 40px 30px;
-      background: var(--light);
-      color: var(--secondary);
-    }
-    
-    .logo-container {
-      display: flex;
       align-items: center;
-      margin-bottom: 25px;
+      gap: 4px;
     }
-    
-    .logo {
-      width: 70px;
-      height: 70px;
-      background: var(--secondary);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-    }
-    
-    .logo i {
-      font-size: 32px;
-      color: var(--primary);
-    }
-    
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    
-    .info-section h1 {
-      font-size: 2.2rem;
-      margin-bottom: 15px;
-      line-height: 1.2;
-    }
-    
-    .info-section p {
-      margin-bottom: 20px;
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-    
-    .features {
-      margin-top: 30px;
-    }
-    
-    .feature {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    
-    .feature i {
-      margin-right: 12px;
-      color: var(--secondary);
-      font-size: 1.2rem;
-    }
-    
-    .form-container {
-      max-width: 100%;
-    }
-    
-    .form-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
+
     .form-header h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
+      font-size: 1.35rem;
+      font-weight: 700;
       color: var(--secondary);
+      margin-bottom: 4px;
     }
-    
+
     .form-header p {
+      font-size: 0.875rem;
       color: var(--dark-gray);
     }
-    
+
+    .form-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+      animation: logoPop 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .form-logo img {
+      width: 84px;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(248,187,5,0.22), 0 2px 8px rgba(0,0,0,0.08);
+      padding: 6px;
+      background: #fff;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-logo img:hover {
+      transform: scale(1.07) rotate(-2deg);
+      box-shadow: 0 12px 32px rgba(248,187,5,0.35);
+    }
+
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       position: relative;
     }
-    
+
     .input-icon {
       position: absolute;
-      left: 15px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--dark-gray);
-      font-size: 1.1rem;
+      color: #bbb;
+      font-size: 0.95rem;
+      pointer-events: none;
     }
-    
+
     input {
       width: 100%;
-      padding: 15px 15px 15px 45px;
-      border: 2px solid #e1e1e1;
+      padding: 13px 14px 13px 40px;
+      border: 1.5px solid #e4e4e4;
       border-radius: 10px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
       background: var(--gray);
+      color: var(--secondary);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    
+
     input:focus {
       border-color: var(--primary);
       background: var(--light);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(248, 187, 5, 0.2);
+      box-shadow: 0 0 0 3px rgba(248,187,5,0.15);
     }
-    
+
+    input::placeholder { color: #bbb; }
+
     .price-tag {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--gray);
-      padding: 15px 20px;
+      background: #fafafa;
+      border: 1.5px solid #ececec;
+      padding: 14px 18px;
       border-radius: 10px;
-      margin: 25px 0;
+      margin: 22px 0;
     }
-    
-    .price {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--secondary);
-    }
-    
+
+    .price-tag-left { display: flex; flex-direction: column; gap: 2px; }
+    .price-label { font-size: 0.75rem; color: var(--dark-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+    .price { font-size: 1.5rem; font-weight: 700; color: var(--secondary); }
+
     .payment-methods {
       display: flex;
-      gap: 10px;
-      margin-top: 5px;
+      gap: 8px;
     }
-    
+
     .payment-method {
       background: var(--light);
+      border: 1px solid #e4e4e4;
       padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    
+
     button {
       width: 100%;
       background: var(--secondary);
       color: var(--light);
-      padding: 16px;
-      font-size: 1.1rem;
+      padding: 14px;
+      font-size: 1rem;
       border: none;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.25s ease;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      letter-spacing: 0.2px;
     }
-    
+
     button:hover {
       background: var(--accent);
       color: var(--secondary);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 230, 27, 0.3);
+      box-shadow: 0 4px 16px rgba(0,230,27,0.25);
     }
-    
-    button:active {
-      transform: translateY(0);
-    }
-    
+
+    button:active { transform: scale(0.99); }
+
     .security-note {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-      font-size: 0.9rem;
-      color: var(--dark-gray);
+      gap: 7px;
+      margin-top: 16px;
+      font-size: 0.78rem;
+      color: #bbb;
     }
-    
+
     .loading {
       display: none;
       text-align: center;
-      margin-top: 15px;
+      padding: 12px 0;
     }
-    
+
     .loading-spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid var(--primary);
+      border: 2.5px solid #f0f0f0;
+      border-top: 2.5px solid var(--primary);
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
+      width: 26px;
+      height: 26px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 8px;
     }
-    
+
+    .loading p { font-size: 0.85rem; color: var(--dark-gray); }
+
+    /* ── Input focus lift ── */
+    .form-group input:focus {
+      transform: translateY(-1px);
+    }
+
+    /* ── Price tag shimmer on load ── */
+    .price-tag {
+      animation: slideUp 0.5s 0.4s ease both;
+    }
+
+    /* ── Button shimmer effect ── */
+    button#submitBtn {
+      position: relative;
+      overflow: hidden;
+    }
+    button#submitBtn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: skewX(-20deg);
+      animation: shimmer 2.8s 1.2s ease-in-out infinite;
+    }
+
+    /* ── Staggered form field entrance ── */
+    .form-group:nth-child(1) { animation: slideUp 0.45s 0.15s ease both; }
+    .form-group:nth-child(2) { animation: slideUp 0.45s 0.25s ease both; }
+    .form-group:nth-child(3) { animation: slideUp 0.45s 0.35s ease both; }
+
+    /* ── Form header entrance ── */
+    .form-header { animation: slideUp 0.45s 0.05s ease both; }
+
+    /* ── Security note fade ── */
+    .security-note { animation: fadeIn 0.5s 0.6s ease both; opacity: 0; animation-fill-mode: both; }
+
+    /* ── Animated background ── */
+    body {
+      background: #efefef;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(248,187,5,0.10) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0,230,27,0.06) 0%, transparent 50%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+
+    /* ── Fee counter pop ── */
+    #formFeeDisplay {
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), color 0.3s;
+    }
+    #formFeeDisplay.popped {
+      animation: feePop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* ── All keyframes ── */
     @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
       from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    
+
+    @keyframes logoPop {
+      0%   { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+      70%  { transform: scale(1.08) rotate(2deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    @keyframes shimmer {
+      0%   { left: -75%; }
+      60%, 100% { left: 130%; }
+    }
+
+    @keyframes bgPulse {
+      from { background-position: 0% 0%; }
+      to   { background-position: 100% 100%; }
+    }
+
+    @keyframes feePop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.18); color: var(--primary-dark); }
+      100% { transform: scale(1); }
+    }
+
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
-    
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      
-      .info-section, .form-section {
-        padding: 30px 20px;
-      }
+
+    @media (max-width: 520px) {
+      .container { padding: 32px 20px 28px; }
+      .container::before { margin: -32px -20px 24px; }
+      .price { font-size: 1.25rem; }
+      .payment-methods { flex-wrap: wrap; }
+    }
+
+    /* ── PAGE ENTRY LOADER ── */
+    #page-loader {
+      position: fixed;
+      inset: 0;
+      background: #181818;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+      pointer-events: all;
+    }
+    #page-loader.fade-out { opacity: 0; pointer-events: none; }
+    #page-loader.hidden   { display: none; }
+    #page-loader .pl-logo {
+      width: 90px; height: 90px;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(255,214,0,0.3);
+      animation: plPop 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #page-loader .pl-ring {
+      width: 52px; height: 52px;
+      border: 3.5px solid rgba(255,214,0,0.15);
+      border-top-color: #FFD600;
+      border-radius: 50%;
+      animation: plSpin 0.8s linear infinite;
+    }
+    #page-loader .pl-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      animation: plPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes plPop {
+      0%   { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+      70%  { transform: scale(1.08) rotate(2deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    @keyframes plSpin { to { transform: rotate(360deg); } }
+    @keyframes plPulse {
+      0%,100% { opacity: 0.35; }
+      50%      { opacity: 0.9; }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="info-section">
-      <div class="logo-container">
-        <div class="logo">
-          <i class="fas fa-graduation-cap"></i>
-        </div>
-        <div class="logo-text">GH SCHOOLS</div>
-      </div>
-      
-      <h1>Begin Your Journey to Excellence</h1>
-      <p>Take the first step toward your future at GH SCHOOLS. Our admission process is designed to help promising students like you join our vibrant academic community.</p>
-      
-      <div class="features">
-        <div class="feature">
-          <i class="fas fa-shield-alt"></i>
-          <span>Secure payment processing</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-clock"></i>
-          <span>Instant form delivery</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-mobile-alt"></i>
-          <span>Mobile-friendly process</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-headset"></i>
-          <span>24/7 support available</span>
-        </div>
-      </div>
-      
-      <div class="contact-block" style="margin-top:30px; color:var(--secondary);">
-        <p style="margin:6px 0;"><i class="fas fa-phone" style="margin-right:8px;"></i> Call: +233 20 462 2250 / +233 27 762 2250 | Landline: +233 30 242 4909</p>
-        <p style="margin:6px 0;"><i class="fab fa-whatsapp" style="margin-right:8px;"></i> WhatsApp: +233 20 462 2250</p>
-      </div>
-    </div>
-    
-    <div class="form-section">
-      <div class="form-container">
-        <div class="form-header">
-          <h2>Admission Form Purchase</h2>
-          <p>Complete your details to proceed with payment</p>
-        </div>
-        
-        <form id="admissionForm">
-          <div class="form-group">
-            <i class="fas fa-user input-icon"></i>
-            <input type="text" id="fullName" name="fullName" placeholder="Full Name (e.g. Alex Osei Twum)" required />
-          </div>
-          
-          <div class="form-group">
-            <i class="fas fa-phone input-icon"></i>
-            <input type="tel" id="phone" name="phone" placeholder="Phone Number (e.g. 0532497382)" required />
-          </div>
+<!-- ── PAGE ENTRY LOADER ── -->
+<div id="page-loader">
+  <img src="images/favicon.png" alt="GH Schools" class="pl-logo">
+  <div class="pl-ring"></div>
+  <div class="pl-text">GH Schools Portal</div>
+</div>
 
-          <div class="form-group">
-            <i class="fas fa-envelope input-icon"></i>
-            <input type="email" id="email" name="email" placeholder="Email (optional)" />
-          </div>
-          
-          <!-- We only collect full name and phone. If the applicant has no email,
-               a mock email will be generated from the name + phone on submit. -->
-          <div id="mockEmailNotice" style="margin-bottom:12px; color:#555; font-size:0.95rem;">
-            If you don't have an email address, we'll generate one for you automatically.
-          </div>
-          
-          <div class="price-tag">
-            <div class="price">₵150.00</div>
-            <div>
-              <div>Admission Form Fee</div>
-              <div class="payment-methods">
-                <div class="payment-method"><i class="fas fa-credit-card"></i> Card</div>
-                <div class="payment-method"><i class="fas fa-mobile-alt"></i> Mobile Money</div>
-              </div>
-            </div>
-          </div>
-          
-          <button type="submit" id="submitBtn">
-            <i class="fas fa-lock"></i>
-            Pay Securely Now
-          </button>
-          
-          <div class="loading" id="loadingIndicator">
-            <div class="loading-spinner"></div>
-            <p>Processing your payment...</p>
-          </div>
-          
-          <div class="security-note">
-            <i class="fas fa-shield-alt"></i>
-            <span>Your information is protected with bank-level security</span>
-          </div>
-        </form>
-      </div>
+
+  <div class="container">
+    <div class="form-logo">
+      <img src="images/favicon.png" alt="GH Schools logo">
     </div>
+    <div class="form-header">
+      <h2> Purchase Admission Form</h2>
+      <p>Enter your details to proceed with payment</p>
+    </div>
+
+    <form id="admissionForm">
+      <div class="form-group">
+        <i class="fas fa-user input-icon"></i>
+        <input type="text" id="fullName" name="fullName" placeholder="Full Name (e.g. Alex Osei Twum)" required />
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-phone input-icon"></i>
+        <input type="tel" id="phone" name="phone" placeholder="Phone Number (e.g. 0532497382)" required />
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" id="email" name="email" placeholder="Email (optional)" />
+      </div>
+
+      <div class="price-tag">
+        <div class="price-tag-left">
+          <span class="price-label">Admission Form Fee</span>
+          <span class="price" id="formFeeDisplay">₵—</span>
+        </div>
+        <div class="payment-methods">
+          <div class="payment-method"><i class="fas fa-credit-card"></i> Card</div>
+          <div class="payment-method"><i class="fas fa-mobile-alt"></i> MoMo</div>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn">
+        <i class="fas fa-lock"></i>
+        Pay Securely
+      </button>
+
+      <div class="loading" id="loadingIndicator">
+        <div class="loading-spinner"></div>
+        <p>Processing payment…</p>
+      </div>
+
+      <div class="security-note">
+        <i class="fas fa-shield-alt"></i>
+        <span>Your details are protected with bank-level security</span>
+      </div>
+    </form>
   </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", async function () {
+    // ── Dismiss page loader after page is ready ──
+    window.addEventListener('load', function() {
+      var loader = document.getElementById('page-loader');
+      if (!loader) return;
+      setTimeout(function() {
+        loader.classList.add('fade-out');
+        setTimeout(function() { loader.classList.add('hidden'); }, 420);
+      }, 1000);
+    });
+
     // Initialize Supabase client inside DOMContentLoaded to avoid redeclaration
     const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
@@ -415,20 +478,137 @@
     }
 
     console.log('Payment page loaded');
-    // Determine admission form fee based on origin:
-    // - If arriving from short-courses (query params or referrer), fee = 200 GHS
-    // - Otherwise (direct admission flow), fee = 150 GHS
-    let FORM_FEE = 150; // default GHS
-    // expose origin flag to payment handlers
+
+    // FORM_FEE will be populated from the DB; start null to block submission until loaded
+    let FORM_FEE = null;
     let fromShortCourses = false;
-    try {
-      const params = new URLSearchParams(window.location.search);
-      fromShortCourses = params.has('school') || params.has('course') || params.has('interest_id') || (document.referrer && document.referrer.includes('short-courses'));
-      if (fromShortCourses) FORM_FEE = 0.1;
-      // update visible price immediately
-      try { document.querySelector('.price').textContent = `₵${FORM_FEE.toFixed(2)}`; } catch (e) {}
-    } catch (e) {
-      console.warn('Failed to parse query params for fee logic', e);
+
+    // ── Helper: update the visible price tag ──────────────────────────────────
+    function renderFee(amount) {
+      const el = document.getElementById('formFeeDisplay');
+      if (el) {
+        el.textContent = amount != null ? `₵${Number(amount).toFixed(2)}` : '₵—';
+        if (amount != null) {
+          el.classList.remove('popped');
+          void el.offsetWidth; // reflow to restart animation
+          el.classList.add('popped');
+        }
+      }
+    }
+
+    // ── Fetch the admission form fee from fee_schedules ─────────────────────
+    //
+    // fee_schedules holds individual fee line items (joined to fee_types by name).
+    // The form/application fee is the row whose fee_type name contains
+    // "application" or "admission" (case-insensitive).
+    //
+    // URL params (level, program, semester, academic_year) narrow the search to
+    // the right cohort. If no exact match exists we broaden progressively:
+    //   1. Exact match on all supplied params
+    //   2. Any row for that academic_year (drop level/program/semester)
+    //   3. Any application-fee row (most recently updated)
+    //
+    async function loadFormFee() {
+      if (!supabase) {
+        console.error('[fee] supabase not available, cannot load fee');
+        renderFee(null);
+        return;
+      }
+
+      try {
+        const params      = new URLSearchParams(window.location.search);
+        const level        = params.get('level')         || null;
+        const program      = params.get('program')       || null;
+        const semester     = params.get('semester')      || null;
+        const academicYear = params.get('academic_year') || null;
+
+        fromShortCourses = params.has('school') || params.has('course') ||
+          params.has('interest_id') ||
+          (document.referrer && document.referrer.includes('short-courses'));
+
+        console.log('[fee] params:', { level, program, semester, academicYear, fromShortCourses });
+
+        // ── Step 1: build the fee_types filter for application/admission fees ──
+        // fee_schedules.fee_type is a text copy of fee_types.name (denormalised).
+        // We match either the text column directly or via a join on fee_types.name.
+        const buildQuery = (ay, sem, lvl, prog) => {
+          let q = supabase
+            .from('fee_schedules')
+            .select('amount, fee_type, academic_year, semester, level, program, fee_types(name)')
+            // Match rows whose fee_type text contains "application" or "admission"
+            .or('fee_type.ilike.%application%,fee_type.ilike.%admission%')
+            .order('updated_at', { ascending: false });
+
+          if (ay)   q = q.eq('academic_year', ay);
+          if (sem)  q = q.eq('semester', sem);
+          if (lvl)  q = q.eq('level', lvl);
+          if (prog) q = q.eq('program', prog);
+
+          return q.limit(1);
+        };
+
+        // ── Step 2: try progressively broader queries until we find a fee ──
+        let fee = null;
+
+        // 2a. Exact match (all supplied params)
+        const { data: exact, error: exactErr } = await buildQuery(academicYear, semester, level, program);
+        if (exactErr) throw exactErr;
+        if (exact && exact.length > 0) {
+          fee = Number(exact[0].amount);
+          console.log('[fee] exact match:', fee, exact[0]);
+        }
+
+        // 2b. Broaden: drop level/program, keep year+semester
+        if (fee == null && (academicYear || semester)) {
+          const { data: broad, error: broadErr } = await buildQuery(academicYear, semester, null, null);
+          if (broadErr) throw broadErr;
+          if (broad && broad.length > 0) {
+            fee = Number(broad[0].amount);
+            console.log('[fee] broad match (year+sem):', fee, broad[0]);
+          }
+        }
+
+        // 2c. Broaden further: any application-fee row, no cohort filter
+        if (fee == null) {
+          const { data: any, error: anyErr } = await buildQuery(null, null, null, null);
+          if (anyErr) throw anyErr;
+          if (any && any.length > 0) {
+            fee = Number(any[0].amount);
+            console.log('[fee] fallback match (any application fee):', fee, any[0]);
+          }
+        }
+
+        // 2d. Last resort: any fee_schedules row at all (catches edge-case naming)
+        if (fee == null) {
+          const { data: last, error: lastErr } = await supabase
+            .from('fee_schedules')
+            .select('amount, fee_type')
+            .order('updated_at', { ascending: false })
+            .limit(1);
+          if (!lastErr && last && last.length > 0) {
+            fee = Number(last[0].amount);
+            console.warn('[fee] last-resort match (first row in fee_schedules):', fee, last[0]);
+          } else {
+            console.error('[fee] fee_schedules returned no rows — check table has data and RLS allows SELECT');
+          }
+        }
+
+        FORM_FEE = fee;
+      } catch (err) {
+        console.error('[fee] error loading form fee from DB:', err);
+      }
+
+      renderFee(FORM_FEE);
+    }
+
+    // Kick off fee fetch immediately after supabase is ready
+    await loadFormFee();
+
+    // ── FALLBACK: if fee still null after DB fetch, use hardcoded default ──
+    if (FORM_FEE == null) {
+      FORM_FEE = 50; // Default admission form fee in GHS — update to match your actual fee
+      renderFee(FORM_FEE);
+      console.warn('[fee] Using hardcoded fallback fee:', FORM_FEE);
     }
     
     const form = document.getElementById("admissionForm");
@@ -437,6 +617,12 @@
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
+
+      // Guard: fee must be loaded from DB before payment can proceed
+      if (FORM_FEE == null) {
+        alert("⚠️ The form fee is still loading from the server. Please wait a moment and try again.");
+        return;
+      }
 
       // Wait for Paystack to be fully loaded
       if (typeof PaystackPop === "undefined") {
@@ -483,189 +669,290 @@
       loadingIndicator.style.display = "block";
 
       try {
-        // First, create a payment record in Supabase
-        // Also store first_name/last_name (safe split) so downstream systems that expect
-        // separate fields continue to work after the newstudents migration.
         const nameParts = fullName.split(/\s+/).filter(Boolean);
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
         if (!supabase) {
-          console.error('[supabase] client instance is not available; aborting payment creation');
+          console.error('[supabase] client instance is not available');
           alert('Payment service currently unavailable. Please try again later.');
           submitBtn.style.display = "flex";
           loadingIndicator.style.display = "none";
           return;
         }
 
-        const { data: paymentRecord, error: insertError } = await supabase
-          .from('admission_payments')
-          .insert([
-            {
-              first_name: firstName,
-              last_name: lastName,
-              email: usedEmail,
-              phone: phone,
-              amount: FORM_FEE,
-              currency: 'GHS',
-              payment_status: 'pending'
-            }
-          ])
-          .select();
+        // ── Helpers ───────────────────────────────────────────────────────
 
-        if (insertError) {
-          throw new Error('Failed to create payment record: ' + insertError.message);
+        function generateUsername(firstName, phone) {
+          const name = firstName.toLowerCase().replace(/[^a-z]/g, '').slice(0, 6) || 'student';
+          const digits = phone.replace(/\D/g, '').slice(-4) || Math.floor(Math.random() * 9000 + 1000).toString();
+          return `GHS-${name}${digits}`;
         }
 
-        const paymentId = paymentRecord[0].id;
+        function generatePassword(length = 8) {
+          const upper  = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+          const lower  = 'abcdefghjkmnpqrstuvwxyz';
+          const digits = '23456789';
+          const all    = upper + lower + digits;
+          let pwd = '';
+          pwd += upper[Math.floor(Math.random() * upper.length)];
+          pwd += lower[Math.floor(Math.random() * lower.length)];
+          pwd += digits[Math.floor(Math.random() * digits.length)];
+          for (let i = 3; i < length; i++) pwd += all[Math.floor(Math.random() * all.length)];
+          return pwd.split('').sort(() => Math.random() - 0.5).join('');
+        }
 
-        // Generate a short unique reference code tied to this student/payment
-        // 6 characters: uppercase, lowercase, digits
-        async function generateRandomCode(length = 6) {
+        function generateRefCode(length = 6) {
           const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
           let out = '';
           for (let i = 0; i < length; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
           return out;
         }
 
-        async function generateAndSaveReferenceCode(paymentId) {
-          let attempts = 0;
-          while (attempts < 8) {
-            attempts++;
-            const code = await generateRandomCode(6);
-            try {
-              // check uniqueness
-              const { data: exists, error: selErr } = await supabase
-                .from('admission_payments')
-                .select('id')
-                .eq('reference_code', code)
-                .limit(1);
+        async function sendCredentialsSMS(phone, username, password, fullName) {
+          const message =
+            `Dear ${fullName.split(' ')[0]}, your GH Schools admission portal credentials are:\n` +
+            `Username: ${username}\n` +
+            `Password: ${password}\n` +
+            `Login at: admissionforms.html\n` +
+            `Keep these safe. - GH Schools`;
 
-              if (selErr) {
-                console.warn('Reference code uniqueness check failed, retrying', selErr);
-                continue;
-              }
+          // ── OPTION A: Arkesel SMS API ─────────────────────────────────
+          /*
+          try {
+            await fetch('https://sms.arkesel.com/sms/api?action=send-sms', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                api_key: 'YOUR_ARKESEL_API_KEY',
+                to: phone, from: 'GHSchools', sms: message
+              })
+            });
+          } catch (e) { console.error('[SMS] Arkesel error', e); }
+          */
 
-              if (exists && exists.length) {
-                // collision, retry
-                continue;
-              }
+          // ── OPTION B: Mnotify SMS API ─────────────────────────────────
+          /*
+          try {
+            const params = new URLSearchParams({
+              key: 'YOUR_MNOTIFY_API_KEY', to: phone,
+              msg: message, sender_id: 'GHSchools'
+            });
+            await fetch(`https://apps.mnotify.net/smsapi?${params}`);
+          } catch (e) { console.error('[SMS] Mnotify error', e); }
+          */
 
-              // Save code to this payment row
-              const { error: updErr } = await supabase
-                .from('admission_payments')
-                .update({ reference_code: code })
-                .eq('id', paymentId);
-
-              if (updErr) {
-                console.warn('Failed to save reference_code, retrying', updErr);
-                continue;
-              }
-
-              return code;
-            } catch (e) {
-              console.warn('generateAndSaveReferenceCode attempt error', e);
-            }
-          }
-          return null;
+          console.log('[SMS - DEMO] To:', phone, '| Message:', message);
         }
 
-        // Create and persist reference code; keep it in closure for redirect
-        const referenceCode = await generateAndSaveReferenceCode(paymentId);
-        console.log('Generated referenceCode for payment', paymentId, referenceCode);
+        // ── Paystack callbacks ────────────────────────────────────────────
+        // Nothing is written to the DB until Paystack confirms success.
 
-        // Define callback functions
-        function paymentCallback(response) {
-          console.log('Payment successful:', response);
-          
-          // Update payment record with successful payment details
-          supabase
-            .from('admission_payments')
-            .update({
-              payment_status: 'success',
-              payment_reference: response.reference,
-              paystack_transaction_id: response.transaction,
-              amount: FORM_FEE,
-              currency: 'GHS'
-            })
-            .eq('id', paymentId)
-            .then(({ error }) => {
-              if (error) {
-                console.error('Error updating payment record:', error);
-              }
-              // ✅ Redirect after successful payment — only after DB update is complete
-              // If user came from short-courses, send them to the course admission form page
-              const targetWithRef = (target) => referenceCode ? `${target}?ref=${encodeURIComponent(referenceCode)}` : target;
-              if (fromShortCourses) {
-                window.location.href = targetWithRef('ghfashionforms.html');
+        async function paymentCallbackAsync(response) {
+          console.log('[payment] Paystack confirmed success:', response);
+
+          const username      = generateUsername(firstName, phone);
+          const password      = generatePassword(8);
+          const referenceCode = generateRefCode(6);
+
+          const record = {
+            first_name:              firstName,
+            last_name:               lastName,
+            email:                   usedEmail,
+            phone:                   phone,
+            amount:                  FORM_FEE,
+            currency:                'GHS',
+            payment_status:          'success',
+            payment_reference:       response.reference,
+            paystack_transaction_id: String(response.transaction || response.trxref || ''),
+            reference_code:          referenceCode,
+            portal_username:         username,
+            portal_password:         password
+          };
+
+          console.log('[DB] Attempting insert with record:', record);
+
+          // ── INSERT into Supabase ──────────────────────────────────────────
+          let insertOk = false;
+          if (supabase) {
+            try {
+              const { data: inserted, error: insertError } = await supabase
+                .from('admission_payments')
+                .insert([record])
+                .select();
+
+              if (insertError) {
+                // Log the FULL error object so you can see exactly what Supabase says
+                console.error('[DB] INSERT FAILED. Full error:', JSON.stringify(insertError));
+                console.error('[DB] Error message:', insertError.message);
+                console.error('[DB] Error code:', insertError.code);
+                console.error('[DB] Error details:', insertError.details);
+                console.error('[DB] Error hint:', insertError.hint);
+                // Show a visible alert so the admin knows immediately
+                alert(
+                  'IMPORTANT: Payment was received but could NOT be saved to the database.\n' +
+                  'Error: ' + (insertError.message || JSON.stringify(insertError)) + '\n' +
+                  'Save these credentials manually:\n' +
+                  'Username: ' + username + '\n' +
+                  'Password: ' + password + '\n' +
+                  'Ref: ' + referenceCode
+                );
               } else {
-                window.location.href = targetWithRef('admissionforms.html');
+                insertOk = true;
+                console.log('[DB] Insert successful:', inserted);
               }
-            });
+            } catch (dbErr) {
+              console.error('[DB] Exception during insert (likely CORS/allowlist issue):', dbErr);
+              alert(
+                'Payment received but DB write failed (network/CORS error).\n' +
+                'Save these credentials manually:\n' +
+                'Username: ' + username + '\n' +
+                'Password: ' + password + '\n' +
+                'Ref: ' + referenceCode
+              );
+            }
+          } else {
+            console.error('[DB] Supabase client not available — cannot insert record');
+          }
+
+          // ── Always send SMS regardless of DB result ───────────────────────
+          try {
+            await sendCredentialsSMS(phone, username, password, fullName);
+          } catch (smsErr) {
+            console.error('[SMS] Failed to send credentials SMS:', smsErr);
+          }
+
+          // ── Show loading screen then redirect to admission form ────────────
+          const targetWithRef = (target) => target + '?ref=' + encodeURIComponent(referenceCode);
+          const redirectUrl = fromShortCourses
+            ? targetWithRef('ghfashionforms.html')
+            : targetWithRef('admissionforms.html');
+
+          // Show the branded loading overlay before navigating
+          const overlay = document.getElementById('payment-success-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            // Let the animation play for 2 seconds, then navigate
+            setTimeout(function() {
+              window.location.href = redirectUrl;
+            }, 2200);
+          } else {
+            window.location.href = redirectUrl;
+          }
+        }
+
+        // Plain (non-async) wrapper — Paystack requires a regular function for callback
+        function paymentCallback(response) {
+          paymentCallbackAsync(response).catch(err => {
+            console.error('[callback] async error after payment:', err);
+          });
         }
 
         function paymentOnClose() {
-          console.log('Payment modal closed');
-          // Update payment record as cancelled
-          supabase
-            .from('admission_payments')
-            .update({
-              payment_status: 'cancelled'
-            })
-            .eq('id', paymentId)
-            .then(({ error }) => {
-              if (error) {
-                console.error('Error updating payment record:', error);
-              }
-            })
-            .finally(() => {
-              // Hide loading indicator and show button again
-              submitBtn.style.display = "flex";
-              loadingIndicator.style.display = "none";
-              alert("Payment was cancelled. You can try again anytime.");
-            });
+          console.log('Payment modal closed without completing payment — nothing saved to DB.');
+          // No DB write — the student did not pay.
+          submitBtn.style.display = "flex";
+          loadingIndicator.style.display = "none";
+          alert("Payment was cancelled. You can try again anytime.");
         }
 
-        // Verify callback functions are valid
-        console.log('Callback function valid:', typeof paymentCallback === 'function');
-        console.log('OnClose function valid:', typeof paymentOnClose === 'function');
-
-        // Setup Paystack
-        // Update visible price tag (if present)
-        try{ document.querySelector('.price').textContent = `₵${FORM_FEE.toFixed(2)}`; }catch(e){}
-
+        // ── Open Paystack ─────────────────────────────────────────────────
         const handler = PaystackPop.setup({
           key: 'pk_live_0563b84aae2c983dcbf04ec1fad441f04ef25d07',
           email: usedEmail,
-          amount: FORM_FEE * 100, // amount in pesewas
+          amount: FORM_FEE * 100,
           currency: 'GHS',
           channels: ['card', 'mobile_money'],
           metadata: {
             custom_fields: [
-              { display_name: "First Name", variable_name: "first_name", value: firstName },
-              { display_name: "Last Name", variable_name: "last_name", value: lastName },
-              { display_name: "Phone Number", variable_name: "phone", value: phone },
-              { display_name: "Payment ID", variable_name: "payment_id", value: paymentId }
+              { display_name: "First Name",    variable_name: "first_name", value: firstName },
+              { display_name: "Last Name",     variable_name: "last_name",  value: lastName  },
+              { display_name: "Phone Number",  variable_name: "phone",      value: phone      }
             ]
           },
           callback: paymentCallback,
           onClose: paymentOnClose
         });
 
-        console.log('Paystack setup successful:', typeof handler !== 'undefined');
         handler.openIframe();
-        
+
       } catch (error) {
         console.error('Payment initialization error:', error);
         alert('An error occurred while processing your payment. Please try again.');
-        
-        // Hide loading indicator and show button again
         submitBtn.style.display = "flex";
         loadingIndicator.style.display = "none";
       }
     });
   });
 </script>
+
+
+<!-- ── POST-PAYMENT LOADING SCREEN ── -->
+<div id="payment-success-overlay" style="
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #181818;
+  z-index: 99999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  animation: overlayIn 0.35s ease both;
+">
+  <style>
+    @keyframes overlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes overlayLogoIn {
+      0%   { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+      70%  { transform: scale(1.08) rotate(2deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    @keyframes overlayPulse {
+      0%,100% { opacity: 0.4; }
+      50%      { opacity: 1; }
+    }
+    @keyframes overlaySpin {
+      to { transform: rotate(360deg); }
+    }
+    #payment-success-overlay img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(255,214,0,0.3);
+      animation: overlayLogoIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
+    }
+    #payment-success-overlay .overlay-ring {
+      width: 52px; height: 52px;
+      border: 3.5px solid rgba(255,214,0,0.15);
+      border-top-color: #FFD600;
+      border-radius: 50%;
+      animation: overlaySpin 0.8s linear infinite;
+    }
+    #payment-success-overlay .overlay-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      animation: overlayPulse 1.4s ease-in-out infinite;
+    }
+    #payment-success-overlay .overlay-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.05em;
+    }
+  </style>
+  <img src="images/favicon.png" alt="GH Schools">
+  <div class="overlay-ring"></div>
+  <div class="overlay-text">GH Schools Portal</div>
+  <div class="overlay-sub">Setting up your application…</div>
+</div>
 
 </body>
 </html>

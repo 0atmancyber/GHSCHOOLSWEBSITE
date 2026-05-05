@@ -71,10 +71,6 @@
   --shadow-lg: 0 12px 40px rgba(0,0,0,.18);
 }
 
-/* Small helper for replacing graduation icons with the GH logo image */
-.gh-icon { width:20px; height:20px; object-fit:contain; display:inline-block; vertical-align:middle; }
-.login-logo-wrap img.gh-icon { width:44px; height:44px; }
-
 /* ═══════════════════════════════════════
    ANIMATIONS & SCROLL EFFECTS
    ═══════════════════════════════════════ */
@@ -1541,7 +1537,7 @@ body {
         <!-- Brand -->
         <div class="login-brand">
           <div class="login-logo-wrap">
-            <img src="images/favicon.png" alt="GH Schools" class="gh-icon">
+            <i class="fas fa-graduation-cap"></i>
           </div>
           <div class="login-brand-name">GH Schools</div>
           <div class="login-brand-sub">School Management System</div>
@@ -1557,31 +1553,31 @@ body {
           <div class="ls-step-label">Select Your Role to Continue</div>
           <div class="login-role-grid">
             <button type="button" class="login-role-btn" onclick="lsSelectRole('superadmin',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Super Admin <br> (Rector)
+              <i class="fas fa-crown"></i>Super Admin
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('finance',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Finance
+              <i class="fas fa-coins"></i>Finance
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('cashier',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Cashier
+              <i class="fas fa-cash-register"></i>Cashier
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('admissions',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Admissions
+              <i class="fas fa-user-plus"></i>Admissions
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('registrar',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Registrar
+              <i class="fas fa-id-card-clip"></i>Registrar
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('communications',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Comms
+              <i class="fas fa-bullhorn"></i>Comms
             </button>
-            <button type="button" class="login-role-btn" onclick="lsSelectRole('academics',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Academics
+            <button type="button" class="login-role-btn" onclick="lsSelectRole('production',this)">
+              <i class="fas fa-print"></i>Production
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('student_affairs',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Student Affairs
+              <i class="fas fa-user-graduate"></i>Student Affairs
             </button>
             <button type="button" class="login-role-btn" onclick="lsSelectRole('quality_control',this)">
-              <img src="images/favicon.png" alt="GH Schools" class="gh-icon"> Quality Control
+              <i class="fas fa-shield-halved"></i>Quality Control
             </button>
           </div>
         </div>
@@ -1763,60 +1759,6 @@ body {
       <i class="fas fa-gear"></i> System Settings
     </div>
   </nav>
-
-  <!-- ADMISSIONS NAV -->
-  <nav class="sidebar-nav role-sidebar" id="sidebar-nav-admissions" style="display:none">
-    <div class="nav-section-label">Main</div>
-    <div class="nav-item active" onclick="showView('admissions-overview')">
-      <i class="fas fa-chart-pie"></i> Overview
-    </div>
-    <div class="nav-section-label">Applications</div>
-    <div class="nav-item" onclick="showView('admissions-applications')">
-      <i class="fas fa-file-alt"></i> Applications
-    </div>
-    <div class="nav-item" onclick="showView('admissions-applicants')">
-      <i class="fas fa-users"></i> Applicants
-    </div>
-    <div class="nav-section-label">Payments</div>
-    <div class="nav-item" onclick="showView('admissions-payments')">
-      <i class="fas fa-receipt"></i> Form Payments
-    </div>
-  </nav>
-
-  <!-- COMMUNICATIONS NAV -->
-  <nav class="sidebar-nav role-sidebar" id="sidebar-nav-communications" style="display:none">
-    <div class="nav-section-label">Main</div>
-    <div class="nav-item active" onclick="showView('communications-overview')">
-      <i class="fas fa-chart-pie"></i> Overview
-    </div>
-    <div class="nav-section-label">Outreach</div>
-    <div class="nav-item" onclick="showView('communications-announcements')">
-      <i class="fas fa-bullhorn"></i> Announcements
-    </div>
-    <div class="nav-section-label">Records</div>
-    <div class="nav-item" onclick="showView('communications-students')">
-      <i class="fas fa-users"></i> Student Directory
-    </div>
-  </nav>
-
-  <nav class="sidebar-nav role-sidebar" id="sidebar-nav-academics" style="display:none">
-    <div class="nav-section-label">Main</div>
-    <div class="nav-item active" onclick="showView('academics-overview')">
-      <i class="fas fa-chart-pie"></i> Overview
-    </div>
-    <div class="nav-section-label">Academic Records</div>
-    <div class="nav-item" onclick="showView('academics-students')">
-      <i class="fas fa-users"></i> Student Registry
-    </div>
-    <div class="nav-item" onclick="showView('academics-courses')">
-      <i class="fas fa-book-open"></i> Courses & Programmes
-    </div>
-    <div class="nav-section-label">Reports</div>
-    <div class="nav-item" onclick="showView('academics-reports')">
-      <i class="fas fa-file-lines"></i> Academic Reports
-    </div>
-  </nav>
-
     <button class="logout-btn" onclick="doLogout()">
       <i class="fas fa-right-from-bracket"></i> Sign Out
     </button>
@@ -2240,7 +2182,7 @@ body {
             <h3 style="font-size:16px;font-weight:800;color:#78350f;margin:0 0 6px;font-family:'Fraunces',serif">Admission Fees</h3>
             <p style="font-size:12px;color:#6b7280;line-height:1.5;margin:0 0 16px">Record manual admission fee payments for Level 100 students. Lookup student and record payment details.</p>
             <div style="display:flex;align-items:center;gap:8px">
-              <span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px"><img src="images/favicon.png" alt="GH Schools" class="gh-icon" style="margin-right:6px;vertical-align:middle;">Level 100</span>
+              <span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px"><i class="fas fa-graduation-cap" style="margin-right:4px"></i>Level 100</span>
               <span style="background:#fff7ed;color:#9a3412;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px"><i class="fas fa-money-bill" style="margin-right:4px"></i>Manual Payment</span>
             </div>
             <div style="margin-top:16px;display:flex;align-items:center;gap:6px;color:#d97706;font-size:12.5px;font-weight:700">
@@ -3411,285 +3353,6 @@ body {
       </div>
     </div>
 
-    <!-- ══════════════ VIEW: ADMISSIONS OVERVIEW ══════════════ -->
-    <div class="view" id="view-admissions-overview">
-      <div class="section-header">
-        <div><h2>Admissions Overview</h2><p id="admissionsOverviewDate">Today's admissions summary</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAdmissionsDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card blue">
-          <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-          <div class="stat-value" id="admStatTotal">—</div>
-          <div class="stat-label">Total Applications</div>
-          <div class="stat-change neutral" id="admStatTotalSub">Loading…</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-          <div class="stat-value" id="admStatPaid">—</div>
-          <div class="stat-label">Form Fees Paid</div>
-          <div class="stat-change up">GHS 150.00 each</div>
-        </div>
-        <div class="stat-card amber">
-          <div class="stat-icon"><i class="fas fa-clock"></i></div>
-          <div class="stat-value" id="admStatPending">—</div>
-          <div class="stat-label">Pending</div>
-          <div class="stat-change neutral">Awaiting processing</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
-          <div class="stat-value" id="admStatToday">—</div>
-          <div class="stat-label">Applications Today</div>
-          <div class="stat-change neutral">—</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><i class="fas fa-clock-rotate-left" style="color:var(--blue-400)"></i><h3>Recent Applications</h3></div>
-        <div class="card-body" style="padding:0">
-          <div class="data-table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-              <tbody id="admRecentBody"><tr class="loading-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: ADMISSIONS APPLICATIONS ══════════════ -->
-    <div class="view" id="view-admissions-applications">
-      <div class="section-header">
-        <div><h2>Applications</h2><p>All application form submissions</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAdmissionsApplications()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:14px 20px 10px">
-          <div class="filter-bar">
-            <div class="search-box" style="flex:0 0 260px">
-              <i class="fas fa-search"></i>
-              <input class="form-input" id="admAppSearch" type="text" placeholder="Search name, email, phone…" oninput="filterAdmissionsApps()">
-            </div>
-            <select class="form-select" style="width:150px" id="admAppStatus" onchange="filterAdmissionsApps()">
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-            </select>
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('admAppSearch').value='';document.getElementById('admAppStatus').value='';filterAdmissionsApps()"><i class="fas fa-times"></i> Clear</button>
-          </div>
-        </div>
-        <div class="data-table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Ref</th><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody id="admAppsBody"><tr class="loading-row"><td colspan="8"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: ADMISSIONS APPLICANTS ══════════════ -->
-    <div class="view" id="view-admissions-applicants">
-      <div class="section-header">
-        <div><h2>Applicants</h2><p>Students who have paid for application forms</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAdmissionsApplicants()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:14px 20px 10px">
-          <div class="filter-bar">
-            <div class="search-box" style="flex:0 0 260px">
-              <i class="fas fa-search"></i>
-              <input class="form-input" id="admApplicantSearch" type="text" placeholder="Search name or email…" oninput="filterAdmissionsApplicants()">
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('admApplicantSearch').value='';filterAdmissionsApplicants()"><i class="fas fa-times"></i> Clear</button>
-          </div>
-        </div>
-        <div class="data-table-wrap">
-          <table class="data-table">
-            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Reference</th><th>Source</th><th>Date</th></tr></thead>
-            <tbody id="admApplicantsBody"><tr class="loading-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: ADMISSIONS PAYMENTS ══════════════ -->
-    <div class="view" id="view-admissions-payments">
-      <div class="section-header">
-        <div><h2>Form Payments</h2><p>Application form fee payment records</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAdmissionsPayments()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="data-table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Ref Code</th><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody id="admPaymentsBody"><tr class="loading-row"><td colspan="8"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: COMMUNICATIONS OVERVIEW ══════════════ -->
-    <div class="view" id="view-communications-overview">
-      <div class="section-header">
-        <div><h2>Communications Overview</h2><p>Student directory and outreach summary</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadCommunicationsDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-card blue">
-          <div class="stat-icon"><i class="fas fa-users"></i></div>
-          <div class="stat-value" id="commStatStudents">—</div>
-          <div class="stat-label">Total Students</div>
-          <div class="stat-change neutral">In database</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon"><i class="fas fa-envelope"></i></div>
-          <div class="stat-value" id="commStatEmails">—</div>
-          <div class="stat-label">With Email Address</div>
-          <div class="stat-change up">Reachable by email</div>
-        </div>
-        <div class="stat-card amber">
-          <div class="stat-icon"><i class="fas fa-phone"></i></div>
-          <div class="stat-value" id="commStatPhones">—</div>
-          <div class="stat-label">With Phone Number</div>
-          <div class="stat-change neutral">Reachable by SMS</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><i class="fas fa-users" style="color:var(--blue-400)"></i><h3>Recent Students</h3>
-          <div class="card-actions"><button class="btn btn-sm btn-outline" onclick="showView('communications-students')">View All</button></div>
-        </div>
-        <div class="card-body" style="padding:0">
-          <div class="data-table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Name</th><th>Programme</th><th>Level</th><th>Email</th><th>Phone</th></tr></thead>
-              <tbody id="commRecentBody"><tr class="loading-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: COMMUNICATIONS ANNOUNCEMENTS ══════════════ -->
-    <div class="view" id="view-communications-announcements">
-      <div class="section-header">
-        <div><h2>Announcements</h2><p>View and prepare student communications</p></div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:24px;text-align:center;color:var(--gray-400)">
-          <i class="fas fa-bullhorn fa-3x" style="opacity:.25;margin-bottom:16px;display:block"></i>
-          <p style="font-size:14px">Announcements module — connect your notification service to send messages to students.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════ VIEW: COMMUNICATIONS STUDENT DIRECTORY ══════════════ -->
-    <div class="view" id="view-communications-students">
-      <div class="section-header">
-        <div><h2>Student Directory</h2><p>All students with contact information</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadCommunicationsStudents()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:14px 20px 10px">
-          <div class="filter-bar">
-            <div class="search-box" style="flex:0 0 260px">
-              <i class="fas fa-search"></i>
-              <input class="form-input" id="commStudentSearch" type="text" placeholder="Search name, ID, email…" oninput="filterCommStudents()">
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('commStudentSearch').value='';filterCommStudents()"><i class="fas fa-times"></i> Clear</button>
-          </div>
-        </div>
-        <div class="data-table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Student ID</th><th>Name</th><th>Programme</th><th>Level</th><th>Email</th><th>Phone</th></tr></thead>
-            <tbody id="commStudentsBody"><tr class="loading-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-          </table>
-        </div>
-        <div class="pagination" id="commStudentsPagination"></div>
-      </div>
-    </div>
-
-    <!-- ══════════════ ACADEMICS VIEWS ══════════════ -->
-    <div class="view" id="view-academics-overview">
-      <div class="section-header">
-        <div><h2>Academics Overview</h2><p id="academicsOverviewDate">Academic summary</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAcademicsDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="stats-grid" id="academicsStatsGrid">
-        <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="acStatStudents">—</div><div class="stat-label">Total Students</div></div>
-        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-book-open"></i></div><div class="stat-value" id="acStatProgrammes">—</div><div class="stat-label">Programmes</div></div>
-        <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-layer-group"></i></div><div class="stat-value" id="acStatLevels">—</div><div class="stat-label">Active Levels</div></div>
-        <div class="stat-card red"><div class="stat-icon"><i class="fas fa-calendar"></i></div><div class="stat-value" id="acStatYear">—</div><div class="stat-label">Academic Year</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3>Enrolment by Programme</h3></div>
-        <div class="card-body" id="acEnrolmentBody" style="padding:16px"><div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading…</div></div>
-      </div>
-    </div>
-
-    <div class="view" id="view-academics-students">
-      <div class="section-header">
-        <div><h2>Student Registry</h2><p>Full student list for academic records</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAcademicsStudents()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:14px 20px 10px">
-          <div class="filter-bar">
-            <div class="search-box" style="flex:0 0 260px">
-              <i class="fas fa-search"></i>
-              <input class="form-input" id="acStudentSearch" type="text" placeholder="Search name, ID, programme…" oninput="filterAcStudents()">
-            </div>
-            <select class="form-select" id="acStudentLevel" onchange="filterAcStudents()" style="width:160px">
-              <option value="">All Levels</option>
-              <option value="100">Level 100</option>
-              <option value="200">Level 200</option>
-              <option value="300">Level 300</option>
-              <option value="400">Level 400</option>
-            </select>
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('acStudentSearch').value='';document.getElementById('acStudentLevel').value='';filterAcStudents()"><i class="fas fa-times"></i> Clear</button>
-          </div>
-        </div>
-        <div class="data-table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Student ID</th><th>Name</th><th>Programme</th><th>Level</th><th>Email</th><th>Phone</th></tr></thead>
-            <tbody id="acStudentsBody"><tr class="loading-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
-          </table>
-        </div>
-        <div class="pagination" id="acStudentsPagination"></div>
-      </div>
-    </div>
-
-    <div class="view" id="view-academics-courses">
-      <div class="section-header">
-        <div><h2>Courses &amp; Programmes</h2><p>Programme enrolment breakdown by level</p></div>
-        <div class="section-header-right">
-          <button class="btn btn-primary btn-sm" onclick="loadAcademicsCourses()"><i class="fas fa-refresh"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card"><div class="card-body" id="acCoursesBody" style="padding:16px"><div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading…</div></div></div>
-    </div>
-
-    <div class="view" id="view-academics-reports">
-      <div class="section-header">
-        <div><h2>Academic Reports</h2><p>Statistical summaries for academic staff</p></div>
-      </div>
-      <div class="card"><div class="card-body" style="padding:24px;text-align:center;color:var(--gray-500)"><i class="fas fa-file-lines fa-2x" style="margin-bottom:12px;display:block;color:var(--gray-300)"></i>Academic reports will be available here.</div></div>
-    </div>
-
   </div><!-- /content -->
 
     <!-- ══════════════ VIEW: FEE SCHEDULE ══════════════ -->
@@ -4128,7 +3791,7 @@ function clearSession() {
 }
 function isValidCashierSession() {
   const s = getSession();
-  return !!(s && ['cashier','finance','registrar','superadmin','admissions','communications','academics'].includes(s.role) && s.admin);
+  return !!(s && ['cashier','finance','registrar','superadmin'].includes(s.role) && s.admin);
 }
 
 // ─── SHOW / HIDE LOGIN & DASHBOARD ───
@@ -4189,7 +3852,6 @@ const _lsRoleMeta = {
   admissions:      { label:'Admissions',            icon:'fa-user-plus' },
   registrar:       { label:'Registrar',             icon:'fa-id-card-clip' },
   communications:  { label:'Communications',        icon:'fa-bullhorn' },
-  academics:       { label:'Academics',             icon:'fa-graduation-cap' },
   production:      { label:'Production',            icon:'fa-print' },
   student_affairs: { label:'Student Affairs',       icon:'fa-user-graduate' },
   quality_control: { label:'Quality Control',       icon:'fa-shield-halved' }
@@ -4263,7 +3925,7 @@ async function doLogin() {
   if (!_selectedRole)         { lsShowError('Please select your role first.');           return; }
   if (!username || !password) { lsShowError('Please enter both username and password.'); return; }
 
-  const ALLOWED_ROLES = ['cashier','finance','registrar','superadmin','admissions','communications','academics'];
+  const ALLOWED_ROLES = ['cashier','finance','registrar','superadmin','admissions'];
   if (!ALLOWED_ROLES.includes(_selectedRole)) {
     lsShowError('This portal does not yet support the selected role. Please contact IT.');
     return;
@@ -4299,6 +3961,13 @@ async function doLogin() {
     saveSession(sess);
 
     btn.innerHTML = '<i class="fas fa-check-circle"></i>&nbsp; Success!';
+
+    // Redirect admissions role to the dedicated admissions dashboard
+    if (_selectedRole === 'admissions') {
+      setTimeout(() => { window.location.href = 'admission_admin_dashboard.html'; }, 400);
+      return;
+    }
+
     setTimeout(() => initDashboard(sess), 400);
 
   } catch(e) {
@@ -4339,7 +4008,7 @@ function initDashboard(sess) {
   if (logoutName) logoutName.textContent = name;
   const logoutRole = document.getElementById('logoutModalRole');
   if (logoutRole) {
-    const roleLabels = { cashier:'Cashier · Fee Collection Officer', finance:'Finance Officer', registrar:'Registrar', superadmin:'Super Administrator', admissions:'Admissions Officer', communications:'Communications Officer', academics:'Academic Staff' };
+    const roleLabels = { cashier:'Cashier · Fee Collection Officer', finance:'Finance Officer', registrar:'Registrar', superadmin:'Super Administrator' };
     if (logoutRole) logoutRole.textContent = roleLabels[role] || role;
   }
 
@@ -4359,18 +4028,6 @@ function initDashboard(sess) {
     activateRoleSidebar('superadmin');
     showView('superadmin-overview');
     loadSuperAdminDashboard();
-  } else if (role === 'admissions') {
-    activateRoleSidebar('admissions');
-    showView('admissions-overview');
-    loadAdmissionsDashboard();
-  } else if (role === 'communications') {
-    activateRoleSidebar('communications');
-    showView('communications-overview');
-    loadCommunicationsDashboard();
-  } else if (role === 'academics') {
-    activateRoleSidebar('academics');
-    showView('academics-overview');
-    loadAcademicsDashboard();
   } else {
     // cashier (default)
     activateRoleSidebar('cashier');
@@ -4390,14 +4047,14 @@ function activateRoleSidebar(role) {
   if (target) target.style.display = 'block';
   // Update role badge in topbar
   const badge = document.getElementById('topbarRoleBadge');
-  const badgeLabels = { cashier:'Fee Collection Active', finance:'Finance Office', registrar:'Registrar Office', superadmin:'Super Admin Portal', admissions:'Admissions Office', communications:'Communications Office', academics:'Academics Office' };
+  const badgeLabels = { cashier:'Fee Collection Active', finance:'Finance Office', registrar:'Registrar Office', superadmin:'Super Admin Portal' };
   if (badge) {
     const spans = badge.querySelectorAll('span');
     if (spans.length >= 2) spans[1].textContent = badgeLabels[role] || role;
   }
   // Update sidebar user role text
   const roleSubEl = document.getElementById('sidebarUserRole');
-  const roleNames  = { cashier:'Fee Collection Officer', finance:'Finance Officer', registrar:'Registrar', superadmin:'Super Administrator', admissions:'Admissions Officer', communications:'Communications Officer', academics:'Academic Staff' };
+  const roleNames  = { cashier:'Fee Collection Officer', finance:'Finance Officer', registrar:'Registrar', superadmin:'Super Administrator' };
   if (roleSubEl) roleSubEl.textContent = roleNames[role] || role;
 }
 
@@ -4458,20 +4115,6 @@ const viewTitles = {
   'superadmin-departments':'Departments',
   'superadmin-audit':'Audit Logs',
   'superadmin-settings':'System Settings',
-  // Admissions
-  'admissions-overview':'Admissions Overview',
-  'admissions-applications':'Applications',
-  'admissions-applicants':'Applicants',
-  'admissions-payments':'Form Payments',
-  // Communications
-  'communications-overview':'Communications Overview',
-  'communications-announcements':'Announcements',
-  'communications-students':'Student Directory',
-  // Academics
-  'academics-overview':'Academics Overview',
-  'academics-students':'Student Registry',
-  'academics-courses':'Courses & Programmes',
-  'academics-reports':'Academic Reports',
 };
 
 function showView(name) {
@@ -4518,15 +4161,6 @@ function showView(name) {
   if (name === 'superadmin-audit') loadSuperAdminAudit();
   // Registrar courses
   if (name === 'registrar-courses') loadRegistrarCourses();
-  // Admissions views
-  if (name === 'admissions-overview') loadAdmissionsDashboard();
-  if (name === 'admissions-applications') loadAdmissionsApplications();
-  if (name === 'admissions-applicants') loadAdmissionsApplicants();
-  if (name === 'admissions-payments') loadAdmissionsPayments();
-  // Communications views
-  if (name === 'communications-overview') loadCommunicationsDashboard();
-  if (name === 'communications-announcements') loadCommunicationsAnnouncements();
-  if (name === 'communications-students') loadCommunicationsStudents();
 }
 
 // ═══════════════════════════════════════
@@ -10971,174 +10605,6 @@ function printCollectReceipt() {
     </body></html>`);
   w.document.close();
   setTimeout(() => w.print(), 400);
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  ACADEMICS — DASHBOARD & VIEWS
-// ═══════════════════════════════════════════════════════════════
-let _acAllStudents = [];
-
-async function loadAcademicsDashboard() {
-  document.getElementById('academicsOverviewDate').textContent =
-    'Today — ' + new Date().toLocaleDateString('en-GH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const acBody = document.getElementById('acEnrolmentBody');
-  if (acBody) acBody.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
-  try {
-    const db = getDB();
-    const { data, error } = await db.from('student_master_db').select('program,school,level,academic_year').limit(5000);
-    if (error) throw error;
-    const students = data || [];
-    _acAllStudents = students;
-
-    // Stats
-    const programmes = new Set(students.map(s => s.program || s.school || 'Unknown'));
-    const levels     = new Set(students.map(s => String(s.level || '')).filter(Boolean));
-    const years      = [...new Set(students.map(s => s.academic_year).filter(Boolean))].sort().reverse();
-
-    const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-    setEl('acStatStudents',   students.length.toLocaleString());
-    setEl('acStatProgrammes', programmes.size);
-    setEl('acStatLevels',     levels.size);
-    setEl('acStatYear',       years[0] || '—');
-
-    // Enrolment by programme
-    const deptMap = {};
-    students.forEach(s => {
-      const d = s.program || s.school || 'Unknown';
-      if (!deptMap[d]) deptMap[d] = { name: d, count: 0 };
-      deptMap[d].count++;
-    });
-    const depts = Object.values(deptMap).sort((a,b) => b.count - a.count);
-    const total = students.length || 1;
-    const colors = ['#c0392b','#16a34a','#d4a017','#6366f1','#0891b2','#be185d','#7c3aed','#64748b'];
-    if (acBody) acBody.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
-      ${depts.map((d,i) => {
-        const pct = Math.round(d.count / total * 100);
-        const c = colors[i % colors.length];
-        return `<div style="border:1px solid var(--gray-200);border-radius:10px;padding:14px;background:white;border-left:4px solid ${c}">
-          <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:8px">${d.name}</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-            <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:${pct}%;background:${c}"></div></div>
-            <span style="font-size:12px;font-weight:700;color:${c}">${pct}%</span>
-          </div>
-          <span style="font-size:11.5px;color:var(--gray-600)"><i class="fas fa-users" style="margin-right:4px;color:${c}"></i>${d.count.toLocaleString()} students</span>
-        </div>`;
-      }).join('')}
-    </div>`;
-  } catch(e) {
-    const acBody2 = document.getElementById('acEnrolmentBody');
-    if (acBody2) acBody2.innerHTML = `<div style="text-align:center;padding:24px;color:var(--danger)"><i class="fas fa-exclamation-circle"></i> ${e.message}</div>`;
-  }
-}
-
-let _acStudentsFiltered = [];
-const AC_PAGE_SIZE = 50;
-let _acPage = 1;
-
-async function loadAcademicsStudents() {
-  const body = document.getElementById('acStudentsBody');
-  if (!body) return;
-  body.innerHTML = '<tr class="loading-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
-  try {
-    const db = getDB();
-    const { data, error } = await db.from('student_master_db')
-      .select('student_id,first_name,middle_name,surname,program,school,level,email,phone_number_1')
-      .order('surname', {ascending:true}).limit(5000);
-    if (error) throw error;
-    _acAllStudents = data || [];
-    _acStudentsFiltered = _acAllStudents;
-    _acPage = 1;
-    renderAcStudents();
-  } catch(e) {
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:20px"><i class="fas fa-exclamation-circle"></i> ${e.message}</td></tr>`;
-  }
-}
-
-function filterAcStudents() {
-  const q   = (document.getElementById('acStudentSearch')?.value || '').toLowerCase();
-  const lvl = document.getElementById('acStudentLevel')?.value || '';
-  _acStudentsFiltered = _acAllStudents.filter(s => {
-    const name = ((s.first_name||'') + ' ' + (s.middle_name||'') + ' ' + (s.surname||'')).toLowerCase();
-    const prog = (s.program || s.school || '').toLowerCase();
-    const matchQ  = !q  || name.includes(q) || (s.student_id||'').toLowerCase().includes(q) || prog.includes(q);
-    const matchLvl= !lvl || String(s.level) === lvl;
-    return matchQ && matchLvl;
-  });
-  _acPage = 1;
-  renderAcStudents();
-}
-
-function renderAcStudents() {
-  const body = document.getElementById('acStudentsBody');
-  if (!body) return;
-  const total = _acStudentsFiltered.length;
-  const pages = Math.ceil(total / AC_PAGE_SIZE) || 1;
-  const slice = _acStudentsFiltered.slice((_acPage-1)*AC_PAGE_SIZE, _acPage*AC_PAGE_SIZE);
-  if (!slice.length) {
-    body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No students found.</td></tr>';
-    document.getElementById('acStudentsPagination').innerHTML = '';
-    return;
-  }
-  body.innerHTML = slice.map(s => {
-    const name = [s.first_name, s.middle_name, s.surname].filter(Boolean).join(' ');
-    return `<tr>
-      <td style="font-weight:600;color:var(--primary)">${s.student_id||'—'}</td>
-      <td>${name || '—'}</td>
-      <td>${s.program || s.school || '—'}</td>
-      <td>${s.level || '—'}</td>
-      <td>${s.email || '—'}</td>
-      <td>${s.phone_number_1 || '—'}</td>
-    </tr>`;
-  }).join('');
-  // Simple pagination
-  const pg = document.getElementById('acStudentsPagination');
-  if (pg) {
-    let html = '';
-    for (let i = 1; i <= Math.min(pages, 10); i++) {
-      html += `<button class="page-btn ${i===_acPage?'active':''}" onclick="_acPage=${i};renderAcStudents()">${i}</button>`;
-    }
-    if (pages > 10) html += `<span style="padding:0 8px;color:var(--gray-400)">… ${total} total</span>`;
-    pg.innerHTML = html;
-  }
-}
-
-async function loadAcademicsCourses() {
-  const body = document.getElementById('acCoursesBody');
-  if (!body) return;
-  body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
-  try {
-    const db = getDB();
-    const { data, error } = await db.from('student_master_db').select('program,school,level').limit(5000);
-    if (error) throw error;
-    const students = data || [];
-    const progMap = {};
-    students.forEach(s => {
-      const prog = s.program || s.school || 'Unknown';
-      if (!progMap[prog]) progMap[prog] = { name: prog, total: 0, byLevel: {} };
-      progMap[prog].total++;
-      const lvl = String(s.level || 'Unknown');
-      progMap[prog].byLevel[lvl] = (progMap[prog].byLevel[lvl] || 0) + 1;
-    });
-    const progs = Object.values(progMap).sort((a,b) => b.total - a.total);
-    if (!progs.length) {
-      body.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><p>No programme data available</p></div>';
-      return;
-    }
-    body.innerHTML = `<div class="data-table-wrap">
-      <table class="data-table">
-        <thead><tr><th>#</th><th>Programme</th><th>Total</th><th>Lvl 100</th><th>Lvl 200</th><th>Lvl 300</th><th>Lvl 400</th></tr></thead>
-        <tbody>${progs.map((p,i) => `<tr>
-          <td style="color:var(--gray-400);font-size:12px">${i+1}</td>
-          <td style="font-weight:600">${p.name}</td>
-          <td style="font-weight:700;color:var(--primary)">${p.total.toLocaleString()}</td>
-          <td>${p.byLevel['100']||'—'}</td><td>${p.byLevel['200']||'—'}</td>
-          <td>${p.byLevel['300']||'—'}</td><td>${p.byLevel['400']||'—'}</td>
-        </tr>`).join('')}</tbody>
-      </table>
-    </div>`;
-  } catch(e) {
-    body.innerHTML = `<div style="text-align:center;padding:24px;color:var(--danger)"><i class="fas fa-exclamation-circle"></i> ${e.message}</div>`;
-  }
 }
 </script>
 </body>

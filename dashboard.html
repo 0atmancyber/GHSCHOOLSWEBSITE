@@ -5379,7 +5379,7 @@
     window.__sb = supabase;
 
     /* ── STANBIC PAYNOW HELPERS ─────────────────────────── */
-    
+
 
     window.setNetwork = function (network, btn) {
       document.querySelectorAll('.network-btn').forEach(b => {
@@ -5539,16 +5539,23 @@
      * Triggers the actual API call after user fills the modal
      */
     window.executeStanbicPayNow = async function () {
-      const phone = document.getElementById('spnPhone').value;
-      const ctx = window._spnCtx;
+      const phoneInput = document.getElementById('spnPhone');
+      const phone = phoneInput.value.replace(/\D/g, '');
+      const ctx = window._spnCtx; // Contains {feeType, amount, feeBreakdown}
       const btn = document.getElementById('spnPayBtn');
+      const msg = document.getElementById('spnPhoneMsg');
 
-      if (!phone || phone.length < 9) { showToast('Enter a valid phone number', 'error'); return; }
+      // 1. Validation
+      if (phone.length < 10 || !phone.startsWith('0')) {
+        msg.textContent = '⚠ Enter a valid 10-digit number';
+        msg.style.color = 'var(--danger)';
+        return;
+      }
 
+      // 2. UI Feedback
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing Secure Payment...';
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Triggering MoMo Prompt...`;
 
-      // DYNAMIC RETURN URL: Detects if you are on localhost or live production
       const returnUrl = window.location.origin + window.location.pathname;
 
       try {
@@ -5559,45 +5566,37 @@
             'Authorization': `Bearer ${SUPABASE_ANON}`
           },
           body: JSON.stringify({
-            ...ctx,
-            phone: phone,
+            amount: ctx.amount,
             studentId: window.studentId,
             studentName: window.studentName,
-            returnUrl: returnUrl // Pass current URL for redirection
+            phone: phone,
+            feeType: ctx.feeType,
+            feeBreakdown: ctx.feeBreakdown, // Passing breakdown for invoiceItems
+            returnUrl: returnUrl
           })
         });
 
         const data = await response.json();
 
-        if (!response.ok) {
-          // Handle the USSD Authorization Required error (if mode is PAYNOW)
-          if (data.statusCode === "AUTHENTICATION_REQUIRED" || (data.error && data.error.includes("*718*"))) {
-            // (Keep USSD helper logic here if you want it as a fallback)
-            // For now, in CHECKOUT mode, the bank site handles verification.
-          }
-          throw new Error(data.error || 'Request failed');
-        }
+        if (!response.ok) throw new Error(data.error || 'Payment initiation failed');
 
-        // MODE: CHECKOUT -> Redirect user to Kowri
-        if (data.mode === 'CHECKOUT' && data.checkoutUrl) {
-          showToast("Redirecting to Stanbic Bank checkout...", "success");
+        // 3. Redirect to Checkout
+        // Even though the prompt hits the phone, we redirect to the checkout 
+        // page so the student sees the "Waiting for PIN" screen on Kowri.
+        if (data.checkoutUrl) {
+          showToast("Prompt sent! Redirecting to status page...", "success");
           setTimeout(() => {
             window.location.href = data.checkoutUrl;
           }, 800);
-          return;
         }
-
-        // MODE: PAYNOW -> Prompt sent directly to phone
-        closeModal('stanbicPayNowModal');
-        showMsg('Prompt Sent', `Check your phone for the PIN prompt.`, true);
 
       } catch (err) {
         console.error('[Stanbic Error]', err);
-        showToast(err.message || 'Payment failed', 'error');
+        showToast(err.message, 'error');
         btn.disabled = false;
-        btn.textContent = 'Authorize Payment';
+        btn.innerHTML = 'Authorize Payment';
       }
-    }
+    };
 
     /**
  * Phase 3: Stanbic Kowri Live API Integration

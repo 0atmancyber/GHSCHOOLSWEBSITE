@@ -3,960 +3,636 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Login - GH SCHOOLS</title>
+  <title>Student Payment Portal — GH Schools</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --primary: #2575fc;
-      --primary-dark: #1a6be0;
-      --secondary: #f19d01;
-      --secondary-dark: #d88a00;
-      --accent: #6a11cb;
-      --light: #f7f9fc;
-      --dark: #2c3e50;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --gray: #7f8c8d;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
+      --navy:    #0b1f3a;
+      --navy2:   #122444;
+      --gold:    #c9960c;
+      --gold2:   #f0b429;
+      --cream:   #fdf8f0;
+      --white:   #ffffff;
+      --ink:     #1a2535;
+      --muted:   #6b7a90;
+      --border:  #dde3ee;
+      --danger:  #b91c1c;
+      --success: #15803d;
     }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      margin: 0;
-      padding: 20px;
-      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--gold);
+      padding: 18px 40px;
+      display: flex;
       align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    body::before {
-      content: '';
-      position: absolute;
+      gap: 16px;
+      position: sticky;
       top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23ffffff" opacity="0.05"><polygon points="50,0 100,50 50,100 0,50"/></svg>');
-      background-size: 80px;
-      z-index: -1;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(11,31,58,.07);
     }
-    
-    .container {
-      max-width: 500px;
-      width: 95%;
-      margin: 20px auto;
-      background: white;
-      padding: 30px;
+    header img { width: 52px; height: 52px; object-fit: contain; }
+    .header-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--navy);
+      line-height: 1.1;
+    }
+    .header-text p {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .header-badge {
+      margin-left: auto;
+      background: var(--navy);
+      color: var(--gold2);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 5px 14px;
       border-radius: 20px;
-      box-shadow: var(--shadow);
+    }
+
+    /* MAIN LAYOUT */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 500px;
+      margin: 48px auto;
+      width: 100%;
+      padding: 0 28px;
+    }
+    /* Login Card */
+    .login-card {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 8px 48px rgba(11,31,58,.12);
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .card-header {
+      background: var(--navy);
+      padding: 30px 32px 26px;
       position: relative;
       overflow: hidden;
-      transform: translateY(0);
-      transition: transform 0.5s ease, box-shadow 0.5s ease;
     }
-    
-    .container:hover {
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    .card-header::after {
+      content: ''; position: absolute;
+      bottom: -22px; right: -22px;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 28px solid rgba(201,150,12,.13);
     }
-    
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(90deg, var(--accent), var(--primary));
+    .card-header::before {
+      content: ''; position: absolute;
+      top: -28px; left: -18px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      border: 22px solid rgba(201,150,12,.09);
     }
-    
-    .school-logo {
-      text-align: center;
-      margin-bottom: 30px;
-      position: relative;
-      transition: var(--transition);
+    .card-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 25px; color: var(--white);
+      margin-bottom: 6px; position: relative;
     }
-    
-    .school-logo:hover {
-      transform: scale(1.02);
+    .card-header p { font-size: 13px; color: rgba(255,255,255,.5); position: relative; }
+
+    .card-body { padding: 32px; }
+
+    /* Warning inside card */
+    .card-notice {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 11px;
+      padding: 15px 17px;
+      margin-bottom: 26px;
+      font-size: 13px;
+      color: #7a4800;
+      line-height: 1.65;
+      display: flex; gap: 11px; align-items: flex-start;
     }
-    
-    .school-logo img {
-      max-width: 100px;
-      height: auto;
-      display: block;
-      margin: 0 auto 15px;
-      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
-      transition: var(--transition);
-    }
-    
-    .school-logo:hover img {
-      transform: scale(1.05);
-      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.15));
-    }
-    
-    .school-logo h2 {
-      font-size: clamp(18px, 4vw, 24px);
-      margin: 0;
-      color: var(--dark);
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .school-logo p {
-      margin: 5px 0 0 0;
-      font-size: 15px;
-      color: var(--gray);
-    }
-    
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: var(--dark);
-      font-size: clamp(20px, 4vw, 28px);
-      position: relative;
-      padding-bottom: 10px;
-    }
-    
-    h1::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--primary));
-      border-radius: 10px;
-    }
-    
-    .login-form {
-      margin-top: 30px;
-    }
-    
+    .card-notice i { color: #d97706; font-size: 16px; margin-top: 2px; flex-shrink: 0; }
+    .card-notice strong { color: #5a3400; }
+
     label {
       display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 14px;
-      color: var(--dark);
+      font-size: 13px; font-weight: 600;
+      color: var(--navy); margin-bottom: 8px;
     }
-    
-    .input-group {
-      position: relative;
-      transition: var(--transition);
-    }
-    
-    .input-group:hover {
-      transform: translateY(-2px);
-    }
-    
-    input, select, textarea {
+
+    .input-wrap { position: relative; margin-bottom: 22px; }
+
+    input[type="text"] {
       width: 100%;
-      padding: 14px 15px;
-      margin-top: 5px;
-      border: 2px solid #e1e5ee;
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Poppins', sans-serif;
-      transition: var(--transition);
-      background: white;
+      padding: 14px 46px 14px 17px;
+      border: 2px solid var(--border);
+      border-radius: 11px;
+      font-size: 14.5px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      letter-spacing: .4px;
     }
-    
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
+    input[type="text"]:focus {
       outline: none;
-      transform: scale(1.02);
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(11,31,58,.08);
+      background: var(--white);
     }
-    
-    .input-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
+    input[type="text"]::placeholder { color: #b0bbc8; }
+
+    .input-icon-right {
+      position: absolute; right: 15px; top: 50%;
       transform: translateY(-50%);
-      color: var(--gray);
-      font-size: 16px;
-      transition: var(--transition);
+      color: var(--muted); font-size: 15px;
     }
-    
-    .input-group:hover .input-icon {
-      color: var(--primary);
-      transform: translateY(-50%) scale(1.1);
-    }
-    
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 14px 25px;
-      margin: 5px;
-      border-radius: 10px;
+
+    .submit-btn {
+      width: 100%; padding: 15px;
+      background: var(--navy); color: var(--white);
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 15px;
-      width: 100%;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
-      position: relative;
-      overflow: hidden;
-      margin-top: 25px;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 18px rgba(11,31,58,.22);
+      letter-spacing: .3px;
     }
-    
-    button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.6s ease, height 0.6s ease;
+    .submit-btn:hover { background: #162d52; transform: translateY(-2px); box-shadow: 0 8px 26px rgba(11,31,58,.28); }
+    .submit-btn:active { transform: none; }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0; color: var(--muted); font-size: 12.5px;
     }
-    
-    button:active::before {
-      width: 300px;
-      height: 300px;
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
-    
-    button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
-    }
-    
-    button:active {
-      transform: translateY(1px);
-    }
-    
-    .btn-secondary {
-      background: var(--gray);
-      box-shadow: 0 4px 15px rgba(127, 140, 141, 0.3);
-    }
-    
-    .btn-secondary:hover {
-      background: #6c757d;
-    }
-    
-    .btn-success {
-      background: var(--success);
-      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-    }
-    
-    .btn-success:hover {
-      background: #218838;
-    }
-    
-    /* Auto-fill notification */
-    .auto-fill-notification {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f0f8ff;
-      border-radius: 12px;
-      border-left: 4px solid var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .auto-fill-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      font-size: 16px;
-      box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
-    }
-    
-    .auto-fill-text h3 {
-      color: var(--dark);
-      margin-bottom: 5px;
-      font-size: 16px;
-    }
-    
-    .auto-fill-text p {
-      color: var(--gray);
-      font-size: 13px;
-      margin: 0;
-    }
-    
-    /* Student Info Display */
-    .student-info {
-      display: none;
-      margin-top: 30px;
-      background: #f0f8ff;
-      border-radius: 12px;
-      padding: 20px;
-      border-left: 4px solid var(--primary);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-    
+
+    .help-link { text-align: center; font-size: 13px; color: var(--muted); }
+    .help-link a { color: var(--navy); font-weight: 600; text-decoration: none; }
+    .help-link a:hover { color: var(--gold); }
+
+    /* Student info (post-login) */
+    .student-info { display: none; }
     .student-info.active {
       display: block;
-      animation: fadeIn 0.5s ease;
+      animation: slideUp .4s ease;
     }
-    
-    .info-header {
-      display: flex;
-      align-items: center;
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .student-profile {
+      background: linear-gradient(135deg, #0b1f3a 0%, #1a3a6b 100%);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 14px;
       margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #d1e3ff;
     }
-    
-    .info-icon {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      margin-right: 15px;
-      font-size: 20px;
-      box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
+    .avatar-circle {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--gold); color: var(--navy);
+      font-family: 'DM Serif Display', serif; font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
-    
-    .info-title h3 {
-      color: var(--dark);
-      margin-bottom: 5px;
-      font-size: 18px;
-    }
-    
-    .info-title p {
-      color: var(--gray);
-      font-size: 14px;
-      margin: 0;
-    }
-    
+    .profile-text .pname { font-size: 16px; font-weight: 700; color: var(--white); }
+    .profile-text .psid  { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+
     .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 22px;
     }
-    
     .info-item {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: var(--transition);
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px;
     }
-    
-    .info-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    .info-item .lbl {
+      font-size: 10.5px; font-weight: 700;
+      letter-spacing: .7px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
     }
-    
-    .info-label {
-      font-size: 12px;
-      color: var(--gray);
-      margin-bottom: 5px;
-      font-weight: 500;
+    .info-item .val { font-size: 13.5px; font-weight: 600; color: var(--navy); }
+
+    .action-btns { display: flex; flex-direction: column; gap: 10px; }
+
+    .btn-portal {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      color: var(--white); border: none; border-radius: 12px;
+      font-size: 14.5px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      transition: all .2s;
+      box-shadow: 0 4px 16px rgba(21,128,61,.28);
     }
-    
-    .info-value {
-      font-size: 15px;
-      color: var(--dark);
-      font-weight: 600;
+    .btn-portal:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(21,128,61,.36); }
+
+    .btn-letter {
+      width: 100%; padding: 13px;
+      background: var(--white); color: var(--navy);
+      border: 2px solid var(--border); border-radius: 12px;
+      font-size: 14px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      transition: all .2s;
     }
-    
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .actions button {
-      margin: 0;
-      flex: 1;
-    }
-    
-    /* Toast Notification */
+    .btn-letter:hover { border-color: var(--navy); background: var(--cream); }
+
+    /* Toast */
     #toast {
-      visibility: hidden;
-      min-width: 300px;
-      background: var(--success);
-      color: white;
-      text-align: center;
-      border-radius: 12px;
-      padding: 18px;
-      position: fixed;
-      z-index: 1000;
-      left: 50%;
-      bottom: 30px;
-      font-size: 16px;
-      transform: translateX(-50%);
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--navy); color: var(--white);
+      padding: 14px 24px; border-radius: 12px;
+      font-size: 14px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+      z-index: 9999; white-space: nowrap;
     }
-    
-    #toast.error {
-      background: var(--danger);
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: var(--danger); }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 24px;
+      font-size: 12.5px; color: var(--muted);
+      border-top: 1px solid var(--border);
     }
-    
-    /* Floating particles */
-    .particles {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -1;
+
+    /* Responsive */
+    @media (max-width: 880px) {
+      main { margin: 28px auto; }
+      header { padding: 14px 20px; }
+      .header-badge { display: none; }
     }
-    
-    .particle {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      animation: float 15s infinite linear;
-    }
-    
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .floating {
-      animation: float 5s ease-in-out infinite;
-    }
-    
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-      
-      .container {
-        margin: 10px auto;
-        padding: 20px 15px;
-        width: 100%;
-      }
-      
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .actions {
-        flex-direction: column;
-      }
-      
-      button {
-        width: 100%;
-      }
-    }
-    
     @media (max-width: 480px) {
-      .container {
-        padding: 15px 10px;
-      }
-      
-      .info-header {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .info-icon {
-        margin-right: 0;
-        margin-bottom: 10px;
-      }
-      
-      .auto-fill-notification {
-        flex-direction: column;
-        text-align: center;
-      }
+      header img { width: 40px; height: 40px; }
+      .header-text h1 { font-size: 18px; }
+      .card-body { padding: 22px 18px; }
+      .info-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Floating particles for background effect -->
-  <div class="particles" id="particles"></div>
-  
-  <div class="container">
-    <div class="school-logo floating">
-      <img src="images/favicon.png" alt="School Logo">
-      <h2>GH SCHOOLS</h2>
-      <p><strong>Student Login Portal</strong></p>
-    </div>
 
-    <h1>Student Login</h1>
-    
-    <div class="login-form">
-      <form id="loginForm">
-        <label for="admissionNumber"><i class="fas fa-id-card"></i> Student ID</label>
-        <div class="input-group">
-          <input type="text" id="admissionNumber" required placeholder="Enter your Student ID" class="clickable">
-          <span class="input-icon"><i class="fas fa-key"></i></span>
-        </div>
-        
-        <button type="submit" class="interactive">
-          <i class="fas fa-sign-in-alt"></i> Login
-        </button>
-      </form>
-      
-      <!-- Auto-fill Notification -->
-      <div class="auto-fill-notification" id="autoFillNotification" style="display: none;">
-        <div class="auto-fill-icon">
-          <i class="fas fa-magic"></i>
-        </div>
-        <div class="auto-fill-text">
-          <h3>Auto-filled Student ID</h3>
-          <p>Your Student ID has been automatically filled. Just click the Login button.</p>
-        </div>
-      </div>
+  <!-- Header -->
+  <header>
+    <img src="images/favicon.png" alt="GH Schools Logo">
+    <div class="header-text">
+      <h1>GH Schools</h1>
+      <p>Student Payment Portal</p>
     </div>
-    
-    <!-- Student Information Display -->
-    <div class="student-info" id="studentInfo">
-      <div class="info-header">
-        <div class="info-icon">
-          <i class="fas fa-user-graduate"></i>
-        </div>
-        <div class="info-title">
-          <h3>Student Information</h3>
-          <p>Your admission details</p>
-        </div>
-      </div>
-      
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Full Name</div>
-          <div class="info-value" id="infoName">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Email Address</div>
-          <div class="info-value" id="infoEmail">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Phone Number</div>
-          <div class="info-value" id="infoPhone">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Student ID</div>
-          <div class="info-value" id="infoAdmissionNo">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Program of Study</div>
-          <div class="info-value" id="infoProgram">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">School</div>
-          <div class="info-value" id="infoSchool">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Program Duration</div>
-          <div class="info-value" id="infoDuration">—</div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-label">Course Type</div>
-          <div class="info-value" id="infoCourseType">—</div>
-        </div>
-      </div>
-      
-      <div class="actions">
-        <button type="button" class="btn-success" id="proceedToPortal">
-          <i class="fas fa-tachometer-alt"></i> Proceed to Student Portal
-        </button>
-        <button type="button" id="viewAdmissionLetter">
-          <i class="fas fa-file-alt"></i> View Admission Letter
-        </button>
-      </div>
-    </div>
-  </div>
+    <span class="header-badge"><i class="fas fa-lock" style="font-size:10px;margin-right:4px;"></i> Secure Portal</span>
+  </header>
 
-  <!-- Toast Notification -->
-  <div id="toast">
-    <i class="fas fa-check-circle"></i>
-    <span>Login successful!</span>
-  </div>
+  <!-- Main -->
+  <main>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+      <div class="card-header">
+        <h2>Student Login</h2>
+        <p>Enter your Student ID and Password to access your portal</p>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Warning notice -->
+        <div class="card-notice">
+          <i class="fas fa-info-circle"></i>
+          <div>
+            <strong>Your Student ID and Password are both required to log in.</strong><br>
+            These are issued in person at the GH Schools Admissions Office after your documents have been physically verified. If you have not yet visited the school, please do so first before attempting to log in here.
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginFormWrap">
+          <form id="loginForm">
+
+            <label for="admissionNumber"><i class="fas fa-ticket-alt"></i>&nbsp; Student ID</label>
+            <div class="input-wrap">
+              <input
+                type="text"
+                id="admissionNumber"
+                required
+                placeholder="e.g. ADM-2026-001"
+                autocomplete="off"
+                spellcheck="false"
+                style="text-transform:uppercase;"
+              >
+              <span class="input-icon-right"><i class="fas fa-hashtag"></i></span>
+            </div>
+
+            <label for="studentId"><i class="fas fa-id-badge"></i>&nbsp; Password</label>
+            <div class="input-wrap">
+              <input
+                type="text"
+                id="studentId"
+                required
+                placeholder="e.g. MSD001 or FSC003"
+                autocomplete="off"
+                spellcheck="false"
+                style="text-transform:uppercase;"
+              >
+              <span class="input-icon-right"><i class="fas fa-key"></i></span>
+            </div>
+
+            <button type="submit" class="submit-btn" id="loginBtn">
+              <i class="fas fa-sign-in-alt"></i> Verify &amp; Proceed
+            </button>
+          </form>
+
+          <div class="divider">need assistance?</div>
+
+          <div class="help-link">
+            Don't have your credentials yet?&nbsp;
+            <a href="tel:0274622250">Call 0274&nbsp;622250</a>
+          </div>
+        </div>
+
+        <!-- Hidden auto-fill placeholder (unused) -->
+        <div id="autoFillNotification" style="display:none;"></div>
+
+        <!-- Student Info (post-login) -->
+        <div class="student-info" id="studentInfo">
+
+          <div class="student-profile">
+            <div class="avatar-circle" id="avatarCircle">—</div>
+            <div class="profile-text">
+              <div class="pname" id="infoName">—</div>
+              <div class="psid" id="infoAdmissionNo">Student ID: —</div>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="lbl">Email</div>
+              <div class="val" id="infoEmail">—</div>
+            </div>
+            <div class="info-item">
+              <div class="lbl">Phone</div>
+              <div class="val" id="infoPhone">—</div>
+            </div>
+            <div class="info-item">
+              <div class="lbl">Program</div>
+              <div class="val" id="infoProgram">—</div>
+            </div>
+            <div class="info-item">
+              <div class="lbl">School</div>
+              <div class="val" id="infoSchool">—</div>
+            </div>
+            <div class="info-item">
+              <div class="lbl">Duration</div>
+              <div class="val" id="infoDuration">—</div>
+            </div>
+            <div class="info-item">
+              <div class="lbl">Course Type</div>
+              <div class="val" id="infoCourseType">—</div>
+            </div>
+          </div>
+
+          <div class="action-btns">
+            <button class="btn-portal" id="proceedToPortal">
+              <i class="fas fa-tachometer-alt"></i> Proceed to Student Portal
+            </button>
+            <button class="btn-letter" id="viewAdmissionLetter">
+              <i class="fas fa-file-alt"></i> View Admission Letter
+            </button>
+          </div>
+
+        </div><!-- /studentInfo -->
+
+      </div><!-- /card-body -->
+    </div><!-- /login-card -->
+
+  </main>
+
+  <footer>
+    &copy; 2026 GH Schools All rights reserved
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast"><i class="fas fa-check-circle"></i><span>Done</span></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    // Supabase setup
     const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
     const { createClient } = supabase;
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    // School display names mapping
     const SCHOOL_DISPLAY_NAMES = {
-      'MEDIA': 'GH MEDIA SCHOOL',
-      'FASHION': 'GH FASHION SCHOOL', 
-      'CATERING': 'GH CATERING SCHOOL',
-      'COSMETOLOGY': 'GH COSMETOLOGY SCHOOL',
-      'TECHNOLOGY': 'GH TECHNOLOGY SCHOOL'
+      'MEDIA':       'GH Media School',
+      'FASHION':     'GH Fashion School',
+      'CATERING':    'GH Catering School',
+      'COSMETOLOGY': 'GH Cosmetology School',
+      'TECHNOLOGY':  'GH Technology School'
     };
 
-    // Create floating particles
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 15;
-      
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        
-        const size = Math.random() * 10 + 5;
-        const posX = Math.random() * 100;
-        const posY = Math.random() * 100;
-        const delay = Math.random() * 15;
-        const duration = Math.random() * 20 + 10;
-        
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${posX}%`;
-        particle.style.top = `${posY}%`;
-        particle.style.animationDelay = `${delay}s`;
-        particle.style.animationDuration = `${duration}s`;
-        
-        particlesContainer.appendChild(particle);
-      }
-    }
-
-    // Show toast notification
+    /* Toast */
     function showToast(message, isError = false) {
-      const toast = document.getElementById("toast");
-      toast.innerHTML = isError 
+      const toast = document.getElementById('toast');
+      toast.innerHTML = isError
         ? `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`
         : `<i class="fas fa-check-circle"></i><span>${message}</span>`;
-      
-      toast.className = isError ? 'error' : '';
-      toast.style.visibility = "visible";
-      
-      setTimeout(() => {
-        toast.style.visibility = "hidden";
-      }, 4000);
+      toast.className = isError ? 'error show' : 'show';
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => { toast.className = isError ? 'error' : ''; }, 4000);
     }
 
-    // Fetch a list of recent student IDs from newstudents
-    async function fetchAllStudentIds() {
-      try {
-        const { data, error } = await supabaseClient
-          .from('newstudents')
-          .select('student_id, first_name, last_name')
-          .order('created_at', { ascending: false })
-          .limit(20);
+    /* Auto-fill disabled — student must enter ID manually */
+    async function autoFillAdmissionNumber() {}
 
-        if (error) {
-          console.error("Error fetching student ids:", error);
-          return [];
-        }
-
-        return data || [];
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        return [];
-      }
-    }
-
-    // Auto-fill the student id
-    // Try to read a student id from localStorage using common keys
-    function readStudentIdFromLocalStorage() {
-      const keys = ['studentId', 'student_id', 'admission_number', 'studentId_local', 'studentIdCached'];
-      for (const k of keys) {
-        try {
-          const v = localStorage.getItem(k);
-          if (v && String(v).trim()) return String(v).trim();
-        } catch (e) {
-          // ignore storage errors
-        }
-      }
-      // If a full student object is stored, try to extract
-      try {
-        const raw = localStorage.getItem('student_data') || localStorage.getItem('studentData');
-        if (raw) {
-          const obj = JSON.parse(raw);
-          if (obj) return (obj.student_id || obj.studentId || obj.admission_number || '').toString();
-        }
-      } catch (e) {
-        // ignore parse errors
-      }
-      return null;
-    }
-
-    async function autoFillAdmissionNumber() {
-      try {
-        // 0) Try URL query parameters first (e.g. ?student_id=GHMS00126)
-        const urlParams = new URLSearchParams(window.location.search);
-        const fromUrlId = urlParams.get('student_id') || urlParams.get('admission_number') || urlParams.get('id');
-        if (fromUrlId) {
-          document.getElementById('admissionNumber').value = String(fromUrlId).trim();
-          document.getElementById('autoFillNotification').style.display = 'flex';
-          document.querySelector('button[type="submit"]').focus();
-          showToast('Student ID auto-filled from URL. Click Login to continue.');
-          return;
-        }
-
-        // 0.5) If the referrer is the admission letter page, prefer localStorage key 'student_id'
-        try {
-          const ref = document.referrer || '';
-          if (ref && ref.toLowerCase().includes('admissionletter')) {
-            const cached = localStorage.getItem('student_id') || localStorage.getItem('studentId') || localStorage.getItem('admission_number');
-            if (cached) {
-              document.getElementById('admissionNumber').value = String(cached).trim();
-              document.getElementById('autoFillNotification').style.display = 'flex';
-              document.querySelector('button[type="submit"]').focus();
-              showToast('Student ID auto-filled from your admission letter. Click Login to continue.');
-              return;
-            }
-          }
-        } catch (e) { /* ignore referrer read errors */ }
-        // 1) Prefer localStorage quick-fill (works offline / after form submission)
-        const localId = readStudentIdFromLocalStorage();
-        if (localId) {
-          document.getElementById('admissionNumber').value = localId;
-          document.getElementById('autoFillNotification').style.display = 'flex';
-          document.querySelector('button[type="submit"]').focus();
-          showToast('Student ID auto-filled from local cache. Click Login to continue.');
-          return;
-        }
-
-        // 2) Fallback: query Supabase for the most recent student id(s)
-        const admissions = await fetchAllStudentIds();
-        if (admissions && admissions.length > 0) {
-          const firstId = admissions[0] && (admissions[0].student_id || admissions[0].studentId);
-          if (firstId) {
-            document.getElementById('admissionNumber').value = firstId;
-            document.getElementById('autoFillNotification').style.display = 'flex';
-            document.querySelector('button[type="submit"]').focus();
-            showToast('Student ID auto-filled. Click Login to continue.');
-            return;
-          }
-        }
-
-        // Nothing found
-        // Do not show error toast repeatedly; keep silent but useful console info
-        console.info('No cached or recent student id found for auto-fill.');
-      } catch (error) {
-        console.error('Error auto-filling student id:', error);
-        // Try to fallback silently — user can enter manually
-      }
-    }
-
-    // Fetch student data by student_id
-    async function fetchStudentData(admissionNumber) {
+    /* Fetch from newstudents table by student_id */
+    async function fetchStudentData(studentId) {
       try {
         const { data, error } = await supabaseClient
           .from('newstudents')
           .select('*')
-          .eq('student_id', admissionNumber)
+          .eq('student_id', studentId)
           .single();
-
-        if (error) {
-          console.error("Error fetching student data:", error);
-          return null;
-        }
-
+        if (error) { console.error('Fetch error:', error); return null; }
         return data;
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        return null;
-      }
+      } catch (err) { console.error('Unexpected error:', err); return null; }
     }
 
-    // Fetch student row from the authoritative `students` table (sequential safe queries)
-    async function fetchStudentFromStudents(admissionNumber) {
-      if (!admissionNumber) return null;
+    /* Also try fetching by admission_number in case the fields are swapped */
+    async function fetchStudentByAdmissionNumber(admissionNo) {
       try {
-        // Try matching student_id first
-        let { data: row, error } = await supabaseClient
-          .from('student_master_db')
+        const { data, error } = await supabaseClient
+          .from('newstudents')
           .select('*')
-          .eq('student_id', admissionNumber)
-          .maybeSingle();
-
-        if (!row) {
-          // Try matching admission_number
-          const res = await supabaseClient
-            .from('student_master_db')
-            .select('*')
-            .eq('admission_number', admissionNumber)
-            .maybeSingle();
-          row = res.data || null;
-          error = res.error || error;
-        }
-
-        if (error) {
-          console.warn('Error checking student_master_db table:', error);
-          return null;
-        }
-
-        return row || null;
-      } catch (e) {
-        console.error('fetchStudentFromStudents error:', e);
-        return null;
-      }
+          .eq('admission_number', admissionNo)
+          .single();
+        if (error) return null;
+        return data;
+      } catch (err) { return null; }
     }
 
-    // Display student information
+    /* Display student info */
     function displayStudentInfo(studentData) {
-      // Compute a display full name using available fields
-      const computedFullName = (studentData.full_name && String(studentData.full_name).trim().length>0)
+      const fullName = (studentData.full_name && studentData.full_name.trim())
         ? studentData.full_name.trim()
         : ((studentData.first_name || studentData.firstname || '') + ' ' + (studentData.last_name || studentData.lastname || '')).trim();
 
-      // Update the info display elements
-      document.getElementById('infoName').textContent = computedFullName || '—';
-      document.getElementById('infoEmail').textContent = studentData.email || '—';
-      document.getElementById('infoPhone').textContent = studentData.phone_number_1 || studentData.phone_number || studentData.phone || '—';
-      document.getElementById('infoAdmissionNo').textContent = studentData.student_id || '—';
-      document.getElementById('infoProgram').textContent = studentData.program_applying_for || '—';
-      document.getElementById('infoSchool').textContent = SCHOOL_DISPLAY_NAMES[studentData.school_selected] || '—';
-      document.getElementById('infoDuration').textContent = studentData.program_duration || '—';
-      document.getElementById('infoCourseType').textContent = studentData.course_type || '—';
-      
-      // Store student data in localStorage for the admission letter
-      localStorage.setItem("admitted_full_name", computedFullName || '');
-      localStorage.setItem("student_id", studentData.student_id);
-      localStorage.setItem("admitted_program", studentData.program_applying_for);
-      localStorage.setItem("selected_school", studentData.school_selected);
-      localStorage.setItem("school_name", SCHOOL_DISPLAY_NAMES[studentData.school_selected]);
-      localStorage.setItem("program_duration", studentData.program_duration);
-      localStorage.setItem("course_type", studentData.course_type);
-      localStorage.setItem("student_gender", studentData.gender);
-      localStorage.setItem("intake_label", "February 2025");
-      localStorage.setItem("admissions_phone", "0274622250");
-      // Persist the full student object and common lookup keys so the dashboard can reuse it
+      document.getElementById('infoName').textContent        = fullName || '—';
+      document.getElementById('infoEmail').textContent       = studentData.email || '—';
+      document.getElementById('infoPhone').textContent       = studentData.phone_number_1 || studentData.phone_number || studentData.phone || '—';
+      document.getElementById('infoAdmissionNo').textContent = 
+        'Admission No: ' + (studentData.admission_number || '—') + '  ·  ID: ' + (studentData.student_id || '—');
+      document.getElementById('infoProgram').textContent     = studentData.program_applying_for || '—';
+      document.getElementById('infoSchool').textContent      = SCHOOL_DISPLAY_NAMES[studentData.school_selected] || studentData.school_selected || '—';
+      document.getElementById('infoDuration').textContent    = studentData.program_duration || '—';
+      document.getElementById('infoCourseType').textContent  = studentData.course_type || '—';
+
+      const avatar = document.getElementById('avatarCircle');
+      if (avatar) avatar.textContent = (fullName || '?').charAt(0).toUpperCase();
+
+      /* Persist to localStorage */
       try {
-        localStorage.setItem('student_data', JSON.stringify(studentData));
-      } catch (e) { console.warn('Could not store full student_data in localStorage', e); }
-      // Store student's contact and id so dashboard fallbacks and fetches can use them
-      if (studentData.phone_number_1 || studentData.phone_number || studentData.phone) localStorage.setItem('student_phone', studentData.phone_number_1 || studentData.phone_number || studentData.phone);
-      if (studentData.email) localStorage.setItem('studentEmail', studentData.email);
-      if (studentData.student_id) localStorage.setItem('studentId', studentData.student_id);
-      // For backward compatibility, also set admission_number if present
-      if (studentData.admission_number) localStorage.setItem('admission_number', studentData.admission_number);
-      
-      // Store WASSCE grades if available
-      if (studentData.english_grade) localStorage.setItem("english_grade", studentData.english_grade);
-      if (studentData.mathematics_grade) localStorage.setItem("mathematics_grade", studentData.mathematics_grade);
-      if (studentData.social_studies_grade) localStorage.setItem("social_studies_grade", studentData.social_studies_grade);
-      if (studentData.integrated_science_grade) localStorage.setItem("integrated_science_grade", studentData.integrated_science_grade);
-      
-      // Show the student info section
+        localStorage.setItem('admitted_full_name', fullName || '');
+        localStorage.setItem('student_id',         studentData.student_id || '');
+        localStorage.setItem('studentId',           studentData.student_id || '');
+        localStorage.setItem('admitted_program',    studentData.program_applying_for || '');
+        localStorage.setItem('selected_school',     studentData.school_selected || '');
+        localStorage.setItem('school_name',         SCHOOL_DISPLAY_NAMES[studentData.school_selected] || '');
+        localStorage.setItem('program_duration',    studentData.program_duration || '');
+        localStorage.setItem('course_type',         studentData.course_type || '');
+        localStorage.setItem('student_gender',      studentData.gender || '');
+        localStorage.setItem('student_data',        JSON.stringify(studentData));
+        localStorage.setItem('intake_label',        'February 2025');
+        localStorage.setItem('admissions_phone',    '0274622250');
+        if (studentData.phone_number_1 || studentData.phone_number || studentData.phone)
+          localStorage.setItem('student_phone', studentData.phone_number_1 || studentData.phone_number || studentData.phone);
+        if (studentData.email)            localStorage.setItem('studentEmail',       studentData.email);
+        if (studentData.admission_number) localStorage.setItem('admission_number',   studentData.admission_number);
+        if (studentData.english_grade)              localStorage.setItem('english_grade',              studentData.english_grade);
+        if (studentData.mathematics_grade)          localStorage.setItem('mathematics_grade',          studentData.mathematics_grade);
+        if (studentData.social_studies_grade)       localStorage.setItem('social_studies_grade',       studentData.social_studies_grade);
+        if (studentData.integrated_science_grade)   localStorage.setItem('integrated_science_grade',   studentData.integrated_science_grade);
+      } catch(e) { console.warn('localStorage error', e); }
+
+      /* Show info, hide form */
+      document.getElementById('loginFormWrap').style.display = 'none';
       document.getElementById('studentInfo').classList.add('active');
-      
-      // Hide the login form
-      document.getElementById('loginForm').style.display = 'none';
-      
-      // Hide the auto-fill notification
-      document.getElementById('autoFillNotification').style.display = 'none';
     }
 
-    // Handle form submission
+    /* Handle login — requires both Admission Number and Student ID */
     async function handleLogin(event) {
       event.preventDefault();
-      
-      const admissionNumber = document.getElementById('admissionNumber').value.trim();
-      
+      const admissionNumber = document.getElementById('admissionNumber').value.trim().toUpperCase();
+      const studentId       = document.getElementById('studentId').value.trim().toUpperCase();
+
       if (!admissionNumber) {
-        showToast("Please enter your Student ID", true);
+        showToast('Please enter your Admission Number', true); return;
+      }
+      if (!studentId) {
+        showToast('Please enter your Student ID', true); return;
+      }
+
+      /* Short-course redirect (Student ID starts with GHWS) */
+      if (studentId.startsWith('GHWS')) {
+        try { localStorage.setItem('studentId', studentId); } catch(e) {}
+        window.location.href = 'shortcourseportal.html?student_id=' + encodeURIComponent(studentId);
         return;
       }
-      // If the ID is a short-course / portal ID starting with GHWS, redirect to shortcourseportal
+
+      const btn = document.getElementById('loginBtn');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+      btn.disabled = true;
+
       try {
-        if (String(admissionNumber).toUpperCase().startsWith('GHWS')) {
-          // persist the id so the portal can auto-fill if needed
-          try { localStorage.setItem('studentId', admissionNumber); } catch (e) {}
-          window.location.href = 'shortcourseportal.html?student_id=' + encodeURIComponent(admissionNumber);
+        /* Look up by Student ID first */
+        let studentData = await fetchStudentData(studentId);
+
+        /* If not found by student_id, try by admission_number */
+        if (!studentData) {
+          studentData = await fetchStudentByAdmissionNumber(admissionNumber);
+        }
+
+        if (!studentData) {
+          showToast('Student ID not found. Please check your details and try again.', true);
           return;
         }
-      } catch (e) { /* ignore unexpected */ }
-      
-      // Show loading state
-      const submitButton = document.querySelector('button[type="submit"]');
-      const originalText = submitButton.innerHTML;
-      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-      submitButton.disabled = true;
-      
-      try {
-        const studentData = await fetchStudentData(admissionNumber);
-        
-        if (studentData) {
-          showToast("Student found — details shown.");
-          displayStudentInfo(studentData);
-        } else {
-          showToast("Student ID not found. Please check and try again.", true);
+
+        /* Cross-check: the admission_number on the record must match what was entered.
+           Also accept if the record's student_id matches the admissionNumber field
+           (covers cases where the two are the same value). */
+        const recordAdmNo  = (studentData.admission_number || '').toString().toUpperCase().trim();
+        const recordStuId  = (studentData.student_id       || '').toString().toUpperCase().trim();
+
+        const admissionNumberMatches =
+          recordAdmNo  === admissionNumber ||
+          recordStuId  === admissionNumber ||
+          admissionNumber === '';           // fallback: if field somehow empty after trim
+
+        if (!admissionNumberMatches) {
+          showToast('Admission Number does not match our records. Please check and try again.', true);
+          return;
         }
+
+        showToast('Verified — details loaded successfully.');
+        displayStudentInfo(studentData);
+
       } catch (error) {
-        console.error("Login error:", error);
-        showToast("An error occurred. Please try again.", true);
+        console.error('Login error:', error);
+        showToast('An error occurred. Please try again.', true);
       } finally {
-        // Restore button state
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Verify &amp; Proceed';
+        btn.disabled = false;
       }
     }
 
-    // Initialize the page
+    /* Init */
     document.addEventListener('DOMContentLoaded', async function() {
-      createParticles();
-      
-      // Auto-fill the student ID
       await autoFillAdmissionNumber();
-      
-      // Add event listeners
+
       document.getElementById('loginForm').addEventListener('submit', handleLogin);
-      
+
       document.getElementById('proceedToPortal').addEventListener('click', function() {
-        // Pass the student_id as a URL param so the dashboard can load the correct student immediately
-        const studentId = localStorage.getItem('student_id') || localStorage.getItem('studentId') || '';
-        const url = studentId
-          ? '100dashboard.html?student_id=' + encodeURIComponent(studentId)
+        const sid = localStorage.getItem('student_id') || localStorage.getItem('studentId') || '';
+        window.location.href = sid
+          ? '100dashboard.html?student_id=' + encodeURIComponent(sid)
           : '100dashboard.html';
-        window.location.href = url;
       });
-      
+
       document.getElementById('viewAdmissionLetter').addEventListener('click', function() {
-        window.location.href = "admissionletter1.html";
-      });
-      
-      // Add clickable class to all interactive elements
-      document.querySelectorAll('input, button').forEach(el => {
-        el.classList.add('clickable');
+        window.location.href = 'admissionletter1.html';
       });
     });
   </script>

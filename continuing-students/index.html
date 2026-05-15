@@ -482,7 +482,7 @@
 
           // Insert data into Supabase
           const { data, error } = await supabase
-            .from('students')
+            .from('student_master_db')
             .insert([studentData]);
 
           if (error) {

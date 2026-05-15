@@ -1765,98 +1765,6 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    /* =========================================================
-       PLAN CONFIRM MODAL
-    ========================================================= */
-    #fpConfirmModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(10,20,50,0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 9000;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    #fpConfirmModal.active { display: flex; }
-
-    .fp-confirm-box {
-      background: #fff;
-      border-radius: var(--radius-xl);
-      box-shadow: 0 24px 64px rgba(37,99,235,0.22);
-      width: 100%;
-      max-width: 480px;
-      overflow: hidden;
-      animation: fpModalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    @keyframes fpModalIn {
-      from { opacity: 0; transform: scale(0.88) translateY(20px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .fp-confirm-header {
-      padding: 22px 24px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      border-bottom: 1.5px solid var(--border);
-      position: relative;
-    }
-    .fp-confirm-icon {
-      width: 46px; height: 46px;
-      border-radius: 13px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-    .fp-confirm-title { font-size: 16px; font-weight: 800; color: var(--ink); font-family: 'Bricolage Grotesque', 'Outfit', sans-serif; }
-    .fp-confirm-subtitle { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-    .fp-confirm-close {
-      position: absolute;
-      top: 16px; right: 16px;
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .fp-confirm-close:hover { background: var(--rose-light); color: var(--rose); border-color: var(--rose); }
-    .fp-confirm-body { padding: 20px 24px; }
-    .fp-confirm-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 9px 14px;
-      background: var(--surface);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-    .fp-confirm-row span:first-child { color: var(--muted); font-weight: 500; }
-    .fp-confirm-row span:last-child { font-weight: 700; color: var(--ink); }
-    .fp-confirm-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 13px 14px;
-      border-radius: 12px;
-      margin-top: 4px;
-      border: 2px solid;
-    }
-    .fp-confirm-total-label { font-size: 13px; font-weight: 700; }
-    .fp-confirm-total-amount { font-size: 1.3rem; font-weight: 900; font-family: 'Bricolage Grotesque', 'Outfit', sans-serif; }
-    .fp-confirm-footer {
-      padding: 16px 24px 20px;
-      display: flex;
-      gap: 10px;
-    }
-    .fp-confirm-footer .btn { flex: 1; padding: 12px; font-size: 14px; }
 
   </style>
 </head>
@@ -2951,13 +2859,30 @@
   /* -------------- UPDATE DASHBOARD STATS -------------- */
   function updateDashboardStats() {
     try {
-      const paid = Number(window.totalPaid || 0);
-      const payable = Number(window.totalPayable || 0);
-      const outstanding = Number(window.outstandingBalance || 0);
+      /* Recompute totalPaid live from allPayments so the card always reflects
+         every approved payment — including admission — even on first load.   */
+      let paid = Number(window.totalPaid || 0);
+      if (paid === 0 && Array.isArray(allPayments) && allPayments.length > 0) {
+        paid = allPayments
+          .filter(p => String(p.status||'').toLowerCase() === 'approved')
+          .reduce((s, p) => s + Number(p.amount_paid || p.amount || 0), 0);
+      }
+
+      /* Recompute payable from globals in case window value is stale */
+      const payable = Number(window.totalPayable || 0) ||
+        (Number(ADMISSION_FEE||0) + Number(TUITION||0) + Number(SRC_DUES||0) + Number(DEPT_DUES||0) + Number(MED_DUES||0));
+
+      const outstanding = Math.max(0, payable - paid);
+
+      /* Keep window globals in sync */
+      window.totalPaid          = paid;
+      window.totalPayable       = payable;
+      window.outstandingBalance = outstanding;
 
       const pctRaw = payable > 0 ? Math.min(100, Math.round((paid / payable) * 100)) : 0;
 
-      const fmt = (n) => `GHS ${Number(n||0).toLocaleString('en-GH', {minimumFractionDigits:0, maximumFractionDigits:0})}`;
+      /* Show 2 decimal places so every amount is reflected accurately */
+      const fmt = (n) => `GHS ${Number(n||0).toLocaleString('en-GH', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 
       const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
@@ -3233,26 +3158,56 @@
   /* -------------- PAYMENTS -------------- */
   async function loadPayments() {
     if (!currentStudent) return [];
+    const sid = String(currentStudent.student_id || currentStudent.id || '').trim();
+    if (!sid) { console.warn('[loadPayments] No student_id'); return []; }
     try {
-      const { data, error } = await sb.from('payments').select('*').eq('student_id', currentStudent.student_id).order('created_at', { ascending: false });
-      if (error) { console.error('Error fetching payments:', error); return []; }
-      allPayments = (data || []).map(row => ({ ...row, amount_paid: row.amount, payment_id: row.receipt_number, fee_type: row.fee_type, status: row.status, created_at: row.created_at }));
+      const { data, error } = await sb
+        .from('payments')
+        .select('*')
+        .eq('student_id', sid)
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('[loadPayments] Supabase error:', error.message, error.details, error.hint, '| student_id:', sid);
+        return [];
+      }
+      console.log('[loadPayments] Fetched', (data||[]).length, 'rows for student_id:', sid, data);
+      allPayments = (data || []).map(row => ({
+        ...row,
+        amount_paid: row.amount,                          // normalise field name
+        payment_id:  row.receipt_number,
+        fee_type:    row.fee_type,
+        status:      row.status,
+        created_at:  row.created_at
+      }));
       try {
         const approvedPayments = allPayments.filter(p => String(p.status||'').toLowerCase() === 'approved');
         const totalPaid = approvedPayments.reduce((s, p) => s + Number(p.amount_paid || 0), 0);
         const totalPayable = Number(ADMISSION_FEE||0) + Number(TUITION||0) + Number(SRC_DUES||0) + Number(DEPT_DUES||0) + Number(MED_DUES||0);
         const outstanding = Number((totalPayable - totalPaid).toFixed(2));
-        window.totalPaid = totalPaid;
-        window.totalPayable = totalPayable;
+        window.totalPaid        = totalPaid;
+        window.totalPayable     = totalPayable;
         window.outstandingBalance = outstanding;
       } catch(e) {}
       return allPayments;
-    } catch (error) { console.error('Error loading payments:', error); return []; }
+    } catch (error) {
+      console.error('[loadPayments] Unexpected error:', error, '| student_id:', sid);
+      return [];
+    }
   }
 
   function hasPaidAdmission() {
-    const admissionPayment = allPayments.find(p => { const ft = String(p.fee_type||'').toLowerCase(); return ft.includes('admission') && p.status === 'approved'; });
-    return admissionPayment && Number(admissionPayment.amount_paid || admissionPayment.amount || 0) >= ADMISSION_FEE - 0.005;
+    // Match any approved payment whose fee_type contains "admission" (case-insensitive)
+    // This covers: "Admission Fee", "Admission", "Admission Fees" — matching the seed SQL
+    const admissionPayment = allPayments.find(p => {
+      const ft = String(p.fee_type || '').toLowerCase();
+      return (ft.includes('admission')) && String(p.status || '').toLowerCase() === 'approved';
+    });
+    if (!admissionPayment) return false;
+    const paidAmt = Number(admissionPayment.amount_paid || admissionPayment.amount || 0);
+    // If ADMISSION_FEE is 0 (schedule not yet loaded) but there IS an approved
+    // admission payment, treat the student as having paid admission
+    if (ADMISSION_FEE <= 0) return paidAmt > 0;
+    return paidAmt >= ADMISSION_FEE - 0.005;
   }
 
   function tuitionStatus() {
@@ -3442,22 +3397,30 @@
   /* -------------- PAYMENT SUPABASE -------------- */
   async function savePaymentToSupabase(student, amount, feeType, transactionRef, paymentId) {
     const payload = {
-      created_at: new Date().toISOString(),
-      student_id: String(student.student_id || student.id),
-      student_name: String(student.name || `${student.firstname} ${student.lastname}`),
-      student_email: String(student.email),
-      department: String(student.department || ''),
-      level: String(student.level || ''),
-      amount: Number(amount),
-      fee_type: String(feeType),
-      transaction_ref: String(transactionRef),
-      receipt_number: String(paymentId),
-      payment_date: new Date().toISOString().slice(0, 10),
-      status: 'approved'
+      created_at:                new Date().toISOString(),
+      student_id:                String(student.student_id || student.id),
+      student_name:              String(student.name || `${student.firstname || ''} ${student.lastname || ''}`).trim(),
+      student_email:             String(student.email || ''),
+      department:                String(student.department || ''),
+      level:                     String(student.level || ''),
+      amount:                    Number(amount),
+      phone:                     student.phone || student.phone_number || student.mobile || null,
+      fee_type:                  String(feeType),
+      payment_date:              new Date().toISOString(),          // timestamptz — full ISO string
+      status:                    'approved',
+      transaction_ref:           String(transactionRef),
+      receipt_number:            String(paymentId),
+      academic_year:             window.loadedAcadYear || null,
+      ecobank_validation_status: 'unused',
     };
+    console.log('[payment] Saving to DB:', JSON.stringify(payload));
     try {
-      let { data, error } = await sb.from('payments').insert([payload]);
-      if (error) { console.error('Supabase insert error:', error); return null; }
+      const { data, error } = await sb.from('payments').insert([payload]).select();
+      if (error) {
+        console.error('[payment] Supabase insert error:', error.message, error.details, error.hint, payload);
+        return null;
+      }
+      console.log('[payment] Saved OK:', data);
       (async function() {
         try {
           await loadPayments();
@@ -3474,10 +3437,10 @@
             const msg = `Hello ${student.name || student.firstname || ''}, we received your payment of ${cedis(payload.amount)} for ${payload.fee_type}. Outstanding balance: ${cedis(outstanding)}.`;
             await sendViaProxy([formatted], msg, { student_id: student.id });
           }
-        } catch(e) {}
+        } catch(e) { console.warn('[payment] Post-save side-effects error', e); }
       })();
       return data;
-    } catch (err) { console.error('Unexpected error saving payment:', err); return null; }
+    } catch (err) { console.error('[payment] Unexpected error saving payment:', err); return null; }
   }
 
   /* -------------- PAYMENT CHANNEL SELECTOR -------------- */
@@ -4549,6 +4512,49 @@
       }
     }
 
+    // ── 6b. Supplemental: always fetch Admission Fee separately ──────────────
+    // The main tiered query breaks on the first level hit. If Admission Fee is
+    // stored under a DIFFERENT level string (e.g. '100' vs 'Level 100') it will
+    // be silently missing from feeRows. We fetch it independently and merge.
+    try {
+      const admFeeTypeNames = ['Admission Fee', 'Admission', 'Admission Fees'];
+      let admRow = null;
+
+      // Try each level candidate
+      for (const lvl of [...levelCandidates, null]) {
+        let q = sb.from('fee_schedules')
+          .select(SEL)
+          .order('academic_year', { ascending: false })
+          .limit(20);
+        if (lvl === null) q = q.is('level', null);
+        else              q = q.eq('level', lvl);
+        const { data: aData } = await q;
+        if (aData && aData.length) {
+          admRow = aData.find(r => {
+            const n = ((r.fee_types && r.fee_types.name) || r.fee_type || '').toLowerCase();
+            return admFeeTypeNames.some(a => a.toLowerCase() === n || n.includes('admission'));
+          });
+          if (admRow) break;
+        }
+      }
+
+      if (admRow) {
+        // Merge into feeRows (add if not already present)
+        const alreadyHave = feeRows && feeRows.some(r => {
+          const n = ((r.fee_types && r.fee_types.name) || r.fee_type || '').toLowerCase();
+          return n.includes('admission');
+        });
+        if (!alreadyHave) {
+          feeRows = feeRows ? [...feeRows, admRow] : [admRow];
+          console.log('[fees] Admission Fee merged from supplemental fetch — level:', admRow.level, 'amount:', admRow.amount);
+        }
+      } else {
+        console.warn('[fees] Admission Fee not found in fee_schedules. Run the seed SQL to insert it.');
+      }
+    } catch (eAdm) {
+      console.warn('[fees] Supplemental admission fee fetch error', eAdm);
+    }
+
     if (!feeRows || !feeRows.length) {
       console.error(
         '[fees] ERROR - No fee rows found.',
@@ -4904,7 +4910,7 @@
         </div>
         <div style="background:var(--brand-light);border:1.5px solid rgba(37,99,235,0.3);border-radius:12px;padding:13px 18px;display:flex;gap:12px;align-items:flex-start;">
           <i class="fas fa-circle-info" style="color:var(--brand);font-size:15px;margin-top:2px;flex-shrink:0;"></i>
-          <div style="font-size:13px;color:#1e3a8a;line-height:1.6;"><strong>How it works:</strong> Click a plan to select it — the other plans will be locked out. Then confirm payment. Click the selected plan again to deselect. Admission Fee must be paid before proceeding to any other plan. "Other Fees" include SRC Dues, Departmental Dues, and Medical Levy.</div>
+          <div style="font-size:13px;color:#1e3a8a;line-height:1.6;"><strong>How it works:</strong> Pay your <strong>Admission Fee</strong> first. Once cleared, use the <strong>Pay Other Fees</strong> button to pay SRC Dues, Departmental Dues, and Medical Levy in one transaction. After all other fees are cleared, the <strong>Tuition Fee</strong> unlocks for payment.</div>
         </div>
       </div>
 
@@ -4926,6 +4932,7 @@
                 <th style="padding:12px 18px;text-align:right;font-weight:700;">Paid (GHS)</th>
                 <th style="padding:12px 18px;text-align:right;font-weight:700;">Balance (GHS)</th>
                 <th style="padding:12px 18px;text-align:center;font-weight:700;">Status</th>
+                <th style="padding:12px 18px;text-align:center;font-weight:700;">Action</th>
               </tr>
             </thead>
             <tbody id="feesBreakdownBody">
@@ -4938,10 +4945,38 @@
                 <td id="fbTotalPaid" style="padding:13px 18px;text-align:right;font-weight:800;color:var(--emerald);">—</td>
                 <td id="fbTotalBal"  style="padding:13px 18px;text-align:right;font-weight:800;color:var(--rose);">—</td>
                 <td></td>
+                <td></td>
               </tr>
             </tfoot>
           </table>
         </div>
+        <!-- Bulk payment action strips -->
+        <div id="bulkOtherFeesStrip" style="display:none;margin-top:14px;background:linear-gradient(135deg,#ede9fe,#f5f3ff);border:1.5px solid var(--violet);border-radius:14px;padding:16px 20px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;background:var(--violet);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;flex-shrink:0;"><i class="fas fa-layer-group"></i></div>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--ink);">Pay All Other Fees</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:1px;">SRC Dues + Departmental Dues + Medical Levy — <span id="bulkOtherTotal" style="font-weight:700;color:var(--violet);">GHS 0.00</span></div>
+            </div>
+          </div>
+          <button id="bulkOtherBtn" onclick="fpBulkPayOtherFees()" style="padding:11px 22px;background:var(--violet);color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='var(--violet)'">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </button>
+        </div>
+
+        <div id="bulkTuitionStrip" style="display:none;margin-top:12px;background:linear-gradient(135deg,#fef3c7,#fffbeb);border:1.5px solid var(--amber);border-radius:14px;padding:16px 20px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;background:var(--amber);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;flex-shrink:0;"><i class="fas fa-graduation-cap"></i></div>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--ink);">Pay Tuition Fee</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:1px;">Balance remaining — <span id="bulkTuitionTotal" style="font-weight:700;color:var(--amber);">GHS 0.00</span></div>
+            </div>
+          </div>
+          <button id="bulkTuitionBtn" onclick="fpBulkPayTuition()" style="padding:11px 22px;background:var(--amber);color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#b45309'" onmouseout="this.style.background='var(--amber)'">
+            <i class="fas fa-credit-card"></i> Pay Tuition
+          </button>
+        </div>
+
         <!-- Payment order notice -->
         <div style="margin-top:12px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:11px 16px;display:flex;gap:10px;align-items:flex-start;">
           <i class="fas fa-circle-exclamation" style="color:#d97706;font-size:14px;margin-top:2px;flex-shrink:0;"></i>
@@ -4949,111 +4984,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;">
 
-        <!-- Plan 1: Admission Only -->
-        <div id="fpCard1" class="fp-plan-card" style="background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.22s ease;position:relative;" onmouseover="if(!this.classList.contains('fp-disabled'))this.style.boxShadow='var(--shadow)';" onmouseout="this.style.boxShadow='';">
-          <div class="fp-disabled-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);z-index:10;border-radius:var(--radius-lg);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);pointer-events:none;"></div>
-          <div style="padding:7px 18px;background:var(--brand);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-door-open" style="color:rgba(255,255,255,.85);font-size:12px;"></i>
-            <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Plan 1 · Entry</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px;">Admission Fee Only</div>
-            <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Pay only the admission fee to secure your enrollment.</div>
-            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-                <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--brand);"></div><span style="font-size:13px;font-weight:500;">Admission Fee</span></div>
-                <span id="fp1AdmAmt" style="font-size:14px;font-weight:800;color:var(--brand);">—</span>
-              </div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-              <span style="font-size:12.5px;font-weight:700;color:var(--muted);">Total Due</span>
-              <span id="fp1Total" style="font-size:1.2rem;font-weight:800;color:var(--ink);">—</span>
-            </div>
-            <button onclick="fpSelectPlan(1)" id="fpBtn1" style="width:100%;padding:11px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-credit-card"></i> Select &amp; Pay <span id="fp1BtnAmt" style="margin-left:3px;"></span></button>
-          </div>
-        </div>
-
-        <!-- Plan 2: Admission + 70% Tuition + Other -->
-        <div id="fpCard2" class="fp-plan-card" style="background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.22s ease;position:relative;" onmouseover="if(!this.classList.contains('fp-disabled'))this.style.boxShadow='var(--shadow)';" onmouseout="this.style.boxShadow='';">
-          <div class="fp-disabled-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);z-index:10;border-radius:var(--radius-lg);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);pointer-events:none;"></div>
-          <div style="padding:7px 18px;background:var(--violet);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-percentage" style="color:rgba(255,255,255,.85);font-size:12px;"></i>
-            <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Plan 2 · Partial</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px;">Admission + 70% Tuition + Other Fees</div>
-            <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Pay admission, 70% of your tuition, and all other applicable fees.</div>
-            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--brand);"></div><span style="font-size:13px;font-weight:500;">Admission Fee</span></div><span id="fp2AdmAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--violet);"></div><span style="font-size:13px;font-weight:500;">Tuition (70%)</span></div><span id="fp2TuitionAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);"></div><span style="font-size:13px;font-weight:500;">Other Fees</span></div><span id="fp2OtherAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:12.5px;font-weight:700;color:var(--muted);">Total Due</span><span id="fp2Total" style="font-size:1.2rem;font-weight:800;color:var(--ink);">—</span></div>
-            <button onclick="fpSelectPlan(2)" id="fpBtn2" style="width:100%;padding:11px;background:var(--violet);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-credit-card"></i> Select &amp; Pay <span id="fp2BtnAmt" style="margin-left:3px;"></span></button>
-          </div>
-        </div>
-
-        <!-- Plan 3: Admission + 100% Tuition + Other (Recommended) -->
-        <div id="fpCard3" class="fp-plan-card" style="background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.22s ease;position:relative;" onmouseover="if(!this.classList.contains('fp-disabled'))this.style.boxShadow='var(--shadow)';" onmouseout="this.style.boxShadow='';">
-          <div class="fp-disabled-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);z-index:10;border-radius:var(--radius-lg);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);pointer-events:none;"></div>          <div style="position:absolute;top:12px;right:12px;background:var(--emerald);color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:3px 10px;letter-spacing:.5px;z-index:2;">★ Recommended</div>
-          <div style="padding:7px 18px;background:var(--emerald);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-star" style="color:rgba(255,255,255,.85);font-size:12px;"></i>
-            <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Plan 3 · Full Clear</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px;">Admission + 100% Tuition + Other Fees</div>
-            <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Pay everything upfront and achieve complete fee clearance this semester.</div>
-            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--brand);"></div><span style="font-size:13px;font-weight:500;">Admission Fee</span></div><span id="fp3AdmAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);"></div><span style="font-size:13px;font-weight:500;">Tuition (100%)</span></div><span id="fp3TuitionAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);"></div><span style="font-size:13px;font-weight:500;">Other Fees</span></div><span id="fp3OtherAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:12.5px;font-weight:700;color:var(--muted);">Total Due</span><span id="fp3Total" style="font-size:1.2rem;font-weight:800;color:var(--ink);">—</span></div>
-            <button onclick="fpSelectPlan(3)" id="fpBtn3" style="width:100%;padding:11px;background:var(--emerald);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-credit-card"></i> Select &amp; Pay <span id="fp3BtnAmt" style="margin-left:3px;"></span></button>
-          </div>
-        </div>
-
-        <!-- Plan 4: Tuition + Other (no admission) -->
-        <div id="fpCard4" class="fp-plan-card" style="background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.22s ease;position:relative;" onmouseover="if(!this.classList.contains('fp-disabled'))this.style.boxShadow='var(--shadow)';" onmouseout="this.style.boxShadow='';">
-          <div class="fp-disabled-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);z-index:10;border-radius:var(--radius-lg);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);pointer-events:none;"></div>
-          <div style="padding:7px 18px;background:var(--amber);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-book-open" style="color:rgba(255,255,255,.85);font-size:12px;"></i>
-            <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Plan 4 · Continuing</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px;">Tuition + Other Fees</div>
-            <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">For students who have already paid admission. Pay full tuition and other fees.</div>
-            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--amber);"></div><span style="font-size:13px;font-weight:500;">Tuition (100%)</span></div><span id="fp4TuitionAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);"></div><span style="font-size:13px;font-weight:500;">Other Fees</span></div><span id="fp4OtherAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:12.5px;font-weight:700;color:var(--muted);">Total Due</span><span id="fp4Total" style="font-size:1.2rem;font-weight:800;color:var(--ink);">—</span></div>
-            <button onclick="fpSelectPlan(4)" id="fpBtn4" style="width:100%;padding:11px;background:var(--amber);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-credit-card"></i> Select &amp; Pay <span id="fp4BtnAmt" style="margin-left:3px;"></span></button>
-          </div>
-        </div>
-
-        <!-- Plan 5: Remaining 30% -->
-        <div id="fpCard5" class="fp-plan-card" style="background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.22s ease;position:relative;" onmouseover="if(!this.classList.contains('fp-disabled'))this.style.boxShadow='var(--shadow)';" onmouseout="this.style.boxShadow='';">
-          <div class="fp-disabled-overlay" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);z-index:10;border-radius:var(--radius-lg);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);pointer-events:none;"></div>
-          <div style="padding:7px 18px;background:var(--rose);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-rotate" style="color:rgba(255,255,255,.85);font-size:12px;"></i>
-            <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Plan 5 · Balance</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px;">Remaining Tuition Balance (30%)</div>
-            <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Pay the outstanding 30% tuition balance after an earlier 70% partial payment.</div>
-            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surface);border-radius:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--rose);"></div><span style="font-size:13px;font-weight:500;">Tuition Balance (30%)</span></div><span id="fp5TuitionAmt" style="font-size:13.5px;font-weight:700;">—</span></div>
-              <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;"><i class="fas fa-info-circle" style="color:var(--amber);font-size:13px;flex-shrink:0;"></i><span style="font-size:12px;color:#92400E;font-weight:500;">Previously paid: 70% of tuition</span></div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:12.5px;font-weight:700;color:var(--muted);">Total Due</span><span id="fp5Total" style="font-size:1.2rem;font-weight:800;color:var(--ink);">—</span></div>
-            <button onclick="fpSelectPlan(5)" id="fpBtn5" style="width:100%;padding:11px;background:var(--rose);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-credit-card"></i> Select &amp; Pay <span id="fp5BtnAmt" style="margin-left:3px;"></span></button>
-          </div>
-        </div>
-
-      </div><!-- /grid -->
       <div style="margin-top:32px;text-align:center;"><p style="font-size:13px;color:var(--muted);">Need help? Visit the <strong>Finance Office</strong> or contact your school's financial services team.</p></div>
     </div><!-- /feesPageContent -->
 
@@ -5206,65 +5137,213 @@ function _fpDeselectAll() {
 }
 
 /* ── Render the fees breakdown table ─────────────── */
-function _fpRenderBreakdown() {
-  try {
-    var f   = _fpGetFees();
-    var o   = typeof otherRemaining   === 'function' ? otherRemaining()   : { src:f.src, dept:f.dept, med:f.med };
-    var t   = typeof tuitionStatus    === 'function' ? tuitionStatus()    : { paid:0, remaining:f.tuition };
-    var adm = typeof hasPaidAdmission === 'function' ? hasPaidAdmission() : false;
+async function _fpRenderBreakdown() {
+  var tbody = document.getElementById('feesBreakdownBody');
+  if (!tbody) return;
 
-    /* Compute paid amounts from remaining */
-    var admPaid    = adm ? f.admission : 0;
-    var admBal     = f.admission - admPaid;
+  /* Show a loading state while querying */
+  tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);font-size:13px;"><i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Checking payment status…</td></tr>';
+
+  try {
+    var f = _fpGetFees();
+    var o = typeof otherRemaining === 'function' ? otherRemaining() : { src:f.src, dept:f.dept, med:f.med };
+    var t = typeof tuitionStatus  === 'function' ? tuitionStatus()  : { paid:0 };
+
+    /* ── Query payments table directly ──────────────────────────────────────
+       This is the single source of truth. We do NOT rely on allPayments being
+       populated — we query fresh every time this function runs.            */
+    var admPaid = 0;
+    var allApprovedPayments = [];
+
+    if (typeof sb !== 'undefined' && typeof currentStudent !== 'undefined' && currentStudent) {
+      var sid = String(currentStudent.student_id || currentStudent.id || '').trim();
+      var res = await sb
+        .from('payments')
+        .select('fee_type, amount, status')
+        .eq('student_id', sid)
+        .eq('status', 'approved');
+
+      if (res.error) {
+        console.error('[breakdown] payments query error:', res.error.message, res.error.hint);
+      } else {
+        allApprovedPayments = res.data || [];
+        console.log('[breakdown] approved payments from DB:', allApprovedPayments);
+
+        /* Sync back into allPayments so hasPaidAdmission() and other functions stay consistent */
+        if (typeof allPayments !== 'undefined') {
+          allApprovedPayments.forEach(function(dbRow) {
+            var alreadyIn = allPayments.some(function(p) {
+              return String(p.fee_type||'').toLowerCase() === String(dbRow.fee_type||'').toLowerCase()
+                && Number(p.amount_paid || p.amount || 0) === Number(dbRow.amount || 0)
+                && String(p.status||'') === 'approved';
+            });
+            if (!alreadyIn) {
+              allPayments.push({ ...dbRow, amount_paid: dbRow.amount, status: 'approved' });
+            }
+          });
+        }
+
+        allApprovedPayments.forEach(function(p) {
+          var ft = String(p.fee_type || '').toLowerCase();
+          if (ft.includes('admission')) {
+            admPaid += Number(p.amount || 0);
+          }
+        });
+      }
+    }
+
+    /* Admission is paid if any approved admission payment exists */
+    var admissionPaid = admPaid > 0;
+    console.log('[breakdown] admissionPaid:', admissionPaid, '| admPaid:', admPaid);
+
+    /* ── Build per-fee figures ─────────────────────────────────────────── */
+    var effectiveAdmFee = f.admission > 0 ? f.admission : admPaid; // fallback if schedule missing
+    var admBal          = Math.max(0, effectiveAdmFee - admPaid);
+
     var srcPaid    = f.src  - (o.src  || 0);
     var deptPaid   = f.dept - (o.dept || 0);
     var medPaid    = f.med  - (o.med  || 0);
-    var tuitionPaid= (t && t.paid != null) ? t.paid : 0;
-    var tuitionBal = f.tuition - tuitionPaid;
+    var tuitionPaid = t && t.paid != null ? t.paid : 0;
+    var tuitionBal  = Math.max(0, f.tuition - tuitionPaid);
+
+    var otherOwed = (o.src || 0) + (o.dept || 0) + (o.med || 0);
+
+    function N(v) { return Number(v || 0); }
+    function fmt(v) { return N(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
     function statusBadge(paid, total) {
-      if (total <= 0) return '<span style="font-size:11px;background:#f1f5f9;color:#94a3b8;padding:3px 10px;border-radius:20px;font-weight:600;">N/A</span>';
-      if (paid >= total - 0.005) return '<span style="font-size:11px;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-check" style="margin-right:3px;"></i>Paid</span>';
-      if (paid > 0) return '<span style="font-size:11px;background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-clock" style="margin-right:3px;"></i>Partial</span>';
+      if (paid > 0 && (total <= 0 || paid >= total - 0.005))
+        return '<span style="font-size:11px;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-check" style="margin-right:3px;"></i>Paid</span>';
+      if (total <= 0)
+        return '<span style="font-size:11px;background:#f1f5f9;color:#94a3b8;padding:3px 10px;border-radius:20px;font-weight:600;">N/A</span>';
+      if (paid > 0)
+        return '<span style="font-size:11px;background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-clock" style="margin-right:3px;"></i>Partial</span>';
       return '<span style="font-size:11px;background:#ffe4e6;color:#9f1239;padding:3px 10px;border-radius:20px;font-weight:700;"><i class="fas fa-xmark" style="margin-right:3px;"></i>Unpaid</span>';
     }
 
-    function N(v){ return Number(v||0); }
-    function fmt(v){ return N(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
-
+    /* ── Row definitions ────────────────────────────────────────────────── */
     var rows = [
-      { label:'Admission Fee',      icon:'fa-door-open',        color:'var(--brand)',   amt:f.admission,  paid:admPaid,   bal:admBal },
-      { label:'SRC Dues',           icon:'fa-users',            color:'var(--violet)',  amt:f.src,        paid:srcPaid,   bal:o.src||0 },
-      { label:'Departmental Dues',  icon:'fa-building',         color:'var(--sky)',     amt:f.dept,       paid:deptPaid,  bal:o.dept||0 },
-      { label:'Medical Levy',       icon:'fa-stethoscope',      color:'var(--emerald)', amt:f.med,        paid:medPaid,   bal:o.med||0 },
-      { label:'Tuition Fee',        icon:'fa-graduation-cap',   color:'var(--amber)',   amt:f.tuition,    paid:tuitionPaid, bal:Math.max(0,tuitionBal) }
+      {
+        key:'admission', label:'Admission Fee', icon:'fa-door-open',    color:'var(--brand)',
+        amt:effectiveAdmFee, paid:admPaid,    bal:admBal,
+        locked: false   // admission is always payable
+      },
+      {
+        key:'src',       label:'SRC Dues',      icon:'fa-users',        color:'var(--violet)',
+        amt:f.src,       paid:srcPaid,          bal:o.src||0,
+        locked: !admissionPaid
+      },
+      {
+        key:'dept',      label:'Departmental Dues', icon:'fa-building', color:'var(--sky)',
+        amt:f.dept,      paid:deptPaid,         bal:o.dept||0,
+        locked: !admissionPaid
+      },
+      {
+        key:'med',       label:'Medical Levy',  icon:'fa-stethoscope',  color:'var(--emerald)',
+        amt:f.med,       paid:medPaid,          bal:o.med||0,
+        locked: !admissionPaid
+      },
+      {
+        key:'tuition',   label:'Tuition Fee',   icon:'fa-graduation-cap', color:'var(--amber)',
+        amt:f.tuition,   paid:tuitionPaid,      bal:tuitionBal,
+        locked: !admissionPaid || otherOwed > 0.005
+      }
     ];
 
+    /* ── Render rows ────────────────────────────────────────────────────── */
     var html = '';
     var totalAmt = 0, totalPaid = 0, totalBal = 0;
+
     rows.forEach(function(r, idx) {
       totalAmt  += N(r.amt);
       totalPaid += N(r.paid);
       totalBal  += N(r.bal);
-      var bg = idx % 2 === 0 ? '#ffffff' : 'var(--surface)';
-      html += '<tr style="background:'+bg+';border-bottom:1px solid var(--border);">'
-        + '<td style="padding:12px 18px;"><div style="display:flex;align-items:center;gap:9px;">'
-        + '<div style="width:30px;height:30px;border-radius:8px;background:'+r.color.replace('var(--','').replace(')','')+'11;background:color-mix(in srgb,'+r.color+' 14%,transparent);display:flex;align-items:center;justify-content:center;font-size:13px;color:'+r.color+';flex-shrink:0;">'
-        + '<i class="fas '+r.icon+'"></i></div>'
-        + '<span style="font-weight:600;color:var(--ink);">'+r.label+'</span></div></td>'
-        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--ink-3);">'+(r.amt > 0 ? fmt(r.amt) : '—')+'</td>'
-        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--emerald);">'+(r.paid > 0 ? fmt(r.paid) : (r.amt > 0 ? '0.00' : '—'))+'</td>'
-        + '<td style="padding:12px 18px;text-align:right;font-weight:700;color:'+(r.bal > 0.005 ? 'var(--rose)' : 'var(--emerald)')+';">'+(r.amt > 0 ? fmt(r.bal) : '—')+'</td>'
-        + '<td style="padding:12px 18px;text-align:center;">'+statusBadge(r.paid, r.amt)+'</td>'
+
+      var bg     = idx % 2 === 0 ? '#ffffff' : 'var(--surface)';
+      var isPaid = r.amt > 0 && r.paid >= r.amt - 0.005;
+
+      /* Action column */
+      var actionCell = '';
+      if (r.amt <= 0 && r.paid <= 0) {
+        actionCell = '<td style="padding:12px 18px;text-align:center;color:var(--muted);">—</td>';
+      } else if (isPaid) {
+        actionCell = '<td style="padding:12px 18px;text-align:center;">'
+          + '<span style="font-size:11px;background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:5px;">'
+          + '<i class="fas fa-check-circle"></i>Cleared</span></td>';
+      } else if (r.locked) {
+        var tip = r.key === 'tuition'
+          ? (admissionPaid ? 'Pay SRC, Departmental &amp; Medical dues first' : 'Pay Admission Fee first to unlock')
+          : 'Pay Admission Fee first to unlock';
+        actionCell = '<td style="padding:12px 18px;text-align:center;">'
+          + '<span title="' + tip + '" style="font-size:11px;background:#f3f4f6;color:#9ca3af;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:5px;cursor:help;">'
+          + '<i class="fas fa-lock" style="font-size:10px;"></i>Locked</span></td>';
+      } else {
+        actionCell = '<td style="padding:12px 14px;text-align:center;">'
+          + '<button onclick="frpmClickHandler(this,\'' + r.key + '\',\'' + r.label + '\',' + r.amt + ',' + r.bal + ',' + r.paid + ')"'
+          + ' style="padding:7px 16px;background:var(--brand);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background 0.15s;min-width:72px;justify-content:center;"'
+          + ' onmouseover="if(!this.disabled)this.style.background=\'var(--brand-2)\'"'
+          + ' onmouseout="if(!this.disabled)this.style.background=\'var(--brand)\'">'
+          + '<i class="fas fa-credit-card"></i>Pay</button></td>';
+      }
+
+      /* Row icon — show lock icon when locked */
+      var iconHtml = r.locked
+        ? '<i class="fas fa-lock" style="font-size:11px;color:#9ca3af;"></i>'
+        : '<i class="fas ' + r.icon + '"></i>';
+
+      html += '<tr style="background:' + bg + ';border-bottom:1px solid var(--border);' + (r.locked ? 'opacity:0.65;' : '') + '">'
+        + '<td style="padding:12px 18px;">'
+          + '<div style="display:flex;align-items:center;gap:9px;">'
+            + '<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:' + r.color + ';flex-shrink:0;background:color-mix(in srgb,' + r.color + ' 14%,transparent);">' + iconHtml + '</div>'
+            + '<span style="font-weight:600;color:var(--ink);">' + r.label + '</span>'
+          + '</div>'
+        + '</td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--ink-3);">' + (r.amt > 0 ? fmt(r.amt) : (r.paid > 0 ? fmt(r.paid) : '—')) + '</td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:600;color:var(--emerald);">' + (r.paid > 0 ? fmt(r.paid) : (r.amt > 0 ? '0.00' : '—')) + '</td>'
+        + '<td style="padding:12px 18px;text-align:right;font-weight:700;color:' + (r.bal > 0.005 ? 'var(--rose)' : 'var(--emerald)') + ';">' + (r.amt > 0 || r.paid > 0 ? fmt(r.bal) : '—') + '</td>'
+        + '<td style="padding:12px 18px;text-align:center;">' + statusBadge(r.paid, r.amt) + '</td>'
+        + actionCell
         + '</tr>';
     });
 
-    var tbody = document.getElementById('feesBreakdownBody');
-    if (tbody) tbody.innerHTML = html;
+    tbody.innerHTML = html;
     _fpSet('fbTotalAmt',  fmt(totalAmt));
     _fpSet('fbTotalPaid', fmt(totalPaid));
     _fpSet('fbTotalBal',  fmt(totalBal));
-  } catch(e) { console.warn('[breakdown]', e); }
+
+    /* ── Show / hide bulk payment action strips ─────────────────────────── */
+
+    /* Other-fees strip: visible when admission is paid AND any of SRC/Dept/Med has a balance */
+    var otherStripEl  = document.getElementById('bulkOtherFeesStrip');
+    var otherTotalEl  = document.getElementById('bulkOtherTotal');
+    var otherRemTotal = N(o.src) + N(o.dept) + N(o.med);
+
+    if (otherStripEl) {
+      if (admissionPaid && otherRemTotal > 0.005) {
+        if (otherTotalEl) otherTotalEl.textContent = 'GHS ' + fmt(otherRemTotal);
+        otherStripEl.style.display = 'flex';
+      } else {
+        otherStripEl.style.display = 'none';
+      }
+    }
+
+    /* Tuition strip: visible when admission is paid, other fees fully cleared, tuition still owed */
+    var tuitionStripEl = document.getElementById('bulkTuitionStrip');
+    var tuitionTotalEl = document.getElementById('bulkTuitionTotal');
+
+    if (tuitionStripEl) {
+      if (admissionPaid && otherRemTotal < 0.005 && tuitionBal > 0.005) {
+        if (tuitionTotalEl) tuitionTotalEl.textContent = 'GHS ' + fmt(tuitionBal);
+        tuitionStripEl.style.display = 'flex';
+      } else {
+        tuitionStripEl.style.display = 'none';
+      }
+    }
+
+  } catch(e) {
+    console.error('[breakdown] error:', e);
+    if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--rose);font-size:13px;"><i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>Could not load fee status. Please refresh.</td></tr>';
+  }
 }
 
 function _fpPopulate() {
@@ -5309,15 +5388,23 @@ async function openFeesPage() {
   if (content) content.style.display = 'none';
   if (errDiv)  errDiv.style.display  = 'none';
   try {
+    /* Always load fee schedule if not yet loaded */
     var f = _fpGetFees();
     if ((f.admission + f.tuition + f.src + f.dept + f.med) === 0 && typeof loadFeesForStudent === 'function') {
       await loadFeesForStudent();
     }
     f = _fpGetFees();
     if ((f.admission + f.tuition + f.src + f.dept + f.med) === 0) throw new Error('Fee schedule returned zero amounts. Please verify fee_schedules table data.');
+
+    /* Always re-fetch payments from DB so admission paid status is live */
+    if (typeof loadPayments === 'function') {
+      try { await loadPayments(); } catch(e) { console.warn('[feesPage] loadPayments error', e); }
+    }
+
     _fpPopulate();
-    /* Reflect already-paid plans */
+    /* Reflect already-paid plans & refresh breakdown with live DB state */
     _fpRefreshPaidState();
+    await _fpRenderBreakdown();
     if (loader)  loader.style.display  = 'none';
     if (content) content.style.display = 'block';
   } catch(err) {
@@ -5456,6 +5543,692 @@ function fpPay(planNum) {
 
   if (typeof openModal === 'function') openModal('payChannelModal');
 }
+
+/* ── Bulk Pay: All Other Fees (SRC + Dept + Medical) ──────────────────────
+   Called from the violet strip below the breakdown table.
+   Uses the same payment-channel modal so the student can pick Paystack/bank.
+
+   FIXES applied:
+   1. Fee label consistency — 'Medical Dues' (not 'Medical Levy') so it matches
+      the otherRemaining() filter and the fee_schedules table seed data.
+   2. feeLabel parts now use the exact same strings saved to Supabase, so the
+      channel-modal header and bank-instruction modal show the correct breakdown.
+   3. Button is disabled during the entire flow and re-enabled on success or
+      cancel, preventing accidental double-submissions.
+   4. onClose handler now re-enables the button (was previously an empty function).
+   5. generateReceipt() is called after all saves succeed so the student receives
+      a downloadable PDF receipt (missing in original code).
+   6. renderFeeUI() is called after reload so the main dashboard fee cards also
+      reflect the new payment state.
+   7. Promise.all error path now re-enables the button so it isn't stuck.        */
+window.fpBulkPayOtherFees = function() {
+
+  /* ── Guard: admission must be paid first ─────────────────────────────── */
+  var admPaid = typeof hasPaidAdmission === 'function' && hasPaidAdmission();
+  if (!admPaid) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Please pay your Admission Fee first before paying other fees.');
+    return;
+  }
+
+  /* ── Guard: fetch live other-fee balances ────────────────────────────── */
+  var o = typeof otherRemaining === 'function' ? otherRemaining() : null;
+  if (!o) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Could not determine fee balances. Please refresh the page and try again.');
+    return;
+  }
+
+  /* ── Guard: student session must exist ───────────────────────────────── */
+  if (typeof currentStudent === 'undefined' || !currentStudent) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Student session not found. Please refresh and log in again.');
+    return;
+  }
+
+  /* ── Compute individual amounts ──────────────────────────────────────── */
+  var srcAmt  = Math.max(0, Number(o.src  || 0));
+  var deptAmt = Math.max(0, Number(o.dept || 0));
+  var medAmt  = Math.max(0, Number(o.med  || 0));
+  var total   = srcAmt + deptAmt + medAmt;
+
+  /* ── Guard: nothing outstanding ──────────────────────────────────────── */
+  if (total < 0.005) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('All other fees (SRC Dues, Departmental Dues, Medical Dues) are already fully paid!');
+    return;
+  }
+
+  /* ── Build fee label — MUST match fee_type strings used in saves below ─ */
+  /* BUG FIX #1: Original code pushed 'Medical Levy' here but saved
+     'Medical Dues' to Supabase. The label shown in the channel modal and
+     bank-instruction slip was therefore wrong.  Now both use 'Medical Dues'
+     which matches otherRemaining() filter (.includes('medical')) and the
+     fee_schedules seed row.                                                 */
+  var parts = [];
+  if (srcAmt  > 0.005) parts.push('SRC Dues');
+  if (deptAmt > 0.005) parts.push('Departmental Dues');
+  if (medAmt  > 0.005) parts.push('Medical Dues');
+  var feeLabel = parts.join(' + ');   // e.g. "SRC Dues + Departmental Dues + Medical Dues"
+
+  /* ── Disable the trigger button to prevent double-submission ─────────── */
+  /* BUG FIX #3: Original code had no button-locking at all.                */
+  var bulkBtn = document.getElementById('bulkOtherBtn');
+  if (bulkBtn) {
+    bulkBtn.disabled = true;
+    bulkBtn.style.opacity = '0.6';
+    bulkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…';
+  }
+
+  /* ── Helper: re-enable button (called on success AND on close/cancel) ── */
+  function _unlockOtherBtn() {
+    if (bulkBtn) {
+      bulkBtn.disabled = false;
+      bulkBtn.style.opacity = '1';
+      bulkBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay Now';
+    }
+  }
+
+  /* ── Prepare payment context ─────────────────────────────────────────── */
+  var student = currentStudent;
+  var ref     = 'BULK-OTHER-' + Date.now();
+
+  /* Update the amount display in the channel-selector modal */
+  var amtEl = document.getElementById('payChAmount');
+  if (amtEl) amtEl.textContent = 'GHS ' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  /* ── Set pending payment context ─────────────────────────────────────── */
+  window._pendingPayCtx = {
+    email:     student.email || '',
+    amountGhs: total,
+    reference: ref,
+    metadata:  {
+      custom_fields: [
+        { display_name: 'Fee Type', variable_name: 'fee_type', value: feeLabel },
+        { display_name: 'Student ID', variable_name: 'student_id',
+          value: String(student.student_id || student.id || '') }
+      ]
+    },
+
+    /* ── onSuccess: save each fee line, generate receipt, refresh UI ───── */
+    onSuccess: function(response) {
+      /* Close both payment-channel and bank-instruction modals */
+      if (typeof closeModal === 'function') {
+        closeModal('payChannelModal');
+        closeModal('bankInstModal');
+      }
+
+      if (typeof savePaymentToSupabase !== 'function') {
+        _unlockOtherBtn();
+        return;
+      }
+
+      /* Save each fee line as a separate Supabase row so per-fee status
+         queries (hasPaidAdmission, otherRemaining, etc.) work correctly.
+         BUG FIX #4: All three labels now match the exact fee_type strings
+         used in the seed data and otherRemaining() filters.                */
+      var saves  = [];
+      var base   = 'PAY_BULK_' + Date.now();
+      var idx    = 1;
+      var txRef  = response.reference || response.trans || ref;
+
+      if (srcAmt  > 0.005) saves.push(
+        savePaymentToSupabase(student, srcAmt,  'SRC Dues',         txRef, base + '_' + idx++));
+      if (deptAmt > 0.005) saves.push(
+        savePaymentToSupabase(student, deptAmt, 'Departmental Dues', txRef, base + '_' + idx++));
+      if (medAmt  > 0.005) saves.push(
+        savePaymentToSupabase(student, medAmt,  'Medical Dues',      txRef, base + '_' + idx++));
+
+      Promise.all(saves)
+        .then(function() {
+          /* BUG FIX #5: Generate a receipt PDF so the student has proof.
+             Original code never called generateReceipt() for bulk payments. */
+          if (typeof generateReceipt === 'function') {
+            generateReceipt(student, total, 'Other Fees (' + feeLabel + ')', txRef, base)
+              .catch(function(e) { console.warn('[fpBulkPayOtherFees] receipt error', e); });
+          }
+
+          /* Reload payments from DB then refresh every UI component */
+          if (typeof loadPayments === 'function') {
+            loadPayments().then(function() {
+              if (typeof updatePaymentStatusDisplay === 'function') updatePaymentStatusDisplay();
+              if (typeof updateDashboardStats       === 'function') updateDashboardStats();
+              /* BUG FIX #6: renderFeeUI() was never called, so the step-1/
+                 step-2 fee cards on the main dashboard stayed stale.        */
+              if (typeof renderFeeUI === 'function') renderFeeUI();
+              _fpRefreshPaidState();
+              _fpRenderBreakdown();
+              _unlockOtherBtn();
+            }).catch(function(e) {
+              console.error('[fpBulkPayOtherFees] loadPayments error', e);
+              _unlockOtherBtn();
+            });
+          } else {
+            _unlockOtherBtn();
+          }
+        })
+        .catch(function(e) {
+          /* BUG FIX #7: Original code never re-enabled the button on error. */
+          console.error('[fpBulkPayOtherFees] save error', e);
+          if (typeof showModalMessage === 'function')
+            showModalMessage('Payment recorded by provider but could not be saved locally. Please contact the Finance Office with reference: ' + txRef);
+          _unlockOtherBtn();
+        });
+    },
+
+    /* ── onClose: student dismissed the channel picker without paying ───── */
+    /* BUG FIX #2: Original onClose was an empty function `{}` — the button
+       stayed disabled/locked forever if the student cancelled.              */
+    onClose: function() {
+      _unlockOtherBtn();
+    }
+  };
+
+  /* Open the payment-channel selector modal */
+  if (typeof openModal === 'function') openModal('payChannelModal');
+};
+
+/* ── Bulk Pay: Tuition Fee ─────────────────────────────────────────────────
+   Called from the amber strip below the breakdown table.
+   Pays the full remaining tuition balance (to 100%).
+   The student must have admission paid AND all other fees cleared first.
+
+   FIXES applied:
+   1. Amount calculation now uses the tuition balance derived directly from
+      the live fee schedule (f.tuition - t.paid) rather than t.to100 alone,
+      which could be undefined or stale if tuitionStatus() used a different
+      TUITION constant than _fpGetFees().
+   2. Saved fee_type is now 'Tuition' (not 'Tuition (100%)') so it is caught
+      by tuitionStatus() filter (String(p.fee_type).includes('Tuition')).
+   3. Button locking prevents double-submission.
+   4. onClose re-enables button (was an empty no-op).
+   5. generateReceipt() is called after save (was missing).
+   6. renderFeeUI() is called after reload so main dashboard cards update.   */
+window.fpBulkPayTuition = function() {
+
+  /* ── Guard: admission must be paid first ─────────────────────────────── */
+  var admPaid = typeof hasPaidAdmission === 'function' && hasPaidAdmission();
+  if (!admPaid) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Please pay your Admission Fee first before paying tuition.');
+    return;
+  }
+
+  /* ── Guard: all other fees must be cleared first ─────────────────────── */
+  var o = typeof otherRemaining === 'function' ? otherRemaining() : null;
+  if (o) {
+    var otherRem = Number(o.src || 0) + Number(o.dept || 0) + Number(o.med || 0);
+    if (otherRem > 0.005) {
+      if (typeof showModalMessage === 'function')
+        showModalMessage(
+          'Please clear all Other Fees before paying tuition.\n\n' +
+          'Remaining:\n' +
+          (Number(o.src  || 0) > 0.005 ? '  • SRC Dues: GHS '          + Number(o.src ).toFixed(2) + '\n' : '') +
+          (Number(o.dept || 0) > 0.005 ? '  • Departmental Dues: GHS ' + Number(o.dept).toFixed(2) + '\n' : '') +
+          (Number(o.med  || 0) > 0.005 ? '  • Medical Dues: GHS '      + Number(o.med ).toFixed(2) + '\n' : '') +
+          '\nTotal remaining: GHS ' + otherRem.toFixed(2)
+        );
+      return;
+    }
+  }
+
+  /* ── Compute tuition balance ──────────────────────────────────────────── */
+  /* BUG FIX #1: Original code used t.to100 which relies on the global
+     TUITION constant. If _fpGetFees() returns a different schedule amount
+     (e.g. from a different academic year), the two values diverge.
+     We now cross-check both and take the larger balance as the source of
+     truth, clamped to zero.                                                 */
+  var t = typeof tuitionStatus === 'function' ? tuitionStatus() : null;
+  var f = _fpGetFees();
+
+  var tuitionPaidAmt = (t && t.paid != null) ? Math.max(0, Number(t.paid)) : 0;
+  var tuitionTotal   = Math.max(Number(f.tuition || 0), 0);
+
+  /* Use schedule-based calculation as primary; fall back to t.to100 */
+  var amount = tuitionTotal > 0
+    ? Math.max(0, tuitionTotal - tuitionPaidAmt)
+    : (t && t.to100 != null ? Math.max(0, Number(t.to100)) : 0);
+
+  /* ── Guard: nothing outstanding ──────────────────────────────────────── */
+  if (amount < 0.005) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Tuition is already fully paid! No balance remaining.');
+    return;
+  }
+
+  /* ── Guard: student session must exist ───────────────────────────────── */
+  if (typeof currentStudent === 'undefined' || !currentStudent) {
+    if (typeof showModalMessage === 'function')
+      showModalMessage('Student session not found. Please refresh and log in again.');
+    return;
+  }
+
+  /* ── Disable the trigger button ──────────────────────────────────────── */
+  /* BUG FIX #3: Original code had no button-locking at all.                */
+  var bulkTBtn = document.getElementById('bulkTuitionBtn');
+  if (bulkTBtn) {
+    bulkTBtn.disabled = true;
+    bulkTBtn.style.opacity = '0.6';
+    bulkTBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…';
+  }
+
+  function _unlockTuitionBtn() {
+    if (bulkTBtn) {
+      bulkTBtn.disabled = false;
+      bulkTBtn.style.opacity = '1';
+      bulkTBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay Tuition';
+    }
+  }
+
+  /* ── Prepare payment context ─────────────────────────────────────────── */
+  var student  = currentStudent;
+  var ref      = 'TUITION-BULK-' + Date.now();
+
+  /* BUG FIX #2: fee_type saved was 'Tuition (100%)' which does pass the
+     .includes('Tuition') filter in tuitionStatus(), but it is inconsistent
+     with the fee_schedules seed row name 'Tuition'. Using 'Tuition' keeps
+     the saved row consistent with other tuition payment rows so aggregation
+     queries always work correctly.                                          */
+  var feeLabel = 'Tuition';
+
+  /* Update the amount display in the channel-selector modal */
+  var amtEl = document.getElementById('payChAmount');
+  if (amtEl) amtEl.textContent = 'GHS ' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  /* ── Set pending payment context ─────────────────────────────────────── */
+  window._pendingPayCtx = {
+    email:     student.email || '',
+    amountGhs: amount,
+    reference: ref,
+    metadata:  {
+      custom_fields: [
+        { display_name: 'Fee Type', variable_name: 'fee_type', value: 'Tuition Fee (Full Balance)' },
+        { display_name: 'Student ID', variable_name: 'student_id',
+          value: String(student.student_id || student.id || '') },
+        { display_name: 'Amount (GHS)', variable_name: 'amount',
+          value: 'GHS ' + amount.toFixed(2) }
+      ]
+    },
+
+    /* ── onSuccess: save the tuition payment, generate receipt, refresh UI  */
+    onSuccess: function(response) {
+      /* Close both modals */
+      if (typeof closeModal === 'function') {
+        closeModal('payChannelModal');
+        closeModal('bankInstModal');
+      }
+
+      if (typeof savePaymentToSupabase !== 'function') {
+        _unlockTuitionBtn();
+        return;
+      }
+
+      var txRef  = response.reference || response.trans || ref;
+      var payId  = 'PAY_TUI_' + Date.now();
+
+      savePaymentToSupabase(student, amount, feeLabel, txRef, payId)
+        .then(function() {
+          /* BUG FIX #5: Generate receipt PDF — missing in original code.   */
+          if (typeof generateReceipt === 'function') {
+            generateReceipt(student, amount, 'Tuition Fee (Full Balance)', txRef, payId)
+              .catch(function(e) { console.warn('[fpBulkPayTuition] receipt error', e); });
+          }
+
+          /* Reload payments then refresh all UI components */
+          if (typeof loadPayments === 'function') {
+            loadPayments().then(function() {
+              if (typeof updatePaymentStatusDisplay === 'function') updatePaymentStatusDisplay();
+              if (typeof updateDashboardStats       === 'function') updateDashboardStats();
+              /* BUG FIX #6: renderFeeUI() was never called in this path. */
+              if (typeof renderFeeUI === 'function') renderFeeUI();
+              _fpRefreshPaidState();
+              _fpRenderBreakdown();
+              _unlockTuitionBtn();
+            }).catch(function(e) {
+              console.error('[fpBulkPayTuition] loadPayments error', e);
+              _unlockTuitionBtn();
+            });
+          } else {
+            _unlockTuitionBtn();
+          }
+        })
+        .catch(function(e) {
+          /* BUG FIX #7: Button was stuck disabled on save error. */
+          console.error('[fpBulkPayTuition] save error', e);
+          if (typeof showModalMessage === 'function')
+            showModalMessage('Payment recorded by provider but could not be saved locally. Please contact the Finance Office with reference: ' + txRef);
+          _unlockTuitionBtn();
+        });
+    },
+
+    /* ── onClose: student dismissed without paying ──────────────────────── */
+    /* BUG FIX #4: Original onClose was an empty function — button stayed
+       locked forever if the student cancelled the payment flow.             */
+    onClose: function() {
+      _unlockTuitionBtn();
+    }
+  };
+
+  /* Open the payment-channel selector modal */
+  if (typeof openModal === 'function') openModal('payChannelModal');
+};
+</script>
+
+<!-- ══ FEE ROW DIRECT PAY MODAL ══ -->
+<div id="feeRowPayModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:440px;width:96%;">
+
+    <div class="modal-header" style="background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:22px 24px 18px;margin:-1px -1px 0;border:none;">
+      <div style="display:flex;align-items:center;gap:13px;flex:1;">
+        <div id="frpmIcon" style="width:44px;height:44px;background:rgba(37,99,235,.22);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#93c5fd;flex-shrink:0;">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <div>
+          <div class="modal-title" style="color:#fff;font-size:16px;" id="frpmTitle">Pay Fee</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;" id="frpmSubtitle">Select amount to pay</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('feeRowPayModal')" style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border-color:transparent;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Balance info strip -->
+    <div style="background:var(--brand-light);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:12.5px;color:var(--muted);">
+        <div>Total: <strong id="frpmTotal">—</strong></div>
+        <div style="margin-top:2px;">Already paid: <strong id="frpmPaid" style="color:var(--emerald);">—</strong></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);">Balance Due</div>
+        <div style="font-weight:800;font-size:22px;color:var(--rose);" id="frpmBalance">—</div>
+      </div>
+    </div>
+
+    <div class="modal-body" style="padding:20px 24px 10px;">
+
+      <!-- Amount section — fixed fees show read-only, tuition shows input -->
+      <div id="frpmFixedBlock" style="display:none;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Amount to Pay</div>
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <i class="fas fa-lock" style="color:var(--muted);font-size:13px;"></i>
+            <span style="font-size:13.5px;font-weight:500;color:var(--ink-3);">Fixed amount (full balance)</span>
+          </div>
+          <span style="font-size:18px;font-weight:800;color:var(--brand);" id="frpmFixedAmt">—</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px;"><i class="fas fa-circle-info" style="margin-right:4px;"></i>This fee has a fixed amount and must be paid in full.</p>
+      </div>
+
+      <div id="frpmCustomBlock" style="display:none;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Amount to Pay</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <button class="frpm-quick-btn" onclick="frpmSetAmount('full')" id="frpmBtnFull" style="flex:1;min-width:90px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;background:var(--white);font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink-3);transition:all 0.15s;">Full Balance</button>
+          <button class="frpm-quick-btn" onclick="frpmSetAmount('half')" id="frpmBtnHalf" style="flex:1;min-width:90px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;background:var(--white);font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink-3);transition:all 0.15s;">Half (50%)</button>
+          <button class="frpm-quick-btn" onclick="frpmSetAmount('custom')" id="frpmBtnCustom" style="flex:1;min-width:90px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;background:var(--white);font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink-3);transition:all 0.15s;">Custom</button>
+        </div>
+        <div id="frpmCustomInputWrap" style="display:none;margin-bottom:8px;">
+          <label style="font-size:12px;font-weight:600;color:var(--ink-3);display:block;margin-bottom:6px;">Enter Amount (GHS)</label>
+          <div style="display:flex;align-items:center;border:2px solid var(--brand);border-radius:10px;overflow:hidden;background:var(--white);">
+            <span style="padding:0 13px;font-size:15px;font-weight:700;color:var(--muted);border-right:1px solid var(--border);">GHS</span>
+            <input type="number" id="frpmCustomInput" min="1" step="0.01" placeholder="0.00"
+              style="flex:1;border:none;outline:none;padding:11px 14px;font-size:16px;font-weight:700;color:var(--ink);font-family:inherit;background:transparent;"
+              oninput="frpmOnCustomInput()" />
+          </div>
+        </div>
+        <div id="frpmAmountPreview" style="display:none;background:var(--brand-light);border:1.5px solid rgba(37,99,235,0.25);border-radius:10px;padding:11px 15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:600;color:var(--ink-3);">You will pay</span>
+          <span style="font-size:18px;font-weight:800;color:var(--brand);" id="frpmPreviewAmt">—</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px;"><i class="fas fa-circle-info" style="margin-right:4px;"></i>You may pay any amount toward your tuition balance.</p>
+      </div>
+
+      <div id="frpmError" style="display:none;background:#ffe4e6;border:1.5px solid #fecdd3;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#9f1239;margin-top:10px;"></div>
+    </div>
+
+    <div class="modal-footer" style="padding:14px 24px 18px;">
+      <button class="btn btn-secondary" onclick="closeModal('feeRowPayModal')">Cancel</button>
+      <button class="btn btn-primary" id="frpmPayBtn" onclick="frpmProceed()" style="flex:2;display:flex;align-items:center;justify-content:center;gap:7px;">
+        <i class="fas fa-bolt"></i> Proceed to Pay
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ FEE ROW DIRECT PAY LOGIC ══ */
+(function() {
+  var _frpm = {
+    key: '', label: '', totalAmt: 0, balance: 0, paid: 0,
+    mode: '', selectedAmt: 0, isTuition: false
+  };
+
+  function fmt(v) {
+    return 'GHS ' + Number(v||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function fmtN(v) {
+    return Number(v||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  /* Handler that shows a loading state on the Pay button while DB is checked */
+  window.frpmClickHandler = function(btn, key, label, totalAmt, balance, paid) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    btn.style.background = 'var(--muted)';
+    window.openFeeRowPayModal(key, label, totalAmt, balance, paid).finally(function() {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      btn.style.background = 'var(--brand)';
+    });
+  };
+
+  window.openFeeRowPayModal = async function(key, label, totalAmt, balance, paid) {
+    /* Query the payments table directly — this is the only source of truth */
+    var admissionIsPaid = false;
+    var sid = typeof currentStudent !== 'undefined' && currentStudent
+      ? String(currentStudent.student_id || currentStudent.id || '').trim()
+      : '';
+
+    if (sid && typeof sb !== 'undefined') {
+      try {
+        var chk = await sb
+          .from('payments')
+          .select('fee_type, amount, status')
+          .eq('student_id', sid)
+          .eq('status', 'approved');
+        if (chk.data && chk.data.length > 0) {
+          admissionIsPaid = chk.data.some(function(p) {
+            return String(p.fee_type || '').toLowerCase().includes('admission');
+          });
+          console.log('[frpm] DB check — admissionIsPaid:', admissionIsPaid, '| rows:', chk.data);
+          /* Sync into allPayments so everything else stays consistent */
+          if (typeof allPayments !== 'undefined') {
+            allPayments = chk.data.map(function(r) {
+              return Object.assign({}, r, { amount_paid: r.amount });
+            });
+          }
+          /* Refresh breakdown table with fresh state */
+          if (typeof _fpRenderBreakdown === 'function') _fpRenderBreakdown();
+        }
+      } catch(e) { console.warn('[frpm] DB check error', e); }
+    }
+
+    /* Gate: non-admission fees need admission paid first */
+    if (key !== 'admission' && !admissionIsPaid) {
+      if (typeof showModalMessage === 'function')
+        showModalMessage('Please pay the Admission Fee first to unlock this payment.');
+      return;
+    }
+
+    /* Gate: tuition needs all other dues paid first */
+    if (key === 'tuition' && admissionIsPaid) {
+      var o = typeof otherRemaining === 'function' ? otherRemaining() : null;
+      if (o && (o.src + o.dept + o.med) > 0.005) {
+        if (typeof showModalMessage === 'function')
+          showModalMessage('Please pay SRC Dues, Departmental Dues, and Medical Levy in full before paying Tuition.');
+        return;
+      }
+    }
+
+    /* If balance is zero — already fully paid */
+    if (balance < 0.005 && totalAmt > 0) {
+      if (typeof showModalMessage === 'function') showModalMessage(label + ' is already fully paid. ✓');
+      return;
+    }
+
+    _frpm.key = key;
+    _frpm.label = label;
+    _frpm.totalAmt = totalAmt;
+    _frpm.balance = balance;
+    _frpm.paid = paid;
+    _frpm.isTuition = (key === 'tuition');
+    _frpm.mode = '';
+    _frpm.selectedAmt = 0;
+
+    /* Populate header */
+    document.getElementById('frpmTitle').textContent = 'Pay ' + label;
+    document.getElementById('frpmSubtitle').textContent = _frpm.isTuition ? 'Choose or enter amount' : 'Fixed fee — full balance required';
+    document.getElementById('frpmTotal').textContent = fmt(totalAmt);
+    document.getElementById('frpmPaid').textContent = fmt(paid);
+    document.getElementById('frpmBalance').textContent = fmt(balance);
+
+    /* Show correct input block */
+    var fixedBlock = document.getElementById('frpmFixedBlock');
+    var customBlock = document.getElementById('frpmCustomBlock');
+    if (_frpm.isTuition) {
+      fixedBlock.style.display = 'none';
+      customBlock.style.display = 'block';
+      frpmResetQuickBtns();
+      document.getElementById('frpmCustomInputWrap').style.display = 'none';
+      document.getElementById('frpmAmountPreview').style.display = 'none';
+      document.getElementById('frpmCustomInput').value = '';
+    } else {
+      fixedBlock.style.display = 'block';
+      customBlock.style.display = 'none';
+      document.getElementById('frpmFixedAmt').textContent = fmt(balance);
+      _frpm.selectedAmt = balance;
+    }
+
+    document.getElementById('frpmError').style.display = 'none';
+    if (typeof openModal === 'function') openModal('feeRowPayModal');
+  };
+
+  function frpmResetQuickBtns() {
+    ['frpmBtnFull','frpmBtnHalf','frpmBtnCustom'].forEach(function(id) {
+      var b = document.getElementById(id);
+      if (b) { b.style.background = 'var(--white)'; b.style.borderColor = 'var(--border)'; b.style.color = 'var(--ink-3)'; }
+    });
+  }
+
+  window.frpmSetAmount = function(mode) {
+    _frpm.mode = mode;
+    frpmResetQuickBtns();
+    var activeBtn = document.getElementById(mode === 'full' ? 'frpmBtnFull' : mode === 'half' ? 'frpmBtnHalf' : 'frpmBtnCustom');
+    if (activeBtn) { activeBtn.style.background = 'var(--brand-light)'; activeBtn.style.borderColor = 'var(--brand)'; activeBtn.style.color = 'var(--brand)'; }
+
+    var inputWrap = document.getElementById('frpmCustomInputWrap');
+    var preview = document.getElementById('frpmAmountPreview');
+
+    if (mode === 'custom') {
+      inputWrap.style.display = 'block';
+      preview.style.display = 'none';
+      _frpm.selectedAmt = 0;
+      document.getElementById('frpmCustomInput').focus();
+    } else {
+      inputWrap.style.display = 'none';
+      _frpm.selectedAmt = mode === 'full' ? _frpm.balance : Math.ceil(_frpm.balance * 0.5 * 100) / 100;
+      preview.style.display = 'flex';
+      document.getElementById('frpmPreviewAmt').textContent = fmt(_frpm.selectedAmt);
+    }
+    document.getElementById('frpmError').style.display = 'none';
+  };
+
+  window.frpmOnCustomInput = function() {
+    var val = parseFloat(document.getElementById('frpmCustomInput').value);
+    var preview = document.getElementById('frpmAmountPreview');
+    if (!isNaN(val) && val > 0) {
+      _frpm.selectedAmt = val;
+      preview.style.display = 'flex';
+      document.getElementById('frpmPreviewAmt').textContent = fmt(val);
+    } else {
+      _frpm.selectedAmt = 0;
+      preview.style.display = 'none';
+    }
+  };
+
+  window.frpmProceed = function() {
+    var errEl = document.getElementById('frpmError');
+    errEl.style.display = 'none';
+
+    var amount = _frpm.selectedAmt;
+
+    /* Validation */
+    if (!amount || amount <= 0) {
+      errEl.textContent = 'Please select or enter a valid amount.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (_frpm.isTuition && amount > _frpm.balance + 0.005) {
+      errEl.textContent = 'Amount cannot exceed your tuition balance of ' + fmt(_frpm.balance) + '.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!_frpm.isTuition && Math.abs(amount - _frpm.balance) > 0.005) {
+      errEl.textContent = 'This fee requires the full balance of ' + fmt(_frpm.balance) + '.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (amount < 1) {
+      errEl.textContent = 'Minimum payment is GHS 1.00.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    /* Build pay context and hand off to payment channel modal */
+    var feeLabel = _frpm.label;
+    var ref = 'FRPM-' + _frpm.key.toUpperCase() + '-' + Date.now();
+
+    if (typeof currentStudent !== 'undefined' && currentStudent) {
+      window._pendingPayCtx = {
+        email: currentStudent.email || '',
+        amountGhs: amount,
+        reference: ref,
+        metadata: { custom_fields: [{ display_name: 'Fee Type', variable_name: 'fee_type', value: feeLabel }] },
+        onSuccess: function(response) {
+          if (typeof closeModal === 'function') {
+            closeModal('payChannelModal');
+            closeModal('bankInstModal');
+            closeModal('feeRowPayModal');
+          }
+          if (typeof savePaymentToSupabase === 'function') {
+            savePaymentToSupabase(currentStudent, amount, feeLabel, response.reference || ref, response.trans || ref)
+              .then(function() {
+                if (typeof loadPayments === 'function') {
+                  loadPayments().then(function() {
+                    if (typeof updatePaymentStatusDisplay === 'function') updatePaymentStatusDisplay();
+                    if (typeof updateDashboardStats === 'function') updateDashboardStats();
+                    _fpRefreshPaidState();
+                    _fpRenderBreakdown();
+                  });
+                }
+              })
+              .catch(function(e) { console.error('savePayment error', e); });
+          }
+        },
+        onClose: function() {}
+      };
+    }
+
+    /* Update amount display in channel modal */
+    var amtEl = document.getElementById('payChAmount');
+    if (amtEl) amtEl.textContent = fmt(amount);
+
+    closeModal('feeRowPayModal');
+    if (typeof openModal === 'function') openModal('payChannelModal');
+  };
+})();
 </script>
 
 <!-- ══ PAYMENT CHANNEL SELECTOR ══ -->
@@ -5568,36 +6341,6 @@ function fpPay(planNum) {
   </div>
 </div>
 
-<!-- ══ PLAN CONFIRM MODAL ══ -->
-<div id="fpConfirmModal" role="dialog" aria-modal="true">
-  <div class="fp-confirm-box">
-    <div class="fp-confirm-header">
-      <div class="fp-confirm-icon" id="fpConfirmIcon"></div>
-      <div>
-        <div class="fp-confirm-title" id="fpConfirmTitle">Confirm Payment Plan</div>
-        <div class="fp-confirm-subtitle" id="fpConfirmSubtitle">Review the details below before proceeding.</div>
-      </div>
-      <button class="fp-confirm-close" id="fpConfirmCloseBtn" aria-label="Close">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="fp-confirm-body">
-      <div id="fpConfirmRows"></div>
-      <div class="fp-confirm-total" id="fpConfirmTotal">
-        <span class="fp-confirm-total-label">Total Due</span>
-        <span class="fp-confirm-total-amount" id="fpConfirmTotalAmt">—</span>
-      </div>
-    </div>
-    <div class="fp-confirm-footer">
-      <button class="btn btn-secondary" id="fpConfirmCancelBtn">
-        <i class="fas fa-xmark"></i> Cancel
-      </button>
-      <button class="btn btn-primary" id="fpConfirmPayBtn" style="flex:2;">
-        <i class="fas fa-bolt"></i> Confirm &amp; Pay
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- ── Motivational rotator ── -->
 <script>
@@ -5626,148 +6369,6 @@ function fpPay(planNum) {
   }
 })();
 
-/* ══ PLAN CONFIRM MODAL LOGIC ══ */
-(function() {
-  var PLAN_META = {
-    1: { label: 'Plan 1 · Entry',      icon: 'fa-door-open',    color: 'var(--brand)',  bg: '#eff6ff', title: 'Admission Fee Only',                       subtitle: 'Secures your enrollment for this semester.' },
-    2: { label: 'Plan 2 · Partial',    icon: 'fa-percentage',   color: 'var(--violet)', bg: '#ede9fe', title: 'Admission + 70% Tuition + Other Fees',       subtitle: 'Pay admission, partial tuition, and all other fees.' },
-    3: { label: 'Plan 3 · Full Clear', icon: 'fa-star',         color: 'var(--emerald)',bg: '#d1fae5', title: 'Admission + 100% Tuition + Other Fees',     subtitle: 'Complete clearance — pay everything upfront.' },
-    4: { label: 'Plan 4 · Continuing', icon: 'fa-book-open',    color: 'var(--amber)',  bg: '#fef3c7', title: 'Tuition + Other Fees',                       subtitle: 'For students who have already paid their admission.' },
-    5: { label: 'Plan 5 · Balance',    icon: 'fa-rotate',       color: 'var(--rose)',   bg: '#ffe4e6', title: 'Remaining Tuition Balance (30%)',             subtitle: 'Pay the outstanding balance after a 70% partial payment.' }
-  };
-
-  function resolveColor(cssVar) {
-    var map = {
-      'var(--brand)': '#2563eb',
-      'var(--violet)': '#7c3aed',
-      'var(--emerald)': '#059669',
-      'var(--amber)': '#d97706',
-      'var(--rose)': '#e11d48'
-    };
-    return map[cssVar] || cssVar;
-  }
-
-  function buildRows(planNum) {
-    /* Pull amounts from the DOM spans already populated by renderFeeUI */
-    var rows = [];
-    function grab(id) {
-      var el = document.getElementById(id);
-      return el ? el.textContent.trim() : '—';
-    }
-    if (planNum === 1) {
-      rows.push({ label: 'Admission Fee', val: grab('fp1AdmAmt') });
-    } else if (planNum === 2) {
-      rows.push({ label: 'Admission Fee', val: grab('fp2AdmAmt') });
-      rows.push({ label: 'Tuition (70%)',  val: grab('fp2TuitionAmt') });
-      rows.push({ label: 'Other Fees',    val: grab('fp2OtherAmt') });
-    } else if (planNum === 3) {
-      rows.push({ label: 'Admission Fee', val: grab('fp3AdmAmt') });
-      rows.push({ label: 'Tuition (100%)',val: grab('fp3TuitionAmt') });
-      rows.push({ label: 'Other Fees',    val: grab('fp3OtherAmt') });
-    } else if (planNum === 4) {
-      rows.push({ label: 'Tuition (100%)',val: grab('fp4TuitionAmt') });
-      rows.push({ label: 'Other Fees',    val: grab('fp4OtherAmt') });
-    } else if (planNum === 5) {
-      rows.push({ label: 'Tuition Balance (30%)', val: grab('fp5TuitionAmt') });
-      rows.push({ label: 'Previously paid',        val: '70% of tuition' });
-    }
-    return rows;
-  }
-
-  function openPlanConfirmModal(planNum) {
-    var meta = PLAN_META[planNum];
-    if (!meta) return;
-
-    var modal   = document.getElementById('fpConfirmModal');
-    var icon    = document.getElementById('fpConfirmIcon');
-    var title   = document.getElementById('fpConfirmTitle');
-    var subtitle= document.getElementById('fpConfirmSubtitle');
-    var rows    = document.getElementById('fpConfirmRows');
-    var total   = document.getElementById('fpConfirmTotal');
-    var totalAmt= document.getElementById('fpConfirmTotalAmt');
-    var payBtn  = document.getElementById('fpConfirmPayBtn');
-
-    var color   = resolveColor(meta.color);
-
-    /* Header icon */
-    icon.style.cssText = 'width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:' + meta.bg + ';color:' + color + ';';
-    icon.innerHTML = '<i class="fas ' + meta.icon + '"></i>';
-
-    title.textContent   = meta.title;
-    subtitle.textContent = meta.subtitle;
-
-    /* Breakdown rows */
-    var rowData = buildRows(planNum);
-    rows.innerHTML = rowData.map(function(r) {
-      return '<div class="fp-confirm-row"><span>' + r.label + '</span><span>' + r.val + '</span></div>';
-    }).join('');
-
-    /* Total strip */
-    total.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-radius:12px;margin-top:4px;border:2px solid ' + color + ';background:' + meta.bg + ';';
-
-    /* Pull total from DOM */
-    var totalIds = { 1: 'fp1Total', 2: 'fp2Total', 3: 'fp3Total', 4: 'fp4Total', 5: 'fp5Total' };
-    var totalEl = document.getElementById(totalIds[planNum]);
-    totalAmt.style.color = color;
-    totalAmt.textContent = totalEl ? totalEl.textContent.trim() : '—';
-
-    /* Pay button color */
-    payBtn.style.background = color;
-    payBtn.style.borderColor = color;
-    payBtn.onclick = function() {
-      closePlanConfirmModal();
-      /* Proceed with the original select + pay flow */
-      if (typeof fpSelectPlan === 'function') fpSelectPlan(planNum);
-      setTimeout(function() {
-        if (typeof fpPay === 'function') fpPay(planNum);
-      }, 120);
-    };
-
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closePlanConfirmModal() {
-    var modal = document.getElementById('fpConfirmModal');
-    if (modal) modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  /* Wire close buttons */
-  document.addEventListener('DOMContentLoaded', function() {
-    var closeBtn   = document.getElementById('fpConfirmCloseBtn');
-    var cancelBtn  = document.getElementById('fpConfirmCancelBtn');
-    var modal      = document.getElementById('fpConfirmModal');
-    if (closeBtn)  closeBtn.addEventListener('click', closePlanConfirmModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closePlanConfirmModal);
-    /* Click outside to close */
-    if (modal) modal.addEventListener('click', function(e) {
-      if (e.target === modal) closePlanConfirmModal();
-    });
-  });
-
-  /* Intercept the plan card "Select & Pay" buttons to show confirm modal first */
-  document.addEventListener('DOMContentLoaded', function() {
-    for (var p = 1; p <= 5; p++) {
-      (function(planNum) {
-        var btn = document.getElementById('fpBtn' + planNum);
-        if (!btn) return;
-        btn.addEventListener('click', function(e) {
-          /* Only intercept when the card is NOT yet selected (fresh click) */
-          if (window._fpSelectedPlan !== planNum) {
-            e.stopImmediatePropagation();
-            e.preventDefault();
-            openPlanConfirmModal(planNum);
-          }
-        }, true); /* capture phase so it runs before the inline onclick */
-      })(p);
-    }
-  });
-
-  /* Expose globally so other scripts can call it if needed */
-  window.openPlanConfirmModal  = openPlanConfirmModal;
-  window.closePlanConfirmModal = closePlanConfirmModal;
-})();
 </script>
 </body>
 </html>

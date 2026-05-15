@@ -452,14 +452,22 @@
 <script>
   document.addEventListener("DOMContentLoaded", async function () {
     // ── Dismiss page loader after page is ready ──
-    window.addEventListener('load', function() {
+    // BUG FIX: if 'load' already fired before this listener registers (can happen
+    // when scripts are deferred/async), document.readyState will be 'complete'.
+    // Guard against that so the loader is always dismissed.
+    function dismissLoader() {
       var loader = document.getElementById('page-loader');
       if (!loader) return;
       setTimeout(function() {
         loader.classList.add('fade-out');
         setTimeout(function() { loader.classList.add('hidden'); }, 420);
       }, 1000);
-    });
+    }
+    if (document.readyState === 'complete') {
+      dismissLoader();
+    } else {
+      window.addEventListener('load', dismissLoader);
+    }
 
     // Initialize Supabase client inside DOMContentLoaded to avoid redeclaration
     const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
@@ -631,17 +639,20 @@
       }
 
       const fullName = document.getElementById("fullName").value.trim();
-      const phone = document.getElementById("phone").value.trim();
+      // BUG FIX: normalize phone before validation AND storage — remove spaces/dashes
+      // that users commonly type (e.g. "053 249 7382" or "053-249-7382")
+      const phone = document.getElementById("phone").value.trim().replace(/[\s\-]/g, '');
 
       // Generate a mock email based on name and phone when the user doesn't provide one
       // Format: sanitizedname + last4phone + @noemail.gh
       const sanitizedName = fullName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || 'applicant';
       const digits = phone.replace(/\D/g, '');
       const lastDigits = digits.slice(-4) || Math.floor(Math.random() * 9000 + 1000).toString();
-      const mockEmail = `${sanitizedName}${lastDigits}@noemail.gh`;
+      // NOTE: domain must be real/resolvable — Paystack rejects fake TLDs like .gh
+      const mockEmail = `${sanitizedName}${lastDigits}@ghschools.com`;
 
       // Use provided email if the user entered one, otherwise fall back to the generated mock email
-      const providedEmail = (document.getElementById('email') && document.getElementById('email').value) ? document.getElementById('email').value.trim() : '';
+      const providedEmail = (document.getElementById('email') && document.getElementById('email').value) ? document.getElementById('email').value.trim().toLowerCase() : '';
       const usedEmail = providedEmail || mockEmail;
 
       // Debug logging
@@ -656,9 +667,12 @@
         return;
       }
 
-      // Validate phone format (basic Ghanaian pattern). Normalize whitespace first.
-      const phoneNormalized = phone.replace(/\s/g, '');
-      const phoneRegex = /^(0|\+233)[23579]\d{8}$/;
+      // Validate phone format (basic Ghanaian pattern). Strip all non-digit/+ chars first.
+      const phoneNormalized = phone.replace(/[^\d+]/g, '');
+      // BUG FIX: original regex [23579] was too restrictive — valid GH prefixes include
+      // 020/050 (Vodafone), 026/056/027/057 (AirtelTigo), 024/054/025/059 (MTN), 028 (Glo).
+      // Updated to [2-9] to cover all current and future Ghanaian network prefixes.
+      const phoneRegex = /^(0|\+233)[2-9]\d{8}$/;
       if (!phoneRegex.test(phoneNormalized)) {
         alert("Please enter a valid Ghanaian phone number (e.g., 0532497382 or +233532497382)");
         return;
@@ -673,12 +687,11 @@
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
+        // Supabase unavailability is a WARNING only - do not block Paystack.
+        // The DB write happens inside paymentCallbackAsync AFTER payment succeeds.
+        // Stopping here would prevent students from paying even when Supabase is down.
         if (!supabase) {
-          console.error('[supabase] client instance is not available');
-          alert('Payment service currently unavailable. Please try again later.');
-          submitBtn.style.display = "flex";
-          loadingIndicator.style.display = "none";
-          return;
+          console.warn('[supabase] client not available - credentials will be shown in alert after payment');
         }
 
         // ── Helpers ───────────────────────────────────────────────────────
@@ -714,7 +727,8 @@
             `Dear ${fullName.split(' ')[0]}, your GH Schools admission portal credentials are:\n` +
             `Username: ${username}\n` +
             `Password: ${password}\n` +
-            `Login at: admissionforms.html\n` +
+            // BUG FIX: was always 'admissionforms.html' even for short-course applicants
+            `Login at: ${fromShortCourses ? 'ghfashionforms.html' : 'admissionforms.html'}\n` +
             `Keep these safe. - GH Schools`;
 
           // ── OPTION A: Arkesel SMS API ─────────────────────────────────
@@ -748,74 +762,136 @@
         // ── Paystack callbacks ────────────────────────────────────────────
         // Nothing is written to the DB until Paystack confirms success.
 
-        async function paymentCallbackAsync(response) {
+        async function paymentCallbackAsync(response, firstName, lastName, phone) {
           console.log('[payment] Paystack confirmed success:', response);
 
-          const username      = generateUsername(firstName, phone);
-          const password      = generatePassword(8);
-          const referenceCode = generateRefCode(6);
+          // FIX: use `let` so the retry loop can update these on a unique-constraint collision
+          let username      = generateUsername(firstName, phone);
+          let password      = generatePassword(8);
+          let referenceCode = generateRefCode(6);
 
-          const record = {
-            first_name:              firstName,
-            last_name:               lastName,
-            email:                   usedEmail,
-            phone:                   phone,
-            amount:                  FORM_FEE,
-            currency:                'GHS',
-            payment_status:          'success',
-            payment_reference:       response.reference,
-            paystack_transaction_id: String(response.transaction || response.trxref || ''),
-            reference_code:          referenceCode,
-            portal_username:         username,
-            portal_password:         password
-          };
+          // ── FIX: last_name must never be an empty string — schema is NOT NULL.
+          //   If the student only provided one name, use their first name as last name
+          //   so the row is always valid. Adjust to your business rules if needed.
+          const safeLastName = lastName || firstName || 'Unknown';
 
-          console.log('[DB] Attempting insert with record:', record);
+          // ── FIX: collision-safe helpers — regenerate if uniqueness fails ──
+          function buildRecord(uname, pwd, refCode) {
+            return {
+              first_name:              firstName,
+              // FIX: send safeLastName — never send '' for a NOT NULL column
+              last_name:               safeLastName,
+              email:                   usedEmail,
+              phone:                   phone,
+              amount:                  FORM_FEE,
+              currency:                'GHS',
+              payment_status:          'success',
+              payment_reference:       response.reference,
+              paystack_transaction_id: response.transaction != null ? String(response.transaction) : (response.trxref || ''),
+              reference_code:          refCode,
+              portal_username:         uname,
+              portal_password:         pwd
+            };
+          }
 
-          // ── INSERT into Supabase ──────────────────────────────────────────
+          console.log('[DB] Attempting insert — firstName:', firstName, 'safeLastName:', safeLastName);
+
+          // ── INSERT into Supabase (with up to 3 retries on unique-constraint collision) ──
+          //
+          // WHY RETRIES?
+          // portal_username and reference_code have UNIQUE constraints.
+          // On a collision (error code 23505) we regenerate both and try again.
+          // This is rare but possible with short identifiers.
+          //
+          // ⚠️  IMPORTANT — if inserts are STILL failing after this fix, the most
+          // common cause is the trigger_adm_sms database trigger whose Authorization
+          // header still contains the placeholder "<YOUR_SERVICE_ROLE_KEY>".
+          // An HTTP 401/403 from the Edge Function can roll back the entire insert.
+          // Fix it in Supabase Dashboard → Database → Triggers → trigger_adm_sms,
+          // or run the corrected SQL from the schema file with your real service role key.
           let insertOk = false;
           if (supabase) {
-            try {
-              const { data: inserted, error: insertError } = await supabase
-                .from('admission_payments')
-                .insert([record])
-                .select();
+            const MAX_ATTEMPTS = 3;
+            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+              // Regenerate unique fields on every retry to avoid repeat collisions
+              const tryUsername  = attempt === 1 ? username  : generateUsername(firstName, phone);
+              const tryPassword  = attempt === 1 ? password  : generatePassword(8);
+              const tryRefCode   = attempt === 1 ? referenceCode : generateRefCode(6);
+              const record = buildRecord(tryUsername, tryPassword, tryRefCode);
 
-              if (insertError) {
-                // Log the FULL error object so you can see exactly what Supabase says
-                console.error('[DB] INSERT FAILED. Full error:', JSON.stringify(insertError));
-                console.error('[DB] Error message:', insertError.message);
-                console.error('[DB] Error code:', insertError.code);
-                console.error('[DB] Error details:', insertError.details);
-                console.error('[DB] Error hint:', insertError.hint);
-                // Show a visible alert so the admin knows immediately
-                alert(
-                  'IMPORTANT: Payment was received but could NOT be saved to the database.\n' +
-                  'Error: ' + (insertError.message || JSON.stringify(insertError)) + '\n' +
-                  'Save these credentials manually:\n' +
-                  'Username: ' + username + '\n' +
-                  'Password: ' + password + '\n' +
-                  'Ref: ' + referenceCode
-                );
-              } else {
-                insertOk = true;
-                console.log('[DB] Insert successful:', inserted);
+              try {
+                const { data: inserted, error: insertError } = await supabase
+                  .from('admission_payments')
+                  .insert([record])
+                  .select();
+
+                if (insertError) {
+                  const isUniqueViolation = insertError.code === '23505';
+                  console.error(
+                    `[DB] INSERT attempt ${attempt} FAILED.`,
+                    '\n  code:', insertError.code,
+                    '\n  message:', insertError.message,
+                    '\n  details:', insertError.details,
+                    '\n  hint:', insertError.hint,
+                    '\n  full:', JSON.stringify(insertError)
+                  );
+
+                  if (isUniqueViolation && attempt < MAX_ATTEMPTS) {
+                    console.warn('[DB] Unique constraint collision — regenerating credentials and retrying…');
+                    continue; // retry with new username/ref
+                  }
+
+                  // Final failure — surface actionable info to the operator
+                  let friendlyMsg = insertError.message || JSON.stringify(insertError);
+                  if (insertError.code === '23505') {
+                    friendlyMsg = 'Duplicate username or reference code after ' + MAX_ATTEMPTS + ' attempts. ' + friendlyMsg;
+                  } else if (insertError.code === '23502') {
+                    friendlyMsg = 'A required field was null/empty (NOT NULL violation). Field: ' + (insertError.details || insertError.message);
+                  } else if (insertError.code === 'PGRST301' || insertError.message?.includes('JWT')) {
+                    friendlyMsg = 'Supabase auth error — check the anon key in the page source.';
+                  } else if (insertError.message?.includes('trigger') || insertError.message?.includes('http_request')) {
+                    friendlyMsg = 'A database trigger failed (likely trigger_adm_sms). Check that the Authorization header in that trigger contains your real Supabase service role key, not the placeholder <YOUR_SERVICE_ROLE_KEY>.\n\nOriginal error: ' + insertError.message;
+                  }
+
+                  alert(
+                    'IMPORTANT: Payment was received but could NOT be saved.\n' +
+                    'Error (' + insertError.code + '): ' + friendlyMsg + '\n\n' +
+                    'Please save these credentials manually right now:\n' +
+                    'Username: ' + tryUsername + '\n' +
+                    'Password: ' + tryPassword + '\n' +
+                    'Ref Code: ' + tryRefCode + '\n' +
+                    'Paystack Ref: ' + response.reference
+                  );
+                  break;
+
+                } else {
+                  insertOk = true;
+                  // Update outer-scope variables so the SMS and redirect use the winning set
+                  username      = tryUsername;
+                  password      = tryPassword;
+                  referenceCode = tryRefCode;
+                  console.log('[DB] Insert successful on attempt', attempt, ':', inserted);
+                  break;
+                }
+              } catch (dbErr) {
+                console.error('[DB] Exception during insert (likely CORS/network):', dbErr);
+                if (attempt === MAX_ATTEMPTS) {
+                  alert(
+                    'Payment received but DB write failed (network/CORS error).\n' +
+                    'Save these credentials manually:\n' +
+                    'Username: ' + tryUsername + '\n' +
+                    'Password: ' + tryPassword + '\n' +
+                    'Ref Code: ' + tryRefCode
+                  );
+                }
               }
-            } catch (dbErr) {
-              console.error('[DB] Exception during insert (likely CORS/allowlist issue):', dbErr);
-              alert(
-                'Payment received but DB write failed (network/CORS error).\n' +
-                'Save these credentials manually:\n' +
-                'Username: ' + username + '\n' +
-                'Password: ' + password + '\n' +
-                'Ref: ' + referenceCode
-              );
             }
           } else {
             console.error('[DB] Supabase client not available — cannot insert record');
           }
 
           // ── Always send SMS regardless of DB result ───────────────────────
+          const fullName = [firstName, lastName].filter(Boolean).join(' ');
           try {
             await sendCredentialsSMS(phone, username, password, fullName);
           } catch (smsErr) {
@@ -843,7 +919,7 @@
 
         // Plain (non-async) wrapper — Paystack requires a regular function for callback
         function paymentCallback(response) {
-          paymentCallbackAsync(response).catch(err => {
+          paymentCallbackAsync(response, firstName, lastName, phone).catch(err => {
             console.error('[callback] async error after payment:', err);
           });
         }
@@ -857,12 +933,22 @@
         }
 
         // ── Open Paystack ─────────────────────────────────────────────────
+        // FIX: Math.round prevents floating-point pesewa fractions (e.g. 5050.0000000001)
+        const amountInPesewas = Math.round(FORM_FEE * 100);
+        // FIX: guard against null/zero — Paystack rejects amount <= 0
+        if (!amountInPesewas || amountInPesewas <= 0) {
+          alert('⚠️ The form fee could not be determined. Please refresh the page and try again.');
+          submitBtn.style.display = "flex";
+          loadingIndicator.style.display = "none";
+          return;
+        }
         const handler = PaystackPop.setup({
-          key: 'pk_live_0563b84aae2c983dcbf04ec1fad441f04ef25d07',
+          key: 'pk_live_0ae6db537388a8f81fc9c70d75a87be1a69c1844',
           email: usedEmail,
-          amount: FORM_FEE * 100,
+          amount: amountInPesewas,
           currency: 'GHS',
-          channels: ['card', 'mobile_money'],
+          // FIX: explicit channels so Paystack routes GHS MoMo correctly
+          channels: ['mobile_money', 'card'],
           metadata: {
             custom_fields: [
               { display_name: "First Name",    variable_name: "first_name", value: firstName },

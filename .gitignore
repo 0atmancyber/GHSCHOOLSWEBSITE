@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Optional variants
+.env.local
+.env.development
+.env.production
+
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

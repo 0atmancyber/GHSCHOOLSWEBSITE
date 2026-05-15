@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS student_master_db (
   id BIGSERIAL PRIMARY KEY,
   student_id VARCHAR(50) NOT NULL UNIQUE,
-  first_name VARCHAR(100) NOT NULL,
+  first_name VARCHAR(100) NOT NULL ,
   middle_name VARCHAR(100),
   surname VARCHAR(100) NOT NULL,
   current_level VARCHAR(50) NOT NULL,

@@ -1906,7 +1906,7 @@ async function loadFeeTypes() {
 async function checkRequiredFeeTypes(data) {
     const container = document.getElementById('feeTypesAlerts');
     container.innerHTML = '';
-    const required = ['Admission Fee', 'Tuition', 'SRC Dues', 'Departmental Dues', 'Medical Dues'];
+    const required = ['Admission Fee', 'Tuition', 'SRC Dues', 'Departmental Dues', 'Medical Dues']; // "Admission Fee" is the canonical name used everywhere
     const existing = new Set(data.map(d => d.name));
     const missing = required.filter(n => !existing.has(n));
     if (!missing.length) return;
@@ -2252,7 +2252,11 @@ async function runGenerateDefaults(intakePeriod) {
             if (level === '100') {
                 Object.entries(level100OnlyFees).forEach(function([name, amount]) {
                     const feeTypeId = byName.get(name); if (!feeTypeId) return;
+                    // level='100' row — shown in the admin fee table
                     inserts.push({ id: uuidv4(), fee_type_id: feeTypeId, fee_type: name, academic_year, semester, level: '100', program: null, amount, created_at: nowIso, updated_at: nowIso });
+                    // NULL-level catch-all — lets admissionforms.html find the fee regardless
+                    // of whether the student chose 'Diploma' or 'CoC' (neither equals '100')
+                    inserts.push({ id: uuidv4(), fee_type_id: feeTypeId, fee_type: name, academic_year, semester, level: null, program: null, amount, created_at: nowIso, updated_at: nowIso });
                 });
             }
         });

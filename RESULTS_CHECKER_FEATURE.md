@@ -18,7 +18,7 @@ When students click the button, a modern modal opens with:
 
 ### 3. **Program Type Selection**
 Students select between:
-- **Diploma Program**: Formal academic award from GH SCHOOLS COLLEGE (2 years)
+- **Diploma Program**: Formal academic award from GH SCHOOLS (2 years)
 - **ICC Program**: Internal Certificate of Competence (1-2 years, more flexible)
 
 ### 4. **WASSCE Grade Input**

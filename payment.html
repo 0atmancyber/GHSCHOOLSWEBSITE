@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Payment</title>
+
+  <!-- Icons & SDKs -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      color: orange;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    button {
+      background-color: orange;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: black;
+    }
+
+    .view-fees-btn {
+      margin-top: 20px;
+      background: #fdf4e7;
+      color: #333;
+      border: 1px solid orange;
+    }
+
+    .view-fees-btn:hover {
+      background: orange;
+      color: white;
+    }
+
+    /* Modal Styling */
+    .modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem; /* prevents overflow on small screens */
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center; /* ✅ Center heading and text */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestion-button {
+  display: block;
+  background: #f2f2f2;
+  color: #000;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  width: 100%;
+  text-align: center; /* ✅ Center text inside button */
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.suggestion-button:hover {
+  background: #ddd;
+}
+
+.suggestion-button.active {
+  background: orange;
+  color: white;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+    
+  </style>
+</head>
+<body>
+    
+  <div class="container">
+    <h2 id="paymentTitle"><i data-lucide="loader"></i> Loading...</h2>
+    <div id="paymentDescription"></div>
+
+    <form id="paymentForm">
+      <input type="hidden" name="paymentType" id="paymentType" />
+
+      <input type="text" name="fullName" placeholder="Full Name" required />
+      <input type="text" name="studentId" placeholder="Student ID" required />
+      <input type="email" name="email" placeholder="Email Address" required />
+      <input type="number" step="0.01" name="amount" id="amount" placeholder="Amount (GHS)" required />
+
+      <button type="submit">Pay Now</button>
+    </form>
+
+    <button class="view-fees-btn" onclick="toggleModal(true)">View Other Fee Options</button>
+  </div>
+
+  <!-- Modal with Fee Suggestions -->
+  <div class="modal" id="feeModal">
+    <div class="modal-close" onclick="toggleModal(false)">✕ Close</div>
+    <h3>Select Fee Option</h3>
+    <div id="suggestions"></div>
+  </div>
+
+  <script>
+  lucide.createIcons();
+
+  // Supabase keys
+  const SUPABASE_URL = 'https://your-project.supabase.co';
+  const SUPABASE_KEY = 'your-public-anon-key';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Query params
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('type');
+
+  // DOM elements
+  const title = document.getElementById('paymentTitle');
+  const description = document.getElementById('paymentDescription');
+  const paymentTypeInput = document.getElementById('paymentType');
+  const amountInput = document.getElementById('amount');
+  const modal = document.getElementById('feeModal');
+
+  // Fee definitions
+  const fees = {
+    "Admission Fee": 200.00,
+    "Tuition Fee": 2550.00,
+    "SRC Dues": 50.00,
+    "Departmental Dues": 20.00,
+    "Medical Dues": 70.00,
+    "Full Bundle (70% Tuition + All Dues)": (2550 * 0.7) + 50 + 20 + 70
+  };
+
+  // Load default based on URL
+  function loadDefault(type) {
+    switch (type) {
+      case "admission":
+        updateForm("Admission Fee", fees["Admission Fee"]);
+        break;
+      case "tuition":
+        updateForm("Tuition Fee", fees["Tuition Fee"]);
+        break;
+      default:
+        title.innerHTML = `<i data-lucide="alert-triangle"></i> Invalid Payment`;
+        description.innerHTML = `<p>Invalid payment type. Please go back and try again.</p>`;
+        break;
+    }
+    lucide.createIcons();
+  }
+
+  function updateForm(name, amount) {
+    paymentTypeInput.value = name;
+    amountInput.value = amount.toFixed(2);
+    title.innerHTML = `<i data-lucide="dollar-sign"></i> Pay ${name}`;
+    description.innerHTML = `<p>You selected <strong>${name}</strong>. Fill the form below.</p>`;
+    document.querySelectorAll('.suggestion-button').forEach(btn => {
+      btn.classList.toggle('active', btn.innerText.includes(name));
+    });
+    lucide.createIcons();
+  }
+
+  function selectFee(name, amount) {
+    updateForm(name, amount);
+    toggleModal(false);
+  }
+
+function toggleModal() {
+    const modal = document.getElementById('feeModal');
+    const isVisible = modal.classList.contains('active');
+    if (isVisible) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    } else {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function selectFee(name, amount) {
+    alert(`You selected: ${name} - GHS ${amount.toFixed(2)}`);
+    document.getElementById('feeModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+
+  // Submit payment form
+  document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    const amount = parseFloat(data.amount);
+    if (!amount || amount < 1) {
+      alert("Enter a valid amount greater than 0");
+      return;
+    }
+
+    try {
+      const handler = PaystackPop.setup({
+        key: 'pk_live_20834c6b266695a845aec74214208749f118ffd9',
+        email: data.email,
+        amount: amount * 100,
+        currency: "GHS",
+        metadata: {
+          first_name: (data.fullName || '').toString().split(/\s+/).filter(Boolean)[0] || '',
+          last_name: (data.fullName || '').toString().split(/\s+/).filter(Boolean).slice(1).join(' ') || '',
+          student_id: data.studentId,
+          payment_type: data.paymentType
+        },
+        callback: async function(response) {
+          // Also store first_name/last_name derived from the provided full name
+          const np = (data.fullName || '').toString().split(/\s+/).filter(Boolean);
+          const fName = np[0] || '';
+          const lName = np.slice(1).join(' ') || '';
+
+          const { error } = await supabase.from("payment").insert([
+            {
+              student_id: data.studentId,
+              first_name: fName,
+              last_name: lName,
+              amount: amount,
+              email: data.email,
+              payment_type: data.paymentType,
+              status: 'success',
+              reference: response.reference
+            }
+          ]);
+          if (error) {
+            alert("Payment success, but failed to save in Supabase.");
+            console.error(error);
+          } else {
+            alert("Payment successful and recorded.");
+            window.location.href = "thank_you.html";
+          }
+        },
+        onClose: function() {
+          alert('Payment window closed.');
+        }
+      });
+
+      handler.openIframe(); // Open Paystack
+    } catch (err) {
+      alert("Something went wrong while launching Paystack.");
+      console.error(err);
+    }
+  });
+
+  // Load on start
+  loadDefault(type);
+</script>
+
+<!-- Button to open -->
+
+
+<!-- Modal -->
+<div class="modal" id="feeModal" onclick="closeIfBackdrop(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="toggleModal()">&times;</button>
+    <h3>Other Suggested Fees</h3>
+    <button class="suggestion-button" onclick="selectFee('70% Tuition', 1785)">Pay 70% Tuition (GHS 1785)</button>
+    <button class="suggestion-button" onclick="selectFee('SRC Dues', 50)">Pay SRC Dues (GHS 50)</button>
+    <button class="suggestion-button" onclick="selectFee('Departmental Dues', 20)">Pay Departmental Dues (GHS 20)</button>
+    <button class="suggestion-button" onclick="selectFee('Medical Dues', 70)">Pay Medical Dues (GHS 70)</button>
+    <button class="suggestion-button active" onclick="selectFee('Full Bundle', 1925)">Pay Full Bundle (GHS 1925)</button>
+  </div>
+</div>
+
+
+  
+</body>
+</html>

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GH SCHOOLS - Student Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VZTBV2YJBX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-VZTBV2YJBX');
+  </script>
+  <style>
+    :root {
+      --primary: #dc2626;
+      --secondary: #b91c1c;
+      --accent: #991b1b;
+      --success: #4cc9f0;
+      --warning: #f72585;
+      --light: #ffffff;
+      --dark: #1f2937;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gradient-primary: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      --gradient-accent: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+      --gradient-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      --shadow-sm: 0 2px 8px rgba(220, 38, 38, 0.1);
+      --shadow-md: 0 8px 24px rgba(220, 38, 38, 0.15);
+      --shadow-lg: 0 20px 40px rgba(220, 38, 38, 0.2);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-2xl: 32px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    html, body {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      touch-action: manipulation;
+      height: 100%;
+    }
+
+    body {
+      background: linear-gradient(135deg, rgba(31, 41, 55, 0.5), rgba(6, 197, 236, 0.265)), url('images/building.webp') center/cover no-repeat fixed;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      color: #333;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    
+    body::after {
+      content: '';
+      display: block;
+      height: 16px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(153, 27, 27, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.15) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .floating-shapes {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(153, 27, 27, 0.1));
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 5%;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 20%;
+      right: 10%;
+      animation: float 15s infinite ease-in-out reverse;
+    }
+
+    .shape-3 {
+      width: 150px;
+      height: 150px;
+      top: 60%;
+      left: 70%;
+      animation: float 25s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin: 0 auto;
+    }
+
+    .login-card {
+      flex: 0 0 450px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.982);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 100%;
+      margin-top: 300px;
+      margin-bottom: 60px;
+    }
+    
+    @media (max-width: 480px) {
+      .login-card {
+        flex: 0 0 100%;
+        padding: 32px 20px;
+      }
+    }
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--gradient-primary);
+    }
+
+    .brand-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: var(--shadow-md);
+      background: white;
+    }
+    
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .brand-subtitle {
+      color: var(--gray-600);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      position: relative;
+    }
+
+    .input-field i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-600);
+      z-index: 1;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      font-size: 15px;
+      background: white;
+      color: var(--dark);
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .input-field input:focus {
+      border-color: var(--primary);
+      background: white;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .input-field input::placeholder {
+      color: var(--gray-300);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 18px;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: var(--gradient-accent);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .help-text {
+      margin-top: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(153, 27, 27, 0.05) 100%);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary);
+    }
+
+    .help-title {
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .help-list li {
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-list li i {
+      color: var(--success);
+      font-size: 12px;
+    }
+
+    .info-panel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-xl);
+      padding: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      margin-bottom: 40px;
+    }
+
+    .panel-title {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .panel-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: white;
+      font-size: 20px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: white;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.5;
+    }
+
+    .contact-info {
+      margin-top: auto;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .contact-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 600;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .contact-item i {
+      color: var(--success);
+      font-size: 16px;
+      width: 20px;
+    }
+
+    /* Loading Screen */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 26, 46, 0.95);
+      z-index: 99999;
+      backdrop-filter: blur(10px);
+    }
+
+    .loading-content {
+      text-align: center;
+      color: white;
+      max-width: 500px;
+      padding: 40px;
+    }
+
+    .loading-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      animation: pulse 2s infinite;
+      box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    .loading-content h2 {
+      margin-bottom: 16px;
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .loading-content p {
+      margin-bottom: 30px;
+      font-size: 16px;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modals */
+    #foundStudentModal, #generatedPasswordModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 26, 46, 0.95);
+      z-index: 99999;
+      backdrop-filter: blur(10px);
+      padding: 16px;
+    }
+
+    /* Found Student Modal */
+    #foundStudentModal > div {
+      background: white;
+      padding: 40px;
+      border-radius: var(--radius-xl);
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(220, 38, 38, 0.1);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    #foundStudentModal h3 {
+      margin: 0 0 20px 0;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #foundStudentModal h3 i {
+      color: var(--success);
+    }
+
+    #foundStudentBody {
+      color: var(--dark);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 30px;
+      padding: 24px;
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary);
+    }
+
+    #foundStudentBody div {
+      margin-bottom: 10px;
+    }
+
+    #foundStudentBody strong {
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+    }
+
+    #foundOkBtn, #closeFoundModal {
+      padding: 12px 32px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #foundOkBtn {
+      background: var(--gradient-primary);
+      color: white;
+    }
+
+    #closeFoundModal {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    #foundOkBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    #closeFoundModal:hover {
+      background: var(--gray-300);
+    }
+
+    /* Generated Password Modal */
+    #generatedPasswordModal > div {
+      background: white;
+      padding: 40px;
+      border-radius: var(--radius-xl);
+      max-width: 550px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(220, 38, 38, 0.1);
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .modal-title-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .modal-icon {
+      width: 70px;
+      height: 70px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-title {
+      margin: 0;
+      color: var(--dark);
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .modal-subtitle {
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-top: 8px;
+    }
+
+    #closeGenModal {
+      background: var(--gray-100);
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--gray-600);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    #closeGenModal:hover {
+      background: var(--gray-200);
+      color: var(--dark);
+    }
+
+    .password-display-container {
+      background: var(--gradient-primary);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      margin-bottom: 30px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .password-display-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    }
+
+    .password-info {
+      position: relative;
+      z-index: 1;
+    }
+
+    .password-label {
+      font-size: 14px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .password-id {
+      font-size: 24px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    #genSaveStatus {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #genSaveStatus i {
+      color: #4ade80;
+    }
+
+    .password-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    #copyPasswordBtn, #usePasswordBtn {
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      flex: 1;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #copyPasswordBtn {
+      background: var(--gradient-primary);
+      color: white;
+    }
+
+    #copyPasswordBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    #copyPasswordBtn.copied {
+      background: #10b981;
+    }
+
+    #usePasswordBtn {
+      background: white;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    #usePasswordBtn:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-footer {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      padding: 20px;
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary);
+      margin-top: 24px;
+    }
+
+    .modal-footer strong {
+      color: var(--dark);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .container {
+        flex-direction: column;
+        max-width: 600px;
+      }
+      
+      .login-card {
+        flex: none;
+        width: 100%;
+      }
+      
+      .info-panel {
+        width: 100%;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      .login-card, .info-panel {
+        padding: 30px;
+      }
+      
+      .brand-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+      
+      .brand-title {
+        font-size: 24px;
+      }
+      
+      .panel-title {
+        font-size: 24px;
+      }
+      
+      .modal-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+      
+      .modal-title {
+        font-size: 22px;
+      }
+      
+      .password-actions {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card, .info-panel {
+        padding: 24px;
+        margin-top: 20px;
+      }
+      
+      .brand-logo {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+      
+      .brand-title {
+        font-size: 20px;
+      }
+      
+      .panel-title {
+        font-size: 20px;
+      }
+      
+      .input-field input {
+        padding: 14px 14px 14px 44px;
+      }
+      
+      .login-btn {
+        padding: 16px;
+        font-size: 14px;
+      }
+    }
+
+    /* Prevent zoom on mobile */
+    @media (max-width: 768px) {
+      input, select, textarea, button {
+        font-size: 16px !important;
+        -webkit-text-size-adjust: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating background shapes -->
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <div class="container">
+    <!-- Login Card -->
+    <div class="login-card">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <img src="images/GH Schools.png" alt="GH Schools Logo">
+        </div>
+        <h1 class="brand-title">GH SCHOOLS</h1>
+        <p class="brand-subtitle">Student Portal Access</p>
+      </div>
+
+      <div class="form-section">
+        <form id="generate-password-form">
+          <div class="form-group">
+            <label for="gen-studentid" class="form-label">Student ID</label>
+            <div class="input-field">
+              <i class="fas fa-id-card"></i>
+              <input type="text" id="gen-studentid" placeholder="Enter your Student ID (e.g., GHTS7099)" required autocomplete="off">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="gen-phone" class="form-label">Password </label>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="gen-phone" placeholder="Enter your  phone number" required autocomplete="off">
+            </div>
+          </div>
+          
+          <button type="submit" class="login-btn">
+            <i class="fas fa-sign-in-alt"></i> Access Portal
+          </button>
+        </form>
+      </div>
+
+      <div class="help-text">
+        <div class="help-title">
+          <i class="fas fa-info-circle"></i> Login Instructions
+        </div>
+        <ul class="help-list">
+          <li><i class="fas fa-check"></i> Enter your official Student ID</li>
+          <li><i class="fas fa-check"></i> Use your phone number as default password</li>
+          <li><i class="fas fa-check"></i> If you've changed your password, use that instead</li>
+          <li><i class="fas fa-check"></i> Contact support if you encounter issues</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-icon">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h2>Welcome Back!</h2>
+      <p>Preparing your personalized dashboard experience. Please wait...</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Found-student Modal -->
+  <div id="foundStudentModal">
+    <div>
+      <h3><i class="fas fa-exclamation-triangle"></i> Account Verification</h3>
+      <div id="foundStudentBody">Loading…</div>
+      <div class="modal-actions">
+        <button id="closeFoundModal">Close</button>
+        <button id="foundOkBtn">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Success Modal -->
+  <div id="generatedPasswordModal">
+    <div>
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <h3 id="genModalTitle" class="modal-title">Access Granted!</h3>
+            <div class="modal-subtitle">Your credentials have been successfully verified</div>
+          </div>
+        </div>
+        <button id="closeGenModal">&times;</button>
+      </div>
+
+      <div class="password-display-container">
+        <div class="password-info">
+          <div class="password-label">Welcome back, student</div>
+          <div id="genModalId" class="password-id">Student ID</div>
+          <div id="genSaveStatus" class="save-status">
+            <i class="fas fa-shield-check"></i> Identity verified successfully
+          </div>
+        </div>
+      </div>
+
+      <div class="password-actions">
+        <button id="usePasswordBtn">Proceed to Dashboard</button>
+      </div>
+
+      <div class="modal-footer">
+        <strong>Note:</strong> You will be automatically redirected to your personalized dashboard in a moment.
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript (EXACTLY THE SAME AS BEFORE - Preserved Login Logic) -->
+  <script>
+    // Initialize Supabase client so we can check authoritative `students` table
+    (function(){
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js';
+      script.onload = () => {
+        try{
+          const supabaseUrl = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+          const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+          window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        }catch(e){ console.warn('Could not initialize Supabase client', e); }
+      };
+      document.head.appendChild(script);
+    })();
+
+    // Helper: hash password using SHA-256 and return hex
+    async function hashPasswordLocal(password){
+      if(!password) return null;
+      const enc = new TextEncoder();
+      const data = enc.encode(password);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      const arr = Array.from(new Uint8Array(digest));
+      return arr.map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // Auto-fill phone number when student ID is entered
+    const studentIdInput = document.getElementById('gen-studentid');
+    if (studentIdInput) {
+      studentIdInput.addEventListener('blur', async function() {
+        const studentId = this.value.trim();
+        if (!studentId) return;
+
+        // Wait for Supabase client
+        const waitForSupabase = async () => {
+          if(window.supabaseClient) return window.supabaseClient;
+          let waited = 0;
+          while(!window.supabaseClient && waited < 3000){ await new Promise(r=>setTimeout(r,200)); waited += 200; }
+          return window.supabaseClient || null;
+        };
+
+        const client = await waitForSupabase();
+        if (!client) return;
+
+        try {
+          // Search in student_master_db table
+          const { data: studentData, error } = await client
+            .from('student_master_db')
+            .select('phone_number_1')
+            .eq('student_id', studentId)
+            .maybeSingle();
+
+          if (!error && studentData && studentData.phone_number_1) {
+            // Auto-fill the password field with the phone number (phone_number_1 column)
+            document.getElementById('gen-phone').value = studentData.phone_number_1;
+            console.log('Phone number auto-filled from student_master_db (phone_number_1)');
+          }
+        } catch (err) {
+          console.warn('Error auto-filling phone number:', err);
+        }
+      });
+    }
+
+    // Password generator form handler
+    const genForm = document.getElementById('generate-password-form');
+    
+    // Generate an 8-character password composed of initials from the
+    // student's full name followed by digits from the student ID.
+    function generatePasswordFrom(name, id){
+      // Use initials (uppercase) + full student id (digits only). No truncation.
+      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+      const initials = parts.map(p => (p[0] || '')).join('').toUpperCase();
+      const idDigits = String(id || '').replace(/\D/g, '');
+
+      if(initials && idDigits) return initials + idDigits;
+      if(initials) return initials;
+      if(idDigits) return idDigits;
+      return '';
+    }
+
+    // Helper: show the existing loading overlay for 5 seconds then redirect
+    function showLoadingAndRedirect(url){
+      try{
+        const ov = document.getElementById('loadingOverlay');
+        if(ov){ ov.style.display = 'flex'; }
+        // give a tiny delay for UI to update, then navigate after 5s
+        setTimeout(()=>{ window.location.href = url; }, 5000);
+      }catch(e){ console.warn('Redirect helper failed', e); window.location.href = url; }
+    }
+
+    if(genForm){
+      genForm.addEventListener('submit', async function(ev){
+        ev.preventDefault();
+        const sid = (document.getElementById('gen-studentid')?.value || '').trim();
+        const phone = (document.getElementById('gen-phone')?.value || '').trim();
+        
+        if(!sid || !phone){ alert('Please enter both your student ID and phone number.'); return; }
+
+        // Wait for Supabase client (if available)
+        const waitForSupabase = async () => {
+          if(window.supabaseClient) return window.supabaseClient;
+          let waited = 0;
+          while(!window.supabaseClient && waited < 3000){ await new Promise(r=>setTimeout(r,200)); waited += 200; }
+          return window.supabaseClient || null;
+        };
+
+        const client = await waitForSupabase();
+
+        let studentRow = null;
+        let admitRow = null;
+
+        if(client){
+          try{
+            const [sRes, nRes] = await Promise.allSettled([
+              client.from('student_master_db').select('*').eq('student_id', sid).maybeSingle(),
+              client.from('newstudents').select('*').eq('student_id', sid).maybeSingle()
+            ]);
+            if(sRes.status === 'fulfilled' && sRes.value && sRes.value.data) studentRow = sRes.value.data;
+            if(nRes.status === 'fulfilled' && nRes.value && nRes.value.data) admitRow = nRes.value.data;
+          }catch(e){ console.warn('Lookup error', e); }
+        }
+
+        const modal = document.getElementById('generatedPasswordModal');
+        if(!modal){ alert('Modal not found'); return; }
+        document.getElementById('genModalId').textContent = sid;
+
+        const pwdEl = document.getElementById('generatedPassword');
+        const statusEl = document.getElementById('genSaveStatus');
+        const copyBtn = document.getElementById('copyPasswordBtn');
+        const useBtn = document.getElementById('usePasswordBtn');
+        const closeBtn = document.getElementById('closeGenModal');
+
+        function closeModal(){ modal.style.display = 'none'; }
+        if(closeBtn) closeBtn.onclick = closeModal;
+
+        // Logic:
+        // - If student exists in `students` table:
+        //   * If they provided a password: VERIFY it against stored hash (LOGIN mode)
+        //   * If no password provided: GENERATE new password and save it (SIGNUP mode)
+        // - Else if student exists in `newstudents` table: treat as new student and redirect to `100dashboard.html`.
+        // - Else: show 'not found' modal.
+
+        if (studentRow) {
+          // Case 1: Student found in student_master_db table
+          const storedPhone = studentRow.phone_number_1 || studentRow.phone || studentRow.phone_number || '';
+          const storedPassword = studentRow.password || ''; 
+          
+          // Normalize phone numbers for comparison (remove spaces, dashes, etc.)
+          const normalizePhone = (p) => (p || '').replace(/[\s\-\(\)]/g, '');
+          const enteredPhoneNorm = normalizePhone(phone);
+          const storedPhoneNorm = normalizePhone(storedPhone);
+          
+          // Check if password exists (student has set a new password via dashboard)
+          let authSuccess = false;
+          
+          if (storedPassword && storedPassword.trim()) {
+            // Password-based authentication (student changed password in dashboard)
+            if (phone === storedPassword) {
+              authSuccess = true;
+              console.log('Password verified successfully');
+              if (statusEl) statusEl.textContent = '✓ Password verified';
+            } else {
+              alert('Incorrect password. Please try again.');
+              return;
+            }
+          } else {
+            // Fall back to phone number verification (default method)
+            if (!storedPhone) {
+              alert('No phone number on file for this student. Please contact support.');
+              return;
+            }
+            
+            if (enteredPhoneNorm === storedPhoneNorm) {
+              authSuccess = true;
+              console.log('Phone number verified successfully');
+              if (statusEl) statusEl.textContent = '✓ Phone number verified';
+            } else {
+              alert('Incorrect phone number. Please try again.');
+              return;
+            }
+          }
+          
+          // If authentication successful, proceed to dashboard
+          if (authSuccess) {
+            if (useBtn) {
+              useBtn.textContent = 'Go to Dashboard';
+              useBtn.onclick = function(){
+                try{
+                  const s = studentRow;
+                  const fullName = `${s.firstname || s.first_name || ''}${s.othername ? ' ' + s.othername : ''} ${s.lastname || s.last_name || ''}`.trim();
+                  localStorage.setItem('student_data', JSON.stringify(s));
+                  if (s.student_id) {
+                    localStorage.setItem('studentId', s.student_id);
+                    localStorage.setItem('student_id', s.student_id);
+                  }
+                  if (s.email) localStorage.setItem('studentEmail', s.email);
+                  if (s.phone_number_1 || s.phone || s.phone_number) localStorage.setItem('studentPhone', s.phone_number_1 || s.phone || s.phone_number);
+                  localStorage.setItem('studentName', fullName);
+                  localStorage.setItem('studentFirstName', s.firstname || s.first_name || '');
+                  localStorage.setItem('studentLastName', s.lastname || s.last_name || '');
+                  localStorage.setItem('studentOtherName', s.othername || '');
+                  localStorage.setItem('studentDepartment', s.department || '');
+                  localStorage.setItem('studentLevel', s.level || '');
+                  localStorage.setItem('studentInfoSaved', '1');
+                }catch(e){ console.warn('Could not persist student keys', e); }
+                closeModal();
+                showLoadingAndRedirect('dashboard.html');
+              };
+            }
+            
+            if (copyBtn) copyBtn.style.display = 'none';
+            modal.style.display = 'flex';
+            return;
+          }
+        }
+
+        // If student not in `students` but present in `newstudents`, redirect to 100dashboard
+        if (admitRow && !studentRow) {
+          try{
+            const a = admitRow;
+            const fullName = `${a.firstname || a.first_name || ''}${a.othername ? ' ' + a.othername : ''} ${a.lastname || a.last_name || ''}`.trim();
+            const normalized = Object.assign({}, a, {
+              firstname: a.firstname || a.first_name || '',
+              othername: a.othername || '',
+              lastname: a.lastname || a.last_name || '',
+              student_id: a.student_id || '',
+              level: a.level || '100',
+              department: a.department || (a.program || ''),
+            });
+            localStorage.setItem('student_data', JSON.stringify(normalized));
+            if(normalized.student_id) {
+              localStorage.setItem('studentId', normalized.student_id);
+              localStorage.setItem('student_id', normalized.student_id);
+            }
+            if(normalized.email) localStorage.setItem('studentEmail', normalized.email);
+            if(normalized.phone_number_1 || normalized.phone || normalized.phone_number) localStorage.setItem('studentPhone', normalized.phone_number_1 || normalized.phone || normalized.phone_number);
+            localStorage.setItem('studentName', fullName);
+            localStorage.setItem('studentFirstName', normalized.firstname || '');
+            localStorage.setItem('studentLastName', normalized.lastname || '');
+            localStorage.setItem('studentOtherName', normalized.othername || '');
+            localStorage.setItem('studentDepartment', normalized.department || '');
+            localStorage.setItem('studentLevel', normalized.level || '100');
+            localStorage.setItem('isNewStudent', '1');
+            localStorage.setItem('studentInfoSaved', '1');
+          }catch(e){ console.warn('Could not persist newstudent keys', e); }
+          // Direct redirect for newstudents
+          showLoadingAndRedirect('100dashboard.html');
+          return;
+        }
+
+        // Neither found -> show not-found modal
+        try {
+          const foundModal = document.getElementById('foundStudentModal');
+          const foundBody = document.getElementById('foundStudentBody');
+          const closeBtnSmall = document.getElementById('closeFoundModal');
+          const okBtn = document.getElementById('foundOkBtn');
+          if(foundBody) {
+            foundBody.innerHTML = `<div><strong>Student not found in our records.</strong></div>
+              <div>Please verify your Student ID and Full Name. If you believe this is an error, contact Admissions at <strong>admissions@ghschools.online</strong> or call 0274 622250.</div>`;
+          }
+          if(closeBtnSmall) closeBtnSmall.onclick = ()=>{ foundModal.style.display = 'none'; };
+          if(okBtn) okBtn.onclick = ()=>{ foundModal.style.display = 'none'; };
+          if(foundModal) foundModal.style.display = 'flex';
+        } catch(e) { alert('Student not found in the database. Please contact support.'); }
+        return;
+      });
+    }
+
+    // Live student identifier check removed per request — student info will no longer be shown as the ID is typed.
+  </script>
+  <script>
+    (function(){
+      // Prevent zoom via Ctrl/Cmd + Wheel
+      window.addEventListener('wheel', function(e){
+        try{ if (e.ctrlKey || e.metaKey) e.preventDefault(); }catch(_){}
+      }, { passive: false });
+
+      // Prevent gesturestart (iOS Safari) which begins pinch-zoom
+      window.addEventListener('gesturestart', function(e){ try{ e.preventDefault(); }catch(_){} }, { passive: false });
+
+      // Prevent multi-touch pinch (mobile)
+      window.addEventListener('touchstart', function(e){ try{ if (e.touches && e.touches.length > 1) e.preventDefault(); }catch(_){} }, { passive: false });
+      window.addEventListener('touchmove', function(e){ try{ if (e.touches && e.touches.length > 1) e.preventDefault(); }catch(_){} }, { passive: false });
+
+      // Prevent keyboard zoom shortcuts (Ctrl/Cmd + +, -, 0)
+      window.addEventListener('keydown', function(e){
+        try{
+          if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+            e.preventDefault();
+          }
+        }catch(_){}
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>

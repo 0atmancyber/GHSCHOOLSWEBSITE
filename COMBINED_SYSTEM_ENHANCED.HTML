@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cashier Dashboard — GH Schools University System</title>
+  <title>GH Schools University System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -2017,8 +2017,8 @@ body {
         <div class="section-header-right"></div>
       </div>
 
-      <!-- ── ROW 1: 4 STAT CARDS ── -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:20px;">
+      <!-- ── ROW 1: 3 STAT CARDS ── -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px;">
 
         <!-- Forms Purchased -->
         <div style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);border-radius:20px;padding:32px 28px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(37,99,235,.45),0 2px 8px rgba(0,0,0,.18);cursor:default;">
@@ -2054,18 +2054,6 @@ body {
           <div id="ovAdmFeesPaid" style="font-size:42px;font-weight:800;color:#fff;line-height:1;margin-bottom:6px;font-family:'Fraunces',serif;">—</div>
           <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px;">All Admission Fees Paid</div>
           <div id="ovAdmFeesPaidSub" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;">Total collected</div>
-        </div>
-
-        <!-- Total Collected (payments + admission_payments) -->
-        <div style="background:linear-gradient(135deg,#14532d 0%,#16a34a 100%);border-radius:20px;padding:32px 28px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(22,163,74,.45),0 2px 8px rgba(0,0,0,.18);cursor:default;">
-          <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07);"></div>
-          <div style="position:absolute;bottom:-20px;left:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.05);"></div>
-          <div style="width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
-            <i class="fas fa-coins" style="color:#fff;font-size:24px;"></i>
-          </div>
-          <div id="ovTotalCollected" style="font-size:42px;font-weight:800;color:#fff;line-height:1;margin-bottom:6px;font-family:'Fraunces',serif;">—</div>
-          <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px;">Total Collected</div>
-          <div id="ovTotalCollectedSub" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;">All fees · both tables</div>
         </div>
 
       </div>
@@ -6537,21 +6525,12 @@ async function loadOverview() {
       .from('admission_payments')
       .select('amount, payment_status');
 
-    const successAdm    = (feeData || []).filter(r => (r.payment_status || '').toLowerCase() === 'success');
-    const totalFeesPaid = successAdm.reduce((s, r) => s + parseFloat(r.amount || 0), 0);
-    const feePaidCount  = successAdm.length;
+    const totalFeesPaid = (feeData || [])
+      .filter(r => (r.payment_status || '').toLowerCase() === 'success')
+      .reduce((s, r) => s + parseFloat(r.amount || 0), 0);
 
-    // ── 4. General payments (payments table, status = 'approved') ──
-    const { data: payData, error: e4 } = await db
-      .from('payments')
-      .select('amount, status');
-
-    const approvedPay   = (payData || []).filter(r => (r.status || '').toLowerCase() === 'approved');
-    const totalPayments = approvedPay.reduce((s, r) => s + parseFloat(r.amount || 0), 0);
-    const payCount      = approvedPay.length;
-
-    const grandTotal    = totalFeesPaid + totalPayments;
-    const grandCount    = feePaidCount  + payCount;
+    const feePaidCount = (feeData || [])
+      .filter(r => (r.payment_status || '').toLowerCase() === 'success').length;
 
     // ── Inject into stat cards ──
     const fp = formsPurchased || 0;
@@ -6567,9 +6546,6 @@ async function loadOverview() {
 
     if (el('ovAdmFeesPaid'))       el('ovAdmFeesPaid').textContent      = formatGHS(totalFeesPaid);
     if (el('ovAdmFeesPaidSub'))    el('ovAdmFeesPaidSub').innerHTML     = `<i class="fas fa-circle-check"></i> ${feePaidCount} successful payment${feePaidCount !== 1 ? 's' : ''}`;
-
-    if (el('ovTotalCollected'))    el('ovTotalCollected').textContent   = formatGHS(grandTotal);
-    if (el('ovTotalCollectedSub')) el('ovTotalCollectedSub').innerHTML  = `<i class="fas fa-circle-check"></i> ${grandCount} payment${grandCount !== 1 ? 's' : ''} · admissions + fees`;
 
     // Update date label
     if (el('overviewDate')) {
@@ -6616,15 +6592,7 @@ async function loadPayments() {
     ftEl.innerHTML = '<option value="">All Fee Types</option>' +
       feeTypes.map(ft => `<option value="${ft}">${ft}</option>`).join('');
 
-    // Also fetch admission_payments to include in total collected
-    const { data: admData } = await db
-      .from('admission_payments')
-      .select('amount, payment_status');
-    const admRevenue = (admData || [])
-      .filter(r => (r.payment_status || '').toLowerCase() === 'success')
-      .reduce((s, r) => s + parseFloat(r.amount || 0), 0);
-
-    updatePayStatCards(_allPayments, admRevenue);
+    updatePayStatCards(_allPayments);
     renderPaymentsTable();
     toast(`Loaded ${_allPayments.length} payment records`, 'success');
   } catch(e) {
@@ -6633,12 +6601,11 @@ async function loadPayments() {
   }
 }
 
-function updatePayStatCards(payments, admRevenue) {
+function updatePayStatCards(payments) {
   const total = payments.length;
   const approved = payments.filter(p => p.status === 'approved');
   const pending  = payments.filter(p => p.status === 'pending');
-  const paymentsRevenue = approved.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
-  const revenue  = paymentsRevenue + (admRevenue || 0);
+  const revenue  = approved.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
   const unique   = new Set(payments.map(p => p.student_id)).size;
   const el = id => document.getElementById(id);
   if (el('psTotalTxns'))     el('psTotalTxns').textContent     = total.toLocaleString();

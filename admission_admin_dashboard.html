@@ -1274,6 +1274,302 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════
+     ADMIN LOGIN SCREEN
+     Username: ADMISSIONS  |  Password: ADMISSION@20206SERVER
+     ═══════════════════════════════════════════════════════ -->
+<div id="adminLoginScreen" style="
+  position:fixed;inset:0;z-index:999999;
+  background: linear-gradient(135deg, #0d0500 0%, #1a0a00 40%, #0a0a0a 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;
+">
+  <!-- Background decorative blobs -->
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+    <div style="position:absolute;top:-10%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(220,38,38,0.12) 0%,transparent 70%);border-radius:50%;"></div>
+    <div style="position:absolute;bottom:-15%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 70%);border-radius:50%;"></div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(22,163,74,0.04) 0%,transparent 70%);border-radius:50%;"></div>
+  </div>
+
+  <!-- Login Card -->
+  <div id="loginCard" style="
+    position:relative;z-index:1;
+    background:rgba(26,10,0,0.85);
+    border:1px solid rgba(220,38,38,0.25);
+    border-radius:24px;
+    padding:28px 36px 28px;
+    width:100%;max-width:400px;
+    box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04) inset;
+    backdrop-filter:blur(20px);
+    animation:loginCardIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  ">
+    <!-- Logo mark -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="
+        width:48px;height:48px;
+        background:linear-gradient(135deg,#dc2626 0%,#f59e0b 100%);
+        border-radius:14px;
+        display:inline-flex;align-items:center;justify-content:center;
+        margin-bottom:10px;
+        box-shadow:0 6px 18px rgba(220,38,38,0.45);
+        animation:logoPulse2 3s ease-in-out infinite;
+      ">
+        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;letter-spacing:0.02em;line-height:1.2;">
+        GH SCHOOL ADMISSION SERVER
+      </div>
+      <div style="font-size:11px;color:rgba(201,168,122,0.65);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">
+        Admin Portal — Restricted Access
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(220,38,38,0.3),transparent);margin-bottom:18px;"></div>
+
+    <!-- Username field -->
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-size:11.5px;font-weight:700;color:rgba(201,168,122,0.7);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+        Username
+      </label>
+      <div style="position:relative;">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;">
+          <svg width="16" height="16" fill="none" stroke="rgba(201,168,122,0.5)" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
+        <input id="loginUsername" type="text" placeholder="Enter username"
+          autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('loginPassword').focus()"
+          style="
+            width:100%;padding:13px 14px 13px 42px;
+            background:rgba(255,255,255,0.05);
+            border:1.5px solid rgba(255,255,255,0.1);
+            border-radius:10px;
+            color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;
+            outline:none;transition:border-color 0.2s,background 0.2s;
+            letter-spacing:0.04em;
+          "
+          onfocus="this.style.borderColor='rgba(220,38,38,0.6)';this.style.background='rgba(255,255,255,0.08)'"
+          onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)'"
+        />
+      </div>
+    </div>
+
+    <!-- Password field -->
+    <div style="margin-bottom:10px;">
+      <label style="display:block;font-size:11.5px;font-weight:700;color:rgba(201,168,122,0.7);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+        Password
+      </label>
+      <div style="position:relative;">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;">
+          <svg width="16" height="16" fill="none" stroke="rgba(201,168,122,0.5)" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </span>
+        <input id="loginPassword" type="password" placeholder="Enter password"
+          autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')submitAdminLogin()"
+          style="
+            width:100%;padding:13px 46px 13px 42px;
+            background:rgba(255,255,255,0.05);
+            border:1.5px solid rgba(255,255,255,0.1);
+            border-radius:10px;
+            color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;
+            outline:none;transition:border-color 0.2s,background 0.2s;
+            letter-spacing:0.06em;
+          "
+          onfocus="this.style.borderColor='rgba(220,38,38,0.6)';this.style.background='rgba(255,255,255,0.08)'"
+          onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)'"
+        />
+        <!-- Toggle visibility -->
+        <button onclick="toggleLoginPwVis()" type="button" style="
+          position:absolute;right:12px;top:50%;transform:translateY(-50%);
+          background:none;border:none;cursor:pointer;padding:4px;
+          color:rgba(201,168,122,0.5);transition:color 0.2s;
+        " onmouseover="this.style.color='rgba(201,168,122,1)'" onmouseout="this.style.color='rgba(201,168,122,0.5)'">
+          <svg id="loginEyeIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div id="loginError" style="
+      display:none;
+      background:rgba(220,38,38,0.12);
+      border:1px solid rgba(220,38,38,0.35);
+      border-radius:8px;padding:10px 14px;
+      font-size:12.5px;color:#f87171;
+      margin-bottom:16px;text-align:center;
+      animation:loginShake 0.4s ease;
+    "></div>
+
+    <!-- Attempts info -->
+    <div id="loginAttempts" style="text-align:center;font-size:11px;color:rgba(201,168,122,0.45);margin-bottom:16px;display:none;"></div>
+
+    <!-- Submit button -->
+    <button onclick="submitAdminLogin()" style="
+      width:100%;padding:12px;margin-top:4px;
+      background:linear-gradient(135deg,#dc2626 0%,#b91c1c 100%);
+      border:none;border-radius:11px;
+      color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;
+      cursor:pointer;letter-spacing:0.03em;
+      box-shadow:0 6px 20px rgba(220,38,38,0.4);
+      transition:opacity 0.18s,transform 0.18s,box-shadow 0.18s;
+      display:flex;align-items:center;justify-content:center;gap:9px;
+    "
+    onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 30px rgba(220,38,38,0.55)'"
+    onmouseout="this.style.opacity='1';this.style.transform='none';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.4)'"
+    onmousedown="this.style.transform='scale(0.97)'"
+    onmouseup="this.style.transform='translateY(-2px)'">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Sign In to Portal
+    </button>
+
+    <!-- Footer note -->
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:rgba(201,168,122,0.35);line-height:1.6;">
+      🔒 Authorised personnel only.<br>Unauthorised access is prohibited.
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes loginCardIn {
+  from { opacity:0; transform:translateY(30px) scale(0.96); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes logoPulse2 {
+  0%,100% { box-shadow:0 8px 24px rgba(220,38,38,0.45); transform:scale(1); }
+  50%      { box-shadow:0 10px 32px rgba(245,158,11,0.55); transform:scale(1.05); }
+}
+@keyframes loginShake {
+  0%,100% { transform:translateX(0); }
+  20%     { transform:translateX(-8px); }
+  40%     { transform:translateX(8px); }
+  60%     { transform:translateX(-5px); }
+  80%     { transform:translateX(5px); }
+}
+</style>
+
+<script>
+(function() {
+  const LOGIN_USER = 'ADMISSIONS';
+  const LOGIN_PASS = 'ADMISSION@20206SERVER';
+  const MAX_LOGIN_ATTEMPTS = 5;
+  let loginAttempts = 0;
+  let loginLockedUntil = 0;
+
+  // Check if already authenticated this session
+  if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+    document.getElementById('adminLoginScreen').style.display = 'none';
+  }
+
+  window.submitAdminLogin = function() {
+    // Lockout check
+    if (loginLockedUntil > Date.now()) {
+      const secs = Math.ceil((loginLockedUntil - Date.now()) / 1000);
+      showLoginError('Too many attempts. Try again in ' + secs + 's.');
+      return;
+    }
+
+    const uEl = document.getElementById('loginUsername');
+    const pEl = document.getElementById('loginPassword');
+    const user = uEl.value.trim();
+    const pass = pEl.value;
+
+    if (user === LOGIN_USER && pass === LOGIN_PASS) {
+      // ✅ Success
+      sessionStorage.setItem('adminAuthenticated', 'true');
+      const screen = document.getElementById('adminLoginScreen');
+      screen.style.transition = 'opacity 0.5s ease';
+      screen.style.opacity = '0';
+      setTimeout(() => { screen.style.display = 'none'; }, 500);
+    } else {
+      // ❌ Wrong credentials
+      loginAttempts++;
+      pEl.value = '';
+
+      // Shake the card
+      const card = document.getElementById('loginCard');
+      card.style.animation = 'none';
+      void card.offsetWidth;
+      card.style.animation = 'loginShake 0.4s ease';
+
+      if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        loginLockedUntil = Date.now() + 30000;
+        loginAttempts = 0;
+        showLoginError('Too many failed attempts. Please wait 30 seconds.');
+        const att = document.getElementById('loginAttempts');
+        att.style.display = 'block';
+        att.textContent = 'Account temporarily locked.';
+        startLoginLockTimer();
+      } else {
+        const left = MAX_LOGIN_ATTEMPTS - loginAttempts;
+        showLoginError('Invalid username or password.');
+        if (left <= 3) {
+          const att = document.getElementById('loginAttempts');
+          att.style.display = 'block';
+          att.textContent = left + ' attempt' + (left === 1 ? '' : 's') + ' remaining before lockout.';
+        }
+      }
+    }
+  };
+
+  function showLoginError(msg) {
+    const el = document.getElementById('loginError');
+    el.style.display = 'block';
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'loginShake 0.4s ease';
+    el.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' + msg;
+  }
+
+  function startLoginLockTimer() {
+    const att = document.getElementById('loginAttempts');
+    const tick = setInterval(() => {
+      if (loginLockedUntil <= Date.now()) {
+        clearInterval(tick);
+        att.textContent = 'You may try again now.';
+        document.getElementById('loginError').style.display = 'none';
+        return;
+      }
+      const secs = Math.ceil((loginLockedUntil - Date.now()) / 1000);
+      att.textContent = 'Locked — try again in ' + secs + 's.';
+    }, 500);
+  }
+
+  window.toggleLoginPwVis = function() {
+    const inp = document.getElementById('loginPassword');
+    const icon = document.getElementById('loginEyeIcon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  };
+
+  // Also clear session on doLogout so login screen reappears
+  const _origDoLogout = window.doLogout;
+  window.doLogout = function() {
+    sessionStorage.removeItem('adminAuthenticated');
+    if (typeof _origDoLogout === 'function') { _origDoLogout(); }
+  };
+})();
+</script>
+
 <!-- Mobile sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
@@ -2585,7 +2881,7 @@
         <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       </div>
       <div class="admt-header-title">New Admission</div>
-      <div class="admt-header-sub">Provide the student's portal username and password to verify payment before proceeding with admission.</div>
+      <div class="admt-header-sub">Choose how you'd like to add this student — verify via portal credentials, or fill in the details directly if you already have them.</div>
     </div>
     <div class="admt-body">
 
@@ -2595,8 +2891,29 @@
           <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
         </div>
         <div class="admt-option-text">
-          <div class="admt-option-title">Add New Applicant</div>
+          <div class="admt-option-title">New Applicant via Portal</div>
           <div class="admt-option-desc">Student has purchased an application form. Enter the portal credentials issued at payment to verify and proceed.</div>
+        </div>
+        <div class="admt-option-arrow">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:12px;padding:6px 4px;">
+        <div style="flex:1;height:1px;background:#e5e7eb;"></div>
+        <span style="font-size:11px;color:#9ca3af;font-weight:600;letter-spacing:.04em;">OR</span>
+        <div style="flex:1;height:1px;background:#e5e7eb;"></div>
+      </div>
+
+      <!-- Option: Admin already has student details -->
+      <div class="admt-option existing" onclick="admTypeSelectExisting()">
+        <div class="admt-option-icon">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="admt-option-text">
+          <div class="admt-option-title">I Already Have Student Details</div>
+          <div class="admt-option-desc">You have the student's information ready. Fill the admission form directly — no portal credentials required.</div>
         </div>
         <div class="admt-option-arrow">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -6708,6 +7025,51 @@ async function submitAdmission() {
       .single()
     if (error) throw error
     const ref = inserted?.reference_code || inserted?.student_id || payload.student_id || '—'
+
+    // ── Sync / validate admission_payments ──────────────────────────────────
+    // For 'new' mode: update the existing payment record to link the student
+    // For 'existing' mode: upsert a minimal payment record to keep the table consistent
+    try {
+      if (_admissionMode === 'new' && _credPortalUsername) {
+        // Mark the payment record as fully processed / linked to the new student entry
+        await supabase
+          .from('admission_payments')
+          .update({
+            first_name: payload.first_name || undefined,
+            last_name:  payload.last_name  || undefined,
+            email:      payload.email      || undefined,
+            phone:      payload.phone_number || undefined,
+            updated_at: new Date().toISOString()
+          })
+          .eq('portal_username', _credPortalUsername)
+      } else if (_admissionMode === 'existing') {
+        // Insert a synthetic payment record so the table stays consistent with newstudents
+        // Generate a unique reference using student_id or timestamp fallback
+        const synthRef  = payload.student_id || `ADM-${Date.now()}`
+        const synthUser = payload.student_id  || `ADM-${Date.now()}`
+        await supabase
+          .from('admission_payments')
+          .upsert([{
+            first_name:        payload.first_name    || '',
+            last_name:         payload.last_name     || '',
+            email:             payload.email         || null,
+            phone:             payload.phone_number  || '',
+            amount:            0,
+            currency:          'GHS',
+            payment_status:    'success',
+            reference_code:    synthRef,
+            portal_username:   synthUser,
+            portal_password:   null,
+            created_at:        new Date().toISOString(),
+            updated_at:        new Date().toISOString()
+          }], { onConflict: 'portal_username' })
+      }
+    } catch (syncErr) {
+      // Non-fatal — student already saved, just warn
+      console.warn('admission_payments sync warning:', syncErr.message)
+    }
+    // ── End sync ─────────────────────────────────────────────────────────────
+
     showToast(`Admission saved! Student ID: ${ref}`, 'success')
     closeAdmissionPanel()
     resetAdmissionForm()
@@ -9397,6 +9759,312 @@ window.exportRegistrationsCSV = function() {
 })(); // end registrations IIFE
 </script>
 
+<!-- ══════════════════════════════════════════════
+     HEAD-OF-ADMISSIONS PASSWORD GATE MODAL
+     Password: IRENE1_
+     Intercepts openModal() and openRegDetail()
+     ══════════════════════════════════════════════ -->
+<div id="pwGateOverlay" style="
+  display:none;position:fixed;inset:0;z-index:99998;
+  background:rgba(10,5,0,0.75);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+">
+  <div id="pwGateCard" style="
+    background:#1a0a00;border:1px solid rgba(220,38,38,0.35);
+    border-radius:20px;padding:36px 32px;width:100%;max-width:380px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.7);
+    animation:pwPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position:relative;
+  ">
+    <style>
+      @keyframes pwPop{from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
+      @keyframes pwShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+      #pwGateCard.shake{animation:pwShake 0.4s ease}
+      #pwGateInput:focus{outline:none;border-color:#dc2626!important;box-shadow:0 0 0 3px rgba(220,38,38,0.18)!important;}
+    </style>
+
+    <!-- Lock icon -->
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="
+        width:58px;height:58px;border-radius:16px;
+        background:linear-gradient(135deg,#dc2626,#f59e0b);
+        display:inline-flex;align-items:center;justify-content:center;
+        box-shadow:0 6px 20px rgba(220,38,38,0.45);
+        margin-bottom:14px;
+      ">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.3" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">
+        Restricted Access
+      </div>
+      <div style="font-size:12.5px;color:#c9a87a;line-height:1.55;">
+        This section is restricted to the<br>
+        <strong style="color:#f59e0b;">Head of Admissions</strong> only.<br>
+        Please enter your access password to continue.
+      </div>
+    </div>
+
+    <!-- Password input -->
+    <div style="position:relative;margin-bottom:14px;">
+      <input
+        id="pwGateInput"
+        type="password"
+        placeholder="Enter access password"
+        autocomplete="off"
+        style="
+          width:100%;padding:11px 44px 11px 14px;
+          background:rgba(255,255,255,0.05);
+          border:1.5px solid rgba(255,255,255,0.12);
+          border-radius:10px;color:#fff;
+          font-family:'DM Sans',sans-serif;font-size:14px;
+          transition:border-color 0.18s,box-shadow 0.18s;
+        "
+        onkeydown="if(event.key==='Enter')pwGateSubmit()"
+      />
+      <button
+        onclick="pwGateToggleVis()"
+        title="Show/hide password"
+        style="
+          position:absolute;right:12px;top:50%;transform:translateY(-50%);
+          background:none;border:none;cursor:pointer;
+          color:rgba(255,255,255,0.4);padding:2px;
+          transition:color 0.15s;
+        "
+        onmouseover="this.style.color='rgba(255,255,255,0.8)'"
+        onmouseout="this.style.color='rgba(255,255,255,0.4)'"
+      >
+        <svg id="pwEyeIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Error message -->
+    <div id="pwGateError" style="
+      display:none;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.35);
+      border-radius:8px;padding:9px 13px;font-size:12.5px;color:#f87171;
+      margin-bottom:14px;text-align:center;
+    ">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Incorrect password. Access denied.
+    </div>
+
+    <!-- Buttons -->
+    <div style="display:flex;gap:10px;">
+      <button
+        onclick="pwGateCancel()"
+        style="
+          flex:1;padding:11px;background:rgba(255,255,255,0.05);
+          border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+          color:#c9a87a;font-family:'DM Sans',sans-serif;font-size:13.5px;
+          font-weight:600;cursor:pointer;transition:background 0.15s;
+        "
+        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.05)'"
+      >Cancel</button>
+      <button
+        onclick="pwGateSubmit()"
+        style="
+          flex:2;padding:11px;
+          background:linear-gradient(135deg,#dc2626,#b91c1c);
+          border:none;border-radius:10px;color:#fff;
+          font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:700;
+          cursor:pointer;transition:opacity 0.15s;
+          box-shadow:0 4px 14px rgba(220,38,38,0.35);
+        "
+        onmouseover="this.style.opacity='0.88'"
+        onmouseout="this.style.opacity='1'"
+      >
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Unlock
+      </button>
+    </div>
+
+    <!-- Attempts counter (hidden until 1st fail) -->
+    <div id="pwGateAttempts" style="text-align:center;margin-top:12px;font-size:11px;color:rgba(201,168,122,0.5);display:none;"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── Config ───────────────────────────────────────────
+  const CORRECT_PW   = 'IRENE1_'
+  const MAX_ATTEMPTS = 5           // lock out after N wrong tries
+  let _pendingAction = null        // { type: 'student'|'reg', id }
+  let _attempts      = 0
+  let _lockedUntil   = 0
+
+  // ── Helpers ──────────────────────────────────────────
+  function showGate(action) {
+    _pendingAction = action
+    const overlay = document.getElementById('pwGateOverlay')
+    overlay.style.display = 'flex'
+    const inp = document.getElementById('pwGateInput')
+    inp.value = ''
+    inp.type  = 'password'
+    document.getElementById('pwGateError').style.display    = 'none'
+    document.getElementById('pwGateAttempts').style.display = 'none'
+    setTimeout(() => inp.focus(), 80)
+  }
+
+  window.pwGateCancel = function() {
+    document.getElementById('pwGateOverlay').style.display = 'none'
+    _pendingAction = null
+  }
+
+  window.pwGateToggleVis = function() {
+    const inp  = document.getElementById('pwGateInput')
+    const icon = document.getElementById('pwEyeIcon')
+    if (inp.type === 'password') {
+      inp.type  = 'text'
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    } else {
+      inp.type  = 'password'
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+    }
+  }
+
+  window.pwGateSubmit = function() {
+    // Lockout check
+    if (_lockedUntil > Date.now()) {
+      const secs = Math.ceil((_lockedUntil - Date.now()) / 1000)
+      showError(`Too many attempts. Try again in ${secs}s.`)
+      return
+    }
+
+    const entered = document.getElementById('pwGateInput').value
+    if (entered === CORRECT_PW) {
+      // ✅ Correct — clear state and fire the real action
+      _attempts = 0
+      document.getElementById('pwGateOverlay').style.display = 'none'
+      document.getElementById('pwGateError').style.display   = 'none'
+
+      const action = _pendingAction
+      _pendingAction = null
+
+      if (action.type === 'student') {
+        _realOpenModal(action.id)
+      } else if (action.type === 'reg') {
+        _realOpenRegDetail(action.id)
+      } else if (action.type === 'statModal') {
+        _realOpenStatModal(action.filter)
+      }
+    } else {
+      // ❌ Wrong password
+      _attempts++
+      const attemptsLeft = MAX_ATTEMPTS - _attempts
+      const card = document.getElementById('pwGateCard')
+      card.classList.remove('shake')
+      void card.offsetWidth   // reflow to restart animation
+      card.classList.add('shake')
+      document.getElementById('pwGateInput').value = ''
+
+      if (_attempts >= MAX_ATTEMPTS) {
+        _lockedUntil = Date.now() + 30000  // 30-second lockout
+        _attempts    = 0
+        showError('Too many failed attempts. Please wait 30 seconds.')
+        const att = document.getElementById('pwGateAttempts')
+        att.style.display = 'block'
+        att.textContent   = 'Account temporarily locked.'
+        startLockTimer()
+      } else {
+        showError('Incorrect password. Access denied.')
+        if (attemptsLeft <= 2) {
+          const att = document.getElementById('pwGateAttempts')
+          att.style.display = 'block'
+          att.textContent   = `${attemptsLeft} attempt${attemptsLeft===1?'':'s'} remaining.`
+        }
+      }
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('pwGateError')
+    el.style.display = 'block'
+    el.querySelector
+      ? (el.childNodes[el.childNodes.length-1].textContent = ' ' + msg)
+      : null
+    el.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${msg}`
+  }
+
+  function startLockTimer() {
+    const att = document.getElementById('pwGateAttempts')
+    const tick = setInterval(() => {
+      if (_lockedUntil <= Date.now()) {
+        clearInterval(tick)
+        att.textContent = 'You may try again now.'
+        document.getElementById('pwGateError').style.display = 'none'
+        return
+      }
+      const secs = Math.ceil((_lockedUntil - Date.now()) / 1000)
+      att.textContent = `Locked — try again in ${secs}s.`
+    }, 500)
+  }
+
+  // ── Intercept openModal (student View button) ────────
+  // Wait for DOMContentLoaded so the original function is defined
+  document.addEventListener('DOMContentLoaded', function() {
+    patchFunctions()
+  })
+  // Also try immediately in case scripts already ran
+  if (document.readyState !== 'loading') {
+    setTimeout(patchFunctions, 0)
+  }
+
+  function patchFunctions() {
+    // Patch openModal
+    if (typeof window.openModal === 'function' && !window._pwOpenModalPatched) {
+      _realOpenModal = window.openModal
+      window.openModal = function(id) {
+        showGate({ type: 'student', id })
+      }
+      window._pwOpenModalPatched = true
+    }
+
+    // Patch openRegDetail (registrations View button)
+    if (typeof window.openRegDetail === 'function' && !window._pwOpenRegDetailPatched) {
+      _realOpenRegDetail = window.openRegDetail
+      window.openRegDetail = function(id) {
+        showGate({ type: 'reg', id })
+      }
+      window._pwOpenRegDetailPatched = true
+    }
+
+    // Patch openStatModal (stat card click — also shows students)
+    if (typeof window.openStatModal === 'function' && !window._pwOpenStatModalPatched) {
+      _realOpenStatModal = window.openStatModal
+      window.openStatModal = function(filter) {
+        showGate({ type: 'statModal', filter })
+      }
+      window._pwOpenStatModalPatched = true
+    }
+  }
+
+  // Keep references to originals
+  let _realOpenModal     = null
+  let _realOpenRegDetail = null
+  let _realOpenStatModal = null
+
+  // Retry patch every 300ms until all three are found (scripts load async)
+  let _patchInterval = setInterval(function() {
+    const allDone = window._pwOpenModalPatched && window._pwOpenRegDetailPatched && window._pwOpenStatModalPatched
+    if (allDone) { clearInterval(_patchInterval); return }
+    patchFunctions()
+  }, 300)
+
+})();
+</script>
+
 <!-- LOGOUT CONFIRMATION MODAL -->
 <div id="logoutOverlay" onclick="if(event.target===this) hideLogoutConfirm()">
   <div class="logout-card">
@@ -9432,14 +10100,36 @@ function hideLogoutConfirm() {
 function doLogout() {
   // Clear session so the main login page doesn't auto-restore
   sessionStorage.removeItem('ghschools_session');
+  sessionStorage.removeItem('adminAuthenticated');
 
   // Show a brief leaving indicator then redirect
   var card = document.querySelector('.logout-card');
   if (card) {
     card.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="width:40px;height:40px;border:3px solid rgba(220,38,38,0.2);border-top-color:#dc2626;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px;"></div><div style="font-family:\'Syne\',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;">Signing out…</div><div style="font-size:12px;color:#7a5230;">Returning to login</div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
   }
+  // After brief delay, hide the logout overlay and show the login screen again
   setTimeout(function() {
-    window.location.href = 'COMBINED_SYSTEM_ENHANCED.HTML';
+    var logoutOverlay = document.getElementById('logoutOverlay');
+    if (logoutOverlay) logoutOverlay.classList.remove('active');
+
+    // Reset login form
+    var uEl = document.getElementById('loginUsername');
+    var pEl = document.getElementById('loginPassword');
+    if (uEl) uEl.value = '';
+    if (pEl) pEl.value = '';
+    var errEl = document.getElementById('loginError');
+    if (errEl) errEl.style.display = 'none';
+    var attEl = document.getElementById('loginAttempts');
+    if (attEl) attEl.style.display = 'none';
+
+    // Fade the login screen back in
+    var loginScreen = document.getElementById('adminLoginScreen');
+    if (loginScreen) {
+      loginScreen.style.opacity = '0';
+      loginScreen.style.display = 'flex';
+      loginScreen.style.transition = 'opacity 0.4s ease';
+      setTimeout(function() { loginScreen.style.opacity = '1'; }, 20);
+    }
   }, 900);
 }
 </script>

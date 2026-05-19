@@ -40,7 +40,6 @@
     }
     .read-more-btn:hover {
       transform: scale(1.05) !important;
-      box-shadow: 0 6px 18px rgba(204,0,0,0.4) !important;
     }
 
     /* Hero banner text shadow */
@@ -51,9 +50,7 @@
 
     /* Buttons global ripple effect */
     .floating-apply-button, .apply-btn, .apply-now-btn {
-      transition: transform 0.25s ease, box-shadow 0.25s ease !important;
-    }
-    .floating-apply-button:hover, .apply-now-btn:hover {
+      transition: transform 0.25s ease, .apply-now-btn:hover {
       transform: translateY(-2px) scale(1.02) !important;
     }
 
@@ -62,8 +59,8 @@
       animation: stickyPulse 2.5s ease-in-out infinite;
     }
     @keyframes stickyPulse {
-      0%, 100% { box-shadow: 0 4px 12px rgba(244,4,4,0.4); }
-      50% { box-shadow: 0 6px 24px rgba(244,4,4,0.7); }
+      0%, 100% { }
+      50% { }
     }
 
     /* Section divider accent line */
@@ -204,7 +201,6 @@
         right: 0;
         width: 100%;
         padding: 15px 20px;
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.975);
         border-radius: 0 0 6px 6px;
         gap: 15px;
         z-index: 1000;
@@ -322,7 +318,6 @@
       left: 0;
       background: #fff;
       border: 1px solid #ccc;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.964);
       z-index: 999;
       width: 200px;
     }
@@ -369,7 +364,6 @@
         top: 100%;
         left: 0;
         padding: 20px 0;
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.952);
         z-index: 999;
       }
 
@@ -387,7 +381,6 @@
       .dropdown {
         position: static;
         border: none;
-        box-shadow: none;
         background: #f9f9f9;
         margin-left: 20px;
         width: auto;
@@ -428,7 +421,7 @@
       height: 350px; /* same height */
       background-color: #f1c40f;
       color: #f7f3f3;
-      border-radius: 10px;
+      border-radius: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -478,7 +471,6 @@
       border-radius: 30px;
       font-weight: bold;
       text-decoration: none;
-      box-shadow: 0 4px 10px rgba(6, 6, 6, 0.976);
       transition: background 0.3s ease;
       cursor: pointer;
       font-size: 16px;
@@ -504,7 +496,6 @@
       border-radius: 10px;
       padding: 20px 25px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.965);
       width: 120px;
       display: flex;
       flex-direction: column;
@@ -529,36 +520,42 @@
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 5px #fff; }
-      50% { box-shadow: 0 0 20px #ffe600; }
-      100% { box-shadow: 0 0 5px #fff; }
+      0% { }
+      50% { }
+      100% { }
     }
 
     /* Base: Align all school-box items horizontally */
     .school-slider {
-      overflow: hidden;
       width: 100%;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      scrollbar-color: #cc0000 transparent;
     }
+    .school-slider::-webkit-scrollbar { height: 4px; }
+    .school-slider::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 2px; }
 
     .slider-track {
       display: flex;
       gap: 20px;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: nowrap;
-      padding: 30px;
-      transition: transform 0.5s ease-in-out;
+      padding: 20px 24px;
     }
 
     .school-box {
       position: relative;
       flex: 0 0 220px;
-      background: transparent; /* removed white background */
+      background: transparent;
       border-radius: 16px;
       padding: 20px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.978);
       transition: transform 0.3s ease;
       overflow: hidden;
+      scroll-snap-align: start;
     }
 
     .school-logo {
@@ -618,28 +615,18 @@
       }
     }
 
-    /* Mobile: horizontal scroll */
+    /* Mobile: card sizing */
     @media (max-width: 768px) {
-      .school-slider {
-        padding: 0;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-      }
-
       .slider-track {
-        display: flex;
-        gap: 20px;
+        padding: 16px 16px 12px;
+        gap: 14px;
         animation: none !important;
       }
 
       .school-box {
-        flex: 0 0 auto;
-        width: 80%;
-        max-width: 300px;
-        box-sizing: border-box;
-        padding: 40px 20px;
-        scroll-snap-align: start;
+        flex: 0 0 75vw;
+        max-width: 280px;
+        padding: 24px 16px;
       }
 
       /* Disable hover animations on mobile */
@@ -652,7 +639,6 @@
 
       .school-box:hover {
         transform: none !important;
-        box-shadow: none !important;
       }
     }
 
@@ -664,7 +650,6 @@
       color: white;
       padding: 12px 20px;
       border-radius: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.944);
       z-index: 999;
       font-weight: bold;
     }
@@ -739,7 +724,6 @@
       font-weight: bold;
       text-decoration: none;
       transition: background 0.3s, color 0.3s;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
 
     .hero-buttons a:first-child {
@@ -859,7 +843,6 @@
       aspect-ratio: 16 / 9;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.962);
       margin: 0 auto;
     }
 
@@ -869,7 +852,6 @@
         max-width: 100%;
         aspect-ratio: 16 / 9;
         border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.961);
       }
     }
 
@@ -935,7 +917,6 @@
       background: #fff;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.985);
       width: 320px;
       transition: transform 0.8s ease;
     }
@@ -978,9 +959,9 @@
 
     /* Glow pulse animation */
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
-      50% { box-shadow: 0 0 25px rgba(255,255,255,0.8); }
-      100% { box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+      0% { }
+      50% { }
+      100% { }
     }
 
     .management-grid {
@@ -997,7 +978,6 @@
       flex: 0 0 250px; /* Fixed card width for horizontal scroll */
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.984);
       overflow: hidden;
     }
 
@@ -1143,7 +1123,6 @@
       margin: 0 auto;
       border-radius: 50px;
       overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     }
     .newsletter-form input {
       flex: 1;
@@ -1181,8 +1160,8 @@
 
     /* Main footer body */
     .site-footer {
-      background: #0d0d0d;
-      color: #ccc;
+      background: #2a2a2a;
+      color: #ddd;
       font-family: 'DM Sans', Arial, sans-serif;
       position: relative;
       overflow: hidden;
@@ -1274,7 +1253,6 @@
       font-size: 13px;
       text-decoration: none;
       letter-spacing: 0.5px;
-      box-shadow: 0 4px 20px rgba(200,0,0,0.4);
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -1293,7 +1271,6 @@
     }
     .apply-btn:hover::before { left: 130%; }
     .apply-btn:hover {
-      box-shadow: 0 8px 30px rgba(200,0,0,0.6);
       transform: translateY(-2px);
     }
 
@@ -1326,7 +1303,6 @@
       background: rgba(61,220,132,0.22);
       border-color: #3ddc84;
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(61,220,132,0.2);
       color: #3ddc84;
     }
     .ios-btn {
@@ -1338,7 +1314,6 @@
       background: rgba(241,196,15,0.2);
       border-color: #f1c40f;
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(241,196,15,0.2);
       color: #f1c40f;
     }
 
@@ -1453,7 +1428,6 @@
     .footer-social-icon:hover::after { background: rgba(255,255,255,0.15); }
     .footer-social-icon:hover {
       transform: translateY(-4px) scale(1.1);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     }
 
     /* Results checker column */
@@ -1486,7 +1460,6 @@
       border: none;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 16px rgba(37,117,252,0.3);
       position: relative;
       overflow: hidden;
     }
@@ -1503,7 +1476,6 @@
     }
     .results-checker-btn:hover::before { left: 130%; }
     .results-checker-btn:hover {
-      box-shadow: 0 8px 28px rgba(37,117,252,0.5);
       transform: translateY(-2px);
     }
     .results-checker-btn:active { transform: translateY(0); }
@@ -1575,9 +1547,9 @@
     }
     .footer-bottom-copy {
       font-size: 13px;
-      color: #666;
+      color: #999;
     }
-    .footer-bottom-copy strong { color: #999; }
+    .footer-bottom-copy strong { color: #bbb; }
     .footer-bottom-links {
       display: flex;
       gap: 20px;
@@ -1612,7 +1584,6 @@
       font-size: 16px;
       cursor: pointer;
       z-index: 900;
-      box-shadow: 0 4px 16px rgba(180,0,0,0.4);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -1628,7 +1599,6 @@
     }
     .footer-scroll-top:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(180,0,0,0.5);
     }
 
     /* Footer animate-in on scroll */
@@ -1708,7 +1678,6 @@
       max-height: 250px; /* reduced height */
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.991);
       overflow: hidden;
     }
 
@@ -1783,7 +1752,6 @@
       font-size: 20px;
       cursor: pointer;
       z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
       transition: transform 0.2s ease-in-out;
     }
     .chat-button:hover {
@@ -1799,7 +1767,6 @@
       width: 320px;
       background: #f8f9fa;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       z-index: 1000;
       overflow: hidden;
       font-family: Arial, sans-serif;
@@ -1926,7 +1893,6 @@
       scroll-snap-align: start;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.989);
       overflow: hidden;
     }
 
@@ -2016,7 +1982,6 @@
       color: #fff;
       border-radius: 12px; /* rounded card look */
       padding: 18px 14px 30px;
-      box-shadow: 0 18px 48px rgba(0,0,0,0.35);
       transform: translateY(20%) scale(0.98);
       transition: transform 0.35s cubic-bezier(.2,.9,.2,1), opacity 0.25s ease;
       overflow-y: auto;
@@ -2043,7 +2008,7 @@
     .mobile-nav-modal .modal-links { display:flex; flex-direction:column; gap:6px; padding-top:6px; }
     .mobile-nav-modal .modal-links a { display:block; padding:12px 14px; text-decoration:none; color:#fff; font-weight:700; border-radius:8px; }
 
-    .mobile-nav-modal .dropdown { position:static; background: transparent; box-shadow:none; border:none; margin:0; padding:0; }
+    .mobile-nav-modal .dropdown { position:static; background: transparent; border:none; margin:0; padding:0; }
     .mobile-nav-modal .dropdown a { background: #fff; color: #000; margin:6px 6px; padding:10px 12px; border-radius:8px; font-weight:600; }
 
     /* student portal mobile item */
@@ -2087,7 +2052,6 @@
       z-index: 99999;
       background: linear-gradient(180deg,#fff,#fff);
       border-radius: 12px;
-      box-shadow: 0 12px 30px rgba(2,6,23,0.24);
       display: none;
       max-width: 980px;
       margin: 0 auto;
@@ -2113,7 +2077,7 @@
 
     #cookieConsent .cc-actions { display:flex; gap:10px; align-items:center; }
     #cookieConsent .btn-cc { padding:10px 14px; border-radius:8px; border: none; cursor: pointer; font-weight:700; }
-    #cookieConsent .btn-cc.accept { background: linear-gradient(90deg,#00b894,#00a676); color:#fff; box-shadow: 0 6px 18px rgba(0,166,118,0.18); }
+    #cookieConsent .btn-cc.accept { background: linear-gradient(90deg,#00b894,#00a676); color:#fff; }
     #cookieConsent .btn-cc.decline { background: transparent; color:#333; border:1px solid rgba(0,0,0,0.08); }
     #cookieConsent .btn-cc.manage { background: transparent; color:#666; border: none; font-weight:600; font-size:13px; }
 
@@ -2139,7 +2103,6 @@
       text-decoration: none;
       font-size: 15px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
       border: none;
       cursor: pointer;
       width: 100%;
@@ -2148,13 +2111,11 @@
 
     .results-checker-btn:hover {
       background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      box-shadow: 0 8px 20px rgba(37, 117, 252, 0.5);
       transform: translateY(-2px);
     }
 
     .results-checker-btn:active {
       transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(37, 117, 252, 0.3);
     }
 
     .results-checker-btn i {
@@ -2197,7 +2158,6 @@
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       animation: slideUpModal 0.4s ease forwards;
     }
 
@@ -2324,7 +2284,6 @@
     .program-type-option input[type="radio"]:checked + label {
       border-color: #2575fc;
       background: linear-gradient(135deg, rgba(37, 117, 252, 0.05) 0%, rgba(106, 17, 203, 0.05) 100%);
-      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.2);
     }
 
     .program-type-option label i {
@@ -2420,7 +2379,6 @@
     .grade-select:focus {
       outline: none;
       border-color: #2575fc;
-      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
     }
 
     .grade-select:hover {
@@ -2444,7 +2402,6 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2453,7 +2410,6 @@
 
     .check-results-btn:hover {
       background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      box-shadow: 0 8px 25px rgba(37, 117, 252, 0.4);
       transform: translateY(-2px);
     }
 
@@ -2564,7 +2520,6 @@
       background: #1a4fa8;
       text-decoration: none;
       transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(37, 117, 252, 0.3);
     }
 
     /* Mobile Responsive */
@@ -2613,7 +2568,7 @@
 <body>
   <!-- Apply Selection Modal -->
   <div id="applyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:2000; align-items:center; justify-content:center;"> 
-    <div style="background:#fff; width:92%; max-width:520px; border-radius:10px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.4); text-align:left;">
+    <div style="background:#fff; width:92%; max-width:520px; border-radius:10px; padding:18px; text-align:left;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
         <h3 style="margin:0; font-size:1.1rem; color:#b22222">Choose application type</h3>
         <button id="applyModalClose" style="background:transparent; border:none; font-size:20px; cursor:pointer;">&times;</button>
@@ -2637,7 +2592,7 @@
 
   <!-- Student Portal Choice Modal -->
   <div id="studentPortalChoiceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:3100; align-items:center; justify-content:center;"> 
-    <div style="background:#fff; width:92%; max-width:520px; border-radius:10px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.4); text-align:left;">
+    <div style="background:#fff; width:92%; max-width:520px; border-radius:10px; padding:18px; text-align:left;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
         <h3 style="margin:0; font-size:1.1rem; color:#b22222">Student Portal</h3>
         <button id="studentPortalChoiceClose" style="background:transparent; border:none; font-size:20px; cursor:pointer;">&times;</button>
@@ -2771,17 +2726,17 @@
 
     <!-- Admission Card -->
     <style>
-      .admission-card { flex:1 1 600px; max-width:700px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; border-radius:12px; color:#fafafa; animation:cardFadeInUp 1s ease 0.3s forwards, cardColorPulse 6s ease-in-out infinite; }
+      .admission-card { flex:1 1 600px; max-width:700px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; border-radius:0; color:#fafafa; animation:cardFadeInUp 1s ease 0.3s forwards, cardColorPulse 6s ease-in-out infinite; }
       .admission-card .admission-title { font-size:2.8rem; font-weight:bold; margin-bottom:15px; opacity:0; animation:cardFadeInUp 1s ease 0.6s forwards; }
       .admission-card .open-word { font-family: Georgia, 'Times New Roman', serif; font-style:italic; font-weight:700; color:inherit; }
       .admission-card .progress { width:100%; height:6px; background:rgba(255,255,255,0.2); overflow:hidden; max-width:300px; margin-bottom:20px; }
       .admission-card .progress .fill { height:100%; background:#fff; width:0%; animation:fillProgress 5s linear infinite; }
-      .admission-card .apply-btn { display:inline-block; background:#f6f4f4; color:rgba(9, 9, 9, 0.972); padding:12px 30px; font-weight:bold; text-decoration:none; border-radius:25px; box-shadow:0 0 10px rgba(8, 7, 7, 0.8); transition:background 0.3s; }
+      .admission-card .apply-btn { display:inline-block; background:#f6f4f4; color:rgba(9, 9, 9, 0.972); padding:12px 30px; font-weight:bold; text-decoration:none; border-radius:25px; transition:background 0.3s; }
 
       @keyframes cardColorPulse {
-        0% { background: linear-gradient(135deg,#b00000,#8a0000); color: #fafafa; box-shadow: 0 10px 30px rgba(176,0,0,0.18); }
-        50% { background: linear-gradient(135deg,#f1c40f,#f39c12); color: #111111; box-shadow: 0 14px 40px rgba(241,196,15,0.18); }
-        100% { background: linear-gradient(135deg,#b00000,#8a0000); color: #fafafa; box-shadow: 0 10px 30px rgba(176,0,0,0.18); }
+        0% { background: linear-gradient(135deg,#b00000,#8a0000); color: #fafafa; }
+        50% { background: linear-gradient(135deg,#f1c40f,#f39c12); color: #111111; }
+        100% { background: linear-gradient(135deg,#b00000,#8a0000); color: #fafafa; }
       }
 
       @keyframes fillProgress {
@@ -2804,12 +2759,7 @@
 
   <!-- Blog section removed per request -->
 
-  <!-- Place after <header> -->
-  <section class="hero-banner">
-   <h1>GH SCHOOLS</h1>
-    
-    </div>
-  </section>
+  
 
   <section class="scroll-indicator">
     <a href="#next-section"><i class="fas fa-angle-down"></i></a>
@@ -2829,7 +2779,7 @@
 
        <div class="school-box">
         <img src="images/media.png" alt="Cosmetology School Logo" class="school-logo" />
-        <div class="school-name">GH COSMETOLOGY SCHOOL</div>
+        <div class="school-name">GH COSMETOLOGY </div>
         <div class="school-desc">Learn hairdressing, skincare, and beauty therapy from professionals.</div>
         <a href="cosme.html" class="read-more-btn">Read More</a>
       </div>
@@ -2849,7 +2799,7 @@
      
       <div class="school-box">
         <img src="images/tech.png" alt="Technology School Logo" class="school-logo" />
-        <div class="school-name">GH TECHNOLOGY SCHOOL</div>
+        <div class="school-name">GH TECHNOLOGY</div>
         <div class="school-desc">Gain skills in computing, networking, and emerging technologies.</div>
         <a href="tech.html" class="read-more-btn">Read More</a>
       </div>
@@ -3177,7 +3127,6 @@
       border-radius: 30px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -3319,7 +3268,7 @@
 
     <!-- 9th CARD - Hidden initially, appears on the SAME ROW as second row when button clicked -->
     <div class="mgmt-card mgmt-card-hidden" id="card-9">
-      <img class="mgmt-card-img" src="images/wofa.jpg" alt="Mr. Eric Mensah">
+      <img class="mgmt-card-img" src="images/wofa.jpeg" alt="Mr. Eric Mensah">
       <div class="mgmt-card-overlay"></div>
       <div class="mgmt-num">09</div>
       <div class="mgmt-card-info">
@@ -3542,7 +3491,6 @@
       .impact-cta:hover {
         background: #cc0000;
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(204,0,0,0.3);
       }
 
       @media(max-width: 1100px) {
@@ -4219,7 +4167,6 @@
       background: #cc0000;
       border-radius: 50%;
       animation: pulse 1.5s ease-in-out infinite;
-      box-shadow: 0 0 12px #cc0000;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -4348,7 +4295,6 @@
     .ct-input-cine:focus, .ct-select-cine:focus, .ct-textarea-cine:focus {
       border-color: #cc0000;
       background: rgba(204, 0, 0, 0.05);
-      box-shadow: 0 0 20px rgba(204, 0, 0, 0.1);
     }
     .ct-input-cine::placeholder, .ct-textarea-cine::placeholder { color: rgba(255, 255, 255, 0.2); }
     .ct-select-cine option { background: #111; color: #fff; }
@@ -4389,7 +4335,6 @@
     }
     .ct-submit-cine:hover {
       transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(204, 0, 0, 0.4);
     }
     .ct-submit-cine .ct-arrow-cine {
       width: 38px;
@@ -4465,7 +4410,6 @@
       align-items: center;
       gap: 10px;
       border-left: 3px solid #cc0000;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     }
     .ct-map-pin-cine i { color: #cc0000; }
 
@@ -4563,7 +4507,6 @@
       background: #cc0000;
       border-color: #cc0000;
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(204, 0, 0, 0.3);
     }
 
     /* Responsive */
@@ -5059,9 +5002,7 @@
       font-size: 24px;
       text-decoration: none;
       z-index: 9999;
-      box-shadow: 0 6px 24px rgba(37, 211, 102, 0.45);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: waPop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+      transition: transform 0.3s ease,1.56,.64,1) both;
     }
     @keyframes waPop {
       from { transform: scale(0); opacity: 0; }
@@ -5069,7 +5010,6 @@
     }
     .sticky-whatsapp:hover {
       transform: scale(1.12) translateY(-3px);
-      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.6);
     }
 
     /* Ping ring animation */
@@ -5103,7 +5043,6 @@
       transform: translateX(6px);
       transition: opacity 0.25s ease, transform 0.25s ease;
       font-family: 'DM Sans', Arial, sans-serif;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
     .wa-tooltip::after {
       content: '';
@@ -5418,11 +5357,9 @@
   <style>
     @keyframes pulseButton {
       0%, 100% {
-        box-shadow: 0 0 12px rgba(214, 0, 0, 0.5);
         transform: scale(1);
       }
       50% {
-        box-shadow: 0 0 24px rgba(214, 0, 0, 0.8);
         transform: scale(1.05);
       }
     }

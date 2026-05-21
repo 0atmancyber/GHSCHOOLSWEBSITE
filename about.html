@@ -15,7 +15,7 @@
       --bg: #ffffff;
       --card: #fafafa;
       --panel: #f4f4f4;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.998);
+      --shadow: none;
       --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
@@ -42,7 +42,7 @@
       position: sticky; top: 0; z-index: 1000;
       background: var(--brand);
       color: #fff;
-      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      
     }
     .header-inner { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
@@ -62,7 +62,7 @@
     .nav-item > button:hover, .nav-item > a.nav-link:hover { background: rgba(255,255,255,.12); }
     .nav-item .chev { font-size: 12px; opacity: .9; }
 
-    .dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 220px; background: #111; color: #fff; border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: none; }
+    .dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 220px; background: #111; color: #fff; border-radius: 12px;  padding: 8px; display: none; }
     .dropdown a { display: block; color: #fff; text-decoration: none; padding: 10px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; }
     .dropdown a:hover { background: rgba(255,255,255,.08); color: #fff; }
     .nav-item:hover .dropdown { display: block; }
@@ -169,114 +169,133 @@
       grid-template-columns: 260px 1fr;
       align-items: start;
     }
-    aside.toc { position: sticky; top: calc(var(--header-h) + 16px); background: var(--panel); border: 1px solid #e8e8e8; border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); }
-    .toc h2 { margin: 0 0 12px; font-size: 16px; color: var(--brand); }
-    .toc a { display: block; color: #333; text-decoration: none; padding: 8px 10px; border-radius: 8px; font-size: 14px; }
-    .toc a.active, .toc a:hover { background: #fff; box-shadow: var(--shadow); }
+    aside.toc { position: sticky; top: calc(var(--header-h) + 16px); background: var(--panel); border: 1px solid #e8e8e8; border-radius: var(--radius-lg); padding: 20px 16px; max-height: calc(100vh - var(--header-h) - 40px); overflow-y: auto; }
+    .toc h2 { margin: 0 0 14px; font-size: 15px; color: var(--brand); font-weight: 800; letter-spacing: 0.3px; }
+    .toc-group { margin-bottom: 14px; }
+    .toc-group:last-child { margin-bottom: 0; }
+    .toc-label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); padding: 0 10px 5px; margin-top: 2px; }
+    .toc-group + .toc-group { border-top: 1px solid #e2e2e2; padding-top: 14px; }
+    .toc a { display: flex; align-items: center; gap: 7px; color: #444; text-decoration: none; padding: 7px 10px; border-radius: 8px; font-size: 13.5px; line-height: 1.3; transition: background .15s, color .15s; }
+    .toc a::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #ccc; flex-shrink: 0; transition: background .15s; }
+    .toc a.active, .toc a:hover { background: #fff; color: var(--brand); }
+    .toc a.active::before, .toc a:hover::before { background: var(--brand); }
 
     .content { display: grid; gap: 28px; }
-    .card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 22px; }
+    .card { background: #fff; border-radius: var(--radius-lg);  padding: 22px; }
     .card h2 { margin-top: 0; font-size: 24px; color: var(--brand); position: relative; padding-bottom: 8px; }
     .card h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 60px; height: 3px; background: var(--accent); border-radius: 2px; }
     .card p { text-align: justify; }
 
     /* People grid */
     .people-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    .person { background: #fff; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; }
+    .people-grid--3col { grid-template-columns: repeat(3, 1fr); }
+    .person { background: #fff; border-radius: 14px; padding: 14px;  display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; }
     .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand); background: #eee; display: block; }
     .person h4 { margin: 0; font-size: 16px; }
     .person span.role { display: block; font-size: 13px; color: var(--muted); }
 
     /* Floating buttons */
-    .fab { position: fixed; right: 20px; z-index: 900; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; text-decoration: none; font-weight: 800; box-shadow: var(--shadow); transition: transform .15s ease-in-out; }
+    .fab { position: fixed; right: 20px; z-index: 900; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; text-decoration: none; font-weight: 800;  transition: transform .15s ease-in-out; }
     .fab:hover { transform: translateY(-3px); }
     .fab.apply { bottom: 88px; background: var(--brand); color: #fff; }
     .fab.top { bottom: 28px; background: #000; color: #fff; }
 
     /* Footer */
     footer.site-footer { background: #222; color: #ddd; padding: 48px 0; }
-    .footer-grid { display: grid; gap: 28px; grid-template-columns: repeat(5, minmax(160px, 1fr)); }
+    .footer-grid { display: grid; gap: 28px; grid-template-columns: repeat(5, minmax(160px, 1fr)); flex-wrap: wrap; }
     .footer-brand { display: grid; gap: 16px; }
     .footer-brand .brandline { display: flex; align-items: center; gap: 12px; }
-    .footer-brand img { width: 64px; height: auto; }
+    .footer-brand img { width: 64px; height: auto; max-width: 100%; }
     .footer-brand h3 { margin: 0; color: var(--accent); }
     .footer-col h4 { margin: 0 0 10px; color: var(--accent); }
     .footer-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
     .footer-col a { color: #ccc; text-decoration: none; font-size: 14px; }
     .footer-col a:hover { text-decoration: underline; }
 
-    /* Mobile */
+    /* ── Responsive breakpoints ── */
+
+    /* Large tablets / small desktops */
     @media (max-width: 1024px) {
       .grid { grid-template-columns: 1fr; }
       aside.toc { display: none; }
+      .footer-grid { grid-template-columns: repeat(3, 1fr); }
     }
+
+    /* Tablets */
     @media (max-width: 840px) {
       .nav { display: none; }
       .hamburger { display: inline-flex; }
       .mobile-panel { display: block; }
+      .footer-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* Sidebar & Navbar Responsive Enhancements */
-@media (max-width: 768px) {
-  /* Grid becomes single column */
-  .grid {
-    grid-template-columns: 1fr;
-  }
+    /* Mobile phones */
+    @media (max-width: 600px) {
+      :root { --header-h: 64px; }
 
-  /* Hide sidebar, add toggle button */
-  aside.toc {
-    display: none;
-    position: fixed;
-    top: var(--header-h);
-    left: 0;
-    width: 260px;
-    height: 100%;
-    background: var(--panel);
-    z-index: 2000;
-    overflow-y: auto;
-    padding: 16px;
-    box-shadow: var(--shadow);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-  aside.toc.open {
-    transform: translateX(0);
-  }
+      /* Header */
+      .brand .title strong { font-size: 15px; }
+      .brand .title small  { font-size: 10px; }
+      .brand img { width: 48px; height: 48px; }
 
-  /* Sidebar toggle button */
-  .sidebar-toggle {
-    display: inline-block;
-    background: #fff;
-    color: var(--brand);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: 800;
-    cursor: pointer;
-  }
+      /* Hero */
+      .hero { min-height: 220px; }
+      .hero .inner { padding: 40px 16px; }
+      .hero h1 { font-size: clamp(22px, 6vw, 32px); }
 
-  /* Navbar changes */
-  .nav {
-    display: none;
-  }
-  .hamburger {
-    display: inline-flex;
-  }
+      /* Page layout */
+      .page { padding: 24px 0 60px; }
+      .container { padding: 0 14px; }
 
-  /* Footer becomes single column */
-  .footer-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .footer-brand .brandline {
-    justify-content: center;
-  }
-}
+      /* Cards */
+      .card { padding: 16px; border-radius: 12px; }
+      .card h2 { font-size: 20px; }
 
-/* Mobile nav panel smooth transition */
-.mobile-panel[hidden] {
-  display: none;
-}
+      /* People grids — force single column on phones */
+      .people-grid,
+      .people-grid--3col { grid-template-columns: 1fr !important; }
+
+      /* Person card — keep avatar + text side by side but tighten */
+      .person {
+        grid-template-columns: 60px 1fr;
+        gap: 10px;
+        padding: 12px;
+      }
+      .avatar { width: 60px; height: 60px; }
+
+      /* Management board featured card */
+      .people-grid[style*="grid-template-columns: 1fr"] .person,
+      .people-grid[style*="grid-template-columns: repeat(3"] .person {
+        max-width: 100% !important;
+        width: 100% !important;
+        flex-direction: row;
+        text-align: left;
+      }
+
+      /* Footer */
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .footer-brand .brandline { justify-content: center; }
+      footer.site-footer { padding: 32px 0; }
+
+      /* FABs — prevent overlap, smaller padding */
+      .fab { padding: 10px 14px; font-size: 14px; }
+      .fab.apply { bottom: 76px; right: 14px; }
+      .fab.top   { bottom: 20px; right: 14px; }
+    }
+
+    /* Very small phones */
+    @media (max-width: 380px) {
+      .brand .title { display: none; }
+      .card h2 { font-size: 18px; }
+      .person { grid-template-columns: 52px 1fr; }
+      .avatar { width: 52px; height: 52px; }
+    }
+
+    /* Mobile nav panel smooth transition */
+    .mobile-panel[hidden] { display: none; }
 
   </style>
 </head>
@@ -410,30 +429,42 @@
     <div class="container grid">
       <!-- Sidebar TOC (desktop) -->
       <aside class="toc" aria-label="On this page">
-        <h2>About Sections</h2>
+        <h2>On This Page</h2>
         <nav>
-          <a href="#institution">Institution</a>
-          <a href="#management-board">Management Board</a>
-          <a href="#head-of-schools">Head of Schools</a>
-          <a href="#registrar">Registrar</a>
-          <a href="#students-affairs">Students Affairs</a>
-          <a href="#finance-directorate">Finance Directorate</a>
-          <a href="#academic-affairs">Academic Affairs</a>
-          <a href="#students-production">Students Production</a>
-          <a href="#marketing-directorate">Marketing Directorate</a>
-          <a href="#communication-directorate">Communication Directorate</a>
-          <a href="#human-resource">Human Resource</a>
-          <a href="#office-chancellor">Office of the Chancellor</a>
-          <a href="#office-rector">Office of the Rector</a>
-          <a href="#vision-mission">Vision & Mission</a>
-          <a href="#values">Our Values</a>
-          <a href="#strategy">The Strategy</a>
-          <a href="#quality">Quality Assurance</a>
-          <a href="#pillars">Pillars of Engagement</a>
-          <a href="#principles">Principles of Module Design</a>
-          <a href="#quality-policy">Quality Management Policy</a>
-          <a href="#philosophy">The Philosophy</a>
-      
+          <!-- About -->
+          <div class="toc-group">
+            <span class="toc-label">About</span>
+            <a href="#institution">Institution</a>
+            <a href="#vision-mission">Vision &amp; Mission</a>
+            <a href="#objective">Objective</a>
+            <a href="#values">Values</a>
+            <a href="#strategy">Strategy</a>
+            <a href="#quality">Quality Assurance</a>
+            <a href="#pillars">Pillars of Engagement</a>
+            <a href="#principles">Module Design Principles</a>
+            <a href="#quality-policy">Quality Management Policy</a>
+            <a href="#philosophy">Philosophy</a>
+          </div>
+
+          <!-- Leadership -->
+          <div class="toc-group">
+            <span class="toc-label">Leadership</span>
+            <a href="#office-chancellor">Office of the Chancellor</a>
+            <a href="#office-rector">Office of the Rector</a>
+            <a href="#management-board">Management Board</a>
+          </div>
+
+          <!-- Directorates -->
+          <div class="toc-group">
+            <span class="toc-label">Directorates</span>
+            <a href="#head-of-schools">Directorates Overview</a>
+            <a href="#registrar">Registrar</a>
+            <a href="#academic-affairs">Academic Affairs</a>
+            <a href="#students-production">Productions</a>
+            <a href="#communication-directorate">Communications</a>
+            <a href="#students-affairs">Student Affairs</a>
+            <a href="#finance-directorate">Finance</a>
+          </div>
         </nav>
       </aside>
 
@@ -444,239 +475,7 @@
           <p>GH SCHOOLS is dedicated to competency-based training across technical disciplines, blending industry with academia. We bring real-world practice into the classroom through state-of-the-art facilities and experienced faculty.</p>
         </section>
 
-        <section id="management-board" class="card">
-          <h2>The Management Board</h2>
-          <p>The Management Board is the highest decision-making body responsible for strategic planning and policy-making to achieve the overall objectives of the institution. It meets weekly and consists of the Rectorate,the registrar and the heads of various directorates. <br> Its extended management includes the various departmental heads in the decision making process.</p>
-       <h2><span style="color: rgb(135, 6, 6);">Rectorates</span></h2>
-
-          <!-- People cards (add actual images at /images/management/...) -->
-          <!-- First row: single featured card -->
-          <div class="people-grid" style="margin-top: 16px; grid-template-columns: 1fr; justify-items: center;">
-            <article class="person" style="justify-self: center; max-width: 250px; width:100%; min-height: 100px; display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 10px;">
-              <img class="avatar" src="images/LESLIe.png" alt="Rector" />
-              <div>
-                <h4>Rector</h4>
-                <span class="role">Executive Leadership</span>
-              </div>
-            </article>
-          </div>
-
-          <!-- Second row: three equal cards -->
-          <div class="people-grid" style="margin-top: 16px; grid-template-columns: repeat(3, 1fr);">
-            <article class="person">
-              <img class="avatar" src="images/0E0A8131.jpg" alt="Registrar" />
-              <div>
-                <h4>Deputy Rector (Academics)</h4>
-                <span class="role">Director of Academics</span>
-              </div>
-            </article>
-
-            <article class="person">
-              <img class="avatar" src="images/101A8121.jpg" alt="Deputy Rector (Academics)" />
-              <div>
-                <h4>Deputy Rector (Monitoring & Supervision)</h4>
-                <span class="role">Director of Quality Control</span>
-              </div>
-            </article>
-
-            <article class="person">
-              <img class="avatar" src="images/0E0A8145.jpg" alt="Deputy Rector (Monitoring & Supervision)" />
-              <div>
-                <h4>Registrar</h4>
-                <span class="role">Records, Admissions, Exams & Certification</span>
-              </div>
-            </article>
-          </div>
-
-        </section>
-
-        <section id="head-of-schools" class="card">
-          <h2>Directorates</h2>
-          <p>Each school is headed by a director with overall responsibility for academic and administrative activities.</p>
-          <div class="people-grid" style="margin-top: 16px;">
-            <article class="person">
-              <img class="avatar" src="images/GMS_0977.jpg" alt="Head, School of Media" />
-              <div>
-                <h4>Director of Student Affairs</h4>
-               
-              </div>
-            </article>
-            <article class="person">
-              <img class="avatar" src="images/0E0A8141.jpg" alt="Head, School of Fashion" />
-              <div>
-                <h4>Director of Finance</h4>
-              
-              </div>
-            </article>
-            <article class="person">
-              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Head, School of Catering" />
-              <div>
-                <h4>Director of Communications</h4>
-              
-              </div>
-            </article>
-            <article class="person">
-              <img class="avatar" src="images/0E0A8178.jpg" alt="Head, School of Cosmetology" />
-              <div>
-                <h4>Director of Productions</h4>
-              
-              </div>
-            </article>
-            <article class="person">
-              <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
-              <div>
-                <h4>Director of Facilities & Logistics</h4>
-             
-              </div>
-            </article>
-
-
-             </article>
-            <article class="person">
-              <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
-              <div>
-                <h4>Director of Legal Affairs</h4>
-             
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="registrar" class="card">
-          <h2>The Registrar</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person" style="grid-template-columns: 100px 1fr;">
-              <img class="avatar" style="width:100px;height:100px;" src="images/Mr. Confidence Aglobi-Tetteh.jpg" alt="Registrar" />
-              <div>
-                <h4>Registrar</h4>
-                <span class="role">Records, Admissions, Exams & Certification</span>
-                <p style="margin-top:8px">The Registrar is a senior administrative officer responsible for managing the institution’s records, regulatory compliance, core administrative processes, and ensuring that everything
-                   from admissions to certification runs accurately, legally, and efficiently.</p>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="students-affairs" class="card">
-          <h2> Student Affairs Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/GMS_0977.jpg" alt="Director, Students Affairs" />
-              <div>
-                <h4>Director of Student Affairs (Dean of Students)</h4>
-                <span class="role">The Dean of Students is responsible for student welfare, discipline, engagement, and overall campus experience, ensuring that learners thrive both personally and professionally in the creative  environment.</span>
-              </div>
-            </article>
-          </div>
-         
-        </section>
-
-        <section id="finance-directorate" class="card">
-          <h2>Finance Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/0E0A8141.jpg" alt="Finance Director" />
-              <div>
-                <h4> Director of Finance</h4>
-                <span class="role">The Director of Finance is responsible for financial planning, control, and sustainability, ensuring the school operates efficiently while supporting high-quality training and infrastructure.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="academic-affairs" class="card">
-          <h2>Academic Affairs Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/0E0A8131.jpg" alt="Director, Academic Affairs" />
-              <div>
-                <h4>Director of Academic Affairs</h4>
-                <span class="role">The Director of Academic Affairs oversees the design, delivery, and continuous improvement of all academic programs, 
-                  ensuring they align with industry standards and produce job-ready professionals.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="students-production" class="card">
-          <h2>Production Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/0E0A8178.jpg" alt="Director, Students Production" />
-              <div>
-                <h4>Director of Productions</h4>
-                <span class="role">The Director of Productions oversees all practical  production activities, ensuring students gain real-world experience while maintaining professional standards across all content created by the school.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="marketing-directorate" class="card">
-          <h2>Marketing Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/directorates/marketing.jpg" alt="Marketing Director" />
-              <div>
-                <h4> Director of Marketing</h4>
-                <span class="role">The Director of Marketing is responsible for brand positioning and public visibility, ensuring the school attracts the right audience and maintains a strong presence in Ghana’s technical and vocational education.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="communication-directorate" class="card">
-          <h2>Communications Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Director, Communications" />
-              <div>
-                <h4>Director of Communications</h4>
-                <span class="role">The Director of Communications is responsible for managing information, messaging, and institutional voice, ensuring clear, consistent, and professional communication internally and externally.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="human-resource" class="card">
-          <h2>Human Resource Directorate</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/Mr. Ebenezer Ocran.jpg" alt="HR Director" />
-              <div>
-                <h4>HR Director</h4>
-                <span class="role">The Human Resource Director is responsible for managing staff recruitment, welfare, performance, and organisational culture, ensuring that GH Schools is staffed with competent, motivated, and well-supported personnel.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="office-chancellor" class="card">
-          <h2>Office of the Chancellor</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/dr kusi.webp" alt="Chancellor" />
-              <div>
-                <h4>Chancellor</h4>
-                <span class="role">The Chancellor is the highest ceremonial and strategic authority of GH Schools, providing overall leadership direction, institutional credibility, and long-term vision for growth and sustainability.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="office-rector" class="card">
-          <h2>Office of the Rector</h2>
-          <div class="people-grid" style="margin-top: 8px;">
-            <article class="person">
-              <img class="avatar" src="images/Mr. Leslie Addo Listowell.jpg" alt="Rector" />
-              <div>
-                <h4>Rector</h4>
-                <span class="role">The Rector is the chief executive and academic administrator of GH Schools, responsible for the day-to-day management of the institution, ensuring that academic, production, and administrative systems operate efficiently and cohesively.</span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- Vision & Mission -->
+          <!-- Vision & Mission -->
         <section id="vision-mission" class="card">
           <h2>Vision and Mission</h2>
           <h3 style="color:var(--brand);margin:12px 0 4px">Vision</h3>
@@ -742,6 +541,236 @@
           <h2>Philosophy</h2>
           <p>Our philosophy is based on proximal learning, bridging education and industry through state-of-the-art equipment, academic excellence, and industry best practices to produce graduates with measurable outcomes and real-world readiness.</p>
         </section>
+
+
+         <section id="office-chancellor" class="card">
+          <h2>Office of the Chancellor</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/dr kusi.webp" alt="Chancellor" />
+              <div>
+                <h4>Chancellor</h4>
+                <span class="role">The Chancellor is the highest ceremonial and strategic authority of GH Schools, providing overall leadership direction, institutional credibility, and long-term vision for growth and sustainability.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+
+
+          <section id="office-rector" class="card">
+          <h2>Office of the Rector</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/Mr. Leslie Addo Listowell.jpg" alt="Rector" />
+              <div>
+                <h4>Rector</h4>
+                <span class="role">The Rector is the chief executive and academic administrator of GH Schools, responsible for the day-to-day management of the institution, ensuring that academic, production, and administrative systems operate efficiently and cohesively.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="management-board" class="card">
+          <h2>The Management Board</h2>
+          <p>The Management Board is the highest decision-making body responsible for strategic planning and policy-making to achieve the overall objectives of the institution. It meets weekly and consists of the Rectorate,the registrar and the heads of various directorates. <br> Its extended management includes the various departmental heads in the decision making process.</p>
+       <h2><span style="color: rgb(135, 6, 6);">Rectorate</span></h2>
+
+          <!-- People cards (add actual images at /images/management/...) -->
+          <!-- First row: single featured card -->
+          <div class="people-grid" style="margin-top: 16px; grid-template-columns: 1fr; justify-items: center;">
+            <article class="person" style="justify-self: center; max-width: 250px; width:100%; min-height: 100px; display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 10px;">
+              <img class="avatar" src="images/LESLIe.png" alt="Rector" />
+              <div>
+                <h4>Rector</h4>
+                <span class="role">Executive Leadership</span>
+              </div>
+            </article>
+          </div>
+
+          <!-- Second row: three equal cards -->
+          <div class="people-grid people-grid--3col" style="margin-top: 16px;">
+            <article class="person">
+              <img class="avatar" src="images/0E0A8131.jpg" alt="Registrar" />
+              <div>
+                <h4>Deputy Rector (Academics)</h4>
+                <span class="role">Director of Academics</span>
+              </div>
+            </article>
+
+            <article class="person">
+              <img class="avatar" src="images/101A8121.jpg" alt="Deputy Rector (Academics)" />
+              <div>
+                <h4>Deputy Rector (Monitoring & Supervision)</h4>
+                <span class="role">Director of Quality Control</span>
+              </div>
+            </article>
+
+            <article class="person">
+              <img class="avatar" src="images/0E0A8145.jpg" alt="Deputy Rector (Monitoring & Supervision)" />
+              <div>
+                <h4>Registrar</h4>
+                <span class="role">Records, Admissions, Exams & Certification</span>
+              </div>
+            </article>
+          </div>
+
+        </section>
+
+        <section id="head-of-schools" class="card">
+          <h2>Directorates</h2>
+          <p>Each school is headed by a director with overall responsibility for academic and administrative activities.</p>
+          <div class="people-grid" style="margin-top: 16px;">
+            <article class="person">
+              <img class="avatar" src="images/GMS_0977.jpg" alt="Head, School of Media" />
+              <div>
+                <h4>Director of Student Affairs</h4>
+               
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/0E0A8141.jpg" alt="Head, School of Fashion" />
+              <div>
+                <h4>Director of Finance</h4>
+              
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Head, School of Catering" />
+              <div>
+                <h4>Director of Communications</h4>
+              
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/0E0A8178.jpg" alt="Head, School of Cosmetology" />
+              <div>
+                <h4>Director of Productions</h4>
+              
+              </div>
+            </article>
+            <article class="person">
+              <img class="avatar" src="images/wofa.jpeg" alt="Head, School of Technology" />
+              <div>
+                <h4>Director of Facilities & Logistics</h4>
+             
+              </div>
+            </article>
+
+
+             </article>
+            <article class="person">
+              <img class="avatar" src="images/heads/technology.jpg" alt="Head, School of Technology" />
+              <div>
+                <h4>Director of Legal Affairs</h4>
+             
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="registrar" class="card">
+          <h2>The Registrar</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person" style="grid-template-columns: 100px 1fr;">
+              <img class="avatar" style="width:100px;height:100px;" src="images/0E0A8145.jpg" alt="Registrar" />
+              <div>
+                <h4>Registrar</h4>
+                <span class="role">Records, Admissions, Exams & Certification</span>
+                <p style="margin-top:8px">The Registrar is a senior administrative officer responsible for managing the institution’s records, regulatory compliance, core administrative processes, and ensuring that everything
+                   from admissions to certification runs accurately, legally, and efficiently.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+          <section id="academic-affairs" class="card">
+          <h2>Academic Affairs Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/0E0A8131.jpg" alt="Director, Academic Affairs" />
+              <div>
+                <h4>Director of Academic Affairs</h4>
+                <span class="role">The Director of Academic Affairs oversees the design, delivery, and continuous improvement of all academic programs, 
+                  ensuring they align with industry standards and produce job-ready professionals.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        
+        <section id="students-production" class="card">
+          <h2>Production Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/0E0A8178.jpg" alt="Director, Students Production" />
+              <div>
+                <h4>Director of Productions</h4>
+                <span class="role">The Director of Productions oversees all practical  production activities, ensuring students gain real-world experience while maintaining professional standards across all content created by the school.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        
+        <section id="communication-directorate" class="card">
+          <h2>Communications Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/John_Osei_Tutu_Agyeman.jpg" alt="Director, Communications" />
+              <div>
+                <h4>Director of Communications</h4>
+                <span class="role">The Director of Communications is responsible for managing information, messaging, and institutional voice, ensuring clear, consistent, and professional communication internally and externally.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+        
+    <section id="communication-directorate" class="card">
+          <h2>Facilities and Logistics Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/wofa.jpeg" alt="Director, Communications" />
+              <div>
+                <h4>Director of Facility and logistics</h4>
+                <span class="role">The Director of Communications is responsible for managing information, messaging, and institutional voice, ensuring clear, consistent, and professional communication internally and externally.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+        
+
+
+        <section id="students-affairs" class="card">
+          <h2> Student Affairs Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/GMS_0977.jpg" alt="Director, Students Affairs" />
+              <div>
+                <h4>Director of Student Affairs (Dean of Students)</h4>
+                <span class="role">The Dean of Students is responsible for student welfare, discipline, engagement, and overall campus experience, ensuring that learners thrive both personally and professionally in the creative  environment.</span>
+              </div>
+            </article>
+          </div>
+         
+        </section>
+
+        <section id="finance-directorate" class="card">
+          <h2>Finance Directorate</h2>
+          <div class="people-grid" style="margin-top: 8px;">
+            <article class="person">
+              <img class="avatar" src="images/0E0A8141.jpg" alt="Finance Director" />
+              <div>
+                <h4> Director of Finance</h4>
+                <span class="role">The Director of Finance is responsible for financial planning, control, and sustainability, ensuring the school operates efficiently while supporting high-quality training and infrastructure.</span>
+              </div>
+            </article>
+          </div>
+        </section>
+   
+
+
+      
 
         
       </div>

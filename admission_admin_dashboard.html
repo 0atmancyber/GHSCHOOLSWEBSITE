@@ -10202,6 +10202,868 @@ window.exportRegistrationsCSV = function() {
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════
+     VOICE ADMISSION MODULE
+     Floating mic button that lets the admin dictate student
+     details; Claude AI parses speech → fills the form fields.
+     ══════════════════════════════════════════════════════════ -->
+<style>
+/* ── Voice Module Styles ───────────────────────────────── */
+#vam-fab {
+  position: fixed;
+  bottom: 88px;
+  right: 26px;
+  z-index: 99990;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 20px rgba(220,38,38,0.45);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: vamPulse 3s ease-in-out infinite;
+}
+@keyframes vamPulse {
+  0%,100% { box-shadow: 0 4px 20px rgba(220,38,38,0.45); }
+  50%      { box-shadow: 0 6px 28px rgba(245,158,11,0.6); }
+}
+#vam-fab:hover { transform: scale(1.08); box-shadow: 0 8px 32px rgba(220,38,38,0.6); animation: none; }
+#vam-fab.recording {
+  background: linear-gradient(135deg, #dc2626, #f59e0b);
+  animation: vamRecording 0.9s ease-in-out infinite;
+}
+@keyframes vamRecording {
+  0%,100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(220,38,38,0.5); }
+  50%     { transform: scale(1.06); box-shadow: 0 0 0 14px rgba(220,38,38,0); }
+}
+#vam-fab.processing {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  animation: vamSpin 1.2s linear infinite;
+}
+@keyframes vamSpin { to { transform: rotate(360deg); } }
+
+#vam-tooltip {
+  position: fixed; bottom: 152px; right: 26px; z-index: 99991;
+  background: #1a0a00; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+  padding: 7px 13px; border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  pointer-events: none; white-space: nowrap;
+  opacity: 0; transition: opacity 0.18s;
+}
+#vam-tooltip.show { opacity: 1; }
+#vam-tooltip::after {
+  content: '';
+  position: absolute; bottom: -6px; right: 20px;
+  border: 6px solid transparent;
+  border-top-color: #1a0a00; border-bottom: none;
+}
+
+/* ── Overlay Panel ─────────────────────────────────────── */
+#vam-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 99992;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#vam-overlay.open { display: flex; }
+
+#vam-panel {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%; max-width: 520px;
+  max-height: 80vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 80px rgba(10,15,30,0.3);
+  animation: vamPanelIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  overflow: hidden;
+  position: relative;
+}
+@keyframes vamPanelIn {
+  from { opacity:0; transform: scale(0.9) translateY(16px); }
+  to   { opacity:1; transform: scale(1)   translateY(0); }
+}
+
+.vam-header {
+  padding: 22px 24px 16px;
+  background: linear-gradient(135deg, #1a0a00 0%, #3d1500 60%, #2d1200 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.vam-header-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.vam-title {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px;
+  color: #fff; display: flex; align-items: center; gap: 10px;
+}
+.vam-title-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, #dc2626, #f59e0b);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(220,38,38,0.4);
+}
+.vam-close {
+  width: 30px; height: 30px; border-radius: 7px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: transparent; cursor: pointer;
+  color: rgba(255,255,255,0.6); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.vam-close:hover { background: rgba(220,38,38,0.3); color: #fff; border-color: #dc2626; }
+.vam-subtitle {
+  font-size: 12px; color: rgba(201,168,122,0.8); margin-top: 4px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.vam-body { padding: 16px 20px 20px; flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #dc2626 #f0f0f0; scroll-behavior: smooth; }
+.vam-body::-webkit-scrollbar { width: 5px; }
+.vam-body::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 10px; }
+.vam-body::-webkit-scrollbar-thumb { background: linear-gradient(#dc2626, #b91c1c); border-radius: 10px; }
+
+/* ── Step indicator ── */
+.vam-steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 20px;
+}
+.vam-step {
+  display: flex; flex-direction: column; align-items: center; flex: 1;
+  position: relative;
+}
+.vam-step:not(:last-child)::after {
+  content: '';
+  position: absolute; top: 14px; left: 60%;
+  width: 80%; height: 2px;
+  background: #e8e8e8; z-index: 0;
+}
+.vam-step.done:not(:last-child)::after { background: #dc2626; }
+.vam-step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #f0f4fa; border: 2px solid #e0e5ef;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #aaa;
+  z-index: 1; transition: all 0.25s;
+}
+.vam-step.active .vam-step-circle { background: #dc2626; border-color: #dc2626; color: #fff; box-shadow: 0 2px 10px rgba(220,38,38,0.4); }
+.vam-step.done   .vam-step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+.vam-step-label { font-size: 10px; color: #aaa; margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'DM Sans', sans-serif; }
+.vam-step.active .vam-step-label { color: #dc2626; }
+.vam-step.done   .vam-step-label { color: #16a34a; }
+
+/* ── Mic area ── */
+.vam-mic-area {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 0 10px;
+}
+.vam-mic-btn {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 24px rgba(220,38,38,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 10px;
+}
+.vam-mic-btn:hover { transform: scale(1.06); box-shadow: 0 10px 36px rgba(220,38,38,0.55); }
+.vam-mic-btn.recording {
+  animation: vamMicPulse 0.9s ease-in-out infinite;
+  background: linear-gradient(135deg, #dc2626, #f59e0b);
+}
+@keyframes vamMicPulse {
+  0%,100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(220,38,38,0.5); }
+  50%     { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(220,38,38,0); }
+}
+.vam-mic-hint {
+  font-size: 13px; color: #7a5230; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; text-align: center; max-width: 320px;
+}
+.vam-mic-hint strong { color: #dc2626; }
+
+/* ── Transcript box ── */
+.vam-transcript-wrap {
+  background: #f8fafc; border: 1.5px solid #e0e5ef;
+  border-radius: 12px; padding: 14px 16px; margin: 14px 0;
+  min-height: 60px; max-height: 120px; overflow-y: auto;
+}
+.vam-transcript-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: #aaa; font-weight: 700; margin-bottom: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.vam-transcript-text {
+  font-size: 14px; color: #1a0a00; font-family: 'DM Sans', sans-serif;
+  line-height: 1.5; min-height: 24px;
+}
+.vam-transcript-text.placeholder { color: #bbb; font-style: italic; }
+
+/* ── Parsed fields preview ── */
+.vam-parsed-wrap {
+  background: #f0fdf4; border: 1.5px solid #86efac;
+  border-radius: 12px; padding: 14px 16px; margin: 10px 0;
+  display: none;
+}
+.vam-parsed-wrap.show { display: block; }
+.vam-parsed-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: #16a34a; font-weight: 700; margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+}
+.vam-field-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.vam-chip {
+  background: #fff; border: 1.5px solid #86efac;
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 12px; color: #1a0a00;
+  font-family: 'DM Sans', sans-serif;
+}
+.vam-chip strong { color: #16a34a; }
+
+/* ── Error box ── */
+.vam-error {
+  background: #fef2f2; border: 1.5px solid #fca5a5;
+  border-radius: 10px; padding: 11px 14px; margin: 10px 0;
+  font-size: 13px; color: #dc2626; display: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.vam-error.show { display: flex; align-items: center; gap: 8px; }
+
+/* ── Actions ── */
+.vam-actions {
+  display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;
+}
+.vam-btn {
+  flex: 1; padding: 11px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  border: none; font-family: 'DM Sans', sans-serif;
+  transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.vam-btn-primary {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff; box-shadow: 0 3px 12px rgba(220,38,38,0.35);
+}
+.vam-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220,38,38,0.5); }
+.vam-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.vam-btn-success {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff; box-shadow: 0 3px 12px rgba(22,163,74,0.35);
+}
+.vam-btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.5); }
+.vam-btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.vam-btn-outline {
+  background: transparent; border: 1.5px solid #e0e5ef;
+  color: #7a5230;
+}
+.vam-btn-outline:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+
+/* ── Tips section ── */
+.vam-tips {
+  background: #fffbeb; border: 1.5px solid #fde68a;
+  border-radius: 12px; padding: 13px 16px; margin-top: 14px;
+}
+.vam-tips-title {
+  font-size: 11px; font-weight: 700; color: #92400e;
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
+  font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px;
+}
+.vam-tips-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.vam-tips-list li {
+  font-size: 12px; color: #78350f; line-height: 1.5;
+  padding: 2px 0; font-family: 'DM Sans', sans-serif;
+}
+.vam-tips-list li::before { content: '▸ '; color: #f59e0b; font-size: 10px; }
+
+/* ── Scroll controls ── */
+.vam-scroll-btns {
+  position: absolute; right: 10px; bottom: 68px;
+  display: flex; flex-direction: column; gap: 5px; z-index: 10;
+}
+.vam-scroll-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #fff; border: 1.5px solid #e0e5ef;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #7a5230; font-size: 12px; transition: all 0.15s;
+}
+.vam-scroll-btn:hover { background: #dc2626; border-color: #dc2626; color: #fff; box-shadow: 0 3px 12px rgba(220,38,38,0.4); }
+.vam-scroll-btn:active { transform: scale(0.93); }
+.vam-scroll-btn.hidden { opacity: 0; pointer-events: none; }
+
+/* fade shadow at top/bottom of scroll area */
+.vam-scroll-fade-top, .vam-scroll-fade-bot {
+  position: absolute; left: 0; right: 14px; height: 28px;
+  pointer-events: none; z-index: 9; transition: opacity 0.2s;
+}
+.vam-scroll-fade-top {
+  top: 72px; /* below header */
+  background: linear-gradient(to bottom, rgba(255,255,255,0.95), transparent);
+}
+.vam-scroll-fade-bot {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(255,255,255,0.95), transparent);
+}
+.vam-scroll-fade-top.hidden, .vam-scroll-fade-bot.hidden { opacity: 0; }
+
+/* tighten step margin */
+.vam-steps { margin-bottom: 14px; }
+/* tighten tips */
+.vam-tips { margin-top: 10px; padding: 11px 14px; }
+
+/* ── Loading spinner inside btn ── */
+.vam-spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: vamSpinA 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes vamSpinA { to { transform: rotate(360deg); } }
+</style>
+
+<!-- FAB trigger button -->
+<button id="vam-fab" title="Voice Entry" onclick="VAM.open()">
+  <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+</button>
+<div id="vam-tooltip">🎤 Voice Entry</div>
+
+<!-- Main overlay panel -->
+<div id="vam-overlay" onclick="if(event.target===this) VAM.close()">
+  <div id="vam-panel">
+
+    <!-- scroll fade indicators -->
+    <div class="vam-scroll-fade-top hidden" id="vam-fade-top"></div>
+    <div class="vam-scroll-fade-bot" id="vam-fade-bot"></div>
+
+    <!-- scroll up/down buttons -->
+    <div class="vam-scroll-btns" id="vam-scroll-btns">
+      <button class="vam-scroll-btn hidden" id="vam-scroll-up" onclick="VAM.scrollBody(-120)" title="Scroll up">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+      <button class="vam-scroll-btn" id="vam-scroll-down" onclick="VAM.scrollBody(120)" title="Scroll down">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+    <div class="vam-header">
+      <div class="vam-header-top">
+        <div class="vam-title">
+          <div class="vam-title-icon">
+            <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          Voice Admission Entry
+        </div>
+        <button class="vam-close" onclick="VAM.close()">✕</button>
+      </div>
+      <div class="vam-subtitle">Speak student details — AI fills the form automatically</div>
+    </div>
+
+    <div class="vam-body" id="vam-body">
+
+      <!-- Step indicator -->
+      <div class="vam-steps">
+        <div class="vam-step active" id="vam-step-1">
+          <div class="vam-step-circle">1</div>
+          <div class="vam-step-label">Speak</div>
+        </div>
+        <div class="vam-step" id="vam-step-2">
+          <div class="vam-step-circle">2</div>
+          <div class="vam-step-label">Review</div>
+        </div>
+        <div class="vam-step" id="vam-step-3">
+          <div class="vam-step-circle">3</div>
+          <div class="vam-step-label">Apply</div>
+        </div>
+      </div>
+
+      <!-- Mic control -->
+      <div class="vam-mic-area">
+        <button class="vam-mic-btn" id="vam-mic-btn" onclick="VAM.toggleMic()">
+          <svg width="32" height="32" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <div class="vam-mic-hint" id="vam-mic-hint">
+          <strong>Tap the mic</strong> and speak the student's details.<br>
+          You can say names, phone numbers, region, program, and more.
+        </div>
+      </div>
+
+      <!-- Transcript -->
+      <div class="vam-transcript-wrap">
+        <div class="vam-transcript-label">📝 Transcript</div>
+        <div class="vam-transcript-text placeholder" id="vam-transcript">Waiting for speech…</div>
+      </div>
+
+      <!-- Error -->
+      <div class="vam-error" id="vam-error">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="vam-error-text"></span>
+      </div>
+
+      <!-- Parsed preview -->
+      <div class="vam-parsed-wrap" id="vam-parsed-wrap">
+        <div class="vam-parsed-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Fields detected — ready to fill
+        </div>
+        <div class="vam-field-chips" id="vam-chips"></div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="vam-actions">
+        <button class="vam-btn vam-btn-outline" id="vam-btn-clear" onclick="VAM.clearAll()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+          </svg>
+          Reset
+        </button>
+        <button class="vam-btn vam-btn-primary" id="vam-btn-parse" onclick="VAM.parseWithAI()" disabled>
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+          </svg>
+          Analyse with AI
+        </button>
+        <button class="vam-btn vam-btn-success" id="vam-btn-apply" onclick="VAM.applyToForm()" style="display:none">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Apply to Form
+        </button>
+      </div>
+
+      <!-- Tips -->
+      <div class="vam-tips">
+        <div class="vam-tips-title">
+          <svg width="13" height="13" fill="none" stroke="#d97706" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Example phrases
+        </div>
+        <ul class="vam-tips-list">
+          <li>"First name is Kwame, last name Mensah, middle name Asante"</li>
+          <li>"He is from Ashanti Region, phone zero two four three..."</li>
+          <li>"She is applying for Fashion Design, CTVET Diploma program"</li>
+          <li>"Date of birth is 15th March 2000, nationality Ghanaian"</li>
+          <li>"Sponsor is his father Emmanuel Mensah, phone zero five five..."</li>
+          <li>"School is Accra Academy, completed 2022, passed WASSCE"</li>
+        </ul>
+      </div>
+
+    </div><!-- /vam-body -->
+  </div><!-- /vam-panel -->
+</div><!-- /vam-overlay -->
+
+<script>
+(function() {
+'use strict';
+
+// ── Config ─────────────────────────────────────────────────
+// Uses the Anthropic API to parse speech transcript into form fields.
+// API key is NOT stored here; the endpoint is proxied through the
+// existing claude.ai interface when embedded there.
+// For standalone use, set ANTHROPIC_API_KEY in env.
+// ──────────────────────────────────────────────────────────
+
+const VAM_FIELD_MAP = {
+  first_name:          'ap-first_name',
+  middle_name:         'ap-middle_name',
+  last_name:           'ap-last_name',
+  date_of_birth:       'ap-dob',
+  gender:              'ap-gender',
+  nationality:         'ap-nationality',
+  phone_number:        'ap-phone_number',
+  email:               'ap-email',
+  region:              'ap-region',
+  home_address:        'ap-home_address',
+  national_id_type:    'ap-national_id_type',
+  national_id_number:  'ap-national_id_number',
+  present_job:         'ap-present_job',
+  language_spoken:     'ap-language_spoken',
+  hostel_preference:   'ap-hostel_preference',
+  emergency_contact:   'ap-emergency_contact',
+  sponsor_name:        'ap-sponsor_name',
+  sponsor_relationship:'ap-sponsor_relationship',
+  sponsor_occupation:  'ap-sponsor_occupation',
+  sponsor_phone:       'ap-sponsor_phone',
+  sponsor_address:     'ap-sponsor_address',
+  school_name:         'ap-school_name',
+  school_location:     'ap-school_location',
+  school_year:         'ap-school_year',
+  school_qualification:'ap-school_qualification',
+  program_applying_for:'ap-program_applying_for',
+  course_type:         'ap-course_type',
+  status:              'ap-status',
+};
+
+const VAM_LABEL_MAP = {
+  first_name: 'First Name', middle_name: 'Middle Name', last_name: 'Last Name',
+  date_of_birth: 'Date of Birth', gender: 'Gender', nationality: 'Nationality',
+  phone_number: 'Phone', email: 'Email', region: 'Region',
+  home_address: 'Address', national_id_type: 'ID Type', national_id_number: 'ID Number',
+  present_job: 'Job', language_spoken: 'Language', hostel_preference: 'Hostel',
+  emergency_contact: 'Emergency Contact', sponsor_name: 'Sponsor',
+  sponsor_relationship: 'Relationship', sponsor_occupation: 'Occupation',
+  sponsor_phone: 'Sponsor Phone', sponsor_address: 'Sponsor Address',
+  school_name: 'School', school_location: 'School Location', school_year: 'Year',
+  school_qualification: 'Qualification', program_applying_for: 'Program',
+  course_type: 'Course Type', status: 'Status',
+};
+
+const SYSTEM_PROMPT = `You are an AI assistant for a school admissions officer in Ghana. You extract student admission details from spoken transcripts and return them as a JSON object only — no explanation, no markdown, no extra text.
+
+The JSON keys you may return (only include keys you actually found):
+first_name, middle_name, last_name, date_of_birth (ISO format YYYY-MM-DD), gender (Male/Female/Other), nationality, phone_number (digits only, start with 0), email, region (Ghana region or country), home_address, national_id_type (Ghana Card/Voter ID/Passport/Birth Certificate), national_id_number, present_job, language_spoken, hostel_preference (Yes/No), emergency_contact, sponsor_name, sponsor_relationship, sponsor_occupation, sponsor_phone, sponsor_address, school_name, school_location, school_year (4-digit year), school_qualification (WASSCE/BECE/Other), program_applying_for (full program name), course_type (CTVET Diploma/COC), status (pending/accepted/rejected — default pending).
+
+Rules:
+- Phone numbers: strip spaces and dashes, keep leading zero
+- Dates: convert "15th March 2000" → "2000-03-15"
+- If a word could be a first or last name and no context, use your best judgement
+- Gender: "he/him/his/boy/male" → Male, "she/her/hers/girl/female" → Female
+- Return ONLY a valid JSON object, nothing else.`;
+
+// ── State ──────────────────────────────────────────────────
+let vamRecognition  = null;
+let vamIsRecording  = false;
+let vamTranscript   = '';
+let vamParsedData   = {};
+let vamShowTip      = false;
+
+// ── FAB tooltip ───────────────────────────────────────────
+const fab     = document.getElementById('vam-fab');
+const tooltip = document.getElementById('vam-tooltip');
+fab.addEventListener('mouseenter', () => tooltip.classList.add('show'));
+fab.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+
+// ── Public API ─────────────────────────────────────────────
+window.VAM = {
+
+  scrollBody(delta) {
+    const body = document.getElementById('vam-body');
+    if (body) body.scrollBy({ top: delta, behavior: 'smooth' });
+  },
+
+  _updateScrollUI() {
+    const body = document.getElementById('vam-body');
+    if (!body) return;
+    const atTop = body.scrollTop <= 4;
+    const atBot = body.scrollTop + body.clientHeight >= body.scrollHeight - 4;
+    document.getElementById('vam-scroll-up')?.classList.toggle('hidden', atTop);
+    document.getElementById('vam-scroll-down')?.classList.toggle('hidden', atBot);
+    document.getElementById('vam-fade-top')?.classList.toggle('hidden', atTop);
+    document.getElementById('vam-fade-bot')?.classList.toggle('hidden', atBot);
+  },
+
+  open() {
+    document.getElementById('vam-overlay').classList.add('open');
+    tooltip.classList.remove('show');
+    // Bind scroll listener
+    const body = document.getElementById('vam-body');
+    if (body) {
+      body.onscroll = () => VAM._updateScrollUI();
+      setTimeout(() => VAM._updateScrollUI(), 80);
+    }
+    // Ensure the admission panel is open (open it if not visible)
+    const panel = document.getElementById('admissionPanel') || document.querySelector('.ap-overlay');
+    if (panel && !panel.classList.contains('open') && !panel.classList.contains('show')) {
+      if (typeof window.openAdmissionPanel === 'function') window.openAdmissionPanel();
+    }
+  },
+
+  close() {
+    document.getElementById('vam-overlay').classList.remove('open');
+    if (vamIsRecording) VAM.stopMic();
+  },
+
+  toggleMic() {
+    if (vamIsRecording) VAM.stopMic();
+    else VAM.startMic();
+  },
+
+  startMic() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      VAM._showError('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    vamRecognition = new SpeechRecognition();
+    vamRecognition.lang = 'en-GH';
+    vamRecognition.continuous = true;
+    vamRecognition.interimResults = true;
+    vamRecognition.maxAlternatives = 1;
+
+    vamRecognition.onstart = () => {
+      vamIsRecording = true;
+      VAM._setStep(1, 'active');
+      document.getElementById('vam-mic-btn').classList.add('recording');
+      fab.classList.add('recording');
+      document.getElementById('vam-mic-hint').innerHTML = '<strong style="color:#dc2626">🔴 Listening…</strong> Speak clearly. Tap mic to stop.';
+      document.getElementById('vam-error').classList.remove('show');
+    };
+
+    let interim = '';
+    vamRecognition.onresult = (e) => {
+      let final = '';
+      interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+        else interim += e.results[i][0].transcript;
+      }
+      vamTranscript += final;
+      const display = (vamTranscript + interim).trim();
+      const el = document.getElementById('vam-transcript');
+      el.classList.remove('placeholder');
+      el.textContent = display || 'Listening…';
+
+      if (vamTranscript.trim()) {
+        document.getElementById('vam-btn-parse').disabled = false;
+      }
+    };
+
+    vamRecognition.onerror = (e) => {
+      const msgs = {
+        'not-allowed': 'Microphone access denied. Please allow microphone permission.',
+        'no-speech':   'No speech detected. Please try again.',
+        'network':     'Network error. Check your internet connection.',
+      };
+      VAM._showError(msgs[e.error] || `Speech error: ${e.error}`);
+      VAM.stopMic();
+    };
+
+    vamRecognition.onend = () => {
+      if (vamIsRecording) {
+        // Auto-restart for continuous listening
+        try { vamRecognition.start(); } catch(_) { VAM._stopMicUI(); }
+      }
+    };
+
+    try {
+      vamRecognition.start();
+    } catch (err) {
+      VAM._showError('Could not start microphone: ' + err.message);
+    }
+  },
+
+  stopMic() {
+    vamIsRecording = false;
+    if (vamRecognition) {
+      try { vamRecognition.stop(); } catch(_) {}
+      vamRecognition = null;
+    }
+    VAM._stopMicUI();
+  },
+
+  _stopMicUI() {
+    document.getElementById('vam-mic-btn').classList.remove('recording');
+    fab.classList.remove('recording');
+    const hint = document.getElementById('vam-mic-hint');
+    if (vamTranscript.trim()) {
+      hint.innerHTML = '✓ Recording stopped. <strong>Tap "Analyse with AI"</strong> to extract fields.';
+    } else {
+      hint.innerHTML = '<strong>Tap the mic</strong> and speak the student\'s details.';
+    }
+  },
+
+  async parseWithAI() {
+    const text = vamTranscript.trim();
+    if (!text) { VAM._showError('Nothing to analyse — please speak first.'); return; }
+
+    const btn = document.getElementById('vam-btn-parse');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="vam-spin"></div> Analysing…';
+    fab.classList.add('processing');
+    document.getElementById('vam-error').classList.remove('show');
+    document.getElementById('vam-parsed-wrap').classList.remove('show');
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: text }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err?.error?.message || `API error ${response.status}`);
+      }
+
+      const data = await response.json();
+      const raw = (data.content || []).map(c => c.text || '').join('').trim();
+
+      // Strip potential code fences
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      let parsed;
+      try { parsed = JSON.parse(cleaned); }
+      catch(_) { throw new Error('AI returned unexpected format. Please try again.'); }
+
+      if (!parsed || typeof parsed !== 'object' || !Object.keys(parsed).length) {
+        throw new Error('No fields detected in your speech. Try speaking more details.');
+      }
+
+      vamParsedData = parsed;
+      VAM._showParsed(parsed);
+      setTimeout(() => VAM._updateScrollUI(), 50);
+      VAM._setStep(2, 'done'); VAM._setStep(2, 'active');
+      document.getElementById('vam-btn-apply').style.display = '';
+      document.getElementById('vam-mic-hint').innerHTML = '✅ Fields extracted! Review below, then click <strong>Apply to Form</strong>.';
+
+    } catch (err) {
+      VAM._showError('AI analysis failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Analyse with AI`;
+      fab.classList.remove('processing');
+    }
+  },
+
+  applyToForm() {
+    if (!Object.keys(vamParsedData).length) {
+      VAM._showError('No parsed data to apply. Please analyse first.');
+      return;
+    }
+
+    // Ensure admission panel is open
+    const apOverlay = document.getElementById('admissionPanel') ||
+                      document.querySelector('.ap-overlay') ||
+                      document.querySelector('[id*="admission"][id*="panel" i]') ||
+                      document.querySelector('[id*="admissionPanel"]');
+
+    if (apOverlay && !apOverlay.classList.contains('open') && !apOverlay.classList.contains('show')) {
+      if (typeof window.openAdmissionPanel === 'function') window.openAdmissionPanel('existing');
+    }
+
+    let applied = 0;
+    const failed = [];
+
+    Object.entries(vamParsedData).forEach(([key, value]) => {
+      const fieldId = VAM_FIELD_MAP[key];
+      if (!fieldId || !value) return;
+      const el = document.getElementById(fieldId);
+      if (!el) { failed.push(key); return; }
+
+      // For select elements, try to match option
+      if (el.tagName === 'SELECT') {
+        const opts = Array.from(el.options);
+        const match = opts.find(o =>
+          o.value.toLowerCase() === String(value).toLowerCase() ||
+          o.text.toLowerCase()  === String(value).toLowerCase()
+        );
+        if (match) { el.value = match.value; applied++; }
+        else { el.value = value; applied++; }
+      } else {
+        el.value = value;
+        applied++;
+      }
+
+      // Trigger change events so conditional fields react
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('input',  { bubbles: true }));
+    });
+
+    // Trigger any conditional visibility functions
+    ['apToggleMedSpec','apToggleHeardSpec','apToggleIdNumber'].forEach(fn => {
+      if (typeof window[fn] === 'function') { try { window[fn](); } catch(_) {} }
+    });
+    if (typeof window.generateNextStudentId === 'function') {
+      try { window.generateNextStudentId(); } catch(_) {}
+    }
+
+    VAM._setStep(3, 'done');
+
+    // Show result toast
+    if (typeof window.showToast === 'function') {
+      window.showToast(`✓ Voice entry applied — ${applied} field${applied!==1?'s':''} filled`, 'success');
+    }
+
+    if (failed.length) {
+      VAM._showError(`${applied} fields applied. ${failed.length} fields not found (form may not be open): ${failed.join(', ')}`);
+    } else {
+      document.getElementById('vam-mic-hint').innerHTML = `🎉 <strong>${applied} fields</strong> filled in the form below. Review and submit.`;
+      document.getElementById('vam-error').classList.remove('show');
+      // Close panel after short delay
+      setTimeout(() => VAM.close(), 1200);
+    }
+  },
+
+  clearAll() {
+    vamTranscript = '';
+    vamParsedData = {};
+    vamIsRecording = false;
+    if (vamRecognition) { try { vamRecognition.stop(); } catch(_) {} vamRecognition = null; }
+
+    document.getElementById('vam-mic-btn').classList.remove('recording');
+    fab.classList.remove('recording');
+    document.getElementById('vam-transcript').textContent = 'Waiting for speech…';
+    document.getElementById('vam-transcript').classList.add('placeholder');
+    document.getElementById('vam-parsed-wrap').classList.remove('show');
+    document.getElementById('vam-chips').innerHTML = '';
+    document.getElementById('vam-error').classList.remove('show');
+    document.getElementById('vam-btn-parse').disabled = true;
+    document.getElementById('vam-btn-apply').style.display = 'none';
+    document.getElementById('vam-mic-hint').innerHTML = '<strong>Tap the mic</strong> and speak the student\'s details.';
+    ['vam-step-1','vam-step-2','vam-step-3'].forEach((id,i) => {
+      const el = document.getElementById(id);
+      el.className = 'vam-step' + (i===0 ? ' active' : '');
+    });
+  },
+
+  _showParsed(data) {
+    const wrap  = document.getElementById('vam-parsed-wrap');
+    const chips = document.getElementById('vam-chips');
+    chips.innerHTML = Object.entries(data)
+      .filter(([,v]) => v)
+      .map(([k,v]) => `<div class="vam-chip"><strong>${VAM_LABEL_MAP[k]||k}:</strong> ${String(v).length > 22 ? String(v).slice(0,20)+'…' : v}</div>`)
+      .join('');
+    wrap.classList.add('show');
+  },
+
+  _showError(msg) {
+    const el = document.getElementById('vam-error');
+    document.getElementById('vam-error-text').textContent = msg;
+    el.classList.add('show');
+  },
+
+  _setStep(num, state) {
+    const el = document.getElementById(`vam-step-${num}`);
+    if (!el) return;
+    el.className = 'vam-step ' + state;
+  }
+};
+
+})();
+</script>
+
 <script>
 function showLogoutConfirm() {
   document.getElementById('logoutOverlay').classList.add('active');

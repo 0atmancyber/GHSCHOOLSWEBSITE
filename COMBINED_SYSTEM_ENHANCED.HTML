@@ -1853,10 +1853,40 @@ body {
   <!-- FINANCE NAV -->
   <nav class="sidebar-nav role-sidebar" id="sidebar-nav-finance" style="display:none">
     <div class="nav-section-label">Main</div>
-    <div class="nav-item" onclick="showView('finance-overview')">
+    <div class="nav-item active" onclick="showView('overview')">
       <i class="fas fa-chart-pie"></i> Overview
     </div>
-    <div class="nav-section-label">Revenue & Payments</div>
+    <div class="nav-section-label">Fee Collection</div>
+    <div class="nav-item" onclick="showView('collect')">
+      <i class="fas fa-cash-register"></i> Collect Payment
+    </div>
+    <div class="nav-item" onclick="showView('outstanding')">
+      <i class="fas fa-triangle-exclamation"></i> Outstanding Fees
+    </div>
+    <div class="nav-item" onclick="showView('fee-schedule')">
+      <i class="fas fa-sliders"></i> Fee Schedule
+    </div>
+    <div class="nav-section-label">Reports</div>
+    <div class="nav-item" onclick="showView('payments')">
+      <i class="fas fa-list-check"></i> Payment Records
+    </div>
+    <div class="nav-item" onclick="showView('analytics')">
+      <i class="fas fa-chart-bar"></i> Analytics
+    </div>
+    <div class="nav-item" onclick="showView('receipts')">
+      <i class="fas fa-receipt"></i> Receipts
+    </div>
+    <div class="nav-section-label">Admissions</div>
+    <div class="nav-item" onclick="showView('cashier-admissions')">
+      <i class="fas fa-user-graduate"></i> Applicants
+    </div>
+    <div class="nav-item" onclick="showView('cashier-adm-payments')">
+      <i class="fas fa-credit-card"></i> Admission Payments
+    </div>
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" onclick="showView('finance-overview')">
+      <i class="fas fa-coins"></i> Finance Overview
+    </div>
     <div class="nav-item" onclick="showView('finance-revenue')">
       <i class="fas fa-money-bill-trend-up"></i> Revenue Reports
     </div>
@@ -1866,16 +1896,8 @@ body {
     <div class="nav-item" onclick="showView('finance-pending')">
       <i class="fas fa-hourglass-half"></i> Pending Approvals
     </div>
-    <div class="nav-section-label">Fee Management</div>
-    <div class="nav-item" onclick="showView('finance-schedule')">
-      <i class="fas fa-sliders"></i> Fee Schedule
-    </div>
     <div class="nav-item" onclick="showView('finance-waivers')">
       <i class="fas fa-hand-holding-heart"></i> Waivers & Discounts
-    </div>
-    <div class="nav-section-label">Analytics</div>
-    <div class="nav-item" onclick="showView('finance-analytics')">
-      <i class="fas fa-chart-bar"></i> Analytics
     </div>
     <div class="nav-item" onclick="showView('finance-debtors')">
       <i class="fas fa-triangle-exclamation"></i> Debtors List
@@ -2332,6 +2354,7 @@ body {
         </div>
         <div class="section-header-right">
           <select class="form-select" id="analyticsYear" onchange="loadAnalytics()" style="width:150px">
+            <option value="">All Years</option>
             <option value="2025/2026">2025/2026</option>
             <option value="2024/2025">2024/2025</option>
           </select>
@@ -2385,8 +2408,8 @@ body {
       <div class="two-col" style="margin-bottom:16px">
         <div class="card">
           <div class="card-header">
-            <i class="fas fa-credit-card" style="color:var(--blue-400)"></i>
-            <h3>Revenue by Payment Method</h3>
+            <i class="fas fa-coins" style="color:var(--blue-400)"></i>
+            <h3>Revenue by Status</h3>
           </div>
           <div class="card-body" id="revenueByMethod">
             <div style="text-align:center;padding:24px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
@@ -4585,7 +4608,7 @@ body {
       <div class="section-header">
         <div>
           <h2>Admission Payments</h2>
-          <p>Portal fee payments from the admission_payments table</p>
+          <p>Admission fee payments from the payments table</p>
         </div>
         <div class="section-header-right">
           <button class="btn btn-outline btn-sm" onclick="exportCashierAdmAP()"><i class="fas fa-download"></i> Export CSV</button>
@@ -4610,18 +4633,18 @@ body {
             </div>
             <select class="form-select" style="width:170px" id="cashApStatusFilter" onchange="filterCashierAdmAP()">
               <option value="">All Statuses</option>
-              <option value="success">Success</option>
+              <option value="approved">Approved</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="refunded">Refunded</option>
             </select>
             <span id="cashApCount" style="font-size:12px;color:var(--gray-500);margin-left:auto"></span>
           </div>
         </div>
         <div class="data-table-wrap">
           <table class="data-table">
-            <thead><tr><th>Ref Code</th><th>Name</th><th>Phone</th><th>Email</th><th>Amount</th><th>Status</th><th>Portal Username</th><th>Paystack Ref</th><th>Date</th></tr></thead>
-            <tbody id="cashApBody"><tr class="loading-row"><td colspan="9"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
+            <thead><tr><th>Student ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Fee Type</th><th>Amount</th><th>Status</th><th>Receipt No.</th><th>Transaction Ref</th><th>Date</th></tr></thead>
+            <tbody id="cashApBody"><tr class="loading-row"><td colspan="10"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
           </table>
         </div>
         <div id="cashApPagination"></div>
@@ -5213,7 +5236,7 @@ function showLoginScreen() {
   document.querySelector('.main').style.visibility = 'hidden';
   const ov = document.getElementById('logoutOverlay');
   if (ov) ov.style.display = 'none';
-  // reset form state
+  // reset form state (lsGoBack also re-enables & resets the login button)
   lsGoBack(true);
   lsHideError();
 }
@@ -5239,7 +5262,7 @@ async function initYearSelects() {
     if (!years.length) return;
 
     // IDs of all <select> elements that should show academic years
-    const selIds = ['payAcademicYear','outstandingYear','analyticsYear','genAcYear','qcAcademicYear','waiverAcademicYear'];
+    const selIds = ['payAcademicYear','outstandingYear','genAcYear','qcAcademicYear','waiverAcademicYear']; // analyticsYear populated from payments table directly
     selIds.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -5294,6 +5317,12 @@ function lsGoBack(silent) {
   const p = document.getElementById('loginPassword');
   if (u) u.value = '';
   if (p) p.value = '';
+  // Always reset the login button — it may still be disabled from a previous session
+  const btn = document.getElementById('loginBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>&nbsp; Sign In to Dashboard';
+  }
   document.querySelectorAll('.login-role-btn').forEach(b => b.classList.remove('selected'));
   const stepRole  = document.getElementById('loginStepRole');
   const stepCreds = document.getElementById('loginStepCredentials');
@@ -5437,8 +5466,14 @@ function initDashboard(sess) {
   // Route to role-specific dashboard
   if (role === 'finance') {
     activateRoleSidebar('finance');
-    showView('finance-overview');
+    showView('overview');
+    document.getElementById('overviewDate').textContent =
+      'Today — ' + new Date().toLocaleDateString('en-GH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    loadFeeSchedule();
+    loadOverview();
     loadFinanceDashboard();
+    const rs = document.getElementById('receiptSearch');
+    if (rs) rs.addEventListener('keydown', e => { if(e.key==='Enter') searchReceipt(); });
   } else if (role === 'registrar') {
     activateRoleSidebar('registrar');
     showView('registrar-overview');
@@ -6520,17 +6555,17 @@ async function loadOverview() {
       .from('newstudents')
       .select('id', { count: 'exact', head: true });
 
-    // ── 3. Admission Fees Paid = sum of amount from admission_payments where status = success ──
+    // ── 3. Admission Fees Paid = sum of amount from payments table where status = approved ──
     const { data: feeData, error: e3 } = await db
-      .from('admission_payments')
-      .select('amount, payment_status');
+      .from('payments')
+      .select('amount, status');
 
     const totalFeesPaid = (feeData || [])
-      .filter(r => (r.payment_status || '').toLowerCase() === 'success')
+      .filter(r => (r.status || '').toLowerCase() === 'approved')
       .reduce((s, r) => s + parseFloat(r.amount || 0), 0);
 
     const feePaidCount = (feeData || [])
-      .filter(r => (r.payment_status || '').toLowerCase() === 'success').length;
+      .filter(r => (r.status || '').toLowerCase() === 'approved').length;
 
     // ── Inject into stat cards ──
     const fp = formsPurchased || 0;
@@ -6956,101 +6991,149 @@ function viewPaymentDetail(p) {
 //  ANALYTICS
 // ═══════════════════════════════════════
 async function loadAnalytics() {
-  const year = document.getElementById('analyticsYear').value;
+  const year = (document.getElementById('analyticsYear')?.value || '').trim();
+
+  // Set all panels to loading state
+  ['revenueByFeeType','paymentsByLevel','revenueByMethod','statusBreakdown','dailyChart'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+  });
+  ['aTotalRevenue','aTotalStudents','aTotalTxns','aAvgPayment'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '—';
+  });
+
   try {
     const db = getDB();
-    const { data, error } = await db.from('payments').select('*').eq('academic_year', year);
+
+    // Build query — filter by year only when one is selected and isn't empty
+    let query = db.from('payments')
+      .select('student_id,amount,fee_type,level,status,payment_date,created_at,academic_year')
+      .order('created_at', { ascending: false })
+      .limit(5000);
+    if (year) query = query.eq('academic_year', year);
+
+    const { data, error } = await query;
     if (error) throw error;
     const payments = data || [];
 
-    const total = payments.reduce((s,p) => s + parseFloat(p.amount||0), 0);
-    const uniqueStudents = new Set(payments.map(p=>p.student_id)).size;
-    const approved = payments.filter(p => p.status==='approved');
-    const avg = approved.length ? approved.reduce((s,p) => s+parseFloat(p.amount||0), 0) / approved.length : 0;
+    // ── KPI Cards ──
+    const approved = payments.filter(p => p.status === 'approved');
+    const total    = approved.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+    const uniqueStudents = new Set(payments.map(p => p.student_id)).size;
+    const avg = approved.length ? total / approved.length : 0;
 
-    document.getElementById('aTotalRevenue').textContent = formatGHS(total);
-    document.getElementById('aTotalStudents').textContent = uniqueStudents;
-    document.getElementById('aTotalTxns').textContent = payments.length;
-    document.getElementById('aAvgPayment').textContent = formatGHS(avg);
+    document.getElementById('aTotalRevenue').textContent  = formatGHS(total);
+    document.getElementById('aTotalStudents').textContent = uniqueStudents.toLocaleString();
+    document.getElementById('aTotalTxns').textContent     = payments.length.toLocaleString();
+    document.getElementById('aAvgPayment').textContent    = formatGHS(avg);
 
-    const colors = ['var(--blue-500)','var(--accent)','var(--success)','var(--warning)','var(--danger)','#8b5cf6','#ec4899'];
+    if (!payments.length) {
+      const empty = '<div class="empty-state" style="padding:28px 0"><i class="fas fa-inbox" style="font-size:28px;opacity:.3"></i><p style="margin-top:10px">No payment records found' + (year ? ' for ' + year : '') + '</p></div>';
+      ['revenueByFeeType','paymentsByLevel','revenueByMethod','statusBreakdown','dailyChart'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.innerHTML = empty;
+      });
+      return;
+    }
 
-    // By fee type
+    const colors = ['var(--primary)','var(--gold)','var(--green)','#8b5cf6','#ec4899','#0891b2','#f97316'];
+
+    // ── Revenue by Fee Type ──
     const feeMap = {};
-    payments.forEach(p => { const k=p.fee_type||'Other'; feeMap[k]=(feeMap[k]||0)+parseFloat(p.amount||0); });
-    const sorted = Object.entries(feeMap).sort((a,b) => b[1]-a[1]);
-    const maxFee = sorted.length ? sorted[0][1] : 1;
-    document.getElementById('revenueByFeeType').innerHTML = sorted.length ? sorted.map(([k,v],i) => `
+    payments.forEach(p => { const k = p.fee_type || 'Other'; feeMap[k] = (feeMap[k]||0) + parseFloat(p.amount||0); });
+    const feeSorted = Object.entries(feeMap).sort((a,b) => b[1]-a[1]);
+    const maxFee = feeSorted[0]?.[1] || 1;
+    document.getElementById('revenueByFeeType').innerHTML = feeSorted.map(([k,v],i) => `
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
           <span style="font-weight:600">${k}</span>
-          <span style="font-weight:700;color:var(--blue-700)">${formatGHS(v)}</span>
+          <span style="font-weight:700;color:var(--primary-dk)">${formatGHS(v)}</span>
         </div>
         <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${(v/maxFee*100).toFixed(1)}%;background:${colors[i%colors.length]}"></div></div>
-      </div>`).join('') : '<div class="empty-state"><i class="fas fa-chart-pie"></i><p>No data</p></div>';
+      </div>`).join('');
 
-    // By level
+    // ── Payments by Level ──
     const levelMap = {};
-    payments.forEach(p => { const k='Level '+(p.level||'Unknown'); levelMap[k]=(levelMap[k]||0)+1; });
+    payments.forEach(p => { const k = p.level ? 'Level ' + p.level : 'Unknown'; levelMap[k] = (levelMap[k]||0) + 1; });
     const levelSorted = Object.entries(levelMap).sort((a,b) => b[1]-a[1]);
-    const maxLvl = levelSorted.length ? levelSorted[0][1] : 1;
-    document.getElementById('paymentsByLevel').innerHTML = levelSorted.length ? levelSorted.map(([k,v],i) => `
+    const maxLvl = levelSorted[0]?.[1] || 1;
+    document.getElementById('paymentsByLevel').innerHTML = levelSorted.map(([k,v],i) => `
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
           <span style="font-weight:600">${k}</span>
-          <span style="font-weight:700;color:var(--blue-700)">${v} payments</span>
+          <span style="font-weight:700;color:var(--primary-dk)">${v} payment${v!==1?'s':''}</span>
         </div>
         <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${(v/maxLvl*100).toFixed(1)}%;background:${colors[(i+2)%colors.length]}"></div></div>
-      </div>`).join('') : '<div class="empty-state"><i class="fas fa-layer-group"></i><p>No data</p></div>';
+      </div>`).join('');
 
-    // By payment method
-    const methodMap = {};
-    payments.forEach(p => { const k=p.payment_method||'Unknown'; methodMap[k]=(methodMap[k]||0)+parseFloat(p.amount||0); });
-    const methodSorted = Object.entries(methodMap).sort((a,b) => b[1]-a[1]);
-    const maxMethod = methodSorted.length ? methodSorted[0][1] : 1;
-    document.getElementById('revenueByMethod').innerHTML = methodSorted.length ? methodSorted.map(([k,v],i) => `
-      <div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
-          <span style="font-weight:600"><i class="fas ${methodIcon(k)}"></i> ${k}</span>
-          <span style="font-weight:700;color:var(--blue-700)">${formatGHS(v)}</span>
-        </div>
-        <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${(v/maxMethod*100).toFixed(1)}%;background:${colors[(i+4)%colors.length]}"></div></div>
-      </div>`).join('') : '<div class="empty-state"><i class="fas fa-credit-card"></i><p>No data</p></div>';
-
-    // Status breakdown
+    // ── Revenue by Status (replacing payment_method which doesn't exist in schema) ──
+    const statusColors = { approved:'var(--green)', pending:'var(--gold)', failed:'var(--danger)', refunded:'var(--gray-500)' };
     const statusMap = {};
-    payments.forEach(p => { const k=p.status||'unknown'; statusMap[k]=(statusMap[k]||0)+1; });
-    const statusColors = { approved:'var(--success)', pending:'var(--warning)', failed:'var(--danger)', refunded:'var(--gray-500)' };
-    const statusSorted = Object.entries(statusMap).sort((a,b) => b[1]-a[1]);
-    const maxSt = statusSorted.length ? statusSorted[0][1] : 1;
-    document.getElementById('statusBreakdown').innerHTML = statusSorted.length ? statusSorted.map(([k,v]) => `
+    payments.forEach(p => { const k = p.status || 'unknown'; statusMap[k] = (statusMap[k]||0) + parseFloat(p.amount||0); });
+    const statusAmtSorted = Object.entries(statusMap).sort((a,b) => b[1]-a[1]);
+    const maxStAmt = statusAmtSorted[0]?.[1] || 1;
+    document.getElementById('revenueByMethod').innerHTML = statusAmtSorted.map(([k,v]) => `
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
           <span style="font-weight:600;text-transform:capitalize">${k}</span>
-          <span style="font-weight:700;color:${statusColors[k]||'var(--gray-600)'}">${v} payments</span>
+          <span style="font-weight:700;color:${statusColors[k]||'var(--gray-600)'}">${formatGHS(v)}</span>
+        </div>
+        <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${(v/maxStAmt*100).toFixed(1)}%;background:${statusColors[k]||'var(--gray-400)'}"></div></div>
+      </div>`).join('');
+
+    // ── Status Count Breakdown ──
+    const statusCntMap = {};
+    payments.forEach(p => { const k = p.status || 'unknown'; statusCntMap[k] = (statusCntMap[k]||0) + 1; });
+    const statusCntSorted = Object.entries(statusCntMap).sort((a,b) => b[1]-a[1]);
+    const maxSt = statusCntSorted[0]?.[1] || 1;
+    document.getElementById('statusBreakdown').innerHTML = statusCntSorted.map(([k,v]) => `
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
+          <span style="font-weight:600;text-transform:capitalize">${k}</span>
+          <span style="font-weight:700;color:${statusColors[k]||'var(--gray-600)'}">${v} payment${v!==1?'s':''}</span>
         </div>
         <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${(v/maxSt*100).toFixed(1)}%;background:${statusColors[k]||'var(--gray-400)'}"></div></div>
-      </div>`).join('') : '<div class="empty-state"><i class="fas fa-chart-bar"></i><p>No data</p></div>';
+      </div>`).join('');
 
-    // Daily 14 days
+    // ── Daily Collection — Last 14 Days ──
     const dailyMap = {};
     const now = new Date();
-    for (let i=13; i>=0; i--) { const d=new Date(now); d.setDate(d.getDate()-i); dailyMap[d.toISOString().substr(0,10)]=0; }
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(now); d.setDate(d.getDate() - i);
+      dailyMap[d.toISOString().substr(0,10)] = 0;
+    }
     payments.forEach(p => {
-      if (p.payment_date) { const k=(p.payment_date||'').substr(0,10); if (k in dailyMap) dailyMap[k]+=parseFloat(p.amount||0); }
+      const raw = p.payment_date || p.created_at;
+      if (raw) { const k = raw.substr(0,10); if (k in dailyMap) dailyMap[k] += parseFloat(p.amount||0); }
     });
     const maxDaily = Math.max(...Object.values(dailyMap), 1);
     document.getElementById('dailyChart').innerHTML = `
-      <div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 4px">
+      <div style="display:flex;align-items:flex-end;gap:4px;height:140px;padding:0 4px">
         ${Object.entries(dailyMap).map(([k,v]) => `
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px" title="${k}: ${formatGHS(v)}">
-            <div style="font-size:9px;color:var(--blue-700);font-weight:700;white-space:nowrap">${v>0?formatGHS(v).replace('GHS ',''):''}</div>
-            <div style="width:100%;background:${v>0?'linear-gradient(180deg,var(--blue-500),var(--accent))':'var(--gray-200)'};border-radius:4px 4px 0 0;height:${Math.max((v/maxDaily)*90,v>0?6:2)}px;transition:height .4s ease;min-height:2px"></div>
-            <div style="font-size:9px;color:var(--gray-500);writing-mode:vertical-rl;transform:rotate(180deg)">${k.substr(5)}</div>
+            <div style="font-size:9px;color:var(--primary-dk);font-weight:700;white-space:nowrap">${v > 0 ? formatGHS(v).replace('GHS ','₵') : ''}</div>
+            <div style="width:100%;background:${v > 0 ? 'linear-gradient(180deg,var(--primary-lt),var(--primary))' : 'var(--gray-100)'};border-radius:4px 4px 0 0;height:${Math.max((v/maxDaily)*100, v>0?6:2)}px;transition:height .4s ease;min-height:2px"></div>
+            <div style="font-size:8.5px;color:var(--gray-500);writing-mode:vertical-rl;transform:rotate(180deg)">${k.substr(5)}</div>
           </div>`).join('')}
       </div>`;
+
+    // ── Populate year dropdown from actual payments data ──
+    const yearsInData = [...new Set(payments.map(p => p.academic_year).filter(Boolean))].sort().reverse();
+    const sel = document.getElementById('analyticsYear');
+    if (sel && yearsInData.length) {
+      const currentVal = sel.value;
+      sel.innerHTML = '<option value="">All Years</option>' +
+        yearsInData.map(y => `<option value="${y}">${y}</option>`).join('');
+      // Restore previously selected value if still valid
+      if (currentVal && yearsInData.includes(currentVal)) sel.value = currentVal;
+    }
+
   } catch(e) {
+    console.error('Analytics error:', e);
     toast('Failed to load analytics: ' + e.message, 'error');
+    ['revenueByFeeType','paymentsByLevel','revenueByMethod','statusBreakdown','dailyChart'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<div class="empty-state" style="color:var(--danger)"><i class="fas fa-triangle-exclamation"></i><p>${e.message}</p></div>`;
+    });
   }
 }
 
@@ -10184,6 +10267,9 @@ function printFilteredPayments() {
     fab.title = 'My Collections Today';
     fab.innerHTML = '<i class="fas fa-user-clock"></i><span class="fab-badge" style="display:none">0</span>';
     fab.onclick = loadActivityLog;
+    // Only visible for cashier and finance roles
+    const sess = (() => { try { return JSON.parse(sessionStorage.getItem('ghschools_session')); } catch(e) { return null; } })();
+    if (!sess || !['cashier','finance'].includes(sess.role)) fab.style.display = 'none';
     document.body.appendChild(fab);
   });
 })();
@@ -10196,9 +10282,12 @@ function printFilteredPayments() {
 const _origInitDashboard = window.initDashboard;
 window.initDashboard = function(sess) {
   _origInitDashboard && _origInitDashboard.call(this, sess);
+  // Show FAB only for cashier role; hide for everyone else
+  const fab = document.getElementById('activityFab');
+  if (fab) fab.style.display = (sess && ['cashier','finance'].includes(sess.role)) ? '' : 'none';
   // Bootstrap new modules after dashboard loads
   setTimeout(() => {
-    refreshActivityFabCount();
+    if (sess && ['cashier','finance'].includes(sess.role)) refreshActivityFabCount();
   }, 1500);
 };
 
@@ -14449,14 +14538,14 @@ let _cashApAll = [], _cashApFiltered = [], _cashApPage = 1;
 
 async function loadCashierAdmAP() {
   const tbody = document.getElementById('cashApBody');
-  if (tbody) tbody.innerHTML = '<tr class="loading-row"><td colspan="9"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
+  if (tbody) tbody.innerHTML = '<tr class="loading-row"><td colspan="10"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
   ['cashApRevenue','cashApSuccess','cashApPending','cashApFailed'].forEach(id => {
     const el = document.getElementById(id); if (el) el.textContent = '—';
   });
   try {
     const db = getDB();
-    const { data, error } = await db.from('admission_payments')
-      .select('id,first_name,last_name,email,phone,amount,currency,payment_status,payment_reference,paystack_transaction_id,reference_code,portal_username,created_at')
+    const { data, error } = await db.from('payments')
+      .select('id,student_id,student_name,student_email,phone,department,level,amount,fee_type,fee_breakdown,status,receipt_number,transaction_ref,payment_date,academic_year,created_at')
       .order('created_at', { ascending: false })
       .limit(2000);
     if (error) throw error;
@@ -14464,13 +14553,13 @@ async function loadCashierAdmAP() {
     _cashApFiltered = [..._cashApAll];
     _cashApPage = 1;
 
-    const success  = _cashApAll.filter(p => p.payment_status === 'success');
-    const pending  = _cashApAll.filter(p => p.payment_status === 'pending').length;
-    const failed   = _cashApAll.filter(p => ['failed','cancelled'].includes(p.payment_status)).length;
-    const revenue  = success.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+    const approved = _cashApAll.filter(p => p.status === 'approved');
+    const pending  = _cashApAll.filter(p => p.status === 'pending').length;
+    const failed   = _cashApAll.filter(p => ['failed','refunded'].includes(p.status)).length;
+    const revenue  = approved.reduce((s,p) => s + parseFloat(p.amount||0), 0);
 
     document.getElementById('cashApRevenue').textContent = formatGHS(revenue);
-    document.getElementById('cashApSuccess').textContent = success.length.toLocaleString();
+    document.getElementById('cashApSuccess').textContent = approved.length.toLocaleString();
     document.getElementById('cashApPending').textContent = pending.toLocaleString();
     document.getElementById('cashApFailed').textContent  = failed.toLocaleString();
 
@@ -14478,7 +14567,7 @@ async function loadCashierAdmAP() {
     if (cnt) cnt.textContent = _cashApFiltered.length.toLocaleString() + ' records';
     renderCashAP();
   } catch(e) {
-    if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--danger);padding:20px">${e.message}</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--danger);padding:20px">${e.message}</td></tr>`;
     toast('Admission payments load error: ' + e.message, 'error');
   }
 }
@@ -14487,9 +14576,16 @@ function filterCashierAdmAP() {
   const q  = (document.getElementById('cashApSearch')?.value || '').toLowerCase().trim();
   const st = document.getElementById('cashApStatusFilter')?.value || '';
   _cashApFiltered = _cashApAll.filter(p => {
-    const name = [p.first_name, p.last_name].filter(Boolean).join(' ').toLowerCase();
-    const matchQ  = !q  || name.includes(q) || (p.phone||'').includes(q) || (p.email||'').toLowerCase().includes(q) || (p.reference_code||'').toLowerCase().includes(q) || (p.payment_reference||'').toLowerCase().includes(q);
-    const matchSt = !st || p.payment_status === st;
+    const name = (p.student_name||'').toLowerCase();
+    const matchQ  = !q
+      || name.includes(q)
+      || (p.student_id||'').toLowerCase().includes(q)
+      || (p.phone||'').includes(q)
+      || (p.student_email||'').toLowerCase().includes(q)
+      || (p.receipt_number||'').toLowerCase().includes(q)
+      || (p.transaction_ref||'').toLowerCase().includes(q)
+      || (p.fee_type||'').toLowerCase().includes(q);
+    const matchSt = !st || p.status === st;
     return matchQ && matchSt;
   });
   _cashApPage = 1;
@@ -14502,28 +14598,29 @@ function renderCashAP() {
   const tbody = document.getElementById('cashApBody');
   if (!tbody) return;
   if (!_cashApFiltered.length) {
-    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-credit-card"></i><p>No payment records found</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fas fa-credit-card"></i><p>No payment records found</p></div></td></tr>';
     document.getElementById('cashApPagination').innerHTML = '';
     return;
   }
   const start = (_cashApPage - 1) * CASH_ADM_PAGE;
   const page  = _cashApFiltered.slice(start, start + CASH_ADM_PAGE);
   const payBadge = s => {
-    const map = { success:'badge-success', pending:'badge-blue', cancelled:'badge-danger', failed:'badge-danger' };
+    const map = { approved:'badge-success', pending:'badge-blue', failed:'badge-danger', refunded:'badge-danger' };
     return `<span class="badge ${map[(s||'pending').toLowerCase()]||'badge-blue'}" style="text-transform:capitalize">${s||'pending'}</span>`;
   };
   tbody.innerHTML = page.map(p => {
-    const name = [p.first_name, p.last_name].filter(Boolean).join(' ');
+    const date = p.payment_date || p.created_at;
     return `<tr>
-      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.reference_code||'—'}</td>
-      <td style="font-weight:600">${name||'—'}</td>
+      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.student_id||'—'}</td>
+      <td style="font-weight:600">${p.student_name||'—'}</td>
       <td style="font-size:12px">${p.phone||'—'}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${p.email||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-500)">${p.student_email||'—'}</td>
+      <td style="font-size:11.5px;color:var(--gray-600)">${p.fee_type||'—'}</td>
       <td style="font-weight:700;color:var(--primary-dk)">${formatGHS(parseFloat(p.amount||0))}</td>
-      <td>${payBadge(p.payment_status)}</td>
-      <td style="font-family:monospace;font-size:11px">${p.portal_username||'—'}</td>
-      <td style="font-family:monospace;font-size:10px;color:var(--gray-400);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.payment_reference||''}">${p.payment_reference||'—'}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${p.created_at ? new Date(p.created_at).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
+      <td>${payBadge(p.status)}</td>
+      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.receipt_number||'—'}</td>
+      <td style="font-family:monospace;font-size:10px;color:var(--gray-400);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.transaction_ref||''}">${p.transaction_ref||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-500)">${date ? new Date(date).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
     </tr>`;
   }).join('');
   renderCashAdmPagination('cashApPagination', _cashApFiltered.length, _cashApPage, p => { _cashApPage = p; renderCashAP(); });
@@ -14531,13 +14628,17 @@ function renderCashAP() {
 
 function exportCashierAdmAP() {
   if (!_cashApFiltered.length) { toast('No data to export', 'warning'); return; }
-  const headers = ['Ref Code','First Name','Last Name','Phone','Email','Amount','Currency','Payment Status','Portal Username','Paystack Ref','Date'];
-  const rows = _cashApFiltered.map(p => [
-    p.reference_code||'', p.first_name||'', p.last_name||'',
-    p.phone||'', p.email||'', p.amount||0, p.currency||'GHS',
-    p.payment_status||'', p.portal_username||'', p.payment_reference||'',
-    p.created_at ? new Date(p.created_at).toLocaleDateString('en-GH') : ''
-  ]);
+  const headers = ['Student ID','Name','Phone','Email','Department','Level','Fee Type','Amount','Status','Receipt No.','Transaction Ref','Academic Year','Date'];
+  const rows = _cashApFiltered.map(p => {
+    const date = p.payment_date || p.created_at;
+    return [
+      p.student_id||'', p.student_name||'', p.phone||'', p.student_email||'',
+      p.department||'', p.level||'', p.fee_type||'', p.amount||0,
+      p.status||'', p.receipt_number||'', p.transaction_ref||'',
+      p.academic_year||'',
+      date ? new Date(date).toLocaleDateString('en-GH') : ''
+    ];
+  });
   downloadCSV(headers, rows, 'admission_payments_' + new Date().toISOString().slice(0,10) + '.csv');
 }
 

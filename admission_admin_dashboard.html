@@ -319,46 +319,81 @@
     margin-bottom: 20px;
   }
   .stat-card {
-    background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 18px 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    padding: 20px 20px 18px;
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
     cursor: pointer;
+    border: none;
   }
-  .stat-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 40px rgba(220,38,38,0.18); }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 3px 3px 0 0;
+  .stat-card:hover { transform: translateY(-6px) scale(1.03); }
+
+  /* ── Total Applicants – purple ── */
+  .stat-card.total {
+    background: #4f46e5;
+    box-shadow: 0 6px 24px rgba(79,70,229,0.4);
   }
-  .stat-card.total::before { background: linear-gradient(90deg, #dc2626, #f59e0b); }
-  .stat-card.accepted::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
-  .stat-card.rejected::before { background: linear-gradient(90deg, #dc2626, #f97316); }
-  .stat-card.pending::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  .stat-card.id-issued::before { background: linear-gradient(90deg, #dc2626, #f59e0b, #16a34a); }
+  .stat-card.total:hover { box-shadow: 0 14px 36px rgba(79,70,229,0.5); }
+  .stat-card.total .stat-label { color: rgba(255,255,255,0.75); }
+  .stat-card.total .stat-value { color: #fff; }
+  .stat-card.total .stat-sub   { color: rgba(255,255,255,0.65); }
+  .stat-card.total .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* ── Accepted – green ── */
+  .stat-card.accepted {
+    background: #16a34a;
+    box-shadow: 0 6px 24px rgba(22,163,74,0.4);
+  }
+  .stat-card.accepted:hover { box-shadow: 0 14px 36px rgba(22,163,74,0.5); }
+  .stat-card.accepted .stat-label { color: rgba(255,255,255,0.75); }
+  .stat-card.accepted .stat-value { color: #fff; }
+  .stat-card.accepted .stat-sub   { color: rgba(255,255,255,0.65); }
+  .stat-card.accepted .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* ── Rejected – red ── */
+  .stat-card.rejected {
+    background: #dc2626;
+    box-shadow: 0 6px 24px rgba(220,38,38,0.4);
+  }
+  .stat-card.rejected:hover { box-shadow: 0 14px 36px rgba(220,38,38,0.5); }
+  .stat-card.rejected .stat-label { color: rgba(255,255,255,0.75); }
+  .stat-card.rejected .stat-value { color: #fff; }
+  .stat-card.rejected .stat-sub   { color: rgba(255,255,255,0.65); }
+  .stat-card.rejected .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* ── Pending – amber ── */
+  .stat-card.pending {
+    background: #d97706;
+    box-shadow: 0 6px 24px rgba(217,119,6,0.4);
+  }
+  .stat-card.pending:hover { box-shadow: 0 14px 36px rgba(217,119,6,0.5); }
+  .stat-card.pending .stat-label { color: rgba(255,255,255,0.75); }
+  .stat-card.pending .stat-value { color: #fff; }
+  .stat-card.pending .stat-sub   { color: rgba(255,255,255,0.65); }
+  .stat-card.pending .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* ── IDs Issued – teal ── */
+  .stat-card.id-issued {
+    background: #0891b2;
+    box-shadow: 0 6px 24px rgba(8,145,178,0.4);
+  }
+  .stat-card.id-issued:hover { box-shadow: 0 14px 36px rgba(8,145,178,0.5); }
+  .stat-card.id-issued .stat-label { color: rgba(255,255,255,0.75); }
+  .stat-card.id-issued .stat-value { color: #fff; }
+  .stat-card.id-issued .stat-sub   { color: rgba(255,255,255,0.65); }
+  .stat-card.id-issued .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
 
   .stat-icon {
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
   .stat-icon svg { width: 18px; height: 18px; }
-  .stat-card.total .stat-icon { background: #fef2f2; color: #dc2626; }
-  .stat-card.accepted .stat-icon { background: #dcfce7; color: #16a34a; }
-  .stat-card.rejected .stat-icon { background: #fef2f2; color: #dc2626; }
-  .stat-card.pending .stat-icon { background: #fef3c7; color: #d97706; }
-  .stat-card.id-issued .stat-icon { background: #fef9c3; color: #ca8a04; }
-
-  .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.07em; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--text-primary); line-height: 1; }
-  .stat-sub { font-size: 11px; color: var(--text-secondary); margin-top: 5px; }
+  .stat-label { font-size: 11px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; line-height: 1; }
+  .stat-sub { font-size: 11px; margin-top: 6px; }
 
   /* ─── ANALYTICS ROW ─── */
   .analytics-row {
@@ -367,27 +402,118 @@
     gap: 16px;
     margin-bottom: 24px;
   }
+
+  /* Each analytics card gets its own personality */
   .analytics-card {
-    background: var(--card-bg);
     border-radius: var(--radius);
     padding: 22px 24px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    transition: box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
+    position: relative;
+    overflow: hidden;
   }
-  .analytics-card:hover { box-shadow: var(--shadow-lg); }
+  .analytics-card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(0,0,0,0.2) !important; }
+
+  /* Status Overview — purple */
+  #analyticsRow .analytics-card:nth-child(1) {
+    background: #4f46e5;
+    border: none;
+  }
+  #analyticsRow .analytics-card:nth-child(1) .analytics-title { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(1) .legend-label { color: rgba(255,255,255,0.75); }
+  #analyticsRow .analytics-card:nth-child(1) .legend-val { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(1) #donutCenter { fill: #fff; }
+  #analyticsRow .analytics-card:nth-child(1) #donutChart circle:first-child { stroke: rgba(255,255,255,0.2); }
+
+  /* Top Programs — orange */
+  #analyticsRow .analytics-card:nth-child(2) {
+    background: #ea580c;
+    border: none;
+  }
+  #analyticsRow .analytics-card:nth-child(2) .analytics-title { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-label { color: rgba(255,255,255,0.8); }
+  #analyticsRow .analytics-card:nth-child(2) .bar-count { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow .analytics-card:nth-child(2) .bar-track { background: rgba(255,255,255,0.2); }
+
+  /* Top Regions — green */
+  #analyticsRow .analytics-card:nth-child(3) {
+    background: #16a34a;
+    border: none;
+  }
+  #analyticsRow .analytics-card:nth-child(3) .analytics-title { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(3) .region-name { color: rgba(255,255,255,0.8); }
+  #analyticsRow .analytics-card:nth-child(3) .region-val { color: #fff; }
+  #analyticsRow .analytics-card:nth-child(3) .region-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow .analytics-card:nth-child(3) .region-bar { background: rgba(255,255,255,0.2); }
+
+  /* CTVET vs COC — blue */
+  #analyticsRow2 .analytics-card:nth-child(1) {
+    background: #1d4ed8;
+    border: none;
+  }
+  #analyticsRow2 .analytics-card:nth-child(1) .analytics-title { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-label { color: rgba(255,255,255,0.8); }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-count { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-track { background: rgba(255,255,255,0.2); }
+
+  /* Gender Distribution — fuchsia */
+  #analyticsRow2 .analytics-card:nth-child(2) {
+    background: #a21caf;
+    border: none;
+  }
+  #analyticsRow2 .analytics-card:nth-child(2) .analytics-title { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(2) .legend-label { color: rgba(255,255,255,0.75); }
+  #analyticsRow2 .analytics-card:nth-child(2) .legend-val { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderDonutCenter { fill: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderDonut circle:first-child { stroke: rgba(255,255,255,0.2); }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderLegend { color: rgba(255,255,255,0.8); }
+
+  /* Conversion Funnel — amber */
+  #analyticsRow2 .analytics-card:nth-child(3) {
+    background: #b45309;
+    border: none;
+  }
+  #analyticsRow2 .analytics-card:nth-child(3) .analytics-title { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-label { color: rgba(255,255,255,0.8); }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-count { color: #fff; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-track { background: rgba(255,255,255,0.2); }
+
+  /* Applications by School — indigo */
+  #analyticsRow3 .analytics-card:nth-child(1) {
+    background: #3730a3;
+    border: none;
+  }
+  #analyticsRow3 .analytics-card:nth-child(1) .analytics-title { color: #fff; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-label { color: rgba(255,255,255,0.8); }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-count { color: #fff; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-track { background: rgba(255,255,255,0.2); }
+
+  /* Monthly Intake — teal */
+  #analyticsRow3 .analytics-card:nth-child(2) {
+    background: #0f766e;
+    border: none;
+  }
+  #analyticsRow3 .analytics-card:nth-child(2) .analytics-title { color: #fff; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-label { color: rgba(255,255,255,0.8); }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-count { color: #fff; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-fill { background: rgba(255,255,255,0.85); }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-track { background: rgba(255,255,255,0.2); }
+
   .analytics-title {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 14px;
     margin-bottom: 18px;
     display: flex; align-items: center; gap: 8px;
-    color: var(--text-primary);
   }
+  .analytics-title svg { color: inherit; stroke: currentColor; }
   /* Donut chart */
-  .donut-wrap {
-    display: flex; align-items: center; gap: 20px;
-  }
+  .donut-wrap { display: flex; align-items: center; gap: 20px; }
   .donut-svg { flex-shrink: 0; }
   .donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
@@ -402,61 +528,65 @@
   .bar-label { color: var(--text-secondary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
   .bar-count { font-weight: 700; color: var(--text-primary); }
   .bar-track { height: 7px; background: #f0f4fa; border-radius: 10px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #dc2626, #f59e0b); transition: width 0.8s cubic-bezier(.34,1.56,.64,1); }
+  .bar-fill { height: 100%; border-radius: 10px; background: #dc2626; transition: width 0.8s cubic-bezier(.34,1.56,.64,1); }
 
   /* Recent regions */
   .region-list { display: flex; flex-direction: column; gap: 9px; }
   .region-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
   .region-name { color: var(--text-secondary); flex: 1; }
   .region-bar { flex: 2; height: 6px; background: #f0f4fa; border-radius: 10px; overflow: hidden; }
-  .region-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #16a34a, #4ade80); transition: width 0.8s cubic-bezier(.34,1.56,.64,1); }
+  .region-fill { height: 100%; border-radius: 10px; background: #16a34a; transition: width 0.8s cubic-bezier(.34,1.56,.64,1); }
   .region-val { font-weight: 700; color: var(--text-primary); min-width: 24px; text-align: right; }
 
   /* ─── FILTER BAR ─── */
   .filter-bar {
-    background: var(--card-bg);
+    background: #1e1b4b;
     border-radius: var(--radius);
     padding: 16px 20px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(99,102,241,0.25);
     display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     margin-bottom: 20px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 16px rgba(30,27,75,0.3);
   }
   .search-wrap { position: relative; flex: 1; min-width: 200px; }
-  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(165,180,252,0.7); pointer-events: none; }
   .search-input {
     width: 100%;
     padding: 9px 12px 9px 38px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid rgba(99,102,241,0.3);
     border-radius: 8px;
     font-size: 13px;
     font-family: 'DM Sans', sans-serif;
     outline: none;
     transition: border-color 0.18s, box-shadow 0.18s;
-    background: #f8fafc;
+    background: rgba(255,255,255,0.08);
+    color: #e0e7ff;
   }
-  .search-input:focus { border-color: #dc2626; background: #fff; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+  .search-input::placeholder { color: rgba(165,180,252,0.5); }
+  .search-input:focus { border-color: rgba(129,140,248,0.6); background: rgba(255,255,255,0.12); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
 
   .filter-select {
     padding: 9px 12px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid rgba(99,102,241,0.3);
     border-radius: 8px;
     font-size: 13px;
     font-family: 'DM Sans', sans-serif;
     outline: none;
-    background: #f8fafc;
+    background: rgba(255,255,255,0.08);
+    color: #e0e7ff;
     cursor: pointer;
     transition: border-color 0.18s;
     min-width: 140px;
   }
-  .filter-select:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); background: #fff; }
+  .filter-select:focus { border-color: rgba(129,140,248,0.6); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); background: rgba(255,255,255,0.12); }
+  .filter-select option { background: #1e1b4b; color: #e0e7ff; }
 
   /* ─── TABLE ─── */
   .table-card {
     background: var(--card-bg);
     border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    border: 1px solid #e0e7ff;
+    box-shadow: 0 4px 20px rgba(79,70,229,0.1);
     overflow: hidden;
   }
   .table-header {
@@ -464,6 +594,7 @@
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 10px;
+    background: #f8faff;
   }
   .table-title {
     font-family: 'Syne', sans-serif;
@@ -475,42 +606,110 @@
   .table-wrap {
     overflow-x: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent) var(--border);
+    scrollbar-color: #4f46e5 #e0e7ff;
   }
-  .table-wrap::-webkit-scrollbar { height: 8px; }
-  .table-wrap::-webkit-scrollbar-track { background: var(--border); }
-  .table-wrap::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #dc2626, #b91c1c); border-radius: 6px; }
-  .table-wrap::-webkit-scrollbar-thumb:hover { background: var(--accent-hover); }
-  table { width: 100%; min-width: 860px; border-collapse: collapse; }
+  .table-wrap::-webkit-scrollbar { height: 6px; }
+  .table-wrap::-webkit-scrollbar-track { background: #e0e7ff; }
+  .table-wrap::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 6px; }
+  .table-wrap::-webkit-scrollbar-thumb:hover { background: #3730a3; }
+
+  table { width: 100%; min-width: 860px; border-collapse: separate; border-spacing: 0; }
+
+  /* ── COLUMN COLOR PALETTE ──
+     col 1  Student       — violet   #4f46e5
+     col 2  Student ID    — sky blue #0284c7
+     col 3  Phase         — amber    #b45309
+     col 4  School        — pink     #db2777
+     col 5  Course        — teal     #0f766e
+     col 6  Course Type   — indigo   #3730a3
+     col 7  Prog. Type    — fuchsia  #a21caf
+     col 8  Duration      — orange   #ea580c
+     col 9  Region        — green    #16a34a
+     col 10 WASSCE Score  — red      #dc2626
+     col 11 Status        — slate    #475569
+     col 12 Applied       — blue     #1d4ed8
+     col 13 Actions       — neutral  #374151
+  ─────────────────────────────────── */
+
+  /* Header row */
   thead tr { background: #f8fafc; }
+
+  /* Per-column header backgrounds */
+  thead th:nth-child(1)  { background: #4f46e5; color: #fff; border-bottom: 3px solid #3730a3; }
+  thead th:nth-child(2)  { background: #0284c7; color: #fff; border-bottom: 3px solid #0369a1; }
+  thead th:nth-child(3)  { background: #b45309; color: #fff; border-bottom: 3px solid #92400e; }
+  thead th:nth-child(4)  { background: #db2777; color: #fff; border-bottom: 3px solid #be185d; }
+  thead th:nth-child(5)  { background: #0f766e; color: #fff; border-bottom: 3px solid #115e59; }
+  thead th:nth-child(6)  { background: #3730a3; color: #fff; border-bottom: 3px solid #312e81; }
+  thead th:nth-child(7)  { background: #a21caf; color: #fff; border-bottom: 3px solid #86198f; }
+  thead th:nth-child(8)  { background: #ea580c; color: #fff; border-bottom: 3px solid #c2410c; }
+  thead th:nth-child(9)  { background: #16a34a; color: #fff; border-bottom: 3px solid #15803d; }
+  thead th:nth-child(10) { background: #dc2626; color: #fff; border-bottom: 3px solid #b91c1c; }
+  thead th:nth-child(11) { background: #475569; color: #fff; border-bottom: 3px solid #334155; }
+  thead th:nth-child(12) { background: #1d4ed8; color: #fff; border-bottom: 3px solid #1e40af; }
+  thead th:nth-child(13) { background: #374151; color: #fff; border-bottom: 3px solid #1f2937; }
+
   th {
-    padding: 11px 14px;
+    padding: 13px 14px;
     text-align: left;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10.5px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-secondary);
-    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.09em;
     cursor: pointer;
     white-space: nowrap;
     user-select: none;
+    position: relative;
   }
-  th:hover { color: var(--accent); }
+  th:hover { filter: brightness(1.15); }
   th.no-sort { cursor: default; }
-  th.no-sort:hover { color: var(--text-secondary); }
+  th.no-sort:hover { filter: none; }
+
+  /* Subtle left border accent on data cells matching column color */
+  tbody td:nth-child(1)  { border-left: 3px solid #e0e7ff; }
+  tbody td:nth-child(2)  { border-left: 3px solid #e0f2fe; }
+  tbody td:nth-child(3)  { border-left: 3px solid #fef3c7; }
+  tbody td:nth-child(4)  { border-left: 3px solid #fce7f3; }
+  tbody td:nth-child(5)  { border-left: 3px solid #ccfbf1; }
+  tbody td:nth-child(6)  { border-left: 3px solid #e0e7ff; }
+  tbody td:nth-child(7)  { border-left: 3px solid #fae8ff; }
+  tbody td:nth-child(8)  { border-left: 3px solid #ffedd5; }
+  tbody td:nth-child(9)  { border-left: 3px solid #dcfce7; }
+  tbody td:nth-child(10) { border-left: 3px solid #fee2e2; }
+  tbody td:nth-child(11) { border-left: 3px solid #f1f5f9; }
+  tbody td:nth-child(12) { border-left: 3px solid #dbeafe; }
+  tbody td:nth-child(13) { border-left: 3px solid #f3f4f6; }
+
   td {
     padding: 11px 14px;
     font-size: 13px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
   }
   tr:last-child td { border-bottom: none; }
-  tbody tr { transition: background 0.15s; animation: rowFadeIn 0.2s ease; }
-  @keyframes rowFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-  tbody tr:hover { background: #f5f8ff; }
+
+  /* Alternating row tint */
+  tbody tr:nth-child(even) { background: #fafbff; }
+  tbody tr:nth-child(odd)  { background: #ffffff; }
+
+  tbody tr { transition: background 0.12s, transform 0.12s; animation: rowFadeIn 0.22s ease; }
+  @keyframes rowFadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  tbody tr:hover {
+    background: #f0f4ff !important;
+    transform: scale(1.002);
+    box-shadow: 0 2px 12px rgba(79,70,229,0.08);
+    z-index: 1;
+    position: relative;
+  }
   tbody tr.top-student { background: #fffbeb !important; }
-  tbody tr.top-student:hover { background: #fef3c7 !important; }
+  tbody tr.top-student:hover { background: #fef9e7 !important; }
+
+  /* Column-specific td text color accents */
+  tbody td:nth-child(2)  { font-family: 'Syne', monospace; font-weight: 700; color: #0284c7; font-size: 12px; }
+  tbody td:nth-child(3)  { text-align: center; }
+  tbody td:nth-child(9)  { font-weight: 600; color: #15803d; font-size: 12px; }
+  tbody td:nth-child(10) { text-align: center; font-weight: 700; color: #dc2626; }
+  tbody td:nth-child(12) { color: #1d4ed8; font-size: 12px; white-space: nowrap; }
 
   .badge {
     display: inline-flex; align-items: center;
@@ -539,11 +738,28 @@
   .mini-avatar-placeholder {
     width: 34px; height: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
+    background: #dc2626;
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 12px; color: #fff;
     flex-shrink: 0;
   }
+  /* Per-school avatar flat colors */
+  .mini-avatar-placeholder[data-school="cosmetology"]   { background: #db2777; }
+  .mini-avatar-placeholder[data-school="fashion"]       { background: #7c3aed; }
+  .mini-avatar-placeholder[data-school="catering"]      { background: #d97706; }
+  .mini-avatar-placeholder[data-school="media"]         { background: #0369a1; }
+  .mini-avatar-placeholder[data-school="technology"]    { background: #059669; }
+  .mini-avatar-placeholder[data-school="default"]       { background: #dc2626; }
+
+  /* Student ID ref code styling */
+
+  /* Status badge enhancements */
+  .badge-accepted { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+  .badge-accepted::before { background: #16a34a; }
+  .badge-rejected { background: #fee2e2; color: #b91c1b; border: 1px solid #fca5a5; }
+  .badge-rejected::before { background: #dc2626; }
+  .badge-pending { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .badge-pending::before { background: #d97706; }
   .student-name { font-weight: 600; font-size: 13px; }
   .student-id { font-size: 11px; color: var(--text-secondary); }
 
@@ -839,12 +1055,15 @@
   }
 
   .ref-code {
-    font-family: monospace;
-    background: #fef2f2;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 12px;
-    color: #dc2626;
+    font-family: 'Syne', monospace;
+    background: #e0f2fe;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0284c7;
+    letter-spacing: 0.04em;
+    border: 1px solid #bae6fd;
   }
 
   /* ─── EDIT MODE ─── */
@@ -4116,12 +4335,20 @@ function renderTable() {
     const date = s.created_at
       ? new Date(s.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : '—'
 
+    const schoolKey = (normSchool(s.school_selected)||'').toLowerCase()
+    const schoolAttr = schoolKey.includes('cosmetolog') ? 'cosmetology'
+      : schoolKey.includes('fashion') ? 'fashion'
+      : schoolKey.includes('catering') ? 'catering'
+      : schoolKey.includes('media') ? 'media'
+      : schoolKey.includes('tech') ? 'technology'
+      : 'default'
+
     return `<tr${isTop ? ' class="top-student"' : ''}>
       <td>
         <div class="avatar-cell">
           ${s.passport_photo_url
-            ? `<img class="mini-avatar" src="${s.passport_photo_url}" alt="" onerror="this.outerHTML='<div class=\\'mini-avatar-placeholder\\'>${initials}</div>'">`
-            : `<div class="mini-avatar-placeholder">${initials}</div>`}
+            ? `<img class="mini-avatar" src="${s.passport_photo_url}" alt="" onerror="this.outerHTML='<div class=\\'mini-avatar-placeholder\\' data-school=\\'${schoolAttr}\\'>${initials}</div>'">`
+            : `<div class="mini-avatar-placeholder" data-school="${schoolAttr}">${initials}</div>`}
           <div>
             <div class="student-name">${esc(name)}</div>
             <div class="student-id">${esc(s.email||'—')}</div>
@@ -10460,55 +10687,89 @@ window.exportRegistrationsCSV = function() {
 }
 .vam-btn-outline:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
 
-/* ── Tips section ── */
-.vam-tips {
-  background: #fffbeb; border: 1.5px solid #fde68a;
-  border-radius: 12px; padding: 13px 16px; margin-top: 14px;
+/* ── Progress bar ── */
+.vam-progress-wrap {
+  margin-bottom: 12px;
 }
-.vam-tips-title {
-  font-size: 11px; font-weight: 700; color: #92400e;
-  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
-  font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px;
+.vam-progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 600; color: #7a5230;
+  margin-bottom: 5px;
 }
-.vam-tips-list {
-  list-style: none; padding: 0; margin: 0;
+.vam-progress-track {
+  height: 6px; background: #f0e8da; border-radius: 10px; overflow: hidden;
 }
-.vam-tips-list li {
-  font-size: 12px; color: #78350f; line-height: 1.5;
-  padding: 2px 0; font-family: 'DM Sans', sans-serif;
+.vam-progress-fill {
+  height: 100%; border-radius: 10px;
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+  transition: width 0.5s cubic-bezier(.34,1.56,.64,1);
 }
-.vam-tips-list li::before { content: '▸ '; color: #f59e0b; font-size: 10px; }
 
-/* ── Scroll controls ── */
-.vam-scroll-btns {
-  position: absolute; right: 10px; bottom: 68px;
-  display: flex; flex-direction: column; gap: 5px; z-index: 10;
+/* ── Chat bubbles ── */
+.vam-chat {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 12px; max-height: 280px;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; scrollbar-color: rgba(220,38,38,0.2) transparent;
 }
-.vam-scroll-btn {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: #fff; border: 1.5px solid #e0e5ef;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: #7a5230; font-size: 12px; transition: all 0.15s;
-}
-.vam-scroll-btn:hover { background: #dc2626; border-color: #dc2626; color: #fff; box-shadow: 0 3px 12px rgba(220,38,38,0.4); }
-.vam-scroll-btn:active { transform: scale(0.93); }
-.vam-scroll-btn.hidden { opacity: 0; pointer-events: none; }
+.vam-chat::-webkit-scrollbar { width: 4px; }
+.vam-chat::-webkit-scrollbar-thumb { background: rgba(220,38,38,0.25); border-radius: 4px; }
 
-/* fade shadow at top/bottom of scroll area */
-.vam-scroll-fade-top, .vam-scroll-fade-bot {
-  position: absolute; left: 0; right: 14px; height: 28px;
-  pointer-events: none; z-index: 9; transition: opacity 0.2s;
+.vam-chat-bubble {
+  display: flex; gap: 8px; align-items: flex-start;
+  animation: bubbleIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
 }
-.vam-scroll-fade-top {
-  top: 72px; /* below header */
-  background: linear-gradient(to bottom, rgba(255,255,255,0.95), transparent);
+@keyframes bubbleIn {
+  from { opacity:0; transform:translateY(8px) scale(0.97); }
+  to   { opacity:1; transform:none; }
 }
-.vam-scroll-fade-bot {
-  bottom: 0;
-  background: linear-gradient(to top, rgba(255,255,255,0.95), transparent);
+
+.vam-bubble-icon {
+  font-size: 16px; flex-shrink: 0; margin-top: 2px;
 }
-.vam-scroll-fade-top.hidden, .vam-scroll-fade-bot.hidden { opacity: 0; }
+.vam-bubble-text {
+  border-radius: 12px; padding: 10px 14px;
+  font-size: 13px; line-height: 1.5;
+  font-family: 'DM Sans', sans-serif;
+  flex: 1;
+}
+.vam-bubble-ai .vam-bubble-text {
+  background: #fef9f0; border: 1.5px solid #f5e0c0; color: #1a0a00;
+  border-radius: 4px 12px 12px 12px;
+}
+.vam-bubble-user .vam-bubble-text {
+  background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff;
+  border-radius: 12px 4px 12px 12px;
+  font-weight: 500;
+}
+.vam-bubble-confirm .vam-bubble-text {
+  background: #dcfce7; border: 1.5px solid #86efac; color: #15803d;
+  border-radius: 4px 12px 12px 12px; font-size: 12px;
+}
+.vam-bubble-typing .vam-bubble-text {
+  background: #fef9f0; border: 1.5px solid #f5e0c0;
+  border-radius: 4px 12px 12px 12px;
+}
+.vam-typing-dots {
+  display: flex; gap: 4px; align-items: center; height: 20px;
+}
+.vam-typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #c9a87a; display: inline-block;
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+.vam-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.vam-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%,80%,100% { transform: scale(0.7); opacity:0.4; }
+  40% { transform: scale(1); opacity:1; }
+}
+
+/* listening pulse on mic hint */
+.vam-mic-hint {
+  font-size: 12px; color: #7a5230; text-align: center; margin-top: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
 
 /* tighten step margin */
 .vam-steps { margin-bottom: 14px; }
@@ -10574,44 +10835,50 @@ window.exportRegistrationsCSV = function() {
       <div class="vam-subtitle">Speak student details — AI fills the form automatically</div>
     </div>
 
+    <!-- ── API Permission Gate (shown once per session) ── -->
+    <div id="vam-api-gate" style="display:none; position:absolute; inset:0; z-index:20; background:rgba(26,10,0,0.72); backdrop-filter:blur(4px); border-radius:18px; align-items:center; justify-content:center; padding:24px;">
+      <div style="background:#fff; border-radius:14px; padding:28px 24px; max-width:320px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:pop-in 0.22s cubic-bezier(0.34,1.56,0.64,1);">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,#dc2626,#f59e0b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#1a0a00;margin-bottom:8px;">Allow AI Processing?</div>
+        <div style="font-size:12px;color:#7a5230;line-height:1.6;margin-bottom:20px;">
+          Voice answers will be sent to the <strong>Anthropic AI API</strong> for field normalisation (formatting names, dates, phone numbers, etc.).<br><br>
+          This uses the school's API access. Approve only if you are authorised to do so.
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="VAM._denyApi()" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid #e0e5ef;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#7a5230;cursor:pointer;">
+            Deny — Save Raw
+          </button>
+          <button onclick="VAM._allowApi()" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(135deg,#dc2626,#b91c1c);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(220,38,38,0.35);">
+            Allow for Session
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="vam-body" id="vam-body">
 
-      <!-- Step indicator -->
-      <div class="vam-steps">
-        <div class="vam-step active" id="vam-step-1">
-          <div class="vam-step-circle">1</div>
-          <div class="vam-step-label">Speak</div>
+      <!-- Progress bar -->
+      <div class="vam-progress-wrap" id="vam-progress-wrap" style="display:none">
+        <div class="vam-progress-label">
+          <span id="vam-progress-field">Starting…</span>
+          <span id="vam-progress-count">0 / 27</span>
         </div>
-        <div class="vam-step" id="vam-step-2">
-          <div class="vam-step-circle">2</div>
-          <div class="vam-step-label">Review</div>
-        </div>
-        <div class="vam-step" id="vam-step-3">
-          <div class="vam-step-circle">3</div>
-          <div class="vam-step-label">Apply</div>
-        </div>
+        <div class="vam-progress-track"><div class="vam-progress-fill" id="vam-progress-fill" style="width:0%"></div></div>
       </div>
 
-      <!-- Mic control -->
-      <div class="vam-mic-area">
-        <button class="vam-mic-btn" id="vam-mic-btn" onclick="VAM.toggleMic()">
-          <svg width="32" height="32" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="23"/>
-            <line x1="8" y1="23" x2="16" y2="23"/>
-          </svg>
-        </button>
-        <div class="vam-mic-hint" id="vam-mic-hint">
-          <strong>Tap the mic</strong> and speak the student's details.<br>
-          You can say names, phone numbers, region, program, and more.
+      <!-- Chat conversation area -->
+      <div class="vam-chat" id="vam-chat">
+        <div class="vam-chat-bubble vam-bubble-ai" id="vam-welcome-msg">
+          <div class="vam-bubble-icon">🤖</div>
+          <div class="vam-bubble-text">
+            <strong>Voice Interview Ready</strong><br>
+            Tap <strong>Start Interview</strong> and I will ask you for each admission field one at a time. Speak your answer clearly after each question.
+          </div>
         </div>
-      </div>
-
-      <!-- Transcript -->
-      <div class="vam-transcript-wrap">
-        <div class="vam-transcript-label">📝 Transcript</div>
-        <div class="vam-transcript-text placeholder" id="vam-transcript">Waiting for speech…</div>
       </div>
 
       <!-- Error -->
@@ -10622,14 +10889,27 @@ window.exportRegistrationsCSV = function() {
         <span id="vam-error-text"></span>
       </div>
 
-      <!-- Parsed preview -->
+      <!-- Mic control (shown during interview) -->
+      <div class="vam-mic-area" id="vam-mic-area" style="display:none">
+        <button class="vam-mic-btn" id="vam-mic-btn" onclick="VAM.toggleMic()">
+          <svg width="32" height="32" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <div class="vam-mic-hint" id="vam-mic-hint">Tap mic to answer</div>
+      </div>
+
+      <!-- Parsed chips preview -->
       <div class="vam-parsed-wrap" id="vam-parsed-wrap">
         <div class="vam-parsed-title">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
             <polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
-          Fields detected — ready to fill
+          Collected fields
         </div>
         <div class="vam-field-chips" id="vam-chips"></div>
       </div>
@@ -10642,11 +10922,15 @@ window.exportRegistrationsCSV = function() {
           </svg>
           Reset
         </button>
-        <button class="vam-btn vam-btn-primary" id="vam-btn-parse" onclick="VAM.parseWithAI()" disabled>
+        <button class="vam-btn vam-btn-primary" id="vam-btn-start" onclick="VAM.startInterview()">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
           </svg>
-          Analyse with AI
+          Start Interview
+        </button>
+        <button class="vam-btn vam-btn-outline" id="vam-btn-skip" onclick="VAM.skipField()" style="display:none">
+          Skip
         </button>
         <button class="vam-btn vam-btn-success" id="vam-btn-apply" onclick="VAM.applyToForm()" style="display:none">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -10657,24 +10941,6 @@ window.exportRegistrationsCSV = function() {
         </button>
       </div>
 
-      <!-- Tips -->
-      <div class="vam-tips">
-        <div class="vam-tips-title">
-          <svg width="13" height="13" fill="none" stroke="#d97706" stroke-width="2.2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          Example phrases
-        </div>
-        <ul class="vam-tips-list">
-          <li>"First name is Kwame, last name Mensah, middle name Asante"</li>
-          <li>"He is from Ashanti Region, phone zero two four three..."</li>
-          <li>"She is applying for Fashion Design, CTVET Diploma program"</li>
-          <li>"Date of birth is 15th March 2000, nationality Ghanaian"</li>
-          <li>"Sponsor is his father Emmanuel Mensah, phone zero five five..."</li>
-          <li>"School is Accra Academy, completed 2022, passed WASSCE"</li>
-        </ul>
-      </div>
-
     </div><!-- /vam-body -->
   </div><!-- /vam-panel -->
 </div><!-- /vam-overlay -->
@@ -10683,382 +10949,556 @@ window.exportRegistrationsCSV = function() {
 (function() {
 'use strict';
 
-// ── Config ─────────────────────────────────────────────────
-// Uses the Anthropic API to parse speech transcript into form fields.
-// API key is NOT stored here; the endpoint is proxied through the
-// existing claude.ai interface when embedded there.
-// For standalone use, set ANTHROPIC_API_KEY in env.
-// ──────────────────────────────────────────────────────────
+// ── Field definitions (ordered interview flow) ───────────────
+const VAM_FIELDS = [
+  { key: 'first_name',           label: 'First Name',           question: "What is the student's first name?",                                              hint: 'e.g. Kwame' },
+  { key: 'middle_name',          label: 'Middle Name',          question: "What is the student's middle name? Say skip if none.",                           hint: 'e.g. Asante, or skip' },
+  { key: 'last_name',            label: 'Last Name',            question: "What is the student's last name or surname?",                                    hint: 'e.g. Mensah' },
+  { key: 'date_of_birth',        label: 'Date of Birth',        question: "What is the student's date of birth?",                                           hint: 'e.g. 15th March 2000' },
+  { key: 'gender',               label: 'Gender',               question: "What is the student's gender? Say Male, Female, or Other.",                      hint: 'Male / Female / Other' },
+  { key: 'nationality',          label: 'Nationality',          question: "What is the student's nationality?",                                             hint: 'e.g. Ghanaian' },
+  { key: 'phone_number',         label: 'Phone Number',         question: "What is the student's phone number?",                                            hint: 'e.g. 0244 123 456' },
+  { key: 'email',                label: 'Email',                question: "What is the student's email address? Say skip if none.",                          hint: 'e.g. kwame@gmail.com, or skip' },
+  { key: 'region',               label: 'Region',               question: "Which region of Ghana is the student from?",                                     hint: 'e.g. Ashanti Region' },
+  { key: 'home_address',         label: 'Home Address',         question: "What is the student's home address?",                                            hint: 'e.g. House 5, Kumasi' },
+  { key: 'national_id_type',     label: 'ID Type',              question: "What type of national ID does the student have? Say Ghana Card, Voter ID, Passport, or Birth Certificate.", hint: 'Ghana Card / Voter ID / Passport / Birth Certificate' },
+  { key: 'national_id_number',   label: 'ID Number',            question: "What is the student's national ID number? Say skip if not available.",           hint: 'e.g. GHA-123456789, or skip' },
+  { key: 'present_job',          label: 'Present Job',          question: "What is the student's current job or occupation? Say skip if they are a student.", hint: 'e.g. Teacher, or skip' },
+  { key: 'language_spoken',      label: 'Language Spoken',      question: "What language or languages does the student speak?",                             hint: 'e.g. Twi, English' },
+  { key: 'hostel_preference',    label: 'Hostel Preference',    question: "Does the student want hostel accommodation? Say Yes or No.",                     hint: 'Yes / No' },
+  { key: 'emergency_contact',    label: 'Emergency Contact',    question: "What is the emergency contact name and phone number?",                           hint: 'e.g. Abena Mensah, 0551234567' },
+  { key: 'sponsor_name',         label: 'Sponsor Name',         question: "What is the name of the student's sponsor or guardian?",                        hint: 'e.g. Emmanuel Mensah' },
+  { key: 'sponsor_relationship', label: 'Sponsor Relationship', question: "What is the relationship of the sponsor to the student?",                       hint: 'e.g. Father, Mother, Uncle' },
+  { key: 'sponsor_occupation',   label: 'Sponsor Occupation',   question: "What is the sponsor's occupation?",                                             hint: 'e.g. Trader, Civil Servant' },
+  { key: 'sponsor_phone',        label: 'Sponsor Phone',        question: "What is the sponsor's phone number?",                                           hint: 'e.g. 0551234567' },
+  { key: 'sponsor_address',      label: 'Sponsor Address',      question: "What is the sponsor's address? Say skip to use the same as the student.",        hint: 'e.g. Accra New Town, or skip' },
+  { key: 'school_name',          label: 'School Name',          question: "What secondary school did the student attend?",                                  hint: 'e.g. Accra Academy' },
+  { key: 'school_location',      label: 'School Location',      question: "Where is that school located?",                                                  hint: 'e.g. Accra, Greater Accra' },
+  { key: 'school_year',          label: 'Year Completed',       question: "What year did the student complete secondary school?",                           hint: 'e.g. 2022' },
+  { key: 'school_qualification', label: 'Qualification',        question: "What qualification did the student obtain? Say WASSCE, BECE, or Other.",         hint: 'WASSCE / BECE / Other' },
+  { key: 'program_applying_for', label: 'Program',              question: "What program is the student applying for?",                                      hint: 'e.g. Fashion Design' },
+  { key: 'course_type',          label: 'Course Type',          question: "Is the course type CTVET Diploma or COC?",                                       hint: 'CTVET Diploma / COC' },
+];
 
 const VAM_FIELD_MAP = {
-  first_name:          'ap-first_name',
-  middle_name:         'ap-middle_name',
-  last_name:           'ap-last_name',
-  date_of_birth:       'ap-dob',
-  gender:              'ap-gender',
-  nationality:         'ap-nationality',
-  phone_number:        'ap-phone_number',
-  email:               'ap-email',
-  region:              'ap-region',
-  home_address:        'ap-home_address',
-  national_id_type:    'ap-national_id_type',
-  national_id_number:  'ap-national_id_number',
-  present_job:         'ap-present_job',
-  language_spoken:     'ap-language_spoken',
-  hostel_preference:   'ap-hostel_preference',
-  emergency_contact:   'ap-emergency_contact',
-  sponsor_name:        'ap-sponsor_name',
-  sponsor_relationship:'ap-sponsor_relationship',
-  sponsor_occupation:  'ap-sponsor_occupation',
-  sponsor_phone:       'ap-sponsor_phone',
-  sponsor_address:     'ap-sponsor_address',
-  school_name:         'ap-school_name',
-  school_location:     'ap-school_location',
-  school_year:         'ap-school_year',
-  school_qualification:'ap-school_qualification',
-  program_applying_for:'ap-program_applying_for',
-  course_type:         'ap-course_type',
-  status:              'ap-status',
+  first_name: 'ap-first_name', middle_name: 'ap-middle_name', last_name: 'ap-last_name',
+  date_of_birth: 'ap-dob', gender: 'ap-gender', nationality: 'ap-nationality',
+  phone_number: 'ap-phone_number', email: 'ap-email', region: 'ap-region',
+  home_address: 'ap-home_address', national_id_type: 'ap-national_id_type',
+  national_id_number: 'ap-national_id_number', present_job: 'ap-present_job',
+  language_spoken: 'ap-language_spoken', hostel_preference: 'ap-hostel_preference',
+  emergency_contact: 'ap-emergency_contact', sponsor_name: 'ap-sponsor_name',
+  sponsor_relationship: 'ap-sponsor_relationship', sponsor_occupation: 'ap-sponsor_occupation',
+  sponsor_phone: 'ap-sponsor_phone', sponsor_address: 'ap-sponsor_address',
+  school_name: 'ap-school_name', school_location: 'ap-school_location',
+  school_year: 'ap-school_year', school_qualification: 'ap-school_qualification',
+  program_applying_for: 'ap-program_applying_for', course_type: 'ap-course_type',
 };
 
-const VAM_LABEL_MAP = {
-  first_name: 'First Name', middle_name: 'Middle Name', last_name: 'Last Name',
-  date_of_birth: 'Date of Birth', gender: 'Gender', nationality: 'Nationality',
-  phone_number: 'Phone', email: 'Email', region: 'Region',
-  home_address: 'Address', national_id_type: 'ID Type', national_id_number: 'ID Number',
-  present_job: 'Job', language_spoken: 'Language', hostel_preference: 'Hostel',
-  emergency_contact: 'Emergency Contact', sponsor_name: 'Sponsor',
-  sponsor_relationship: 'Relationship', sponsor_occupation: 'Occupation',
-  sponsor_phone: 'Sponsor Phone', sponsor_address: 'Sponsor Address',
-  school_name: 'School', school_location: 'School Location', school_year: 'Year',
-  school_qualification: 'Qualification', program_applying_for: 'Program',
-  course_type: 'Course Type', status: 'Status',
-};
+// ── State ───────────────────────────────────────────────────
+let vamRecognition    = null;
+let vamIsRecording    = false;
+let vamCurrentField   = 0;
+let vamParsedData     = {};
+let vamInterviewActive = false;
+let vamAwaitingAnswer = false;
+// API access: null = not asked yet, true = allowed, false = denied
+let vamApiAllowed     = null;
+let vamApiPendingCb   = null;  // callback to resume after gate decision
 
-const SYSTEM_PROMPT = `You are an AI assistant for a school admissions officer in Ghana. You extract student admission details from spoken transcripts and return them as a JSON object only — no explanation, no markdown, no extra text.
+// ── FAB tooltip ─────────────────────────────────────────────
+const vamFab     = document.getElementById('vam-fab');
+const vamTooltip = document.getElementById('vam-tooltip');
+if (vamFab) {
+  vamFab.addEventListener('mouseenter', () => vamTooltip && vamTooltip.classList.add('show'));
+  vamFab.addEventListener('mouseleave', () => vamTooltip && vamTooltip.classList.remove('show'));
+}
 
-The JSON keys you may return (only include keys you actually found):
-first_name, middle_name, last_name, date_of_birth (ISO format YYYY-MM-DD), gender (Male/Female/Other), nationality, phone_number (digits only, start with 0), email, region (Ghana region or country), home_address, national_id_type (Ghana Card/Voter ID/Passport/Birth Certificate), national_id_number, present_job, language_spoken, hostel_preference (Yes/No), emergency_contact, sponsor_name, sponsor_relationship, sponsor_occupation, sponsor_phone, sponsor_address, school_name, school_location, school_year (4-digit year), school_qualification (WASSCE/BECE/Other), program_applying_for (full program name), course_type (CTVET Diploma/COC), status (pending/accepted/rejected — default pending).
+// ── Speech synthesis ─────────────────────────────────────────
+function speak(text, onEnd) {
+  if (!window.speechSynthesis) { onEnd && onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-GH';
+  utt.rate = 0.92;
+  utt.pitch = 1.0;
+  utt.volume = 1;
+  if (onEnd) utt.onend = onEnd;
+  window.speechSynthesis.speak(utt);
+}
 
-Rules:
-- Phone numbers: strip spaces and dashes, keep leading zero
-- Dates: convert "15th March 2000" → "2000-03-15"
-- If a word could be a first or last name and no context, use your best judgement
-- Gender: "he/him/his/boy/male" → Male, "she/her/hers/girl/female" → Female
-- Return ONLY a valid JSON object, nothing else.`;
+// ── Anthropic API — gated by admin approval (once per session) ─
+function requestApiAccess(cb) {
+  if (vamApiAllowed === true)  { cb(true);  return; }
+  if (vamApiAllowed === false) { cb(false); return; }
+  // First time — show the gate dialog
+  vamApiPendingCb = cb;
+  var gate = document.getElementById('vam-api-gate');
+  if (gate) gate.style.display = 'flex';
+}
 
-// ── State ──────────────────────────────────────────────────
-let vamRecognition  = null;
-let vamIsRecording  = false;
-let vamTranscript   = '';
-let vamParsedData   = {};
-let vamShowTip      = false;
+async function callAnthropicAPI(systemPrompt, userMessage) {
+  return new Promise(function(resolve, reject) {
+    requestApiAccess(async function(allowed) {
+      if (!allowed) { reject(new Error('API access denied by admin')); return; }
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 200,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userMessage }]
+          })
+        });
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          reject(new Error(err?.error?.message || 'API error ' + response.status));
+          return;
+        }
+        const data = await response.json();
+        resolve((data.content || []).map(function(c){ return c.text || ''; }).join('').trim());
+      } catch(e) { reject(e); }
+    });
+  });
+}
 
-// ── FAB tooltip ───────────────────────────────────────────
-const fab     = document.getElementById('vam-fab');
-const tooltip = document.getElementById('vam-tooltip');
-fab.addEventListener('mouseenter', () => tooltip.classList.add('show'));
-fab.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+// ── Chat UI helpers ──────────────────────────────────────────
+function addBubble(type, html) {
+  const chat = document.getElementById('vam-chat');
+  if (!chat) return null;
+  const icons = { 'vam-bubble-ai': '🤖', 'vam-bubble-user': '🎤', 'vam-bubble-confirm': '✅', 'vam-bubble-typing': '🤖' };
+  const div = document.createElement('div');
+  div.className = 'vam-chat-bubble ' + type;
+  div.innerHTML = '<div class="vam-bubble-icon">' + (icons[type]||'💬') + '</div><div class="vam-bubble-text">' + html + '</div>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
 
-// ── Public API ─────────────────────────────────────────────
+function showTyping() {
+  return addBubble('vam-bubble-typing', '<div class="vam-typing-dots"><span></span><span></span><span></span></div>');
+}
+
+function updateProgress() {
+  const total = VAM_FIELDS.length;
+  const done  = vamCurrentField;
+  const pct   = Math.round((done / total) * 100);
+  const wrap  = document.getElementById('vam-progress-wrap');
+  if (wrap) wrap.style.display = '';
+  const fill  = document.getElementById('vam-progress-fill');
+  if (fill) fill.style.width = pct + '%';
+  const count = document.getElementById('vam-progress-count');
+  if (count) count.textContent = done + ' / ' + total;
+  const label = document.getElementById('vam-progress-field');
+  if (label) label.textContent = vamCurrentField < total ? VAM_FIELDS[vamCurrentField].label : 'Complete!';
+}
+
+function updateChips() {
+  const chips = document.getElementById('vam-chips');
+  const wrap  = document.getElementById('vam-parsed-wrap');
+  if (!chips) return;
+  const entries = Object.entries(vamParsedData).filter(function(e){ return e[1] && e[1] !== '__skip__'; });
+  chips.innerHTML = entries.map(function(e) {
+    var k = e[0], v = e[1];
+    var lbl = (VAM_FIELDS.find(function(f){ return f.key === k; }) || {}).label || k;
+    var disp = String(v).length > 20 ? String(v).slice(0,18) + '…' : v;
+    return '<div class="vam-chip"><strong>' + lbl + ':</strong> ' + disp + '</div>';
+  }).join('');
+  if (wrap) wrap.classList.toggle('show', entries.length > 0);
+}
+
+// ── Interview flow ────────────────────────────────────────────
+function askField(idx) {
+  if (idx >= VAM_FIELDS.length) { finishInterview(); return; }
+  vamCurrentField = idx;
+  updateProgress();
+
+  var field = VAM_FIELDS[idx];
+  addBubble('vam-bubble-ai',
+    '<strong>' + field.label + '</strong><br>' + field.question +
+    '<br><span style="font-size:11px;color:#7a5230;margin-top:4px;display:block">💡 ' + field.hint + '</span>'
+  );
+
+  var hint = document.getElementById('vam-mic-hint');
+  if (hint) hint.innerHTML = '<strong style="color:#dc2626">🔴 Listening for: ' + field.label + '…</strong>';
+
+  speak(field.question, function() {
+    if (vamInterviewActive) startListening();
+  });
+}
+
+function startListening() {
+  if (vamIsRecording) return;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { VAM._showError('Speech recognition not supported. Use Chrome or Edge.'); return; }
+
+  vamRecognition = new SR();
+  vamRecognition.lang = 'en-GH';
+  vamRecognition.continuous = false;
+  vamRecognition.interimResults = true;
+  vamRecognition.maxAlternatives = 1;
+
+  var micBtn = document.getElementById('vam-mic-btn');
+  if (micBtn) micBtn.classList.add('recording');
+  if (vamFab) vamFab.classList.add('recording');
+  vamIsRecording = true;
+  vamAwaitingAnswer = true;
+
+  var finalText = '';
+  var interim   = '';
+
+  vamRecognition.onresult = function(e) {
+    finalText = ''; interim = '';
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalText += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    var hint = document.getElementById('vam-mic-hint');
+    var disp = (finalText + interim).trim();
+    if (hint) hint.innerHTML = disp
+      ? '<span style="color:#1a0a00">&ldquo;' + disp + '&rdquo;</span>'
+      : '<strong style="color:#dc2626">🔴 Listening…</strong>';
+  };
+
+  vamRecognition.onerror = function(e) {
+    stopListeningUI();
+    if (e.error === 'no-speech') {
+      addBubble('vam-bubble-ai', "I didn't hear anything. Tap the mic to try again, or tap <strong>Skip</strong>.");
+      speak("I didn't hear anything. Please tap the microphone and try again.");
+    } else {
+      VAM._showError('Mic error: ' + e.error);
+    }
+  };
+
+  vamRecognition.onend = function() {
+    stopListeningUI();
+    if (finalText.trim() && vamInterviewActive) {
+      processAnswer(finalText.trim());
+    }
+  };
+
+  try { vamRecognition.start(); } catch(err) { VAM._showError('Could not start mic: ' + err.message); }
+}
+
+function stopListeningUI() {
+  vamIsRecording = false;
+  var micBtn = document.getElementById('vam-mic-btn');
+  if (micBtn) micBtn.classList.remove('recording');
+  if (vamFab) vamFab.classList.remove('recording');
+}
+
+async function processAnswer(rawText) {
+  if (!vamInterviewActive) return;
+  var field = VAM_FIELDS[vamCurrentField];
+
+  addBubble('vam-bubble-user', rawText);
+
+  var lower = rawText.toLowerCase().trim();
+  if (lower === 'skip' || lower === 'skip it' || lower === 'next' || lower === 'pass' || lower === 'none') {
+    vamParsedData[field.key] = '__skip__';
+    addBubble('vam-bubble-confirm', 'Skipped <strong>' + field.label + '</strong>.');
+    updateChips();
+    await delay(400);
+    askField(vamCurrentField + 1);
+    return;
+  }
+
+  var typingBubble = showTyping();
+
+  try {
+    var systemPrompt =
+      'You are a Ghanaian school admissions clerk with deep knowledge of Ghanaian personal names, languages, places, and culture.\n\n' +
+
+      'GHANAIAN NAME KNOWLEDGE:\n' +
+      'You know all common Ghanaian names and their correct spellings across all ethnic groups:\n' +
+      '- Akan/Twi day-names (male): Kwasi, Kwadwo/Kojo, Kwabena, Kwaku, Yaw, Kofi, Kwame\n' +
+      '- Akan/Twi day-names (female): Akosua, Adwoa/Adwowa, Abenaa, Akua, Yaa, Afua/Efua, Ama\n' +
+      '- Common Akan surnames: Mensah, Asante, Owusu, Boateng, Osei, Agyei, Acheampong, Amponsah, Antwi, Appiah, Asamoah, Asare, Atta, Baah, Bonsu, Darko, Doku, Frimpong, Gyimah, Kyei, Nkrumah, Ntim, Nyarko, Ofori, Opoku, Poku, Sarpong, Twum, Wiredu, Yeboah\n' +
+      '- Ga names: Nii, Naa, Tetteh, Quaye, Laryea, Lamptey, Ankrah, Sowah, Adjei, Kotey, Martey, Nortey, Okai, Okine, Quarshie, Tackie\n' +
+      '- Ewe names: Adzogble, Agbeko, Agblevor, Agbotse, Agyeman, Akpalu, Akuamoah, Amedzro, Amedzofe, Atsu, Dziwornu, Fiagbedzi, Gborglah, Hoggar, Klutse, Kuwornu, Mensah, Tsatsu, Zottor\n' +
+      '- Northern names (Dagomba/Mamprusi/Gonja): Abdul, Alhassan, Awuni, Ayariga, Bukari, Fusheini, Ibrahim, Iddrisu, Imoro, Issah, Mahama, Mohammed, Mumuni, Sulemana, Tampuli, Yakubu, Ziblim\n' +
+      '- Fante names: Entsua, Essel, Koomson, Mends, Ricketts, Sagoe, Sam\n' +
+      '- Christian names common in Ghana: Emmanuel, Theresa, Beatrice, Patience, Priscilla, Abigail, Comfort, Rejoice, Grace, Mercy, Gifty, Celestine, Augustina, Georgina, Felicia, Bernice, Adwoa, Akua, Ama, Akosua\n' +
+      '- Compound/hyphenated common patterns: Kwame-Asante, Nana Yaw, Nana Ama, Nana Akua, Nana Kofi\n' +
+      '- Title prefixes: Nana, Nii, Naa, Maame, Madam, Opanyin\n\n' +
+
+      'GHANAIAN PLACES & REGIONS:\n' +
+      'Regions: Greater Accra, Ashanti, Western, Eastern, Central, Volta, Northern, Upper East, Upper West, Brong-Ahafo, Oti, Savannah, North East, Western North, Ahafo.\n' +
+      'Cities & towns: Accra, Kumasi, Tamale, Takoradi, Cape Coast, Sunyani, Koforidua, Wa, Bolgatanga, Ho, Tema, Kasoa, Madina, Ashaiman, Obuasi, Tarkwa, Techiman, Nkawkaw, Winneba, Saltpond, Elmina, Ejura, Mampong, Kintampo, Wenchi, Berekum, Dunkwa, Axim, Sekondi, Prestea, Bibiani, Sefwi Wiawso, Goaso, Bechem, Atebubu, Yeji, Salaga, Damongo, Bole, Sawla, Bawku, Navrongo, Sandema, Zebilla, Binduri, Garu, Tempane, Nalerigu, Gambaga, Walewale, Yendi, Saboba, Chereponi, Kpandai, Karaga, Savelugu, Tolon, Kumbungu, Sagnarigu, Nanton.\n\n' +
+
+      'GHANAIAN SCHOOLS:\n' +
+      'You know all SHS, JHS, and vocational schools in Ghana including: Achimota School, Prempeh College, Opoku Ware School, Wesley Girls, St. Louis SHS, Accra Academy, Mfantsipim, Aggrey Memorial, Adisadel College, Holy Child School, St. Peter\'s SHS, Tamale SHS, St. John\'s Grammar, Tema SHS, Labone SHS, Presbyterian Boys, Aburi Girls, Yaa Asantewaa Girls, Bishop Herman College, Nalerigu SHS, Bolgatanga SHS, Notre Dame Seminary, Kumasi SHS, Osei Kyeretwie SHS, Oti Boateng SHS, Mpraeso SHS, Krobo Girls, etc.\n\n' +
+
+      'YOUR TASK:\n' +
+      'You are parsing a spoken answer for the admission field: "' + field.label + '".\n' +
+      'The speaker may have a Ghanaian accent. Speech-to-text may misspell Ghanaian names — use your knowledge to correct them to their proper Ghanaian spelling.\n' +
+      'Examples of corrections: "Kwame" not "Quame", "Kofi" not "Coffee", "Yaw" not "Yao", "Ama" not "Amma", "Akosua" not "Akosia", "Mensah" not "Mensa", "Boateng" not "Boatings", "Asante" not "Asanti".\n\n' +
+
+      'Extract and return ONLY the clean corrected value — no explanation, no punctuation, no extra words.\n' +
+      'Field-specific rules:\n' +
+      '- Names: Title Case, correct Ghanaian spelling\n' +
+      '- date_of_birth: ISO format YYYY-MM-DD\n' +
+      '- gender: exactly "Male", "Female", or "Other"\n' +
+      '- phone_number: digits only, keep leading zero, no spaces or dashes (Ghana numbers start with 0)\n' +
+      '- email: lowercase\n' +
+      '- hostel_preference: "Yes" or "No"\n' +
+      '- school_year: 4-digit year only\n' +
+      '- school_qualification: "WASSCE", "BECE", or "Other"\n' +
+      '- course_type: "CTVET Diploma" or "COC"\n' +
+      '- national_id_type: "Ghana Card", "Voter ID", "Passport", or "Birth Certificate"\n' +
+      '- region: use the official Ghana region name\n' +
+      '- For all other fields: clean up and return naturally\n\n' +
+      'If the answer is genuinely unclear or just noise with no recoverable meaning, return exactly: UNCLEAR';
+
+    var parsed = await callAnthropicAPI(systemPrompt, rawText);
+    if (typingBubble && typingBubble.parentNode) typingBubble.parentNode.removeChild(typingBubble);
+
+    if (!parsed || parsed === 'UNCLEAR' || parsed.length < 1) {
+      addBubble('vam-bubble-ai', 'I couldn\'t understand that. Could you please repeat your <strong>' + field.label + '</strong>?');
+      speak('I could not understand that. Could you please repeat your ' + field.label + '?', function() {
+        if (vamInterviewActive) startListening();
+      });
+      return;
+    }
+
+    vamParsedData[field.key] = parsed;
+    addBubble('vam-bubble-confirm', '✓ <strong>' + field.label + ':</strong> ' + parsed);
+    speak('Got it.');
+    updateChips();
+    await delay(700);
+    askField(vamCurrentField + 1);
+
+  } catch(err) {
+    // API unavailable (CORS in standalone) — store raw answer as-is
+    if (typingBubble && typingBubble.parentNode) typingBubble.parentNode.removeChild(typingBubble);
+    vamParsedData[field.key] = rawText.trim();
+    addBubble('vam-bubble-confirm', '✓ <strong>' + field.label + ':</strong> ' + rawText.trim());
+    speak('Recorded.');
+    updateChips();
+    await delay(600);
+    askField(vamCurrentField + 1);
+  }
+}
+
+function finishInterview() {
+  vamInterviewActive = false;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  updateProgress();
+
+  var micArea  = document.getElementById('vam-mic-area');
+  var btnSkip  = document.getElementById('vam-btn-skip');
+  var btnStart = document.getElementById('vam-btn-start');
+  var btnApply = document.getElementById('vam-btn-apply');
+  if (micArea)  micArea.style.display  = 'none';
+  if (btnSkip)  btnSkip.style.display  = 'none';
+  if (btnStart) btnStart.style.display = 'none';
+  if (btnApply) btnApply.style.display = '';
+
+  var filled = Object.values(vamParsedData).filter(function(v){ return v && v !== '__skip__'; }).length;
+  addBubble('vam-bubble-ai', '🎉 Interview complete! I collected <strong>' + filled + ' fields</strong>. Review above, then tap <strong>Apply to Form</strong>.');
+  speak('Interview complete. I collected ' + filled + ' fields. Please review and tap Apply to Form.');
+}
+
+function delay(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
+
+// ── Public API ────────────────────────────────────────────────
 window.VAM = {
 
-  scrollBody(delta) {
-    const body = document.getElementById('vam-body');
-    if (body) body.scrollBy({ top: delta, behavior: 'smooth' });
-  },
-
-  _updateScrollUI() {
-    const body = document.getElementById('vam-body');
-    if (!body) return;
-    const atTop = body.scrollTop <= 4;
-    const atBot = body.scrollTop + body.clientHeight >= body.scrollHeight - 4;
-    document.getElementById('vam-scroll-up')?.classList.toggle('hidden', atTop);
-    document.getElementById('vam-scroll-down')?.classList.toggle('hidden', atBot);
-    document.getElementById('vam-fade-top')?.classList.toggle('hidden', atTop);
-    document.getElementById('vam-fade-bot')?.classList.toggle('hidden', atBot);
-  },
-
-  open() {
-    document.getElementById('vam-overlay').classList.add('open');
-    tooltip.classList.remove('show');
-    // Bind scroll listener
-    const body = document.getElementById('vam-body');
-    if (body) {
-      body.onscroll = () => VAM._updateScrollUI();
-      setTimeout(() => VAM._updateScrollUI(), 80);
-    }
-    // Ensure the admission panel is open (open it if not visible)
-    const panel = document.getElementById('admissionPanel') || document.querySelector('.ap-overlay');
+  open: function() {
+    var overlay = document.getElementById('vam-overlay');
+    if (overlay) overlay.classList.add('open');
+    if (vamTooltip) vamTooltip.classList.remove('show');
+    var panel = document.getElementById('admissionPanel') || document.querySelector('.ap-overlay');
     if (panel && !panel.classList.contains('open') && !panel.classList.contains('show')) {
       if (typeof window.openAdmissionPanel === 'function') window.openAdmissionPanel();
     }
   },
 
-  close() {
-    document.getElementById('vam-overlay').classList.remove('open');
-    if (vamIsRecording) VAM.stopMic();
-  },
-
-  toggleMic() {
-    if (vamIsRecording) VAM.stopMic();
-    else VAM.startMic();
-  },
-
-  startMic() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      VAM._showError('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
-      return;
-    }
-
-    vamRecognition = new SpeechRecognition();
-    vamRecognition.lang = 'en-GH';
-    vamRecognition.continuous = true;
-    vamRecognition.interimResults = true;
-    vamRecognition.maxAlternatives = 1;
-
-    vamRecognition.onstart = () => {
-      vamIsRecording = true;
-      VAM._setStep(1, 'active');
-      document.getElementById('vam-mic-btn').classList.add('recording');
-      fab.classList.add('recording');
-      document.getElementById('vam-mic-hint').innerHTML = '<strong style="color:#dc2626">🔴 Listening…</strong> Speak clearly. Tap mic to stop.';
-      document.getElementById('vam-error').classList.remove('show');
-    };
-
-    let interim = '';
-    vamRecognition.onresult = (e) => {
-      let final = '';
-      interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
-        else interim += e.results[i][0].transcript;
-      }
-      vamTranscript += final;
-      const display = (vamTranscript + interim).trim();
-      const el = document.getElementById('vam-transcript');
-      el.classList.remove('placeholder');
-      el.textContent = display || 'Listening…';
-
-      if (vamTranscript.trim()) {
-        document.getElementById('vam-btn-parse').disabled = false;
-      }
-    };
-
-    vamRecognition.onerror = (e) => {
-      const msgs = {
-        'not-allowed': 'Microphone access denied. Please allow microphone permission.',
-        'no-speech':   'No speech detected. Please try again.',
-        'network':     'Network error. Check your internet connection.',
-      };
-      VAM._showError(msgs[e.error] || `Speech error: ${e.error}`);
-      VAM.stopMic();
-    };
-
-    vamRecognition.onend = () => {
-      if (vamIsRecording) {
-        // Auto-restart for continuous listening
-        try { vamRecognition.start(); } catch(_) { VAM._stopMicUI(); }
-      }
-    };
-
-    try {
-      vamRecognition.start();
-    } catch (err) {
-      VAM._showError('Could not start microphone: ' + err.message);
+  close: function() {
+    var overlay = document.getElementById('vam-overlay');
+    if (overlay) overlay.classList.remove('open');
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    if (vamIsRecording) {
+      vamIsRecording = false;
+      if (vamRecognition) { try { vamRecognition.stop(); } catch(_) {} }
+      stopListeningUI();
     }
   },
 
-  stopMic() {
-    vamIsRecording = false;
-    if (vamRecognition) {
-      try { vamRecognition.stop(); } catch(_) {}
-      vamRecognition = null;
-    }
-    VAM._stopMicUI();
+  startInterview: function() {
+    vamInterviewActive = true;
+    vamCurrentField = 0;
+    vamParsedData = {};
+    updateChips();
+
+    var micArea  = document.getElementById('vam-mic-area');
+    var btnStart = document.getElementById('vam-btn-start');
+    var btnSkip  = document.getElementById('vam-btn-skip');
+    var btnApply = document.getElementById('vam-btn-apply');
+    if (micArea)  micArea.style.display  = '';
+    if (btnStart) btnStart.style.display = 'none';
+    if (btnSkip)  btnSkip.style.display  = '';
+    if (btnApply) btnApply.style.display = 'none';
+
+    var chat = document.getElementById('vam-chat');
+    if (chat) chat.innerHTML = '';
+
+    addBubble('vam-bubble-ai', "Let's begin! I'll ask you one field at a time. Speak your answer clearly, or tap <strong>Skip</strong> to leave a field blank.");
+    speak("Let's begin. I will ask you one field at a time. Please speak clearly.", function() {
+      if (vamInterviewActive) askField(0);
+    });
   },
 
-  _stopMicUI() {
-    document.getElementById('vam-mic-btn').classList.remove('recording');
-    fab.classList.remove('recording');
-    const hint = document.getElementById('vam-mic-hint');
-    if (vamTranscript.trim()) {
-      hint.innerHTML = '✓ Recording stopped. <strong>Tap "Analyse with AI"</strong> to extract fields.';
+  toggleMic: function() {
+    if (vamIsRecording) {
+      vamIsRecording = false;
+      if (vamRecognition) { try { vamRecognition.stop(); } catch(_) {} }
+      stopListeningUI();
     } else {
-      hint.innerHTML = '<strong>Tap the mic</strong> and speak the student\'s details.';
+      if (vamInterviewActive) startListening();
     }
   },
 
-  async parseWithAI() {
-    const text = vamTranscript.trim();
-    if (!text) { VAM._showError('Nothing to analyse — please speak first.'); return; }
-
-    const btn = document.getElementById('vam-btn-parse');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="vam-spin"></div> Analysing…';
-    fab.classList.add('processing');
-    document.getElementById('vam-error').classList.remove('show');
-    document.getElementById('vam-parsed-wrap').classList.remove('show');
-
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: text }]
-        })
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err?.error?.message || `API error ${response.status}`);
-      }
-
-      const data = await response.json();
-      const raw = (data.content || []).map(c => c.text || '').join('').trim();
-
-      // Strip potential code fences
-      const cleaned = raw.replace(/```json|```/g, '').trim();
-      let parsed;
-      try { parsed = JSON.parse(cleaned); }
-      catch(_) { throw new Error('AI returned unexpected format. Please try again.'); }
-
-      if (!parsed || typeof parsed !== 'object' || !Object.keys(parsed).length) {
-        throw new Error('No fields detected in your speech. Try speaking more details.');
-      }
-
-      vamParsedData = parsed;
-      VAM._showParsed(parsed);
-      setTimeout(() => VAM._updateScrollUI(), 50);
-      VAM._setStep(2, 'done'); VAM._setStep(2, 'active');
-      document.getElementById('vam-btn-apply').style.display = '';
-      document.getElementById('vam-mic-hint').innerHTML = '✅ Fields extracted! Review below, then click <strong>Apply to Form</strong>.';
-
-    } catch (err) {
-      VAM._showError('AI analysis failed: ' + err.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Analyse with AI`;
-      fab.classList.remove('processing');
+  skipField: function() {
+    if (!vamInterviewActive) return;
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    if (vamIsRecording) {
+      vamIsRecording = false;
+      if (vamRecognition) { try { vamRecognition.stop(); } catch(_) {} }
+      stopListeningUI();
     }
+    var field = VAM_FIELDS[vamCurrentField];
+    vamParsedData[field.key] = '__skip__';
+    addBubble('vam-bubble-confirm', 'Skipped <strong>' + field.label + '</strong>.');
+    updateChips();
+    setTimeout(function(){ askField(vamCurrentField + 1); }, 300);
   },
 
-  applyToForm() {
+  applyToForm: function() {
     if (!Object.keys(vamParsedData).length) {
-      VAM._showError('No parsed data to apply. Please analyse first.');
+      this._showError('No data collected yet. Please complete the interview first.');
       return;
     }
-
-    // Ensure admission panel is open
-    const apOverlay = document.getElementById('admissionPanel') ||
-                      document.querySelector('.ap-overlay') ||
-                      document.querySelector('[id*="admission"][id*="panel" i]') ||
-                      document.querySelector('[id*="admissionPanel"]');
-
+    var apOverlay = document.getElementById('admissionPanel') || document.querySelector('.ap-overlay');
     if (apOverlay && !apOverlay.classList.contains('open') && !apOverlay.classList.contains('show')) {
       if (typeof window.openAdmissionPanel === 'function') window.openAdmissionPanel('existing');
     }
 
-    let applied = 0;
-    const failed = [];
-
-    Object.entries(vamParsedData).forEach(([key, value]) => {
-      const fieldId = VAM_FIELD_MAP[key];
-      if (!fieldId || !value) return;
-      const el = document.getElementById(fieldId);
+    var applied = 0, failed = [];
+    Object.entries(vamParsedData).forEach(function(entry) {
+      var key = entry[0], value = entry[1];
+      if (!value || value === '__skip__') return;
+      var fieldId = VAM_FIELD_MAP[key];
+      if (!fieldId) return;
+      var el = document.getElementById(fieldId);
       if (!el) { failed.push(key); return; }
 
-      // For select elements, try to match option
       if (el.tagName === 'SELECT') {
-        const opts = Array.from(el.options);
-        const match = opts.find(o =>
-          o.value.toLowerCase() === String(value).toLowerCase() ||
-          o.text.toLowerCase()  === String(value).toLowerCase()
-        );
-        if (match) { el.value = match.value; applied++; }
-        else { el.value = value; applied++; }
+        var opts = Array.from(el.options);
+        var match = opts.find(function(o){
+          return o.value.toLowerCase() === String(value).toLowerCase() ||
+                 o.text.toLowerCase()  === String(value).toLowerCase();
+        });
+        el.value = match ? match.value : value;
       } else {
         el.value = value;
-        applied++;
       }
-
-      // Trigger change events so conditional fields react
       el.dispatchEvent(new Event('change', { bubbles: true }));
       el.dispatchEvent(new Event('input',  { bubbles: true }));
+      applied++;
     });
 
-    // Trigger any conditional visibility functions
-    ['apToggleMedSpec','apToggleHeardSpec','apToggleIdNumber'].forEach(fn => {
-      if (typeof window[fn] === 'function') { try { window[fn](); } catch(_) {} }
+    ['apToggleMedSpec','apToggleHeardSpec','apToggleIdNumber'].forEach(function(fn){
+      if (typeof window[fn] === 'function') { try { window[fn](); } catch(_){} }
     });
     if (typeof window.generateNextStudentId === 'function') {
-      try { window.generateNextStudentId(); } catch(_) {}
+      try { window.generateNextStudentId(); } catch(_){}
     }
 
-    VAM._setStep(3, 'done');
-
-    // Show result toast
     if (typeof window.showToast === 'function') {
-      window.showToast(`✓ Voice entry applied — ${applied} field${applied!==1?'s':''} filled`, 'success');
+      window.showToast('✓ Voice entry applied — ' + applied + ' field' + (applied !== 1 ? 's' : '') + ' filled', 'success');
     }
 
     if (failed.length) {
-      VAM._showError(`${applied} fields applied. ${failed.length} fields not found (form may not be open): ${failed.join(', ')}`);
+      this._showError(applied + ' fields applied. ' + failed.length + ' not found on form.');
     } else {
-      document.getElementById('vam-mic-hint').innerHTML = `🎉 <strong>${applied} fields</strong> filled in the form below. Review and submit.`;
-      document.getElementById('vam-error').classList.remove('show');
-      // Close panel after short delay
-      setTimeout(() => VAM.close(), 1200);
+      setTimeout(function(){ VAM.close(); }, 1000);
     }
   },
 
-  clearAll() {
-    vamTranscript = '';
+  clearAll: function() {
+    vamInterviewActive = false;
+    vamCurrentField = 0;
     vamParsedData = {};
     vamIsRecording = false;
-    if (vamRecognition) { try { vamRecognition.stop(); } catch(_) {} vamRecognition = null; }
+    vamAwaitingAnswer = false;
+    vamApiAllowed = null;
+    vamApiPendingCb = null;
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    if (vamRecognition) { try { vamRecognition.stop(); } catch(_){} vamRecognition = null; }
+    stopListeningUI();
 
-    document.getElementById('vam-mic-btn').classList.remove('recording');
-    fab.classList.remove('recording');
-    document.getElementById('vam-transcript').textContent = 'Waiting for speech…';
-    document.getElementById('vam-transcript').classList.add('placeholder');
-    document.getElementById('vam-parsed-wrap').classList.remove('show');
-    document.getElementById('vam-chips').innerHTML = '';
-    document.getElementById('vam-error').classList.remove('show');
-    document.getElementById('vam-btn-parse').disabled = true;
-    document.getElementById('vam-btn-apply').style.display = 'none';
-    document.getElementById('vam-mic-hint').innerHTML = '<strong>Tap the mic</strong> and speak the student\'s details.';
-    ['vam-step-1','vam-step-2','vam-step-3'].forEach((id,i) => {
-      const el = document.getElementById(id);
-      el.className = 'vam-step' + (i===0 ? ' active' : '');
-    });
+    var gate = document.getElementById('vam-api-gate');
+    if (gate) gate.style.display = 'none';
+
+    var chat = document.getElementById('vam-chat');
+    if (chat) chat.innerHTML = '<div class="vam-chat-bubble vam-bubble-ai"><div class="vam-bubble-icon">🤖</div><div class="vam-bubble-text"><strong>Voice Interview Ready</strong><br>Tap <strong>Start Interview</strong> and I will ask for each field one at a time.</div></div>';
+
+    var wrap = document.getElementById('vam-progress-wrap');
+    if (wrap) wrap.style.display = 'none';
+    var fill = document.getElementById('vam-progress-fill');
+    if (fill) fill.style.width = '0%';
+
+    var micArea  = document.getElementById('vam-mic-area');
+    var btnStart = document.getElementById('vam-btn-start');
+    var btnSkip  = document.getElementById('vam-btn-skip');
+    var btnApply = document.getElementById('vam-btn-apply');
+    if (micArea)  micArea.style.display  = 'none';
+    if (btnStart) { btnStart.style.display = ''; btnStart.disabled = false; }
+    if (btnSkip)  btnSkip.style.display  = 'none';
+    if (btnApply) btnApply.style.display = 'none';
+
+    var chips = document.getElementById('vam-chips');
+    if (chips) chips.innerHTML = '';
+    var parsedWrap = document.getElementById('vam-parsed-wrap');
+    if (parsedWrap) parsedWrap.classList.remove('show');
+    this._hideError();
   },
 
-  _showParsed(data) {
-    const wrap  = document.getElementById('vam-parsed-wrap');
-    const chips = document.getElementById('vam-chips');
-    chips.innerHTML = Object.entries(data)
-      .filter(([,v]) => v)
-      .map(([k,v]) => `<div class="vam-chip"><strong>${VAM_LABEL_MAP[k]||k}:</strong> ${String(v).length > 22 ? String(v).slice(0,20)+'…' : v}</div>`)
-      .join('');
-    wrap.classList.add('show');
+  _allowApi: function() {
+    vamApiAllowed = true;
+    var gate = document.getElementById('vam-api-gate');
+    if (gate) gate.style.display = 'none';
+    addBubble('vam-bubble-confirm', '🔓 AI processing <strong>allowed</strong> for this session.');
+    if (vamApiPendingCb) { var cb = vamApiPendingCb; vamApiPendingCb = null; cb(true); }
   },
 
-  _showError(msg) {
-    const el = document.getElementById('vam-error');
-    document.getElementById('vam-error-text').textContent = msg;
-    el.classList.add('show');
+  _denyApi: function() {
+    vamApiAllowed = false;
+    var gate = document.getElementById('vam-api-gate');
+    if (gate) gate.style.display = 'none';
+    addBubble('vam-bubble-confirm', '🔒 AI processing <strong>denied</strong> — answers will be saved as spoken.');
+    if (vamApiPendingCb) { var cb = vamApiPendingCb; vamApiPendingCb = null; cb(false); }
   },
 
-  _setStep(num, state) {
-    const el = document.getElementById(`vam-step-${num}`);
-    if (!el) return;
-    el.className = 'vam-step ' + state;
-  }
+  _showError: function(msg) {
+    var el = document.getElementById('vam-error');
+    var txt = document.getElementById('vam-error-text');
+    if (txt) txt.textContent = msg;
+    if (el) el.classList.add('show');
+  },
+
+  _hideError: function() {
+    var el = document.getElementById('vam-error');
+    if (el) el.classList.remove('show');
+  },
+
+  scrollBody: function(delta) {
+    var body = document.getElementById('vam-body');
+    if (body) body.scrollBy({ top: delta, behavior: 'smooth' });
+  },
 };
 
 })();

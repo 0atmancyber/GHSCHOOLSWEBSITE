@@ -5371,6 +5371,8 @@ function v(id) { const el = document.getElementById(id); return el ? el.value.tr
 
 // Generate a client-side fallback ID matching admissionletter1.html format:
 // {SchoolPrefix}{D|C}{sequential_3_digit} e.g. FSD001, MSC045
+// A random 2-digit salt is appended (e.g. FSD001-47) to prevent duplicate key
+// collisions when two submissions generate IDs at the same millisecond.
 async function generateLocalId() {
   const schoolKey = v('schoolSelect');
   const prefix = SCHOOL_CODES[schoolKey] || 'GH';
@@ -5383,16 +5385,21 @@ async function generateLocalId() {
         .from('newstudents').select('student_id')
         .ilike('student_id', effectivePrefix + '%')
         .order('created_at', { ascending: false }).limit(200);
-      const prefixRegex = new RegExp('^' + effectivePrefix + '(\d+)$', 'i');
+      const prefixRegex = new RegExp('^' + effectivePrefix + '(\\d+)', 'i');
       let maxNum = 0;
       (records || []).forEach(row => {
         const match = (row.student_id || '').trim().match(prefixRegex);
         if (match) { const n = parseInt(match[1], 10); if (!isNaN(n) && n > maxNum) maxNum = n; }
       });
-      return effectivePrefix + String(maxNum + 1).padStart(3, '0');
+      // Append a random 2-digit salt to guarantee uniqueness under concurrent submissions
+      const salt = String(Math.floor(Math.random() * 90) + 10);
+      return effectivePrefix + String(maxNum + 1).padStart(3, '0') + salt;
     }
   } catch(e) { }
-  return effectivePrefix + String(Math.floor(Math.random() * 900) + 100).padStart(3, '0');
+  // Pure-random fallback: 3-digit sequence + 2-digit salt
+  const seq  = String(Math.floor(Math.random() * 900) + 100);
+  const salt = String(Math.floor(Math.random() * 90) + 10);
+  return effectivePrefix + seq + salt;
 }
 
 // ── INSERT STUDENT INTO newstudents TABLE ──
@@ -5467,53 +5474,77 @@ async function insertStudentToSupabase(formData) {
     is_admission_form:           true
   };
 
-  try {
-    const { data, error } = await supabaseClient
-      .from('newstudents')
-      .insert(payload)
-      .select('id, student_id, reference_code')
-      .single();
-
-    if (error) {
-      console.error('[insertStudent] Supabase insert error:', error);
-      // Surface the real error so it can be acted on in confirmApplication
-      throw new Error(error.message || JSON.stringify(error));
+  // Retry up to 5 times if a duplicate student_id collision occurs (race condition)
+  const MAX_RETRIES = 5;
+  let lastError = null;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    let data, error;
+    try {
+      ({ data, error } = await supabaseClient
+        .from('newstudents')
+        .insert(payload)
+        .select('id, student_id, reference_code')
+        .single());
+    } catch (err) {
+      console.error('[insertStudent] Unexpected error:', err);
+      throw err;
     }
 
-    console.log('[insertStudent] Student saved. student_id:', data.student_id, 'ref:', data.reference_code);
+    if (!error) {
+      // ── Success ──────────────────────────────────────────────────────────
+      console.log('[insertStudent] Student saved. student_id:', data.student_id, 'ref:', data.reference_code);
 
-    // ── Upload passport photo to Supabase Storage (non-blocking) ──────────────
-    const passportInput = document.getElementById('passport');
-    if (passportInput && passportInput.files && passportInput.files[0] && data.id) {
-      try {
-        const file = passportInput.files[0];
-        const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
-        const path = 'passport-photos/' + data.id + '.' + ext;
-        const { data: uploadData, error: uploadErr } = await supabaseClient
-          .storage.from('student-documents')
-          .upload(path, file, { upsert: true, contentType: file.type });
-        if (!uploadErr) {
-          const { data: urlData } = supabaseClient.storage
-            .from('student-documents').getPublicUrl(path);
-          if (urlData && urlData.publicUrl) {
-            await supabaseClient.from('newstudents')
-              .update({ passport_photo_url: urlData.publicUrl })
-              .eq('id', data.id);
-            console.log('[insertStudent] Passport photo uploaded:', urlData.publicUrl);
+      // ── Upload passport photo to Supabase Storage (non-blocking) ────────
+      const passportInput = document.getElementById('passport');
+      if (passportInput && passportInput.files && passportInput.files[0] && data.id) {
+        try {
+          const file = passportInput.files[0];
+          const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+          const path = 'passport-photos/' + data.id + '.' + ext;
+          const { data: uploadData, error: uploadErr } = await supabaseClient
+            .storage.from('student-documents')
+            .upload(path, file, { upsert: true, contentType: file.type });
+          if (!uploadErr) {
+            const { data: urlData } = supabaseClient.storage
+              .from('student-documents').getPublicUrl(path);
+            if (urlData && urlData.publicUrl) {
+              await supabaseClient.from('newstudents')
+                .update({ passport_photo_url: urlData.publicUrl })
+                .eq('id', data.id);
+              console.log('[insertStudent] Passport photo uploaded:', urlData.publicUrl);
+            }
+          } else {
+            console.warn('[insertStudent] Photo upload failed (non-critical):', uploadErr.message);
           }
-        } else {
-          console.warn('[insertStudent] Photo upload failed (non-critical):', uploadErr.message);
+        } catch(photoErr) {
+          console.warn('[insertStudent] Photo upload exception (non-critical):', photoErr);
         }
-      } catch(photoErr) {
-        console.warn('[insertStudent] Photo upload exception (non-critical):', photoErr);
       }
+
+      return data; // { id, student_id, reference_code }
     }
 
-    return data; // { id, student_id, reference_code }
-  } catch (err) {
-    console.error('[insertStudent] Unexpected error:', err);
-    throw err; // re-throw so confirmApplication can surface the real message
+    // ── Error handling ───────────────────────────────────────────────────
+    const isDuplicateKey =
+      (error.code === '23505') ||
+      (error.message && error.message.toLowerCase().includes('duplicate key')) ||
+      (error.message && error.message.toLowerCase().includes('unique constraint'));
+
+    if (isDuplicateKey && attempt < MAX_RETRIES) {
+      // Re-generate a fresh student_id and retry
+      console.warn('[insertStudent] Duplicate student_id collision on attempt ' + attempt + ' — regenerating ID and retrying…');
+      payload.student_id = await generateLocalId();
+      lastError = error;
+      continue;
+    }
+
+    // Non-duplicate error, or all retries exhausted
+    console.error('[insertStudent] Supabase insert error:', error);
+    throw new Error(error.message || JSON.stringify(error));
   }
+
+  // Should never reach here, but throw last error just in case
+  throw new Error((lastError && lastError.message) ? lastError.message : 'Failed to insert student after multiple attempts.');
 }
 
 

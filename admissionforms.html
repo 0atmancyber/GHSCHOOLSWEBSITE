@@ -5463,7 +5463,8 @@ async function insertStudentToSupabase(formData) {
     bece_arabic:                 (() => { try { return (formData.bece_grades ? JSON.parse(formData.bece_grades) : {}).electives?.['Arabic'] || null; } catch(e) { return null; } })(),
     // ── programme type stored in course_type (schema) and program_type (alias) ──
     program_type:                formData.course_type          || null,
-    status:                      'pending'
+    status:                      'pending',
+    is_admission_form:           true
   };
 
   try {
@@ -5475,7 +5476,8 @@ async function insertStudentToSupabase(formData) {
 
     if (error) {
       console.error('[insertStudent] Supabase insert error:', error);
-      return null;
+      // Surface the real error so it can be acted on in confirmApplication
+      throw new Error(error.message || JSON.stringify(error));
     }
 
     console.log('[insertStudent] Student saved. student_id:', data.student_id, 'ref:', data.reference_code);
@@ -5510,7 +5512,7 @@ async function insertStudentToSupabase(formData) {
     return data; // { id, student_id, reference_code }
   } catch (err) {
     console.error('[insertStudent] Unexpected error:', err);
-    return null;
+    throw err; // re-throw so confirmApplication can surface the real message
   }
 }
 
@@ -5674,19 +5676,35 @@ async function confirmApplication() {
     }
 
     // ── INSERT into newstudents ─────────────────────────────────────────
-    const inserted = await insertStudentToSupabase(App.formData);
+    let inserted = null;
+    let insertError = null;
+    try {
+      inserted = await insertStudentToSupabase(App.formData);
+    } catch(e) {
+      insertError = e.message || String(e);
+      console.error('[confirmApplication] DB insert threw:', e);
+    }
+
     if (inserted && inserted.student_id) {
       App.studentId = inserted.student_id;
       App.formData.student_id = inserted.student_id;
       App.formData.reference_code = inserted.reference_code || '';
       App._savedToDb = true;
+      clearDraft();
     } else {
-      console.warn('[confirmApplication] DB insert failed — using local fallback ID.');
-      App.studentId = await generateLocalId();
-      App.formData.student_id = App.studentId;
-      App._savedToDb = true;
+      // DB write failed — do NOT silently proceed. Show the real error.
+      hideLoading();
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm &amp; Submit Application';
+      }
+      const errMsg = insertError
+        ? 'Submission failed: ' + insertError
+        : 'Could not save your application to the database. Please check your internet connection and try again. If the problem persists, contact the Admissions Office.';
+      toast(errMsg, 'error');
+      console.error('[confirmApplication] Insert failed. Raw error:', insertError);
+      return;
     }
-    clearDraft();
   }
 
   hideLoading();

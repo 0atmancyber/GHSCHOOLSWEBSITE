@@ -3755,7 +3755,7 @@
               Format: <strong>PREFIX + YY + PHASE + SEQ</strong> — e.g.
               <em>GHMSD262001</em> (Media·Diploma), <em>GHMSC262001</em> (Media·CoC),
               <em>GHFSD262001</em> (Fashion·Diploma), <em>GHCASD262001</em> (Catering·Diploma),
-              <em>GHCOSD262001</em> (Cosmetology·Diploma), <em>GHTSD262001</em> (Tech·Diploma).
+              <em>GHCSD262001</em> (Cosmetology·Diploma), <em>GHTSD262001</em> (Tech·Diploma).
               Sequence is read live from DB — increments independently per school/type/year/phase.
             </div>
           </div>
@@ -4884,8 +4884,8 @@ window.saveEditedDetails = saveEditedDetails
 //          GHFSC262001  (GH Fashion School · CoC …)
 //          GHCASD262001 (GH Catering School · Diploma …)
 //          GHCASC262001 (GH Catering School · CoC …)
-//          GHCOSD262001 (GH Cosmetology · Diploma …)
-//          GHCOSC262001 (GH Cosmetology · CoC …)
+//          GHCSD262001  (GH Cosmetology · Diploma …)
+//          GHCSC262001  (GH Cosmetology · CoC …)
 //          GHTSD262001  (GH Technology School · Diploma …)
 //          GHTSC262001  (GH Technology School · CoC …)
 //  4. Auto-generate a strong portal password — always replaces whatever was there
@@ -4924,7 +4924,7 @@ async function issueOfficialAdmissionLetter(id) {
     //   GHMSD / GHMSC  — GH Media School
     //   GHFSD / GHFSC  — GH Fashion School
     //   GHCASD / GHCASC — GH Catering School
-    //   GHCOSD / GHCOSC — GH Cosmetology
+    //   GHCSD / GHCSC   — GH Cosmetology
     //   GHTSD / GHTSC  — GH Technology School
     const schoolKey = resolveSchoolKey(s.school_selected, programRaw)
     if (!schoolKey) {
@@ -6039,14 +6039,14 @@ let subjectCount = 0
 //   GH Media School        Diploma → GHMSD    CoC → GHMSC
 //   GH Fashion School      Diploma → GHFSD    CoC → GHFSC
 //   GH Catering School     Diploma → GHCASD   CoC → GHCASC
-//   GH Cosmetology         Diploma → GHCOSD   CoC → GHCOSC
+//   GH Cosmetology         Diploma → GHCSD    CoC → GHCSC
 //   GH Technology School   Diploma → GHTSD    CoC → GHTSC
 //
 // Phase 2, Year 2026, first student — all 10 formats:
 //   GHMSD262001   GHMSC262001
 //   GHFSD262001   GHFSC262001
 //   GHCASD262001  GHCASC262001
-//   GHCOSD262001  GHCOSC262001
+//   GHCSD262001   GHCSC262001
 //   GHTSD262001   GHTSC262001
 //
 // SEQ is always read live from the DB — it counts ONLY records whose
@@ -6059,7 +6059,7 @@ const SCHOOL_BASE_PREFIXES = {
   'GH MEDIA SCHOOL':      { diploma: 'GHMSD',   coc: 'GHMSC'   },
   'GH FASHION SCHOOL':    { diploma: 'GHFSD',   coc: 'GHFSC'   },
   'GH CATERING SCHOOL':   { diploma: 'GHCASD',  coc: 'GHCASC'  },
-  'GH COSMETOLOGY':       { diploma: 'GHCOSD',  coc: 'GHCOSC'  },
+  'GH COSMETOLOGY':       { diploma: 'GHCSD',   coc: 'GHCSC'   },
   'GH TECHNOLOGY SCHOOL': { diploma: 'GHTSD',   coc: 'GHTSC'   },
 }
 
@@ -6190,7 +6190,7 @@ function padNum(n) {
 //   GH Media School      Diploma → GHMSD262001   CoC → GHMSC262001
 //   GH Fashion School    Diploma → GHFSD262001   CoC → GHFSC262001
 //   GH Catering School   Diploma → GHCASD262001  CoC → GHCASC262001
-//   GH Cosmetology       Diploma → GHCOSD262001  CoC → GHCOSC262001
+//   GH Cosmetology       Diploma → GHCSD262001  CoC → GHCSC262001
 //   GH Technology School Diploma → GHTSD262001   CoC → GHTSC262001
 //
 // SEQ is determined by querying the DB for all student_ids that start with

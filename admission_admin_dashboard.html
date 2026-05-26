@@ -5099,7 +5099,7 @@ async function revertIssuedLetter(id) {
     if (issuedBadge)  issuedBadge.style.display  = 'none'
     if (_rb)          _rb.style.display           = 'none'
     if (officialBtn && isAccepted) officialBtn.style.display = 'inline-flex'
-    if (_mi) _mi.textContent = s.reference_code ? `Ref: ${s.reference_code}` : ''
+    if (_mi) _mi.textContent = s.student_id ? `Student ID: ${s.student_id}` : (s.reference_code ? `Ref: ${s.reference_code}` : '')
 
     updateStats()
     applyFilters()
@@ -7249,7 +7249,7 @@ async function submitAdmission() {
 
   const payload = {
     // ── Identity
-    student_id:                document.getElementById('ap-student_id').value || null,
+    student_id:                null, // Assigned only when the official admission letter is issued
     first_name:                v('ap-first_name'),
     middle_name:               v('ap-middle_name'),
     last_name:                 v('ap-last_name'),
@@ -7381,8 +7381,9 @@ async function submitAdmission() {
       } else if (_admissionMode === 'existing') {
         // Insert a synthetic payment record so the table stays consistent with newstudents
         // Generate a unique reference using student_id or timestamp fallback
-        const synthRef  = payload.student_id || `ADM-${Date.now()}`
-        const synthUser = payload.student_id  || `ADM-${Date.now()}`
+        const _synthTs  = Date.now()
+        const synthRef  = `ADM-${_synthTs}`
+        const synthUser = `ADM-${_synthTs}`
         await supabase
           .from('admission_payments')
           .upsert([{

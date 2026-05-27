@@ -2232,7 +2232,7 @@
 
     <div style="padding:24px 28px 48px;">
       <!-- STAT CARDS -->
-      <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px;">
+      <div class="stats-grid" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px;">
         <div class="stat-card total">
           <div class="stat-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
           <div class="stat-label">Total Payments</div>
@@ -2262,6 +2262,12 @@
           <div class="stat-label">Total Amount</div>
           <div class="stat-value" style="font-size:20px;" id="pay-stat-amount">—</div>
           <div class="stat-sub" id="pay-stat-sub-amount">Approved sum</div>
+        </div>
+        <div class="stat-card" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 6px 20px rgba(124,58,237,0.35);cursor:pointer;" onclick="openAdmFeesModal()">
+          <div class="stat-icon" style="background:rgba(255,255,255,0.2);color:#fff;"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg></div>
+          <div class="stat-label" style="color:rgba(255,255,255,0.8);">Admission Fees</div>
+          <div class="stat-value" id="pay-stat-adm-count" style="color:#fff;">—</div>
+          <div class="stat-sub" id="pay-stat-sub-adm-count" style="color:rgba(255,255,255,0.65);">Paid applicants</div>
         </div>
       </div>
 
@@ -2648,6 +2654,68 @@
       </button>
     </div>
     <div class="modal-body" id="pdm-body" style="padding:24px 28px;"></div>
+  </div>
+</div>
+
+<!-- ADMISSION FEES MODAL -->
+<div class="modal-overlay" id="admFeesModal" onclick="closeAdmFeesModal(event)" style="z-index:450;">
+  <div class="modal" style="max-width:900px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);border-radius:16px 16px 0 0;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#7c3aed,#a78bfa,#7c3aed) 1;">
+      <div>
+        <div class="modal-student-name" style="color:#fff;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Admission Fee Payments</div>
+        <div class="modal-student-id" id="afm-sub" style="color:rgba(255,255,255,0.65);margin-top:4px;">Fetching records…</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="afm-total-badge" style="background:rgba(255,255,255,0.15);color:#fff;padding:5px 14px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:0.02em;"></div>
+        <button class="modal-close" onclick="closeAdmFeesDirect()" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Summary strip -->
+    <div id="afm-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border);background:#faf5ff;"></div>
+    <!-- Search bar -->
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border);background:#fff;display:flex;align-items:center;gap:10px;">
+      <div class="search-wrap" style="flex:1;max-width:340px;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" id="afm-search" placeholder="Search name, phone, reference…" oninput="afmApplyFilter()" style="font-size:13px;">
+      </div>
+      <select id="afm-filter-status" class="filter-select" onchange="afmApplyFilter()" style="font-size:12px;padding:7px 10px;">
+        <option value="">All Statuses</option>
+        <option value="success">Success</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button class="btn btn-outline" onclick="afmExportCSV()" style="font-size:12px;padding:7px 14px;display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+    <!-- Table -->
+    <div style="max-height:55vh;overflow-y:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f5f3ff;position:sticky;top:0;z-index:5;">
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">#</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Name</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Phone</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Email</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Reference</th>
+            <th style="padding:11px 16px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Amount</th>
+            <th style="padding:11px 16px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Status</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Portal User</th>
+            <th style="padding:11px 16px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#6d28d9;font-weight:700;border-bottom:1px solid #ede9fe;">Date</th>
+          </tr>
+        </thead>
+        <tbody id="afm-tbody"></tbody>
+      </table>
+    </div>
+    <!-- Footer -->
+    <div style="padding:12px 20px;border-top:1px solid var(--border);background:#faf5ff;border-radius:0 0 16px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <span id="afm-footer-count" style="font-size:12px;color:#6d28d9;font-weight:600;"></span>
+      <span style="font-size:11px;color:var(--text-secondary);">Showing all matching records</span>
+    </div>
   </div>
 </div>
 
@@ -7391,7 +7459,7 @@ async function submitAdmission() {
             last_name:         payload.last_name     || '',
             email:             payload.email         || null,
             phone:             payload.phone_number  || '',
-            amount:            0,
+            amount:            200.00,
             currency:          'GHS',
             payment_status:    'success',
             reference_code:    synthRef,
@@ -8828,14 +8896,22 @@ window.loadPayments = async function() {
   showPayTableLoading()
   try {
     const supabase = window.supabase
-    const { data, error } = await supabase
-      .from('payments')
-      .select('*')
-      .order('payment_date', { ascending: false })
+    const [{ data, error }, { count: admCount, error: admErr }] = await Promise.all([
+      supabase
+        .from('payments')
+        .select('*')
+        .order('payment_date', { ascending: false }),
+      supabase
+        .from('admission_payments')
+        .select('id', { count: 'exact', head: true })
+        .eq('payment_status', 'success')
+    ])
 
     if (error) throw error
+    if (admErr) console.warn('admission_payments count error:', admErr.message)
 
     allPayments = data || []
+    window._admissionFeeCount = admCount || 0
     populatePaymentFilterDropdowns()
     updatePaymentStats()
     applyPaymentFilters()
@@ -8895,6 +8971,7 @@ function updatePaymentStats() {
   const pending  = allPayments.filter(p => p.status === 'pending').length
   const failed   = allPayments.filter(p => p.status === 'failed' || p.status === 'refunded').length
   const totalAmt = allPayments.filter(p => p.status === 'approved').reduce((sum, p) => sum + parseFloat(p.amount || 0), 0)
+  const admCount = window._admissionFeeCount || 0
 
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v }
   set('pay-stat-total',    total)
@@ -8907,6 +8984,8 @@ function updatePaymentStats() {
   set('pay-stat-sub-pending',  pending + ' pending')
   set('pay-stat-sub-failed',   failed + ' issues')
   set('pay-stat-sub-amount',  'From approved payments')
+  set('pay-stat-adm-count',     admCount)
+  set('pay-stat-sub-adm-count', admCount + ' successful payment' + (admCount !== 1 ? 's' : ''))
 }
 
 window.applyPaymentFilters = function() {
@@ -9111,6 +9190,144 @@ window.closePayDetailModal = function(e) {
 window.closePayDetailDirect = function() {
   document.getElementById('payDetailModal').classList.remove('open')
 }
+
+// ── ADMISSION FEES MODAL ─────────────────────────────────────────────────────
+let _afmAllRecords    = []
+let _afmFiltered      = []
+let _afmLoaded        = false
+
+window.openAdmFeesModal = async function() {
+  document.getElementById('admFeesModal').classList.add('open')
+  if (!_afmLoaded) await afmFetch()
+}
+window.closeAdmFeesModal = function(e) {
+  if (e.target === document.getElementById('admFeesModal')) closeAdmFeesDirect()
+}
+window.closeAdmFeesDirect = function() {
+  document.getElementById('admFeesModal').classList.remove('open')
+}
+
+async function afmFetch() {
+  document.getElementById('afm-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-secondary);"><div class="spinner" style="margin:0 auto 10px;"></div>Loading admission fee records…</td></tr>`
+  document.getElementById('afm-sub').textContent = 'Fetching records…'
+  document.getElementById('afm-summary').innerHTML = ''
+  document.getElementById('afm-total-badge').textContent = ''
+  try {
+    const { data, error } = await window.supabase
+      .from('admission_payments')
+      .select('id, first_name, last_name, email, phone, amount, currency, payment_status, reference_code, portal_username, created_at')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    _afmAllRecords = data || []
+    _afmLoaded = true
+    afmApplyFilter()
+  } catch (err) {
+    document.getElementById('afm-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;">
+      <svg width="34" height="34" fill="none" stroke="var(--danger)" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 10px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <strong>Failed to load records</strong><br><span style="font-size:12px;color:var(--text-secondary)">${err.message}</span><br><br>
+      <button class="btn btn-primary btn-sm" onclick="_afmLoaded=false;afmFetch()">Retry</button>
+    </td></tr>`
+    document.getElementById('afm-sub').textContent = 'Error loading data'
+  }
+}
+
+window.afmApplyFilter = function() {
+  const q  = (document.getElementById('afm-search')?.value || '').toLowerCase()
+  const st = document.getElementById('afm-filter-status')?.value || ''
+  _afmFiltered = _afmAllRecords.filter(r => {
+    if (st && r.payment_status !== st) return false
+    if (q) {
+      const hay = [r.first_name, r.last_name, r.phone, r.email, r.reference_code, r.portal_username].filter(Boolean).join(' ').toLowerCase()
+      if (!hay.includes(q)) return false
+    }
+    return true
+  })
+  afmRender()
+}
+
+function afmRender() {
+  const records = _afmFiltered
+  const total   = _afmAllRecords.length
+  const success = _afmAllRecords.filter(r => r.payment_status === 'success').length
+  const pending = _afmAllRecords.filter(r => r.payment_status === 'pending').length
+  const failed  = _afmAllRecords.filter(r => r.payment_status === 'failed' || r.payment_status === 'cancelled').length
+  const totalAmt = _afmAllRecords.filter(r => r.payment_status === 'success')
+                     .reduce((s, r) => s + parseFloat(r.amount || 0), 0)
+  const cur = _afmAllRecords[0]?.currency || 'GHS'
+
+  // Header badge & sub
+  document.getElementById('afm-total-badge').textContent = total + ' record' + (total !== 1 ? 's' : '')
+  document.getElementById('afm-sub').textContent = success + ' successful · ' + pending + ' pending · ' + failed + ' failed/cancelled'
+
+  // Summary strip
+  const strip = [
+    { label: 'Total Records',    value: total,    color: '#6d28d9', bg: '#f5f3ff' },
+    { label: 'Successful',       value: success,  color: '#16a34a', bg: '#f0fdf4' },
+    { label: 'Pending',          value: pending,  color: '#d97706', bg: '#fffbeb' },
+    { label: 'Total Collected',  value: cur + ' ' + totalAmt.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), color: '#1d4ed8', bg: '#eff6ff' },
+  ]
+  document.getElementById('afm-summary').innerHTML = strip.map((s, i) => `
+    <div style="padding:14px 18px;background:${s.bg};border-right:${i < 3 ? '1px solid var(--border)' : 'none'};">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);font-weight:700;margin-bottom:4px;">${s.label}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:${s.color};line-height:1;">${s.value}</div>
+    </div>`).join('')
+
+  // Footer
+  document.getElementById('afm-footer-count').textContent =
+    records.length === total ? `${total} record${total !== 1 ? 's' : ''}` : `${records.length} of ${total} records`
+
+  // Status badge helper
+  const badge = status => {
+    const map = {
+      success:   ['#dcfce7','#16a34a','Success'],
+      pending:   ['#fef9c3','#b45309','Pending'],
+      failed:    ['#fee2e2','#dc2626','Failed'],
+      cancelled: ['#f3f4f6','#6b7280','Cancelled'],
+    }
+    const [bg, color, label] = map[status] || ['#f3f4f6','#6b7280', status]
+    return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${bg};color:${color};">${label}</span>`
+  }
+
+  if (!records.length) {
+    document.getElementById('afm-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:48px;color:var(--text-secondary);">
+      <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 12px;opacity:0.3;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      No records match your filter.</td></tr>`
+    return
+  }
+
+  const esc = v => String(v || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GH', { day:'2-digit', month:'short', year:'numeric' }) : '—'
+  const fmtAmt  = (a, c) => (c || 'GHS') + ' ' + parseFloat(a || 0).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  document.getElementById('afm-tbody').innerHTML = records.map((r, i) => `
+    <tr style="border-bottom:1px solid #f3f0ff;transition:background 0.15s;" onmouseover="this.style.background='#faf5ff'" onmouseout="this.style.background=''">
+      <td style="padding:11px 16px;color:var(--text-secondary);font-size:12px;">${i + 1}</td>
+      <td style="padding:11px 16px;">
+        <div style="font-weight:600;color:var(--text-primary);">${esc(r.first_name)} ${esc(r.last_name)}</div>
+      </td>
+      <td style="padding:11px 16px;color:var(--text-secondary);">${esc(r.phone)}</td>
+      <td style="padding:11px 16px;color:var(--text-secondary);font-size:12px;">${esc(r.email) || '—'}</td>
+      <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:#6d28d9;">${esc(r.reference_code) || '—'}</td>
+      <td style="padding:11px 16px;text-align:right;font-weight:700;color:${r.payment_status==='success'?'#16a34a':'var(--text-primary)'};">${fmtAmt(r.amount, r.currency)}</td>
+      <td style="padding:11px 16px;text-align:center;">${badge(r.payment_status)}</td>
+      <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:var(--text-secondary);">${esc(r.portal_username) || '—'}</td>
+      <td style="padding:11px 16px;color:var(--text-secondary);font-size:12px;white-space:nowrap;">${fmtDate(r.created_at)}</td>
+    </tr>`).join('')
+}
+
+window.afmExportCSV = function() {
+  if (!_afmFiltered.length) { showToast('No records to export', 'info'); return }
+  const fields = ['first_name','last_name','phone','email','reference_code','amount','currency','payment_status','portal_username','created_at']
+  const header = fields.join(',')
+  const csv = [header, ..._afmFiltered.map(r => fields.map(f => JSON.stringify(r[f] ?? '')).join(','))].join('\n')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+  a.download = 'admission_fees_' + new Date().toISOString().slice(0,10) + '.csv'
+  a.click()
+  URL.revokeObjectURL(a.href)
+  showToast(`Exported ${_afmFiltered.length} admission fee records`, 'success')
+}
+// ── END ADMISSION FEES MODAL ─────────────────────────────────────────────────
 
 window.exportPaymentsCSV = function() {
   const rows = filteredPayments

@@ -329,60 +329,65 @@
   }
   .stat-card:hover { transform: translateY(-6px) scale(1.03); }
 
-  /* ── Total Applicants – purple ── */
+  /* ── Total Applicants – white ── */
   .stat-card.total {
-    background: #4f46e5;
-    box-shadow: 0 6px 24px rgba(79,70,229,0.4);
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(79,70,229,0.15);
+    border: 1px solid rgba(79,70,229,0.15);
   }
-  .stat-card.total:hover { box-shadow: 0 14px 36px rgba(79,70,229,0.5); }
-  .stat-card.total .stat-label { color: rgba(255,255,255,0.75); }
-  .stat-card.total .stat-value { color: #fff; }
-  .stat-card.total .stat-sub   { color: rgba(255,255,255,0.65); }
-  .stat-card.total .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+  .stat-card.total:hover { box-shadow: 0 14px 36px rgba(79,70,229,0.25); }
+  .stat-card.total .stat-label { color: #4f46e5; }
+  .stat-card.total .stat-value { color: #1a0a00; }
+  .stat-card.total .stat-sub   { color: #7a5230; }
+  .stat-card.total .stat-icon  { background: rgba(79,70,229,0.1); color: #4f46e5; }
 
-  /* ── Accepted – green ── */
+  /* ── Accepted – white ── */
   .stat-card.accepted {
-    background: #16a34a;
-    box-shadow: 0 6px 24px rgba(22,163,74,0.4);
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(22,163,74,0.15);
+    border: 1px solid rgba(22,163,74,0.15);
   }
-  .stat-card.accepted:hover { box-shadow: 0 14px 36px rgba(22,163,74,0.5); }
-  .stat-card.accepted .stat-label { color: rgba(255,255,255,0.75); }
-  .stat-card.accepted .stat-value { color: #fff; }
-  .stat-card.accepted .stat-sub   { color: rgba(255,255,255,0.65); }
-  .stat-card.accepted .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+  .stat-card.accepted:hover { box-shadow: 0 14px 36px rgba(22,163,74,0.25); }
+  .stat-card.accepted .stat-label { color: #16a34a; }
+  .stat-card.accepted .stat-value { color: #1a0a00; }
+  .stat-card.accepted .stat-sub   { color: #7a5230; }
+  .stat-card.accepted .stat-icon  { background: rgba(22,163,74,0.1); color: #16a34a; }
 
-  /* ── Rejected – red ── */
+  /* ── Rejected – white ── */
   .stat-card.rejected {
-    background: #dc2626;
-    box-shadow: 0 6px 24px rgba(220,38,38,0.4);
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(220,38,38,0.15);
+    border: 1px solid rgba(220,38,38,0.15);
   }
-  .stat-card.rejected:hover { box-shadow: 0 14px 36px rgba(220,38,38,0.5); }
-  .stat-card.rejected .stat-label { color: rgba(255,255,255,0.75); }
-  .stat-card.rejected .stat-value { color: #fff; }
-  .stat-card.rejected .stat-sub   { color: rgba(255,255,255,0.65); }
-  .stat-card.rejected .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+  .stat-card.rejected:hover { box-shadow: 0 14px 36px rgba(220,38,38,0.25); }
+  .stat-card.rejected .stat-label { color: #dc2626; }
+  .stat-card.rejected .stat-value { color: #1a0a00; }
+  .stat-card.rejected .stat-sub   { color: #7a5230; }
+  .stat-card.rejected .stat-icon  { background: rgba(220,38,38,0.1); color: #dc2626; }
 
-  /* ── Pending – amber ── */
+  /* ── Pending – white ── */
   .stat-card.pending {
-    background: #d97706;
-    box-shadow: 0 6px 24px rgba(217,119,6,0.4);
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(217,119,6,0.15);
+    border: 1px solid rgba(217,119,6,0.15);
   }
-  .stat-card.pending:hover { box-shadow: 0 14px 36px rgba(217,119,6,0.5); }
-  .stat-card.pending .stat-label { color: rgba(255,255,255,0.75); }
-  .stat-card.pending .stat-value { color: #fff; }
-  .stat-card.pending .stat-sub   { color: rgba(255,255,255,0.65); }
-  .stat-card.pending .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+  .stat-card.pending:hover { box-shadow: 0 14px 36px rgba(217,119,6,0.25); }
+  .stat-card.pending .stat-label { color: #d97706; }
+  .stat-card.pending .stat-value { color: #1a0a00; }
+  .stat-card.pending .stat-sub   { color: #7a5230; }
+  .stat-card.pending .stat-icon  { background: rgba(217,119,6,0.1); color: #d97706; }
 
-  /* ── IDs Issued – teal ── */
+  /* ── IDs Issued – white ── */
   .stat-card.id-issued {
-    background: #0891b2;
-    box-shadow: 0 6px 24px rgba(8,145,178,0.4);
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(8,145,178,0.15);
+    border: 1px solid rgba(8,145,178,0.15);
   }
-  .stat-card.id-issued:hover { box-shadow: 0 14px 36px rgba(8,145,178,0.5); }
-  .stat-card.id-issued .stat-label { color: rgba(255,255,255,0.75); }
-  .stat-card.id-issued .stat-value { color: #fff; }
-  .stat-card.id-issued .stat-sub   { color: rgba(255,255,255,0.65); }
-  .stat-card.id-issued .stat-icon  { background: rgba(255,255,255,0.2); color: #fff; }
+  .stat-card.id-issued:hover { box-shadow: 0 14px 36px rgba(8,145,178,0.25); }
+  .stat-card.id-issued .stat-label { color: #0891b2; }
+  .stat-card.id-issued .stat-value { color: #1a0a00; }
+  .stat-card.id-issued .stat-sub   { color: #7a5230; }
+  .stat-card.id-issued .stat-icon  { background: rgba(8,145,178,0.1); color: #0891b2; }
 
   .stat-icon {
     width: 38px; height: 38px;
@@ -413,96 +418,104 @@
     position: relative;
     overflow: hidden;
   }
-  .analytics-card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(0,0,0,0.2) !important; }
+  .analytics-card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(0,0,0,0.12) !important; }
 
-  /* Status Overview — purple */
+  /* Status Overview — white */
   #analyticsRow .analytics-card:nth-child(1) {
-    background: #4f46e5;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(79,70,229,0.15);
+    box-shadow: 0 4px 16px rgba(79,70,229,0.1) !important;
   }
-  #analyticsRow .analytics-card:nth-child(1) .analytics-title { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(1) .legend-label { color: rgba(255,255,255,0.75); }
-  #analyticsRow .analytics-card:nth-child(1) .legend-val { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(1) #donutCenter { fill: #fff; }
-  #analyticsRow .analytics-card:nth-child(1) #donutChart circle:first-child { stroke: rgba(255,255,255,0.2); }
+  #analyticsRow .analytics-card:nth-child(1) .analytics-title { color: #4f46e5; }
+  #analyticsRow .analytics-card:nth-child(1) .legend-label { color: #7a5230; }
+  #analyticsRow .analytics-card:nth-child(1) .legend-val { color: #1a0a00; }
+  #analyticsRow .analytics-card:nth-child(1) #donutCenter { fill: #1a0a00; }
+  #analyticsRow .analytics-card:nth-child(1) #donutChart circle:first-child { stroke: #f0f0f0; }
 
-  /* Top Programs — orange */
+  /* Top Programs — white */
   #analyticsRow .analytics-card:nth-child(2) {
-    background: #ea580c;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(234,88,12,0.15);
+    box-shadow: 0 4px 16px rgba(234,88,12,0.1) !important;
   }
-  #analyticsRow .analytics-card:nth-child(2) .analytics-title { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(2) .bar-label { color: rgba(255,255,255,0.8); }
-  #analyticsRow .analytics-card:nth-child(2) .bar-count { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(2) .bar-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow .analytics-card:nth-child(2) .bar-track { background: rgba(255,255,255,0.2); }
+  #analyticsRow .analytics-card:nth-child(2) .analytics-title { color: #ea580c; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-label { color: #7a5230; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-count { color: #1a0a00; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-fill { background: #ea580c; }
+  #analyticsRow .analytics-card:nth-child(2) .bar-track { background: rgba(234,88,12,0.12); }
 
-  /* Top Regions — green */
+  /* Top Regions — white */
   #analyticsRow .analytics-card:nth-child(3) {
-    background: #16a34a;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(22,163,74,0.15);
+    box-shadow: 0 4px 16px rgba(22,163,74,0.1) !important;
   }
-  #analyticsRow .analytics-card:nth-child(3) .analytics-title { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(3) .region-name { color: rgba(255,255,255,0.8); }
-  #analyticsRow .analytics-card:nth-child(3) .region-val { color: #fff; }
-  #analyticsRow .analytics-card:nth-child(3) .region-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow .analytics-card:nth-child(3) .region-bar { background: rgba(255,255,255,0.2); }
+  #analyticsRow .analytics-card:nth-child(3) .analytics-title { color: #16a34a; }
+  #analyticsRow .analytics-card:nth-child(3) .region-name { color: #7a5230; }
+  #analyticsRow .analytics-card:nth-child(3) .region-val { color: #1a0a00; }
+  #analyticsRow .analytics-card:nth-child(3) .region-fill { background: #16a34a; }
+  #analyticsRow .analytics-card:nth-child(3) .region-bar { background: rgba(22,163,74,0.12); }
 
-  /* CTVET vs COC — blue */
+  /* CTVET vs COC — white */
   #analyticsRow2 .analytics-card:nth-child(1) {
-    background: #1d4ed8;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(29,78,216,0.15);
+    box-shadow: 0 4px 16px rgba(29,78,216,0.1) !important;
   }
-  #analyticsRow2 .analytics-card:nth-child(1) .analytics-title { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(1) .bar-label { color: rgba(255,255,255,0.8); }
-  #analyticsRow2 .analytics-card:nth-child(1) .bar-count { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(1) .bar-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow2 .analytics-card:nth-child(1) .bar-track { background: rgba(255,255,255,0.2); }
+  #analyticsRow2 .analytics-card:nth-child(1) .analytics-title { color: #1d4ed8; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-label { color: #7a5230; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-count { color: #1a0a00; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-fill { background: #1d4ed8; }
+  #analyticsRow2 .analytics-card:nth-child(1) .bar-track { background: rgba(29,78,216,0.12); }
 
-  /* Gender Distribution — fuchsia */
+  /* Gender Distribution — white */
   #analyticsRow2 .analytics-card:nth-child(2) {
-    background: #a21caf;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(162,28,175,0.15);
+    box-shadow: 0 4px 16px rgba(162,28,175,0.1) !important;
   }
-  #analyticsRow2 .analytics-card:nth-child(2) .analytics-title { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(2) .legend-label { color: rgba(255,255,255,0.75); }
-  #analyticsRow2 .analytics-card:nth-child(2) .legend-val { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(2) #genderDonutCenter { fill: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(2) #genderDonut circle:first-child { stroke: rgba(255,255,255,0.2); }
-  #analyticsRow2 .analytics-card:nth-child(2) #genderLegend { color: rgba(255,255,255,0.8); }
+  #analyticsRow2 .analytics-card:nth-child(2) .analytics-title { color: #a21caf; }
+  #analyticsRow2 .analytics-card:nth-child(2) .legend-label { color: #7a5230; }
+  #analyticsRow2 .analytics-card:nth-child(2) .legend-val { color: #1a0a00; }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderDonutCenter { fill: #1a0a00; }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderDonut circle:first-child { stroke: #f0f0f0; }
+  #analyticsRow2 .analytics-card:nth-child(2) #genderLegend { color: #7a5230; }
 
-  /* Conversion Funnel — amber */
+  /* Conversion Funnel — white */
   #analyticsRow2 .analytics-card:nth-child(3) {
-    background: #b45309;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(180,83,9,0.15);
+    box-shadow: 0 4px 16px rgba(180,83,9,0.1) !important;
   }
-  #analyticsRow2 .analytics-card:nth-child(3) .analytics-title { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(3) .bar-label { color: rgba(255,255,255,0.8); }
-  #analyticsRow2 .analytics-card:nth-child(3) .bar-count { color: #fff; }
-  #analyticsRow2 .analytics-card:nth-child(3) .bar-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow2 .analytics-card:nth-child(3) .bar-track { background: rgba(255,255,255,0.2); }
+  #analyticsRow2 .analytics-card:nth-child(3) .analytics-title { color: #b45309; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-label { color: #7a5230; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-count { color: #1a0a00; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-fill { background: #b45309; }
+  #analyticsRow2 .analytics-card:nth-child(3) .bar-track { background: rgba(180,83,9,0.12); }
 
-  /* Applications by School — indigo */
+  /* Applications by School — white */
   #analyticsRow3 .analytics-card:nth-child(1) {
-    background: #3730a3;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(55,48,163,0.15);
+    box-shadow: 0 4px 16px rgba(55,48,163,0.1) !important;
   }
-  #analyticsRow3 .analytics-card:nth-child(1) .analytics-title { color: #fff; }
-  #analyticsRow3 .analytics-card:nth-child(1) .bar-label { color: rgba(255,255,255,0.8); }
-  #analyticsRow3 .analytics-card:nth-child(1) .bar-count { color: #fff; }
-  #analyticsRow3 .analytics-card:nth-child(1) .bar-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow3 .analytics-card:nth-child(1) .bar-track { background: rgba(255,255,255,0.2); }
+  #analyticsRow3 .analytics-card:nth-child(1) .analytics-title { color: #3730a3; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-label { color: #7a5230; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-count { color: #1a0a00; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-fill { background: #3730a3; }
+  #analyticsRow3 .analytics-card:nth-child(1) .bar-track { background: rgba(55,48,163,0.12); }
 
-  /* Monthly Intake — teal */
+  /* Monthly Intake — white */
   #analyticsRow3 .analytics-card:nth-child(2) {
-    background: #0f766e;
-    border: none;
+    background: #ffffff;
+    border: 1px solid rgba(15,118,110,0.15);
+    box-shadow: 0 4px 16px rgba(15,118,110,0.1) !important;
   }
-  #analyticsRow3 .analytics-card:nth-child(2) .analytics-title { color: #fff; }
-  #analyticsRow3 .analytics-card:nth-child(2) .bar-label { color: rgba(255,255,255,0.8); }
-  #analyticsRow3 .analytics-card:nth-child(2) .bar-count { color: #fff; }
-  #analyticsRow3 .analytics-card:nth-child(2) .bar-fill { background: rgba(255,255,255,0.85); }
-  #analyticsRow3 .analytics-card:nth-child(2) .bar-track { background: rgba(255,255,255,0.2); }
+  #analyticsRow3 .analytics-card:nth-child(2) .analytics-title { color: #0f766e; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-label { color: #7a5230; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-count { color: #1a0a00; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-fill { background: #0f766e; }
+  #analyticsRow3 .analytics-card:nth-child(2) .bar-track { background: rgba(15,118,110,0.12); }
 
   .analytics-title {
     font-family: 'Syne', sans-serif;
@@ -2265,7 +2278,7 @@
         </div>
         <div class="stat-card" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 6px 20px rgba(124,58,237,0.35);cursor:pointer;" onclick="openAdmFeesModal()">
           <div class="stat-icon" style="background:rgba(255,255,255,0.2);color:#fff;"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg></div>
-          <div class="stat-label" style="color:rgba(255,255,255,0.8);">Admission Fees</div>
+          <div class="stat-label" style="color:rgba(255,255,255,0.8);">Admission Forms Purchased</div>
           <div class="stat-value" id="pay-stat-adm-count" style="color:#fff;">—</div>
           <div class="stat-sub" id="pay-stat-sub-adm-count" style="color:rgba(255,255,255,0.65);">Paid applicants</div>
         </div>
@@ -2662,7 +2675,7 @@
   <div class="modal" style="max-width:900px;">
     <div class="modal-header" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);border-radius:16px 16px 0 0;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#7c3aed,#a78bfa,#7c3aed) 1;">
       <div>
-        <div class="modal-student-name" style="color:#fff;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Admission Fee Payments</div>
+        <div class="modal-student-name" style="color:#fff;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Admission Forms Purchased</div>
         <div class="modal-student-id" id="afm-sub" style="color:rgba(255,255,255,0.65);margin-top:4px;">Fetching records…</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -9208,7 +9221,7 @@ window.closeAdmFeesDirect = function() {
 }
 
 async function afmFetch() {
-  document.getElementById('afm-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-secondary);"><div class="spinner" style="margin:0 auto 10px;"></div>Loading admission fee records…</td></tr>`
+  document.getElementById('afm-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-secondary);"><div class="spinner" style="margin:0 auto 10px;"></div>Loading admission form records…</td></tr>`
   document.getElementById('afm-sub').textContent = 'Fetching records…'
   document.getElementById('afm-summary').innerHTML = ''
   document.getElementById('afm-total-badge').textContent = ''
@@ -9322,10 +9335,10 @@ window.afmExportCSV = function() {
   const csv = [header, ..._afmFiltered.map(r => fields.map(f => JSON.stringify(r[f] ?? '')).join(','))].join('\n')
   const a = document.createElement('a')
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
-  a.download = 'admission_fees_' + new Date().toISOString().slice(0,10) + '.csv'
+  a.download = 'admission_forms_' + new Date().toISOString().slice(0,10) + '.csv'
   a.click()
   URL.revokeObjectURL(a.href)
-  showToast(`Exported ${_afmFiltered.length} admission fee records`, 'success')
+  showToast(`Exported ${_afmFiltered.length} admission form records`, 'success')
 }
 // ── END ADMISSION FEES MODAL ─────────────────────────────────────────────────
 

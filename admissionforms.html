@@ -4290,9 +4290,10 @@ const App = {
   paymentMethod: '',
   paymentRef: '',
   formData: {},
-  loggedInRecord: null,
+  loggedInRecord: null,    // set after successful DB login — never modified client-side
   passportDataUrl: '',     // data URL for passport photo — captured on form submit
-  _savedToDb: false        // true only after confirmAndProceedToPayment inserts to DB
+  _savedToDb: false,       // true only after confirmApplication inserts to DB
+  _hasPaid: false          // true only after DB confirms approved payment row
 };
 
 // Dismiss the initial page loader after fonts/resources load
@@ -4366,7 +4367,43 @@ function showPageLoader(label, callback, duration) {
 }
 
 // ── SCREEN NAV ──
+// ── SCREEN GATE: enforces that navigation respects submission + payment state ──
+function _allowedScreens() {
+  // Login screen is always accessible (pre-auth)
+  // After login, screens are gated by state:
+  //   - form NOT submitted → may see: screen-login, screen-program, screen-form-*, screen-preview
+  //   - form submitted, NOT paid → may see: screen-login, screen-payment
+  //   - form submitted AND paid → may see: screen-login, screen-feedback, screen-letter
+  if (!App.loggedInRecord) return new Set(['screen-login']);
+
+  const submitted = App.loggedInRecord.is_admission_form === true || App._savedToDb;
+  const paid      = App._hasPaid === true;
+
+  if (!submitted) {
+    // Allow form fill flow only
+    return new Set(['screen-program','screen-form-1','screen-form-2','screen-form-3','screen-preview']);
+  }
+  if (!paid) {
+    // Only payment screen; no going back to form or preview
+    return new Set(['screen-payment']);
+  }
+  // Paid: feedback and letter only
+  return new Set(['screen-feedback','screen-letter','screen-payment']);
+}
+
 function showScreen(id, loaderLabel) {
+  // The login screen is always reachable (logout path)
+  if (id !== 'screen-login') {
+    const allowed = _allowedScreens();
+    if (!allowed.has(id)) {
+      // Redirect to the correct screen for their state
+      if (!App.loggedInRecord) { id = 'screen-login'; }
+      else if (App._hasPaid) { id = 'screen-feedback'; }
+      else if (App.loggedInRecord.is_admission_form === true || App._savedToDb) { id = 'screen-payment'; }
+      else { id = 'screen-program'; }
+      toast('You cannot go to that step from here.', 'error');
+    }
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   if (!el) { console.error('showScreen: element not found:', id); return; }
@@ -4441,6 +4478,8 @@ function saveDraft() {
 }
 
 function restoreDraft(userId) {
+  // Never restore a draft for a student who already submitted — they cannot re-enter the form
+  if (App.loggedInRecord && App.loggedInRecord.is_admission_form === true) { return false; }
   try {
     const raw = localStorage.getItem(draftKey(userId));
     if (!raw) return false;
@@ -4534,20 +4573,105 @@ function hideSaveBanner() {
 }
 
 // ── LOGIN ──
-function loginSuccess(record) {
+
+// Route student after successful credential check based on form + payment status
+async function loginSuccess(record) {
   App.loggedInRecord = record;
   App.studentId = (record.reference_code && String(record.reference_code).trim())
     ? String(record.reference_code).trim()
     : String(record.id);
-  hideLoading();
+
   document.getElementById('global-nav').classList.add('visible');
-  var restored = restoreDraft(App.studentId);
-  if (restored) {
-    toast('Welcome back, ' + record.first_name + '! Your progress has been restored.', 'ok');
+
+  const firstName = record.first_name || 'Student';
+  const formSubmitted = record.is_admission_form === true;
+
+  // ── Check payment status ────────────────────────────────────────────────────
+  // If record came from admission_payments it carries _ap_paid (already verified above).
+  // Otherwise query the payments table for an approved row.
+  let hasPaid = false;
+  if (record._ap_paid === true) {
+    // Student authenticated via admission_payments and payment_status = 'success'
+    hasPaid = true;
+  } else if (formSubmitted && supabaseClient) {
+    try {
+      const { data: payRows } = await supabaseClient
+        .from('payments')
+        .select('id, status')
+        .eq('student_id', record.student_id || record.id)
+        .eq('status', 'approved')
+        .limit(1);
+      hasPaid = !!(payRows && payRows.length > 0);
+    } catch(e) {
+      console.warn('[loginSuccess] payments check failed:', e);
+      // On error, treat as unpaid — safer than granting access
+      hasPaid = false;
+    }
+  }
+
+  // Stamp the verified state onto App so the screen gate can use it
+  App._hasPaid = hasPaid;
+
+  hideLoading();
+
+  if (!formSubmitted) {
+    // Student has NOT yet filled the form — let them fill it
+    var restored = restoreDraft(App.studentId);
+    if (restored) {
+      toast('Welcome back, ' + firstName + '! Your progress has been restored.', 'ok');
+    } else {
+      showScreen('screen-program');
+      setStageActive('st-program');
+      toast('Welcome, ' + firstName + '! Please fill in your application form.', 'ok');
+    }
+  } else if (!hasPaid) {
+    // Form already submitted but admission fee not yet paid —
+    // Restore App.programType from the student DB record so loadFeeBreakdown
+    // can use the correct programme level for the fee lookup.
+    var nsRow = record._nsRow;
+    if (nsRow) {
+      var progType = nsRow.program_type || nsRow.course_type || '';
+      if (progType) App.programType = progType;
+      // Apply CoC theme if needed
+      if (App.programType === 'CoC') document.body.classList.add('coc-theme');
+
+      // ── Populate App.formData from DB record so Paystack has name/email/phone ──
+      // Without this, launchPaystack() would fail with "No email address found".
+      App.formData = {
+        first_name:        nsRow.first_name  || record.first_name  || '',
+        last_name:         nsRow.last_name   || record.last_name   || '',
+        email:             nsRow.email       || '',
+        phone_number:      nsRow.phone_number || record.phone_number || '',
+        phone:             nsRow.phone_number || record.phone_number || '',
+        school_selected:   nsRow.school_selected   || '',
+        program_applying_for: nsRow.program_applying_for || '',
+        student_id:        nsRow.student_id  || record.student_id  || ''
+      };
+    } else {
+      // nsRow is null (no newstudents row found) — seed formData from admission_payments
+      App.formData = {
+        first_name:   record.first_name  || '',
+        last_name:    record.last_name   || '',
+        email:        '',
+        phone_number: record.phone_number || '',
+        phone:        record.phone_number || '',
+        student_id:   record.student_id  || ''
+      };
+    }
+    // Land on the payment screen then immediately pop the fee modal.
+    showScreen('screen-payment', 'Setting up Payment…');
+    setStageActive('st-payment');
+    loadFeeBreakdown();   // pre-load fee in background
+    // Small delay so the screen renders before the modal opens
+    setTimeout(function() {
+      toast('Welcome back, ' + firstName + '! Your form is submitted. Please pay your admission fee to continue.', 'ok');
+      showFeeInfoModal();
+    }, 400);
   } else {
-    showScreen('screen-program');
-    setStageActive('st-program');
-    toast('Welcome, ' + record.first_name + '! Please fill in your application form.', 'ok');
+    // Form submitted AND paid — go to feedback/letter flow
+    toast('Welcome back, ' + firstName + '! Your application and payment are complete.', 'ok');
+    showScreen('screen-feedback');
+    setStageActive('st-feedback');
   }
 }
 
@@ -4555,15 +4679,6 @@ async function doLogin() {
   var inputId = document.getElementById('login-id').value.trim();
   var inputPw = document.getElementById('login-pw').value.trim();
   if (!inputId || !inputPw) { toast('Please enter your username and password.', 'error'); return; }
-
-  // ── DEMO / TEST MODE ──
-  // If credentials match the demo account, bypass Supabase entirely
-  if (inputId === 'demo' && inputPw === 'demo123') {
-    loginSuccess({ id: 'demo-001', first_name: 'Demo', last_name: 'Applicant',
-                   phone: '000', portal_username: 'demo', portal_password: 'demo123',
-                   payment_status: 'success', reference_code: 'DEMO01' });
-    return;
-  }
 
   showLoading();
 
@@ -4574,40 +4689,120 @@ async function doLogin() {
   }
 
   try {
-    // Query by portal_username — only rows where payment_status = 'success'
-    // will have a non-null portal_username (credentials are generated on payment)
-    var result = await supabaseClient
+    // ── Step 1: verify credentials from admission_payments ────────────────────
+    var apResult = await supabaseClient
       .from('admission_payments')
       .select('id, first_name, last_name, phone, portal_username, portal_password, payment_status, reference_code')
       .eq('portal_username', inputId)
-      .eq('payment_status', 'success')
       .limit(1);
 
-    var records = result.data;
-    var dbError = result.error;
-
-    if (dbError) {
-      console.error('[login] DB error:', dbError);
+    if (apResult.error) {
+      console.error('[login] DB error:', apResult.error);
       hideLoading();
       toast('A database error occurred. Please try again.', 'error');
       return;
     }
 
-    if (!records || records.length === 0) {
+    if (!apResult.data || apResult.data.length === 0) {
       hideLoading();
-      toast('Username not found or payment not yet confirmed. Contact admissions if this is an error.', 'error');
+      toast('Username not found. Please check your credentials or contact the Admissions Office.', 'error');
       return;
     }
 
-    var record = records[0];
+    var apRecord = apResult.data[0];
 
-    if (record.portal_password !== inputPw) {
+    // ── Step 2: verify password ───────────────────────────────────────────────
+    if (apRecord.portal_password !== inputPw) {
       hideLoading();
-      toast('Incorrect password. Please check the SMS sent to you.', 'error');
+      toast('Incorrect password. Please check your credentials and try again.', 'error');
       return;
     }
 
-    loginSuccess(record);
+    // ── Step 3: check if student record exists in newstudents ────────────────
+    // Fetch ALL columns needed for auto-fill AND routing.
+    // Also try portal_username as a fallback if reference_code lookup misses.
+    var nsRow = null;
+    var nsSelectCols = [
+      'id','student_id','is_admission_form','reference_code',
+      'first_name','middle_name','last_name','dob','gender',
+      'phone_number','email','home_address','nationality','region',
+      'national_id_type','national_id_number','present_job','language_spoken',
+      'current_residence','hostel_preference','any_medical','medical_spec',
+      'disability_spec','heard_source','heard_spec',
+      'sponsor_name','sponsor_relationship','sponsor_occupation',
+      'sponsor_address','sponsor_phone','emergency_contact',
+      'school_name','school_location','school_year','school_qualification',
+      'school_selected','program_applying_for','program_type','program_duration',
+      'course_type','passport_photo_url',
+      'english_grade','mathematics_grade','social_studies_grade','integrated_science_grade',
+      'shs_elective_course','elective_grades',
+      'bece_english','bece_mathematics','bece_science','bece_social_studies',
+      'bece_rme','bece_career_technology','bece_creative_arts','bece_computing',
+      'bece_ghanaian_language','bece_french','bece_arabic','bece_grades',
+      'portal_username','portal_password','status'
+    ].join(',');
+
+    // Try reference_code first, then portal_username as fallback
+    if (apRecord.reference_code) {
+      var nsResult = await supabaseClient
+        .from('newstudents')
+        .select(nsSelectCols)
+        .eq('reference_code', apRecord.reference_code)
+        .limit(1);
+      if (!nsResult.error && nsResult.data && nsResult.data.length > 0) {
+        nsRow = nsResult.data[0];
+      }
+    }
+    // Fallback: match by portal_username in case reference_code differs
+    if (!nsRow && apRecord.portal_username) {
+      var nsResult2 = await supabaseClient
+        .from('newstudents')
+        .select(nsSelectCols)
+        .eq('portal_username', apRecord.portal_username)
+        .limit(1);
+      if (!nsResult2.error && nsResult2.data && nsResult2.data.length > 0) {
+        nsRow = nsResult2.data[0];
+      }
+    }
+
+    // ── Step 4: check if student has a payment record in payments table ───────
+    var payRow = null;
+    if (nsRow && apRecord.reference_code) {
+      var payResult = await supabaseClient
+        .from('payments')
+        .select('id, status')
+        .eq('student_id', apRecord.reference_code)
+        .eq('status', 'approved')
+        .limit(1);
+      if (!payResult.error && payResult.data && payResult.data.length > 0) {
+        payRow = payResult.data[0];
+      }
+      // Also accept payment_status = 'success' on admission_payments itself
+      if (!payRow && apRecord.payment_status === 'success') {
+        payRow = { id: 'ap', status: 'approved' };
+      }
+    }
+
+    // ── Step 5: build unified record and route ────────────────────────────────
+    var record = {
+      id:                apRecord.id,
+      student_id:        nsRow ? nsRow.student_id : null,
+      first_name:        apRecord.first_name,
+      last_name:         apRecord.last_name,
+      phone_number:      apRecord.phone || null,
+      portal_username:   apRecord.portal_username,
+      portal_password:   apRecord.portal_password,
+      reference_code:    apRecord.reference_code,
+      // exists in newstudents = form has been filled and submitted
+      // Check BOTH the DB flag AND whether a newstudents row exists at all
+      is_admission_form: !!(nsRow && (nsRow.is_admission_form === true || nsRow.id)),
+      // has a payment row = admission fee paid
+      _ap_paid:          !!(payRow),
+      // Full newstudents row for auto-fill (null if form not yet submitted)
+      _nsRow:            nsRow || null
+    };
+
+    await loginSuccess(record);
 
   } catch(err) {
     console.error('[login] Exception:', err);
@@ -4653,8 +4848,12 @@ function filterDurationOptions(type) {
 
 // Called by the Apply buttons on each programme card
 function applyForProgram(type) {
+  // Block if form already submitted
+  if (App.loggedInRecord && (App.loggedInRecord.is_admission_form === true || App._savedToDb)) {
+    toast('Your application has already been submitted. You cannot re-enter the form.', 'error');
+    return;
+  }
   App.programType = type;
-  // Visually mark the chosen card as selected
   document.querySelectorAll('.prog-card').forEach(c => {
     c.classList.toggle('selected', c.dataset.prog === type);
   });
@@ -4666,6 +4865,11 @@ function applyForProgram(type) {
 }
 
 function proceedToForm() {
+  // Block if form already submitted
+  if (App.loggedInRecord && (App.loggedInRecord.is_admission_form === true || App._savedToDb)) {
+    toast('Your application has already been submitted. You cannot re-enter the form.', 'error');
+    return;
+  }
   if (!App.programType) { toast('Please select a programme type to continue.', 'error'); return; }
   document.getElementById('badge-prog-name').textContent = App.programType === 'CoC' ? 'Certificate of Competence' : 'Diploma';
   applyProgramTheme(App.programType);
@@ -4675,6 +4879,7 @@ function proceedToForm() {
 }
 
 function goToScreen(screenId, stageId) {
+  // goToScreen respects the screen gate — showScreen will redirect if not allowed
   showScreen(screenId, 'Loading…');
   if (stageId) setStageActive(stageId);
 }
@@ -5688,6 +5893,11 @@ function capturePassportPhoto() {
 // ── CONFIRM PREVIEW → dup-check + DB insert (first time only) + payment ────
 // ── Step 1: Confirm & Submit — saves to DB, unlocks the pay button ──
 async function confirmApplication() {
+  // Hard block: if the DB record already has is_admission_form = true, refuse
+  if (App.loggedInRecord && App.loggedInRecord.is_admission_form === true) {
+    toast('Your application has already been submitted. No changes are allowed.', 'error');
+    return;
+  }
   const confirmBtn = document.getElementById('preview-confirm-btn');
   const editBtn    = document.getElementById('preview-edit-btn');
   const payBtn     = document.getElementById('preview-pay-btn');
@@ -6567,6 +6777,11 @@ function restorePreviewConfirmedState() {
 }
 
 function goBackToForm() {
+  // Block if form was already committed to DB
+  if (App.loggedInRecord && App.loggedInRecord.is_admission_form === true) {
+    toast('Your application has already been submitted and cannot be edited.', 'error');
+    return;
+  }
   // Mark that the student is editing after preview — form data is NOT yet in DB
   App._editingAfterPreview = true;
   App._savedToDb = false; // reset so a re-confirm will re-insert fresh data
@@ -6813,14 +7028,21 @@ function hideLoading() { document.getElementById('loading-overlay').classList.re
 
 // ── RESET ──
 function startNewApplication() {
-  if (!confirm('Start a new application? This will clear all current data.')) return;
-  Object.assign(App, { programType:'', studentId:'', paymentMethod:'', paymentRef:'', formData:{}, passportDataUrl:'', _savedToDb:false });
+  // This only logs out — it does NOT grant a new session.
+  // The next login will re-verify state from the DB.
+  if (!confirm('Sign out and start over? Your submitted application and any payment records are kept.')) return;
+  Object.assign(App, { programType:'', studentId:'', paymentMethod:'', paymentRef:'', formData:{},
+                        passportDataUrl:'', _savedToDb:false, loggedInRecord:null, _hasPaid:false });
   currentFormStep = 1; starRating = 0;
   document.querySelectorAll('input, select, textarea').forEach(el => { el.value = ''; });
   document.getElementById('global-nav').classList.remove('visible');
   document.querySelectorAll('.prog-card').forEach(c => c.classList.remove('selected'));
-  showScreen('screen-login', 'Returning to Sign In…');
-  toast('Session cleared. Please sign in again.', '');
+  // Use the raw DOM manipulation — do NOT call showScreen() here as App.loggedInRecord is now null
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const loginEl = document.getElementById('screen-login');
+  if (loginEl) loginEl.classList.add('active');
+  window.scrollTo(0, 0);
+  toast('Signed out. Please sign in again.', '');
 }
 
 // Attach live validation listeners once DOM is ready

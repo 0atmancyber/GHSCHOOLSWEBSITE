@@ -4019,10 +4019,42 @@ body {
 
     <!-- SUPERADMIN OVERVIEW / COMMAND CENTRE -->
     <div class="view" id="view-superadmin-overview">
-      <div class="section-header">
+      <div class="section-header" style="flex-wrap:wrap;gap:12px">
         <div>
           <h2>Command Centre</h2>
           <p id="superadminDate">Institution-wide overview</p>
+        </div>
+        <!-- ── Universal Search Bar ── -->
+        <div id="cmdSearchWrap" style="flex:1;min-width:280px;max-width:520px;position:relative">
+          <!-- Mode toggle pills -->
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <button id="cmdModeNav" onclick="setCmdMode('nav')"
+              style="display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid var(--primary);background:var(--primary);color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s">
+              <i class="fas fa-compass"></i> Navigate
+            </button>
+            <button id="cmdModeAI" onclick="setCmdMode('ai')"
+              style="display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid var(--gray-300);background:white;color:var(--gray-600);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s">
+              <i class="fas fa-sparkles"></i> Ask AI
+            </button>
+          </div>
+          <div style="position:relative">
+            <i id="cmdSearchIcon" class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-400);font-size:13px;pointer-events:none"></i>
+            <input id="cmdSearchInput" type="text" placeholder="Search sections, students, tools…"
+              autocomplete="off"
+              style="width:100%;padding:9px 38px 9px 34px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;color:var(--gray-800);background:white;outline:none;transition:border-color .15s,box-shadow .15s"
+              onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(192,57,43,.15)';cmdSearchShow()"
+              onblur="setTimeout(()=>{this.style.borderColor='var(--gray-200)';this.style.boxShadow='none';cmdSearchHide()},200)"
+              oninput="cmdSearchFilter(this.value)"
+              onkeydown="cmdSearchKeydown(event)">
+            <!-- Send button (AI mode only) -->
+            <button id="cmdAISendBtn" onclick="cmdAIAsk()" title="Ask AI"
+              style="display:none;position:absolute;right:7px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--primary),var(--gold));color:white;font-size:11px;cursor:pointer;align-items:center;justify-content:center">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+          <!-- Dropdown results -->
+          <div id="cmdSearchDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow-md);z-index:9999;max-height:480px;overflow-y:auto">
+          </div>
         </div>
         <div class="section-header-right">
           <button class="btn btn-primary btn-sm" onclick="loadSuperAdminDashboard()"><i class="fas fa-refresh"></i> Refresh All</button>
@@ -4488,6 +4520,10 @@ body {
             <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
           </div>
         </div>
+      </div>
+      <!-- ── ADMISSION PAYMENTS SOURCE BREAKDOWN STRIP ── -->
+      <div id="safAdmissionStrip" style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 18px;margin-bottom:16px;box-shadow:var(--shadow)">
+        <div style="font-size:12px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i> Loading admission payments…</div>
       </div>
       <!-- Full payments table -->
       <div class="card">
@@ -5317,7 +5353,7 @@ body {
       <div class="section-header">
         <div>
           <h2>Admission Payments</h2>
-          <p>Admission fee payments from the payments table</p>
+          <p>Admission form fee payments — cashier desk collections &amp; online (Paystack) payments</p>
         </div>
         <div class="section-header-right">
           <button class="btn btn-outline btn-sm" onclick="exportCashierAdmAP()"><i class="fas fa-download"></i> Export CSV</button>
@@ -5326,11 +5362,35 @@ body {
       </div>
 
       <!-- KPI strip -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px">
-        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="stat-value" id="cashApRevenue">—</div><div class="stat-label">Total Collected</div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="stat-value" id="cashApRevenue">—</div><div class="stat-label">Total Collected (Success)</div></div>
         <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="cashApSuccess">—</div><div class="stat-label">Successful</div></div>
         <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="cashApPending">—</div><div class="stat-label">Pending</div></div>
         <div class="stat-card red"><div class="stat-icon"><i class="fas fa-ban"></i></div><div class="stat-value" id="cashApFailed">—</div><div class="stat-label">Failed / Cancelled</div></div>
+      </div>
+
+      <!-- Payment Source Breakdown -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+        <div style="background:white;border:1px solid #fde68a;border-radius:var(--radius);padding:14px 16px;border-top:3px solid #d97706;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">
+            <div style="width:32px;height:32px;border-radius:9px;background:#fffbeb;display:flex;align-items:center;justify-content:center"><i class="fas fa-cash-register" style="color:#d97706;font-size:14px"></i></div>
+            <div><div style="font-size:11.5px;font-weight:700;color:#92400e">Cashier Desk</div><div style="font-size:10px;color:#a16207">Payments collected by staff at the cashier desk</div></div>
+          </div>
+          <div style="font-size:24px;font-weight:800;color:#d97706;font-family:'Fraunces',serif" id="cashApSrcCashierRev">—</div>
+          <div style="font-size:11px;font-weight:600;color:#78350f;margin-top:2px" id="cashApSrcCashierCount">— transactions</div>
+          <div style="height:5px;background:#fef3c7;border-radius:99px;margin-top:8px;overflow:hidden"><div id="cashApSrcCashierBar" style="height:100%;background:#d97706;border-radius:99px;transition:width .4s;width:0%"></div></div>
+          <div style="font-size:9.5px;color:#a16207;margin-top:3px" id="cashApSrcCashierPct">0% of successful collections</div>
+        </div>
+        <div style="background:white;border:1px solid #a7f3d0;border-radius:var(--radius);padding:14px 16px;border-top:3px solid #059669;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">
+            <div style="width:32px;height:32px;border-radius:9px;background:#ecfdf5;display:flex;align-items:center;justify-content:center"><i class="fas fa-credit-card" style="color:#059669;font-size:14px"></i></div>
+            <div><div style="font-size:11.5px;font-weight:700;color:#065f46">Online / Paystack</div><div style="font-size:10px;color:#047857">Student self-service payments via Paystack portal</div></div>
+          </div>
+          <div style="font-size:24px;font-weight:800;color:#059669;font-family:'Fraunces',serif" id="cashApSrcOnlineRev">—</div>
+          <div style="font-size:11px;font-weight:600;color:#065f46;margin-top:2px" id="cashApSrcOnlineCount">— transactions</div>
+          <div style="height:5px;background:#d1fae5;border-radius:99px;margin-top:8px;overflow:hidden"><div id="cashApSrcOnlineBar" style="height:100%;background:#059669;border-radius:99px;transition:width .4s;width:0%"></div></div>
+          <div style="font-size:9.5px;color:#047857;margin-top:3px" id="cashApSrcOnlinePct">0% of successful collections</div>
+        </div>
       </div>
 
       <div class="card">
@@ -5340,19 +5400,24 @@ body {
               <i class="fas fa-search"></i>
               <input class="form-input" id="cashApSearch" type="text" placeholder="Name, phone, email, reference code…" oninput="filterCashierAdmAP()">
             </div>
-            <select class="form-select" style="width:170px" id="cashApStatusFilter" onchange="filterCashierAdmAP()">
+            <select class="form-select" style="width:160px" id="cashApStatusFilter" onchange="filterCashierAdmAP()">
               <option value="">All Statuses</option>
-              <option value="approved">Approved</option>
+              <option value="success">Success</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select class="form-select" style="width:170px" id="cashApSourceFilter" onchange="filterCashierAdmAP()">
+              <option value="">All Sources</option>
+              <option value="cashier">Cashier Desk</option>
+              <option value="online">Online / Paystack</option>
             </select>
             <span id="cashApCount" style="font-size:12px;color:var(--gray-500);margin-left:auto"></span>
           </div>
         </div>
         <div class="data-table-wrap">
           <table class="data-table">
-            <thead><tr><th>Student ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Fee Type</th><th>Amount</th><th>Status</th><th>Receipt No.</th><th>Transaction Ref</th><th>Date</th></tr></thead>
+            <thead><tr><th>Ref Code</th><th>Name</th><th>Phone</th><th>Email</th><th>Amount</th><th>Source</th><th>Status</th><th>Portal Username</th><th>Payment Ref / Paystack</th><th>Date</th></tr></thead>
             <tbody id="cashApBody"><tr class="loading-row"><td colspan="10"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
           </table>
         </div>
@@ -13053,33 +13118,49 @@ async function loadFinanceDashboard() {
   try {
     const db = getDB();
     const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-    const [allRes, todayRes, pendingRes, fullRes] = await Promise.all([
+    const [allRes, todayRes, pendingRes, fullRes, admAllRes, admTodayRes] = await Promise.all([
       db.from('payments').select('amount,status,fee_type,created_at,payment_coverage').eq('status','approved'),
       db.from('payments').select('amount,id').gte('created_at', todayStart.toISOString()),
       db.from('payments').select('id,amount').eq('status','pending'),
       db.from('payments').select('amount,status,fee_type,created_at,source_table,source_payload,transaction_ref').order('created_at',{ascending:false}).limit(500),
+      // Admission payments — for combined revenue
+      db.from('admission_payments').select('amount,payment_status,paystack_transaction_id,payment_reference,created_at').eq('payment_status','success'),
+      db.from('admission_payments').select('amount,id').eq('payment_status','success').gte('created_at', todayStart.toISOString()),
     ]);
     const allData     = allRes.data || [];
     const todayData   = todayRes.data || [];
     const pendingData = pendingRes.data || [];
     const fullData    = fullRes.data || [];
+    const admAll      = admAllRes.data  || [];
+    const admToday    = admTodayRes.data || [];
 
-    const totalRev = allData.reduce((s,p) => s + parseFloat(p.amount||0), 0);
-    const todayRev = todayData.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+    // ── Admission revenue (successful only)
+    const admRev      = admAll.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+    const admTodayRev = admToday.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+
+    const totalRev = allData.reduce((s,p) => s + parseFloat(p.amount||0), 0) + admRev;
+    const todayRev = todayData.reduce((s,p) => s + parseFloat(p.amount||0), 0) + admTodayRev;
     const debtors  = (await db.from('payments').select('id',{count:'exact'}).eq('payment_coverage','Half Payment')).count || 0;
 
     document.getElementById('finTotalRevenue').textContent = formatGHS(totalRev);
     document.getElementById('finTodayRevenue').textContent = formatGHS(todayRev);
     document.getElementById('finPendingCount').textContent = pendingData.length;
     document.getElementById('finDebtorCount').textContent  = debtors;
-    document.getElementById('finRevenueChange').textContent = allData.length + ' transactions';
-    document.getElementById('finTodayCount').textContent = todayData.length + ' transactions';
+    document.getElementById('finRevenueChange').textContent = (allData.length + admAll.length) + ' transactions';
+    document.getElementById('finTodayCount').textContent = (todayData.length + admToday.length) + ' transactions';
 
-    // ── Finance Source Breakdown cards ──
+    // ── Finance Source Breakdown cards (tuition payments) ──
     let fdCashC=0,fdCashR=0,fdOnlineC=0,fdOnlineR=0;
     fullData.filter(p=>p.status==='approved').forEach(p=>{
       const src=getPaymentSource(p);const amt=parseFloat(p.amount||0);
       if(src.isCashier){fdCashC++;fdCashR+=amt;}else{fdOnlineC++;fdOnlineR+=amt;}
+    });
+    // Add admission payments to the source breakdown
+    admAll.forEach(p => {
+      const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+      const amt = parseFloat(p.amount||0);
+      if (isOnline) { fdOnlineC++; fdOnlineR += amt; }
+      else          { fdCashC++;   fdCashR   += amt; }
     });
     const fdTotal=fdCashC+fdOnlineC||1;
     const fdCashPct=Math.round(fdCashC/fdTotal*100);
@@ -13098,6 +13179,12 @@ async function loadFinanceDashboard() {
     // ── Finance Fee Type Chips ──
     const fdFeeMap={};
     allData.forEach(p=>{const ft=p.fee_type||'Other';fdFeeMap[ft]=(fdFeeMap[ft]||{count:0,rev:0});fdFeeMap[ft].count++;fdFeeMap[ft].rev+=parseFloat(p.amount||0);});
+    // Admission forms as a fee type
+    if (admAll.length) {
+      fdFeeMap['Admission Form'] = fdFeeMap['Admission Form'] || {count:0,rev:0};
+      fdFeeMap['Admission Form'].count += admAll.length;
+      fdFeeMap['Admission Form'].rev   += admRev;
+    }
     const fdTopFT=Object.entries(fdFeeMap).sort((a,b)=>b[1].rev-a[1].rev).slice(0,7);
     const fdFTColors=['#c0392b','#d4a017','#16a34a','#2563eb','#7c3aed','#0891b2','#f97316'];
     const fdFTEl=document.getElementById('finFeeTypeChips');
@@ -13110,9 +13197,10 @@ async function loadFinanceDashboard() {
         </span>`;}).join(''):'<span style="font-size:10px;color:var(--gray-400)">No data</span>';
     }
 
-    // Fee type breakdown chart
+    // Fee type breakdown chart (tuition only, admission separate)
     const byType = {};
     allData.forEach(p => { const k = p.fee_type||'Other'; byType[k] = (byType[k]||0) + parseFloat(p.amount||0); });
+    if (admRev > 0) byType['Admission Form'] = (byType['Admission Form']||0) + admRev;
     const sorted = Object.entries(byType).sort((a,b)=>b[1]-a[1]).slice(0,6);
     const colors = ['#16a34a','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2'];
     document.getElementById('finRevByType').innerHTML = sorted.length ? `
@@ -13129,9 +13217,14 @@ async function loadFinanceDashboard() {
         }).join('')}
       </div>` : '<div style="text-align:center;padding:24px;color:var(--gray-400)">No data</div>';
 
-    // Monthly breakdown
+    // Monthly breakdown (tuition + admission combined)
     const monthMap = {};
     allData.forEach(p => {
+      if (!p.created_at) return;
+      const m = new Date(p.created_at).toLocaleDateString('en-GH',{month:'short',year:'numeric'});
+      monthMap[m] = (monthMap[m]||0) + parseFloat(p.amount||0);
+    });
+    admAll.forEach(p => {
       if (!p.created_at) return;
       const m = new Date(p.created_at).toLocaleDateString('en-GH',{month:'short',year:'numeric'});
       monthMap[m] = (monthMap[m]||0) + parseFloat(p.amount||0);
@@ -14978,28 +15071,44 @@ async function loadSuperAdminFinance() {
   try {
     const db = getDB();
     const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-    const [allRes, todayRes, pendRes, wRes, allFull] = await Promise.all([
+    const [allRes, todayRes, pendRes, wRes, allFull, admAllRes, admTodayRes] = await Promise.all([
       db.from('payments').select('amount').eq('status','approved'),
       db.from('payments').select('amount').eq('status','approved').gte('created_at',todayStart.toISOString()),
       db.from('payments').select('amount').eq('status','pending'),
       db.from('fee_waivers').select('id',{count:'exact'}).limit(1),
       db.from('payments').select('*').order('created_at',{ascending:false}).limit(5000),
+      // Admission payments
+      db.from('admission_payments').select('amount,payment_status,paystack_transaction_id,payment_reference,created_at').eq('payment_status','success'),
+      db.from('admission_payments').select('amount').eq('payment_status','success').gte('created_at',todayStart.toISOString()),
     ]);
-    const allPay = allFull.data || [];
+    const allPay   = allFull.data || [];
+    const admAll   = admAllRes.data  || [];
+    const admToday = admTodayRes.data || [];
     const approved = allPay.filter(p=>p.status==='approved');
     const failCount = allPay.filter(p=>['failed','refunded'].includes(p.status)).length;
-    document.getElementById('safTotal').textContent    = formatGHS((allRes.data||[]).reduce((s,r)=>s+parseFloat(r.amount||0),0));
-    document.getElementById('safToday').textContent    = formatGHS((todayRes.data||[]).reduce((s,r)=>s+parseFloat(r.amount||0),0));
+
+    const admRev      = admAll.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+    const admTodayRev = admToday.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+    const tuitionRev  = (allRes.data||[]).reduce((s,r)=>s+parseFloat(r.amount||0),0);
+    const tuitionTodayRev = (todayRes.data||[]).reduce((s,r)=>s+parseFloat(r.amount||0),0);
+
+    document.getElementById('safTotal').textContent    = formatGHS(tuitionRev + admRev);
+    document.getElementById('safToday').textContent    = formatGHS(tuitionTodayRev + admTodayRev);
     document.getElementById('safPending').textContent  = formatGHS((pendRes.data||[]).reduce((s,r)=>s+parseFloat(r.amount||0),0));
     document.getElementById('safWaivers').textContent  = wRes.count||'0';
-    document.getElementById('safTxCount').textContent  = allPay.length.toLocaleString();
+    document.getElementById('safTxCount').textContent  = (allPay.length + admAll.length).toLocaleString();
     document.getElementById('safFailCount').textContent= failCount.toLocaleString();
 
-    // ── Finance Source Breakdown ──
+    // ── Finance Source Breakdown (tuition + admission combined) ──
     let finCashC=0,finCashR=0,finOnlineC=0,finOnlineR=0;
     approved.forEach(p=>{
       const src=getPaymentSource(p);const amt=parseFloat(p.amount||0);
       if(src.isCashier){finCashC++;finCashR+=amt;}else{finOnlineC++;finOnlineR+=amt;}
+    });
+    admAll.forEach(p=>{
+      const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+      const amt = parseFloat(p.amount||0);
+      if(isOnline){finOnlineC++;finOnlineR+=amt;}else{finCashC++;finCashR+=amt;}
     });
     const finSrcTotal=finCashC+finOnlineC||1;
     const finCashPct=Math.round(finCashC/finSrcTotal*100);
@@ -15018,6 +15127,11 @@ async function loadSuperAdminFinance() {
     // ── Finance Fee Type chips ──
     const finFeeMap={};
     approved.forEach(p=>{const ft=p.fee_type||'Other';finFeeMap[ft]=(finFeeMap[ft]||{count:0,rev:0});finFeeMap[ft].count++;finFeeMap[ft].rev+=parseFloat(p.amount||0);});
+    if (admAll.length) {
+      finFeeMap['Admission Form'] = finFeeMap['Admission Form'] || {count:0,rev:0};
+      finFeeMap['Admission Form'].count += admAll.length;
+      finFeeMap['Admission Form'].rev   += admRev;
+    }
     const finTopFT=Object.entries(finFeeMap).sort((a,b)=>b[1].rev-a[1].rev).slice(0,7);
     const finFTColors=['#c0392b','#d4a017','#16a34a','#2563eb','#7c3aed','#0891b2','#f97316'];
     const finFTEl=document.getElementById('finFeeTypeChips');
@@ -15030,9 +15144,14 @@ async function loadSuperAdminFinance() {
         </span>`;}).join(''):'<span style="font-size:10px;color:var(--gray-400)">No data</span>';
     }
 
-    // Monthly chart
+    // Monthly chart (tuition + admission combined)
     const monthMap = {};
     approved.forEach(p=>{
+      if (!p.created_at) return;
+      const m = new Date(p.created_at).toLocaleDateString('en-GH',{month:'short',year:'numeric'});
+      monthMap[m]=(monthMap[m]||0)+parseFloat(p.amount||0);
+    });
+    admAll.forEach(p=>{
       if (!p.created_at) return;
       const m = new Date(p.created_at).toLocaleDateString('en-GH',{month:'short',year:'numeric'});
       monthMap[m]=(monthMap[m]||0)+parseFloat(p.amount||0);
@@ -15051,8 +15170,12 @@ async function loadSuperAdminFinance() {
     // Status chart
     const statusMap = {};
     allPay.forEach(p=>{ const s=p.status||'unknown'; statusMap[s]=(statusMap[s]||0)+1; });
-    const statusColors = {approved:'#16a34a',pending:'#d4a017',failed:'#c0392b',refunded:'#64748b'};
-    const totalSt = allPay.length||1;
+    // Add admission payment statuses
+    (admAllRes.data||[]).concat(
+      ...(await db.from('admission_payments').select('payment_status').limit(5000)).data||[]
+    ).forEach(p=>{ const s=p.payment_status||'unknown'; statusMap[s]=(statusMap[s]||0)+1; });
+    const statusColors = {approved:'#16a34a',success:'#16a34a',pending:'#d4a017',failed:'#c0392b',cancelled:'#c0392b',refunded:'#64748b'};
+    const totalSt = Object.values(statusMap).reduce((a,b)=>a+b,0)||1;
     document.getElementById('safStatusChart').innerHTML = Object.entries(statusMap).length ? `
       <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px">
         ${Object.entries(statusMap).map(([s,n])=>{
@@ -15069,12 +15192,50 @@ async function loadSuperAdminFinance() {
         }).join('')}
       </div>` : '<div style="text-align:center;padding:24px;color:var(--gray-400)">No data</div>';
 
-    // Store for table
+    // Store for table (tuition payments only in the main ledger; admission shown separately)
     window._safAllPay = allPay;
     window._safFiltered = [...allPay];
     window._safPage = 1;
     renderFinanceTable();
+
+    // ── Admission Payments summary strip inside superadmin-finance ──
+    _renderSafAdmissionStrip(admAll, admRev);
+
   } catch(e) { toast('Finance summary error: '+e.message,'error'); }
+}
+
+// Renders a compact admission payment breakdown inside the superadmin finance view
+function _renderSafAdmissionStrip(admAll, admRev) {
+  const container = document.getElementById('safAdmissionStrip');
+  if (!container) return; // strip may not exist yet
+
+  let cashierC=0, cashierR=0, onlineC=0, onlineR=0;
+  admAll.forEach(p => {
+    const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+    const amt = parseFloat(p.amount||0);
+    if (isOnline) { onlineC++; onlineR+=amt; } else { cashierC++; cashierR+=amt; }
+  });
+  const srcTotal = cashierC + onlineC || 1;
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="font-size:12px;font-weight:700;color:var(--gray-600);white-space:nowrap">
+        <i class="fas fa-file-signature" style="color:var(--primary);margin-right:5px"></i>
+        Admission Form Fees — <span style="color:var(--green);font-family:'Fraunces',serif">${formatGHS(admRev)}</span>
+        <span style="font-size:10.5px;color:var(--gray-400);font-weight:500;margin-left:4px">(${admAll.length} successful payments)</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:#fffbeb;color:#92400e;border:1px solid #fde68a">
+          <i class="fas fa-cash-register" style="font-size:10px"></i> Cashier Desk
+          <span style="font-weight:800;color:#d97706">${formatGHS(cashierR)}</span>
+          <span style="font-size:10px;font-weight:500;opacity:.8">${cashierC} tx · ${Math.round(cashierC/srcTotal*100)}%</span>
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0">
+          <i class="fas fa-credit-card" style="font-size:10px"></i> Online / Paystack
+          <span style="font-weight:800;color:#059669">${formatGHS(onlineR)}</span>
+          <span style="font-size:10px;font-weight:500;opacity:.8">${onlineC} tx · ${Math.round(onlineC/srcTotal*100)}%</span>
+        </span>
+      </div>
+    </div>`;
 }
 
 const SAF_PAGE = 50;
@@ -16873,13 +17034,15 @@ let _cashApAll = [], _cashApFiltered = [], _cashApPage = 1;
 async function loadCashierAdmAP() {
   const tbody = document.getElementById('cashApBody');
   if (tbody) tbody.innerHTML = '<tr class="loading-row"><td colspan="10"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
-  ['cashApRevenue','cashApSuccess','cashApPending','cashApFailed'].forEach(id => {
+  ['cashApRevenue','cashApSuccess','cashApPending','cashApFailed',
+   'cashApSrcCashierRev','cashApSrcCashierCount','cashApSrcOnlineRev','cashApSrcOnlineCount'].forEach(id => {
     const el = document.getElementById(id); if (el) el.textContent = '—';
   });
   try {
     const db = getDB();
-    const { data, error } = await db.from('payments')
-      .select('id,student_id,student_name,student_email,phone,department,level,amount,fee_type,fee_breakdown,status,receipt_number,transaction_ref,payment_date,academic_year,created_at')
+    // Load from admission_payments — the correct table for form-purchase fees
+    const { data, error } = await db.from('admission_payments')
+      .select('id,first_name,last_name,email,phone,amount,currency,payment_status,payment_reference,paystack_transaction_id,reference_code,portal_username,created_at')
       .order('created_at', { ascending: false })
       .limit(2000);
     if (error) throw error;
@@ -16887,15 +17050,38 @@ async function loadCashierAdmAP() {
     _cashApFiltered = [..._cashApAll];
     _cashApPage = 1;
 
-    const approved = _cashApAll.filter(p => p.status === 'approved');
-    const pending  = _cashApAll.filter(p => p.status === 'pending').length;
-    const failed   = _cashApAll.filter(p => ['failed','refunded'].includes(p.status)).length;
-    const revenue  = approved.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+    const success  = _cashApAll.filter(p => (p.payment_status||'').toLowerCase() === 'success');
+    const pending  = _cashApAll.filter(p => (p.payment_status||'').toLowerCase() === 'pending').length;
+    const failed   = _cashApAll.filter(p => ['failed','cancelled'].includes((p.payment_status||'').toLowerCase())).length;
+    const revenue  = success.reduce((s,p) => s + parseFloat(p.amount||0), 0);
 
     document.getElementById('cashApRevenue').textContent = formatGHS(revenue);
-    document.getElementById('cashApSuccess').textContent = approved.length.toLocaleString();
+    document.getElementById('cashApSuccess').textContent = success.length.toLocaleString();
     document.getElementById('cashApPending').textContent = pending.toLocaleString();
     document.getElementById('cashApFailed').textContent  = failed.toLocaleString();
+
+    // ── Source breakdown: cashier (no paystack_transaction_id) vs online (has paystack_transaction_id)
+    let cashierC=0, cashierR=0, onlineC=0, onlineR=0;
+    success.forEach(p => {
+      const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+      const amt = parseFloat(p.amount||0);
+      if (isOnline) { onlineC++; onlineR += amt; }
+      else          { cashierC++; cashierR += amt; }
+    });
+    const srcTotal = cashierC + onlineC || 1;
+    const cashierPct = Math.round(cashierC / srcTotal * 100);
+    const onlinePct  = Math.round(onlineC  / srcTotal * 100);
+
+    const _setAP = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+    const _setAPW = (id,w) => { const e=document.getElementById(id); if(e) e.style.width=w+'%'; };
+    _setAP('cashApSrcCashierRev',   formatGHS(cashierR));
+    _setAP('cashApSrcCashierCount', cashierC.toLocaleString() + ' transaction' + (cashierC!==1?'s':''));
+    _setAP('cashApSrcCashierPct',   cashierPct + '% of successful collections');
+    _setAP('cashApSrcOnlineRev',    formatGHS(onlineR));
+    _setAP('cashApSrcOnlineCount',  onlineC.toLocaleString() + ' transaction' + (onlineC!==1?'s':''));
+    _setAP('cashApSrcOnlinePct',    onlinePct + '% of successful collections');
+    _setAPW('cashApSrcCashierBar',  cashierPct);
+    _setAPW('cashApSrcOnlineBar',   onlinePct);
 
     const cnt = document.getElementById('cashApCount');
     if (cnt) cnt.textContent = _cashApFiltered.length.toLocaleString() + ' records';
@@ -16907,20 +17093,23 @@ async function loadCashierAdmAP() {
 }
 
 function filterCashierAdmAP() {
-  const q  = (document.getElementById('cashApSearch')?.value || '').toLowerCase().trim();
-  const st = document.getElementById('cashApStatusFilter')?.value || '';
+  const q   = (document.getElementById('cashApSearch')?.value || '').toLowerCase().trim();
+  const st  = document.getElementById('cashApStatusFilter')?.value || '';
+  const src = document.getElementById('cashApSourceFilter')?.value || '';
   _cashApFiltered = _cashApAll.filter(p => {
-    const name = (p.student_name||'').toLowerCase();
-    const matchQ  = !q
+    const name = ([p.first_name, p.last_name].filter(Boolean).join(' ')).toLowerCase();
+    const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+    const matchQ   = !q
       || name.includes(q)
-      || (p.student_id||'').toLowerCase().includes(q)
       || (p.phone||'').includes(q)
-      || (p.student_email||'').toLowerCase().includes(q)
-      || (p.receipt_number||'').toLowerCase().includes(q)
-      || (p.transaction_ref||'').toLowerCase().includes(q)
-      || (p.fee_type||'').toLowerCase().includes(q);
-    const matchSt = !st || p.status === st;
-    return matchQ && matchSt;
+      || (p.email||'').toLowerCase().includes(q)
+      || (p.reference_code||'').toLowerCase().includes(q)
+      || (p.portal_username||'').toLowerCase().includes(q)
+      || (p.payment_reference||'').toLowerCase().includes(q)
+      || (p.paystack_transaction_id||'').toLowerCase().includes(q);
+    const matchSt  = !st  || (p.payment_status||'').toLowerCase() === st;
+    const matchSrc = !src || (src === 'online' ? isOnline : !isOnline);
+    return matchQ && matchSt && matchSrc;
   });
   _cashApPage = 1;
   const cnt = document.getElementById('cashApCount');
@@ -16939,22 +17128,29 @@ function renderCashAP() {
   const start = (_cashApPage - 1) * CASH_ADM_PAGE;
   const page  = _cashApFiltered.slice(start, start + CASH_ADM_PAGE);
   const payBadge = s => {
-    const map = { approved:'badge-success', pending:'badge-blue', failed:'badge-danger', refunded:'badge-danger' };
+    const map = { success:'badge-success', pending:'badge-blue', failed:'badge-danger', cancelled:'badge-danger' };
     return `<span class="badge ${map[(s||'pending').toLowerCase()]||'badge-blue'}" style="text-transform:capitalize">${s||'pending'}</span>`;
   };
+  const srcBadge = p => {
+    const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+    return isOnline
+      ? `<span class="src-paystack"><i class="fas fa-credit-card"></i> Online / Paystack</span>`
+      : `<span class="src-cashier"><i class="fas fa-cash-register"></i> Cashier Desk</span>`;
+  };
   tbody.innerHTML = page.map(p => {
-    const date = p.payment_date || p.created_at;
+    const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
+    const ref  = p.paystack_transaction_id || p.payment_reference || '—';
     return `<tr>
-      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.student_id||'—'}</td>
-      <td style="font-weight:600">${p.student_name||'—'}</td>
+      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.reference_code||'—'}</td>
+      <td style="font-weight:600">${name}</td>
       <td style="font-size:12px">${p.phone||'—'}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${p.student_email||'—'}</td>
-      <td style="font-size:11.5px;color:var(--gray-600)">${p.fee_type||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-500)">${p.email||'—'}</td>
       <td style="font-weight:700;color:var(--primary-dk)">${formatGHS(parseFloat(p.amount||0))}</td>
-      <td>${payBadge(p.status)}</td>
-      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.receipt_number||'—'}</td>
-      <td style="font-family:monospace;font-size:10px;color:var(--gray-400);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.transaction_ref||''}">${p.transaction_ref||'—'}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${date ? new Date(date).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
+      <td>${srcBadge(p)}</td>
+      <td>${payBadge(p.payment_status)}</td>
+      <td style="font-family:monospace;font-size:10.5px;color:var(--gray-500)">${p.portal_username||'—'}</td>
+      <td style="font-family:monospace;font-size:10px;color:var(--gray-400);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${ref}">${ref}</td>
+      <td style="font-size:11px;color:var(--gray-500)">${p.created_at ? new Date(p.created_at).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
     </tr>`;
   }).join('');
   renderCashAdmPagination('cashApPagination', _cashApFiltered.length, _cashApPage, p => { _cashApPage = p; renderCashAP(); });
@@ -16962,15 +17158,17 @@ function renderCashAP() {
 
 function exportCashierAdmAP() {
   if (!_cashApFiltered.length) { toast('No data to export', 'warning'); return; }
-  const headers = ['Student ID','Name','Phone','Email','Department','Level','Fee Type','Amount','Status','Receipt No.','Transaction Ref','Academic Year','Date'];
+  const headers = ['Reference Code','First Name','Last Name','Phone','Email','Amount','Currency','Payment Status','Source','Portal Username','Payment Ref / Paystack Tx','Date'];
   const rows = _cashApFiltered.map(p => {
-    const date = p.payment_date || p.created_at;
+    const isOnline = !!(p.paystack_transaction_id || (p.payment_reference||'').toUpperCase().startsWith('PSK-'));
+    const ref = p.paystack_transaction_id || p.payment_reference || '';
     return [
-      p.student_id||'', p.student_name||'', p.phone||'', p.student_email||'',
-      p.department||'', p.level||'', p.fee_type||'', p.amount||0,
-      p.status||'', p.receipt_number||'', p.transaction_ref||'',
-      p.academic_year||'',
-      date ? new Date(date).toLocaleDateString('en-GH') : ''
+      p.reference_code||'', p.first_name||'', p.last_name||'',
+      p.phone||'', p.email||'', p.amount||0, p.currency||'GHS',
+      p.payment_status||'',
+      isOnline ? 'Online / Paystack' : 'Cashier Desk',
+      p.portal_username||'', ref,
+      p.created_at ? new Date(p.created_at).toLocaleDateString('en-GH') : ''
     ];
   });
   downloadCSV(headers, rows, 'admission_payments_' + new Date().toISOString().slice(0,10) + '.csv');
@@ -18272,6 +18470,574 @@ async function saveStudentConversion() {
     btn.innerHTML = '<i class="fas fa-arrow-right-arrow-left"></i> Confirm Conversion';
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMAND CENTRE — Universal Search  +  AI Intelligence Layer
+   ═══════════════════════════════════════════════════════════════ */
+
+// ── Search index: every navigable section + quick-action keywords ──
+const CMD_SEARCH_INDEX = [
+  { label:'Command Centre',        sub:'Dashboard overview & KPIs',          icon:'fa-crown',             view:'superadmin-overview',     tags:'home overview kpi stats' },
+  { label:'User Management',       sub:'Create/edit admin & staff accounts',  icon:'fa-users-cog',         view:'superadmin-users',        tags:'users admin staff accounts roles password' },
+  { label:'Roles & Permissions',   sub:'Manage access roles',                 icon:'fa-shield-halved',     view:'superadmin-roles',        tags:'roles permissions access rights' },
+  { label:'Admissions Overview',   sub:'View all applicants & pipeline',      icon:'fa-file-pen',          view:'superadmin-admissions',   tags:'admissions applicants apply new student' },
+  { label:'Registry',              sub:'Student records & enrolment data',    icon:'fa-id-card',           view:'superadmin-registry',     tags:'registry enrolment students records' },
+  { label:'Finance Overview',      sub:'Payments, revenue & financial data',  icon:'fa-coins',             view:'superadmin-finance',      tags:'finance revenue money payments approved' },
+  { label:'Cashier Analytics',     sub:'Cashier desk transactions & shifts',  icon:'fa-cash-register',     view:'superadmin-cashier',      tags:'cashier transactions receipts shift report' },
+  { label:'Communications',        sub:'Announcements & messaging',           icon:'fa-bullhorn',          view:'superadmin-comms',        tags:'comms messages announcements broadcast' },
+  { label:'All Students',          sub:'Search & manage every student',       icon:'fa-user-graduate',     view:'superadmin-students',     tags:'students all search lookup profile' },
+  { label:'Departments',           sub:'Schools, faculties & programmes',     icon:'fa-building-columns',  view:'superadmin-departments',  tags:'departments schools faculties programmes courses' },
+  { label:'Audit Logs',            sub:'Full system activity log',            icon:'fa-scroll',            view:'superadmin-audit',        tags:'audit logs activity history events security' },
+  { label:'System Settings',       sub:'Configure institution settings',      icon:'fa-gear',              view:'superadmin-settings',     tags:'settings configuration system institution' },
+  { label:'Fee Schedule',          sub:'View & manage fee structure',         icon:'fa-file-invoice-dollar', view:'fee-schedule',           tags:'fee schedule tuition rates charges' },
+  { label:'Waivers',               sub:'Manage fee waivers & discounts',      icon:'fa-hand-holding-heart', view:'waivers',                tags:'waivers discount reduce fees' },
+  { label:'Pending Payments',      sub:'Payments awaiting approval',          icon:'fa-clock',             view:'finance-pending',         tags:'pending awaiting approval payments queue' },
+  { label:'Installments',          sub:'Manage payment installment plans',    icon:'fa-calendar-check',    view:'installments',            tags:'installments payment plan schedule' },
+  { label:'Outstanding Balances',  sub:'Students with outstanding fees',      icon:'fa-triangle-exclamation', view:'outstanding',          tags:'outstanding balances debtors owe debt' },
+  { label:'Receipts',              sub:'View and print payment receipts',     icon:'fa-receipt',           view:'receipts',                tags:'receipts print payment proof' },
+  { label:'Analytics',             sub:'Financial charts & trends',           icon:'fa-chart-bar',         view:'analytics',              tags:'analytics charts graphs trends revenue' },
+  { label:'Shift Report',          sub:'Daily cashier shift summary',         icon:'fa-clipboard-list',    view:'shift-report',            tags:'shift report cashier daily summary' },
+  { label:'Student Clearance',     sub:'Clearance certificates & status',     icon:'fa-certificate',       view:'registrar-clearance',     tags:'clearance certificate status graduate' },
+  { label:'Transcripts',           sub:'Academic transcripts management',     icon:'fa-file-lines',        view:'registrar-transcripts',   tags:'transcripts academic records results' },
+];
+
+const CMD_ICON_COLORS = {
+  'fa-crown':'#c0392b','fa-users-cog':'#7c3aed','fa-shield-halved':'#0891b2',
+  'fa-file-pen':'#0891b2','fa-id-card':'#7c3aed','fa-coins':'#16a34a',
+  'fa-cash-register':'#d97706','fa-bullhorn':'#c0392b','fa-user-graduate':'#c0392b',
+  'fa-building-columns':'#7c3aed','fa-scroll':'#64748b','fa-gear':'#64748b',
+  'fa-file-invoice-dollar':'#16a34a','fa-hand-holding-heart':'#d97706',
+  'fa-clock':'#d97706','fa-calendar-check':'#0891b2','fa-triangle-exclamation':'#c0392b',
+  'fa-receipt':'#64748b','fa-chart-bar':'#16a34a','fa-clipboard-list':'#d97706',
+  'fa-certificate':'#c0392b','fa-file-lines':'#7c3aed',
+};
+
+// ── Mode state: 'nav' = navigate sections | 'ai' = ask AI ──
+let _cmdMode = 'nav';
+let _cmdSearchVisible = false;
+let _cmdAIHistory = [];  // conversation history for multi-turn AI chat
+let _cmdAIBusy = false;
+
+function setCmdMode(mode) {
+  _cmdMode = mode;
+  const navBtn  = document.getElementById('cmdModeNav');
+  const aiBtn   = document.getElementById('cmdModeAI');
+  const inp     = document.getElementById('cmdSearchInput');
+  const icon    = document.getElementById('cmdSearchIcon');
+  const sendBtn = document.getElementById('cmdAISendBtn');
+  const dd      = document.getElementById('cmdSearchDropdown');
+
+  if (mode === 'nav') {
+    navBtn.style.cssText = 'display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid var(--primary);background:var(--primary);color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s';
+    aiBtn.style.cssText  = 'display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid var(--gray-300);background:white;color:var(--gray-600);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s';
+    inp.placeholder = 'Search sections, students, tools…';
+    icon.className  = 'fas fa-search';
+    icon.style.color = 'var(--gray-400)';
+    sendBtn.style.display = 'none';
+    if (dd) dd.style.display = 'none';
+    inp.value = '';
+  } else {
+    aiBtn.style.cssText  = 'display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid #7c3aed;background:#7c3aed;color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s';
+    navBtn.style.cssText = 'display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1.5px solid var(--gray-300);background:white;color:var(--gray-600);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s';
+    inp.placeholder = 'Ask anything about your institution…';
+    icon.className  = 'fas fa-sparkles';
+    icon.style.color = '#7c3aed';
+    sendBtn.style.display = 'flex';
+    inp.value = '';
+    inp.focus();
+    _cmdAIHistory = [];
+    cmdAIShowWelcome();
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   NAV MODE helpers (unchanged logic)
+   ───────────────────────────────────────────────────────────────── */
+
+function cmdSearchShow() {
+  _cmdSearchVisible = true;
+  if (_cmdMode === 'nav') {
+    cmdSearchFilter(document.getElementById('cmdSearchInput')?.value || '');
+  } else {
+    const dd = document.getElementById('cmdSearchDropdown');
+    if (dd && dd.innerHTML.trim()) dd.style.display = 'block';
+    else cmdAIShowWelcome();
+  }
+}
+
+function cmdSearchHide() {
+  _cmdSearchVisible = false;
+  const dd = document.getElementById('cmdSearchDropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+function cmdSearchFilter(query) {
+  if (_cmdMode === 'ai') return; // AI mode handles its own input
+  const dd = document.getElementById('cmdSearchDropdown');
+  if (!dd) return;
+  const q = (query || '').toLowerCase().trim();
+  let results = !q ? CMD_SEARCH_INDEX : CMD_SEARCH_INDEX.filter(item =>
+    item.label.toLowerCase().includes(q) ||
+    item.sub.toLowerCase().includes(q) ||
+    (item.tags && item.tags.toLowerCase().includes(q))
+  );
+  if (results.length === 0) {
+    dd.innerHTML = `<div style="padding:18px 16px;text-align:center;color:var(--gray-400);font-size:12.5px">
+      <i class="fas fa-magnifying-glass" style="font-size:18px;margin-bottom:6px;display:block"></i>
+      No results for "<strong>${query}</strong>"
+      <div style="margin-top:10px">
+        <button onclick="setCmdMode('ai');document.getElementById('cmdSearchInput').value='${query.replace(/'/g,"\\'")}';cmdAIAsk()"
+          style="padding:6px 14px;border-radius:99px;border:1.5px solid #7c3aed;background:#7c3aed18;color:#7c3aed;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit">
+          <i class="fas fa-sparkles"></i> Ask AI about "${query}"
+        </button>
+      </div>
+    </div>`;
+  } else {
+    let html = `<div style="padding:8px 14px 4px;font-size:10.5px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.7px">${q ? results.length+' result'+(results.length!==1?'s':'') : 'Browse all sections'}</div>`;
+    results.forEach(item => {
+      const col = CMD_ICON_COLORS[item.icon] || '#64748b';
+      let labelHtml = item.label;
+      if (q) {
+        const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+        labelHtml = item.label.replace(re, '<mark style="background:#fef08a;border-radius:2px;padding:0 1px">$1</mark>');
+      }
+      html += `<div class="cmd-search-item" onclick="cmdSearchGo('${item.view}')"
+        style="display:flex;align-items:center;gap:11px;padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s"
+        onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''">
+        <div style="width:32px;height:32px;border-radius:8px;background:${col}18;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas ${item.icon}" style="color:${col};font-size:13px"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--gray-800)">${labelHtml}</div>
+          <div style="font-size:11px;color:var(--gray-500)">${item.sub}</div>
+        </div>
+        <i class="fas fa-arrow-right" style="color:var(--gray-300);font-size:11px;flex-shrink:0"></i>
+      </div>`;
+    });
+    html += `<div style="padding:8px 14px;font-size:11px;color:var(--gray-400);text-align:center;border-top:1px solid var(--gray-100)">
+      <i class="fas fa-keyboard"></i> Type to filter · Click to navigate · <span onclick="setCmdMode('ai')" style="color:#7c3aed;cursor:pointer;font-weight:700"><i class="fas fa-sparkles"></i> Switch to AI</span>
+    </div>`;
+    dd.innerHTML = html;
+  }
+  dd.style.display = 'block';
+}
+
+function cmdSearchGo(view) {
+  const inp = document.getElementById('cmdSearchInput');
+  const dd  = document.getElementById('cmdSearchDropdown');
+  if (inp) inp.value = '';
+  if (dd)  dd.style.display = 'none';
+  if (typeof showView === 'function') showView(view);
+}
+
+function cmdSearchKeydown(e) {
+  if (e.key === 'Enter' && _cmdMode === 'ai') {
+    e.preventDefault();
+    cmdAIAsk();
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   AI MODE — data gathering from live Supabase
+   ───────────────────────────────────────────────────────────────── */
+
+async function cmdAIGatherContext() {
+  // Pull lightweight but comprehensive snapshots from every major table
+  const db = getDB();
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+
+  const [studRes, payRes, admPayRes, admAppRes, feeRes, planRes, waiverRes, userRes] = await Promise.allSettled([
+    // Confirmed columns: student_id, first_name, middle_name, surname, school, program, level
+    db.from('student_master_db').select('student_id,first_name,surname,school,program,level,created_at', {count:'exact'}).limit(2000),
+    // payments table — fully confirmed columns
+    db.from('payments').select('id,student_id,student_name,department,level,amount,fee_type,status,payment_date,created_at,source_table,source_payload,transaction_ref,receipt_number,academic_year,payment_coverage').order('created_at',{ascending:false}).limit(3000),
+    // admission_payments — confirmed: amount, payment_status, created_at, first_name, last_name
+    db.from('admission_payments').select('id,first_name,last_name,amount,payment_status,created_at').limit(1000),
+    // newstudents — confirmed: id, school_selected, status, created_at
+    db.from('newstudents').select('id,school_selected,status,created_at', {count:'exact'}).limit(1000),
+    // fee_schedules — select * is safe (confirmed used elsewhere)
+    db.from('fee_schedules').select('*').limit(200),
+    // payment_plans — may not exist, gracefully handled by allSettled
+    db.from('payment_plans').select('*').order('created_at',{ascending:false}).limit(500),
+    // fee_waivers — may not exist, gracefully handled by allSettled
+    db.from('fee_waivers').select('*').order('created_at',{ascending:false}).limit(500),
+    // admin_users — confirmed columns
+    db.from('admin_users').select('id,full_name,username,role,is_active,last_login').limit(100),
+  ]);
+
+  const getValue = r => (r.status === 'fulfilled' ? r.value.data || [] : []);
+  const getCount = r => (r.status === 'fulfilled' ? (r.value.count || getValue(r).length) : 0);
+
+  const students   = getValue(studRes);
+  const payments   = getValue(payRes);
+  const admPay     = getValue(admPayRes);
+  const admApps    = getValue(admAppRes);
+  const fees       = getValue(feeRes);
+  const plans      = getValue(planRes);
+  const waivers    = getValue(waiverRes);
+  const users      = getValue(userRes);
+
+  // ── Derived analytics ──
+  const approvedPay  = payments.filter(p => p.status === 'approved');
+  const pendingPay   = payments.filter(p => p.status === 'pending');
+  const totalRev     = approvedPay.reduce((s,p) => s + parseFloat(p.amount||0), 0);
+  const todayRev     = approvedPay.filter(p => p.created_at >= todayStart.toISOString()).reduce((s,p) => s + parseFloat(p.amount||0), 0);
+  const todayCount   = approvedPay.filter(p => p.created_at >= todayStart.toISOString()).length;
+
+  // Revenue by fee type
+  const feeTypeRev = {};
+  approvedPay.forEach(p => { const ft = p.fee_type||'Other'; feeTypeRev[ft] = (feeTypeRev[ft]||0)+parseFloat(p.amount||0); });
+
+  // Revenue by department
+  const deptRev = {};
+  approvedPay.forEach(p => { const d = p.department||'Unknown'; deptRev[d] = (deptRev[d]||0)+parseFloat(p.amount||0); });
+
+  // Revenue by month (last 12)
+  const monthRev = {};
+  approvedPay.forEach(p => {
+    if (!p.created_at) return;
+    const m = new Date(p.created_at).toLocaleDateString('en-GH',{month:'short',year:'numeric'});
+    monthRev[m] = (monthRev[m]||0)+parseFloat(p.amount||0);
+  });
+
+  // Student distribution by school/program
+  const schoolDist = {};
+  students.forEach(s => { const sc = s.school||'Unknown'; schoolDist[sc] = (schoolDist[sc]||0)+1; });
+
+  const levelDist = {};
+  students.forEach(s => { const lv = s.level||'Unknown'; levelDist[lv] = (levelDist[lv]||0)+1; });
+
+  // Cashier vs online split
+  let cashierRev=0, cashierCount=0, onlineRev=0, onlineCount=0;
+  approvedPay.forEach(p => {
+    const src = (p.source_table||'').toLowerCase();
+    const payload = p.source_payload||{};
+    const isCashier = src.includes('cashier')||src.includes('manual')||src.includes('general')||payload.collection_source==='cashier_desk'||payload.collected_by;
+    if (isCashier) { cashierRev+=parseFloat(p.amount||0); cashierCount++; }
+    else { onlineRev+=parseFloat(p.amount||0); onlineCount++; }
+  });
+
+  // Payment plans
+  const activePlans    = plans.filter(p => p.status==='active');
+  const completedPlans = plans.filter(p => p.status==='completed');
+  const totalOwed      = plans.reduce((s,p) => s+parseFloat(p.total_amount||0),0);
+  const totalCollected = plans.reduce((s,p) => s+parseFloat(p.amount_paid||0),0);
+
+  // Admissions app distribution
+  const admSchoolDist = {};
+  admApps.forEach(a => { const sc = a.school_selected||'Unknown'; admSchoolDist[sc] = (admSchoolDist[sc]||0)+1; });
+  const admApproved = admApps.filter(a => a.status==='approved').length;
+  const admPending  = admApps.filter(a => !a.status||a.status==='pending').length;
+  const admPaySuccess = admPay.filter(a => a.payment_status==='success');
+  const admPayRev   = admPaySuccess.reduce((s,a) => s+parseFloat(a.amount||0),0);
+
+  // Waivers
+  const totalWaived = waivers.reduce((s,w) => s+parseFloat(w.amount_waived||0),0);
+
+  // Top students by payment (for individual queries)
+  const studentPayMap = {};
+  approvedPay.forEach(p => {
+    if (!p.student_id) return;
+    if (!studentPayMap[p.student_id]) studentPayMap[p.student_id] = {name:p.student_name||p.student_id, total:0, count:0, fees:[]};
+    studentPayMap[p.student_id].total += parseFloat(p.amount||0);
+    studentPayMap[p.student_id].count++;
+    if (!studentPayMap[p.student_id].fees.includes(p.fee_type)) studentPayMap[p.student_id].fees.push(p.fee_type);
+  });
+
+  const now = new Date().toLocaleString('en-GH', {dateStyle:'full',timeStyle:'short'});
+
+  return {
+    generatedAt: now,
+    summary: {
+      totalEnrolledStudents: getCount(studRes),
+      totalPaymentTransactions: payments.length,
+      approvedTransactions: approvedPay.length,
+      pendingTransactions: pendingPay.length,
+      totalRevenue_GHS: totalRev,
+      todayRevenue_GHS: todayRev,
+      todayApprovedTransactions: todayCount,
+      totalAdmissionApplications: getCount(admAppRes),
+      admissionsApproved: admApproved,
+      admissionsPending: admPending,
+      admissionPaymentRevenue_GHS: admPayRev,
+      admissionPaymentCount: admPaySuccess.length,
+      cashierRevenue_GHS: cashierRev,
+      cashierTransactionCount: cashierCount,
+      onlinePortalRevenue_GHS: onlineRev,
+      onlinePortalTransactionCount: onlineCount,
+      activePlans: activePlans.length,
+      completedPlans: completedPlans.length,
+      totalOwedInPlans_GHS: totalOwed,
+      totalCollectedInPlans_GHS: totalCollected,
+      totalWaivedAmount_GHS: totalWaived,
+      totalWaiverCount: waivers.length,
+      activeAdminUsers: users.filter(u=>u.is_active).length,
+      totalAdminUsers: users.length,
+    },
+    revenueByFeeType: Object.entries(feeTypeRev).sort((a,b)=>b[1]-a[1]),
+    revenueByDepartment: Object.entries(deptRev).sort((a,b)=>b[1]-a[1]),
+    revenueByMonth: Object.entries(monthRev),
+    studentsBySchool: Object.entries(schoolDist).sort((a,b)=>b[1]-a[1]),
+    studentsByLevel: Object.entries(levelDist).sort((a,b)=>b[1]-a[1]),
+    adminUsers: users.map(u=>({username:u.username,fullName:u.full_name,role:u.role,isActive:u.is_active,lastLogin:u.last_login})),
+    feeScheduleSample: fees.slice(0,30).map(f=>({name:f.fee_name||f.name,amount:f.amount,type:f.fee_type||f.type,level:f.level,school:f.school,academicYear:f.academic_year})),
+    recentPayments: approvedPay.slice(0,30).map(p=>({studentId:p.student_id,studentName:p.student_name,amount:p.amount,feeType:p.fee_type,department:p.department,level:p.level,date:p.payment_date||p.created_at,receipt:p.receipt_number,ref:p.transaction_ref,coverage:p.payment_coverage,academicYear:p.academic_year})),
+    recentPendingPayments: pendingPay.slice(0,20).map(p=>({studentId:p.student_id,studentName:p.student_name,amount:p.amount,feeType:p.fee_type,department:p.department,date:p.payment_date||p.created_at})),
+    admissionsBySchool: Object.entries(admSchoolDist).sort((a,b)=>b[1]-a[1]),
+    recentAdmissionApplications: admApps.slice(0,30).map(a=>({school:a.school_selected,status:a.status,date:a.created_at})),
+    topPayingStudents: Object.entries(studentPayMap).sort((a,b)=>b[1].total-a[1].total).slice(0,15).map(([id,d])=>({studentId:id,name:d.name,totalPaid:d.total,transactionCount:d.count,feeTypes:d.fees})),
+    recentWaivers: waivers.slice(0,15).map(w=>({studentId:w.student_id,studentName:w.student_name,feeType:w.fee_type,waiverType:w.waiver_type,amountWaived:w.amount_waived,academicYear:w.academic_year})),
+    paymentPlans: plans.slice(0,20).map(p=>({studentId:p.student_id,studentName:p.student_name,totalAmount:p.total_amount,amountPaid:p.amount_paid,status:p.status})),
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   AI chat UI helpers
+   ───────────────────────────────────────────────────────────────── */
+
+function cmdAIShowWelcome() {
+  const dd = document.getElementById('cmdSearchDropdown');
+  if (!dd) return;
+
+  const suggestions = [
+    { icon:'fa-coins',      q:'What is the total revenue this year?',         color:'#16a34a' },
+    { icon:'fa-users',      q:'How many students are enrolled?',              color:'#2563eb' },
+    { icon:'fa-clock',      q:'Which payments are still pending?',            color:'#d97706' },
+    { icon:'fa-chart-bar',  q:'Which department generates the most revenue?', color:'#7c3aed' },
+    { icon:'fa-file-pen',   q:'What is the admissions status summary?',       color:'#0891b2' },
+    { icon:'fa-hand-holding-heart', q:'How much has been waived in fees?',    color:'#c0392b' },
+  ];
+
+  dd.innerHTML = `
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--gray-100)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#c0392b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-sparkles" style="color:white;font-size:12px"></i>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gray-800)">GH Schools AI Assistant</div>
+          <div style="font-size:11px;color:var(--gray-500)">Ask anything — I pull live data from the system to answer</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 14px 6px">
+      <div style="font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Suggested questions</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${suggestions.map(s => `
+          <div onclick="cmdAIQuickAsk(this.dataset.q)" data-q="${s.q}"
+            style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid var(--gray-100);transition:background .1s"
+            onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''">
+            <div style="width:26px;height:26px;border-radius:6px;background:${s.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fas ${s.icon}" style="color:${s.color};font-size:11px"></i>
+            </div>
+            <span style="font-size:12.5px;color:var(--gray-700)">${s.q}</span>
+            <i class="fas fa-arrow-right" style="margin-left:auto;color:var(--gray-300);font-size:10px;flex-shrink:0"></i>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div style="padding:8px 14px;font-size:11px;color:var(--gray-400);text-align:center;border-top:1px solid var(--gray-100)">
+      <i class="fas fa-lock" style="font-size:9px"></i> AI reads live data — answers are grounded in your actual system records
+    </div>`;
+  dd.style.display = 'block';
+}
+
+function cmdAIQuickAsk(q) {
+  const inp = document.getElementById('cmdSearchInput');
+  if (inp) inp.value = q;
+  cmdAIAsk();
+}
+
+function cmdAIAppendMessage(role, html, isStreaming) {
+  const dd = document.getElementById('cmdSearchDropdown');
+  if (!dd) return;
+
+  // First message replaces welcome, subsequent messages append
+  if (!dd.querySelector('.ai-chat-thread')) {
+    dd.innerHTML = `<div class="ai-chat-thread" style="display:flex;flex-direction:column;max-height:440px;overflow-y:auto;scroll-behavior:smooth"></div>
+      <div style="padding:8px 12px;border-top:1px solid var(--gray-100);display:flex;gap:6px;align-items:center;background:#fafaf8">
+        <span style="font-size:10px;color:var(--gray-400)"><i class="fas fa-sparkles" style="color:#7c3aed"></i> AI — Follow up or ask another question</span>
+        <button onclick="cmdAIClear()" style="margin-left:auto;padding:3px 9px;border-radius:6px;border:1px solid var(--gray-200);background:white;color:var(--gray-500);font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit">Clear</button>
+      </div>`;
+  }
+
+  const thread = dd.querySelector('.ai-chat-thread');
+  const bubble = document.createElement('div');
+  bubble.className = 'ai-bubble-' + role;
+
+  if (role === 'user') {
+    bubble.innerHTML = `<div style="display:flex;justify-content:flex-end;padding:8px 12px 2px">
+      <div style="max-width:85%;background:linear-gradient(135deg,var(--primary),#922b21);color:white;padding:9px 13px;border-radius:14px 14px 2px 14px;font-size:12.5px;font-weight:500;line-height:1.4">${html}</div>
+    </div>`;
+  } else {
+    bubble.id = isStreaming ? 'ai-streaming-bubble' : undefined;
+    bubble.innerHTML = `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px 2px">
+      <div style="width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#c0392b);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+        <i class="fas fa-sparkles" style="color:white;font-size:10px"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="ai-bubble-content" style="background:white;border:1px solid var(--gray-200);padding:10px 13px;border-radius:2px 14px 14px 14px;font-size:12.5px;line-height:1.6;color:var(--gray-800)">${html}</div>
+      </div>
+    </div>`;
+  }
+
+  thread.appendChild(bubble);
+  thread.scrollTop = thread.scrollHeight;
+  dd.style.display = 'block';
+  return bubble;
+}
+
+function cmdAIShowThinking() {
+  return cmdAIAppendMessage('assistant', `
+    <div style="display:flex;align-items:center;gap:8px;color:var(--gray-500)">
+      <div style="display:flex;gap:4px">
+        <div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:dotBounce 1.2s ease-in-out infinite"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:#c0392b;animation:dotBounce 1.2s ease-in-out .2s infinite"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:#d4a017;animation:dotBounce 1.2s ease-in-out .4s infinite"></div>
+      </div>
+      <span style="font-size:12px">Gathering live data & thinking…</span>
+    </div>`, true);
+}
+
+// Add dotBounce keyframe once
+(function(){
+  if (document.getElementById('ai-bounce-style')) return;
+  const s = document.createElement('style');
+  s.id = 'ai-bounce-style';
+  s.textContent = '@keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}';
+  document.head.appendChild(s);
+})();
+
+function cmdAIClear() {
+  _cmdAIHistory = [];
+  const dd = document.getElementById('cmdSearchDropdown');
+  if (dd) { dd.innerHTML = ''; dd.style.display = 'none'; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Core AI ask — fetches live data, builds context, calls Claude
+   ───────────────────────────────────────────────────────────────── */
+
+async function cmdAIAsk() {
+  if (_cmdAIBusy) return;
+  const inp = document.getElementById('cmdSearchInput');
+  const question = (inp?.value || '').trim();
+  if (!question) return;
+
+  _cmdAIBusy = true;
+  inp.value = '';
+
+  // Show user bubble
+  cmdAIAppendMessage('user', escapeHtml(question));
+
+  // Show thinking indicator
+  const thinkingBubble = cmdAIShowThinking();
+
+  try {
+    // 1. Gather real-time system data
+    const ctx = await cmdAIGatherContext();
+
+    // 2. Build the system prompt with full institutional context
+    const systemPrompt = `You are the GH Schools AI Intelligence Assistant — an expert analyst embedded inside the GH Schools University Management System superadmin dashboard.
+
+You have FULL ACCESS to real-time, live institutional data fetched directly from the Supabase database. Every number, name, and figure in the context below is accurate and current as of ${ctx.generatedAt}.
+
+SYSTEM CONTEXT (LIVE DATA):
+${JSON.stringify(ctx, null, 2)}
+
+YOUR MISSION:
+Answer the superadmin's question with extreme detail, precision, and intelligence. You must:
+1. ALWAYS cite exact numbers from the data above — never estimate or make up figures
+2. Provide DEEP ANALYSIS — not just facts, but what they mean, trends, comparisons, and recommendations
+3. Structure your response with clear sections using HTML formatting (bold headers, bullet points, highlighted figures)
+4. If the question is about a specific student, payment, department, or period — scan the data and pull exact matching records
+5. Always mention the data source (e.g. "Based on 3,000 payment records pulled live from the payments table...")
+6. If data is insufficient to answer fully, say so clearly and explain what additional query would be needed
+7. For financial questions, always include: total amounts in GHS, percentage breakdowns, comparisons, and trends
+8. For student questions, include: enrollment numbers, distribution by school/level/program
+9. For operational questions, include: cashier vs online splits, pending items, staff activity
+10. End with "📊 Data freshness:" and the timestamp
+
+FORMATTING RULES:
+- Use <strong> for key figures and section headers
+- Use <br> for line breaks
+- For lists, use • bullet points inline
+- Highlight important numbers like: <span style="color:#16a34a;font-weight:700">GHS X,XXX</span> for revenue, <span style="color:#c0392b;font-weight:700">X</span> for alerts
+- Keep responses concise but complete — no fluff, all substance`;
+
+    // 3. Add to conversation history for multi-turn support
+    _cmdAIHistory.push({ role: 'user', content: question });
+
+    // 4. Call Claude API
+    // NOTE: Must be served over HTTP/HTTPS (not file://) for CORS to work.
+    // If running locally, serve with: python -m http.server 8080
+    let response;
+    try {
+      response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-request-proxy': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: _cmdAIHistory,
+        })
+      });
+    } catch (corsErr) {
+      // CORS block — file:// origin. Give clear guidance.
+      throw new Error('CORS blocked: This system must be served via HTTP, not opened as a local file. Run: <code>python -m http.server 8080</code> then open <code>http://localhost:8080</code>');
+    }
+
+    if (!response.ok) {
+      const err = await response.json().catch(()=>({}));
+      throw new Error(err.error?.message || `API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const aiText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+
+    // Add assistant response to history
+    _cmdAIHistory.push({ role: 'assistant', content: aiText });
+
+    // 5. Replace thinking bubble with real answer
+    const thread = document.querySelector('.ai-chat-thread');
+    if (thread && thinkingBubble && thread.contains(thinkingBubble)) {
+      thinkingBubble.querySelector('.ai-bubble-content').innerHTML = aiText;
+    }
+
+  } catch (err) {
+    const isCors = err.message.includes('CORS');
+    const errMsg = isCors
+      ? `<span style="color:#c0392b;font-weight:700"><i class="fas fa-triangle-exclamation"></i> CORS Error</span><br>
+         <span style="font-size:12px;color:var(--gray-700)">The AI requires the system to be served over HTTP, not opened as a local file.<br><br>
+         <strong>Fix:</strong> Open a terminal in the folder containing this file and run:<br>
+         <code style="background:#f4f2ef;padding:3px 8px;border-radius:5px;font-size:11.5px;display:inline-block;margin-top:4px">python -m http.server 8080</code><br>
+         Then open <code style="background:#f4f2ef;padding:2px 6px;border-radius:4px;font-size:11.5px">http://localhost:8080</code> in your browser.</span>`
+      : `<span style="color:#c0392b"><i class="fas fa-triangle-exclamation"></i> <strong>Error:</strong> ${escapeHtml(err.message)}</span>`;
+    const thread = document.querySelector('.ai-chat-thread');
+    if (thread && thinkingBubble && thread.contains(thinkingBubble)) {
+      thinkingBubble.querySelector('.ai-bubble-content').innerHTML = errMsg;
+    }
+  } finally {
+    _cmdAIBusy = false;
+    inp?.focus();
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Close dropdown on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const inp = document.getElementById('cmdSearchInput');
+    if (inp && document.activeElement === inp) { inp.blur(); cmdSearchHide(); }
+  }
+});
 </script>
 </body>
 </html>

@@ -1977,15 +1977,25 @@ body {
     <div class="nav-item" onclick="showView('registrar-enrollment')">
       <i class="fas fa-user-plus"></i> Enrollment
     </div>
+    <div class="nav-section-label">Academic Services</div>
     <div class="nav-item" onclick="showView('registrar-transcripts')">
       <i class="fas fa-scroll"></i> Transcripts
     </div>
     <div class="nav-item" onclick="showView('registrar-clearance')">
       <i class="fas fa-shield-check"></i> Clearance
     </div>
+    <div class="nav-item" onclick="showView('registrar-graduation')">
+      <i class="fas fa-graduation-cap"></i> Graduation
+    </div>
+    <div class="nav-item" onclick="showView('registrar-deferral')">
+      <i class="fas fa-calendar-xmark"></i> Deferrals & Withdrawals
+    </div>
     <div class="nav-section-label">Reports</div>
     <div class="nav-item" onclick="showView('registrar-reports')">
       <i class="fas fa-file-chart-column"></i> Statistical Reports
+    </div>
+    <div class="nav-item" onclick="showView('registrar-analytics')">
+      <i class="fas fa-chart-line"></i> Analytics
     </div>
   </nav>
 
@@ -3635,92 +3645,215 @@ body {
 
     <!-- REGISTRAR OVERVIEW -->
     <div class="view" id="view-registrar-overview">
-      <div class="section-header">
+      <div class="section-header" style="flex-wrap:wrap;gap:12px">
         <div>
           <h2>Registrar Overview</h2>
           <p id="registrarDate">Academic records summary</p>
         </div>
-        <div class="section-header-right">
+        <div class="section-header-right" style="gap:8px">
+          <span id="regLastUpdated" style="font-size:11px;color:var(--gray-400);align-self:center"></span>
+          <button class="btn btn-outline btn-sm" onclick="exportRegistrarCSV()"><i class="fas fa-download"></i> Export</button>
           <button class="btn btn-primary btn-sm" onclick="loadRegistrarDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
         </div>
       </div>
 
-      <!-- Section: Continuing Students from student_master_db -->
+      <!-- ── HERO SUMMARY BANNER ── -->
+      <div style="background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 60%,#3d1515 100%);border-radius:16px;padding:20px 24px;margin-bottom:22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 8px 32px rgba(192,57,43,.25)">
+        <div style="flex:1;min-width:160px">
+          <div style="font-size:11px;font-weight:700;color:rgba(240,192,64,.7);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">TOTAL INSTITUTION ENROLMENT</div>
+          <div id="regHeroTotal" style="font-size:42px;font-weight:800;color:white;font-family:'Fraunces',serif;line-height:1">—</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:4px">Continuing + New Students</div>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px">
+            <div id="regHeroCont" style="font-size:22px;font-weight:800;color:#f0c040;font-family:'Fraunces',serif">—</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px">Continuing</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px">
+            <div id="regHeroNew" style="font-size:22px;font-weight:800;color:#22c55e;font-family:'Fraunces',serif">—</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px">New Applicants</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px">
+            <div id="regHeroToday" style="font-size:22px;font-weight:800;color:#e74c3c;font-family:'Fraunces',serif">—</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px">Applied Today</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px">
+            <div id="regHeroPending" style="font-size:22px;font-weight:800;color:#fbbf24;font-family:'Fraunces',serif">—</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px">Pending Action</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px">
+            <div id="regHeroApproved" style="font-size:22px;font-weight:800;color:#34d399;font-family:'Fraunces',serif">—</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px">Approved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Continuing Students -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <div style="width:4px;height:22px;background:linear-gradient(180deg,var(--primary),var(--gold));border-radius:2px"></div>
         <span style="font-size:13px;font-weight:700;color:var(--gray-700);letter-spacing:.3px">CONTINUING STUDENTS <span style="font-weight:400;color:var(--gray-400);font-size:11px">— student_master_db</span></span>
+        <button class="btn btn-outline btn-sm" onclick="showView('registrar-continuing')" style="margin-left:auto;font-size:11px"><i class="fas fa-arrow-right"></i> View All</button>
       </div>
       <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
-        <div class="stat-card blue" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('cont-all')">
+        <div class="stat-card blue ripple-host" style="cursor:pointer" onclick="openRegCardModal('cont-all')">
           <div class="stat-icon"><i class="fas fa-users"></i></div>
           <div class="stat-value" id="regContTotal">—</div>
           <div class="stat-label">Total Continuing</div>
           <div class="stat-change neutral" id="regStudentBreak">All programmes</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card green" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('cont-100')">
+        <div class="stat-card green ripple-host" style="cursor:pointer" onclick="openRegCardModal('cont-100')">
           <div class="stat-icon"><i class="fas fa-1"></i></div>
           <div class="stat-value" id="regContL1">—</div>
           <div class="stat-label">Level 100</div>
-          <div class="stat-change neutral">Year 1</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div class="stat-change neutral" id="regContL1Pct">Year 1</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card amber" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('cont-200')">
+        <div class="stat-card amber ripple-host" style="cursor:pointer" onclick="openRegCardModal('cont-200')">
           <div class="stat-icon"><i class="fas fa-2"></i></div>
           <div class="stat-value" id="regContL2">—</div>
           <div class="stat-label">Level 200</div>
-          <div class="stat-change neutral">Year 2</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div class="stat-change neutral" id="regContL2Pct">Year 2</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card red" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('cont-300')">
+        <div class="stat-card red ripple-host" style="cursor:pointer" onclick="openRegCardModal('cont-300')">
           <div class="stat-icon"><i class="fas fa-3"></i></div>
           <div class="stat-value" id="regContL3">—</div>
           <div class="stat-label">Level 300</div>
-          <div class="stat-change neutral">Year 3</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div class="stat-change neutral" id="regContL3Pct">Year 3</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card blue" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('cont-400')">
+        <div class="stat-card blue ripple-host" style="cursor:pointer" onclick="openRegCardModal('cont-400')">
           <div class="stat-icon"><i class="fas fa-4"></i></div>
           <div class="stat-value" id="regContL4">—</div>
           <div class="stat-label">Level 400</div>
-          <div class="stat-change neutral">Year 4</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div class="stat-change neutral" id="regContL4Pct">Year 4</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
       </div>
 
-      <!-- Section: New Applicants from newstudents -->
+      <!-- Section: New Applicants -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <div style="width:4px;height:22px;background:linear-gradient(180deg,var(--green),var(--green-lt));border-radius:2px"></div>
         <span style="font-size:13px;font-weight:700;color:var(--gray-700);letter-spacing:.3px">NEW APPLICANTS <span style="font-weight:400;color:var(--gray-400);font-size:11px">— newstudents</span></span>
+        <button class="btn btn-outline btn-sm" onclick="showView('registrar-students')" style="margin-left:auto;font-size:11px"><i class="fas fa-arrow-right"></i> View All</button>
       </div>
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
-        <div class="stat-card blue" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('ns-all')">
+        <div class="stat-card blue ripple-host" style="cursor:pointer" onclick="openRegCardModal('ns-all')">
           <div class="stat-icon"><i class="fas fa-file-signature"></i></div>
           <div class="stat-value" id="regTotalStudents">—</div>
           <div class="stat-label">Total Applicants</div>
           <div class="stat-change neutral">All intake</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card green" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('ns-today')">
+        <div class="stat-card green ripple-host" style="cursor:pointer" onclick="openRegCardModal('ns-today')">
           <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
           <div class="stat-value" id="regNewEnrollments">—</div>
           <div class="stat-label">Applied Today</div>
           <div class="stat-change up">New applications</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card amber" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('ns-pending')">
+        <div class="stat-card amber ripple-host" style="cursor:pointer" onclick="openRegCardModal('ns-pending')">
           <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
           <div class="stat-value" id="regClearancePending">—</div>
           <div class="stat-label">Pending Review</div>
           <div class="stat-change neutral">Awaiting action</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
         </div>
-        <div class="stat-card red" style="cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.13)'" onmouseleave="this.style.transform='';this.style.boxShadow=''" onclick="openRegCardModal('ns-approved')">
+        <div class="stat-card red ripple-host" style="cursor:pointer" onclick="openRegCardModal('ns-approved')">
           <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
           <div class="stat-value" id="regTranscriptReqs">—</div>
           <div class="stat-label">Approved</div>
           <div class="stat-change neutral">Applications</div>
-          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em">CLICK FOR DETAILS</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);margin-top:6px;letter-spacing:.06em;display:flex;align-items:center;gap:4px"><i class="fas fa-hand-pointer" style="font-size:8px"></i> CLICK FOR DETAILS</div>
+        </div>
+      </div>
+
+      <!-- ── CHARTS ROW ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <!-- Continuing Students Level Distribution Chart -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-chart-bar" style="color:var(--primary)"></i>
+            <h3>Continuing Students by Level</h3>
+          </div>
+          <div class="card-body" id="regLevelBarChart" style="min-height:180px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+        <!-- Application Status Donut -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-chart-donut" style="color:var(--green)"></i>
+            <h3>Application Status Distribution</h3>
+          </div>
+          <div class="card-body" id="regStatusDonut" style="min-height:180px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECOND CHARTS ROW ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <!-- Gender Breakdown -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-venus-mars" style="color:var(--gold-dk)"></i>
+            <h3>Gender Breakdown — All Students</h3>
+          </div>
+          <div class="card-body" id="regGenderChart" style="min-height:160px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+        <!-- Programme Type Split -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-graduation-cap" style="color:var(--primary)"></i>
+            <h3>Programme Type Split — New Applicants</h3>
+          </div>
+          <div class="card-body" id="regProgTypeChart" style="min-height:160px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCHOOL BREAKDOWN TABLE ── -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <i class="fas fa-building-columns" style="color:var(--primary)"></i>
+          <h3>Enrollment by School — Continuing Students</h3>
+          <div style="margin-left:auto;font-size:11.5px;color:var(--gray-500)" id="regSchoolBreakTimestamp"></div>
+        </div>
+        <div class="card-body" id="regSchoolBreakTable" style="min-height:100px">
+          <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+
+      <!-- ── RECENT APPLICATIONS + QUICK ACTIONS ── -->
+      <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-clock-rotate-left" style="color:var(--primary)"></i>
+            <h3>Recent Applications</h3>
+            <span id="regRecentCount" style="margin-left:8px;font-size:11px;background:var(--primary-50);color:var(--primary);border:1px solid var(--primary-100);padding:2px 8px;border-radius:99px;font-weight:700"></span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="regRecentApps" style="max-height:280px;overflow-y:auto">
+              <div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:200px">
+          <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Quick Actions</div>
+          <button class="btn btn-primary" onclick="showView('registrar-students')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-file-signature" style="width:16px"></i> New Applicants</button>
+          <button class="btn btn-outline" onclick="showView('registrar-continuing')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-id-card" style="width:16px"></i> Continuing Students</button>
+          <button class="btn btn-outline" onclick="showView('registrar-enrollment')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-user-plus" style="width:16px"></i> Enrollment</button>
+          <button class="btn btn-outline" onclick="showView('registrar-transcripts')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-scroll" style="width:16px"></i> Transcripts</button>
+          <button class="btn btn-outline" onclick="showView('registrar-clearance')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-shield-check" style="width:16px"></i> Clearance</button>
+          <button class="btn btn-outline" onclick="showView('registrar-reports')" style="justify-content:flex-start;gap:10px;width:100%"><i class="fas fa-chart-pie" style="width:16px"></i> Reports</button>
+          <div style="border-top:1px solid var(--gray-200);padding-top:10px;margin-top:2px">
+            <button class="btn btn-outline" onclick="exportRegistrarCSV()" style="justify-content:flex-start;gap:10px;width:100%;color:var(--green);border-color:var(--green-200)"><i class="fas fa-download" style="width:16px"></i> Export CSV</button>
+          </div>
         </div>
       </div>
 
@@ -4012,6 +4145,85 @@ body {
       </div>
     </div>
 
+
+    <!-- REGISTRAR GRADUATION VIEW -->
+    <div class="view" id="view-registrar-graduation">
+      <div class="section-header">
+        <div><h2>Graduation Tracking</h2><p>Monitor Level 400 students eligible for graduation</p></div>
+        <div class="section-header-right">
+          <button class="btn btn-outline btn-sm" onclick="exportRegistrarCSV()"><i class="fas fa-download"></i> Export</button>
+          <button class="btn btn-primary btn-sm" onclick="loadRegistrarGraduation()"><i class="fas fa-refresh"></i> Refresh</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+        <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-value" id="gradL400Total">—</div><div class="stat-label">Level 400 Students</div></div>
+        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-circle-check"></i></div><div class="stat-value" id="gradEligible">—</div><div class="stat-label">Eligible to Graduate</div></div>
+        <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-value" id="gradPending">—</div><div class="stat-label">Clearance Pending</div></div>
+        <div class="stat-card red"><div class="stat-icon"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="gradSchools">—</div><div class="stat-label">Schools</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-table" style="color:var(--primary)"></i><h3>Level 400 Students — Graduation Candidates</h3></div>
+        <div class="card-body" id="gradTableWrap" style="min-height:200px">
+          <div style="text-align:center;padding:48px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin" style="font-size:22px;display:block;margin-bottom:12px"></i>Loading graduation data…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRAR DEFERRALS & WITHDRAWALS VIEW -->
+    <div class="view" id="view-registrar-deferral">
+      <div class="section-header">
+        <div><h2>Deferrals &amp; Withdrawals</h2><p>Track students who have deferred, withdrawn, or are on leave of absence</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+        <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-calendar-xmark"></i></div><div class="stat-value">—</div><div class="stat-label">Deferred Students</div></div>
+        <div class="stat-card red"><div class="stat-icon"><i class="fas fa-user-minus"></i></div><div class="stat-value">—</div><div class="stat-label">Withdrawn</div></div>
+        <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-pause-circle"></i></div><div class="stat-value">—</div><div class="stat-label">Leave of Absence</div></div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:40px;text-align:center;color:var(--gray-400)">
+          <i class="fas fa-calendar-xmark" style="font-size:40px;margin-bottom:14px;display:block;color:var(--gold)"></i>
+          <p style="font-size:14px;font-weight:600;color:var(--gray-700)">Deferral &amp; Withdrawal Tracking</p>
+          <p style="font-size:12px;margin-top:6px">This feature requires a <code>student_deferrals</code> table in your database. Contact your database admin to configure.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="toast('Feature requires database configuration','info')"><i class="fas fa-database"></i> Configure Database</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRAR ANALYTICS VIEW -->
+    <div class="view" id="view-registrar-analytics">
+      <div class="section-header">
+        <div><h2>Analytics &amp; Insights</h2><p>Deep enrollment trends and institutional statistics</p></div>
+        <div class="section-header-right">
+          <button class="btn btn-primary btn-sm" onclick="loadRegistrarAnalytics()"><i class="fas fa-refresh"></i> Refresh</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+        <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="anKpiTotal">—</div><div class="stat-label">Total Enrolled</div></div>
+        <div class="stat-card green"><div class="stat-icon"><i class="fas fa-building-columns"></i></div><div class="stat-value" id="anKpiSchools">—</div><div class="stat-label">Active Schools</div></div>
+        <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-value" id="anKpiPrograms">—</div><div class="stat-label">Programmes</div></div>
+        <div class="stat-card red"><div class="stat-icon"><i class="fas fa-venus-mars"></i></div><div class="stat-value" id="anKpiGenderRatio">—</div><div class="stat-label">M:F Ratio</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <div class="card-header"><i class="fas fa-chart-bar" style="color:var(--primary)"></i><h3>Students per School</h3></div>
+          <div class="card-body" id="anSchoolChart" style="min-height:200px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><i class="fas fa-chart-pie" style="color:var(--gold-dk)"></i><h3>Level Distribution</h3></div>
+          <div class="card-body" id="anLevelChart" style="min-height:200px">
+            <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-table-list" style="color:var(--primary)"></i><h3>School × Level Matrix</h3></div>
+        <div class="card-body" id="anMatrixTable" style="overflow-x:auto;min-height:100px">
+          <div style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ══════════════════════════════════════════════════════════════
          SUPERADMIN DASHBOARD VIEWS
@@ -5564,6 +5776,59 @@ body {
     <!-- ══════ END COMMUNICATIONS VIEWS ══════ -->
 
 
+<!-- ══════ REGISTRAR CARD DETAIL MODAL (FIX: was missing) ══════ -->
+<div id="regCardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)" onclick="if(event.target===this)closeRegCardModal()">
+  <div style="background:white;border-radius:18px;width:100%;max-width:980px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.3);overflow:hidden">
+
+    <!-- Modal Header -->
+    <div style="background:linear-gradient(135deg,#1a0505,#2d0a0a);padding:18px 22px;display:flex;align-items:center;gap:14px;flex-shrink:0">
+      <div id="regCardModalIcon" style="background:#2563eb;color:#fff;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
+        <i class="fas fa-users"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div id="regCardModalTitle" style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:white;line-height:1.2">Student Details</div>
+        <div id="regCardModalSub" style="font-size:11.5px;color:rgba(255,255,255,.6);margin-top:2px"></div>
+      </div>
+      <button onclick="closeRegCardModal()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:white;width:34px;height:34px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:background .15s" onmouseenter="this.style.background='rgba(255,255,255,.2)'" onmouseleave="this.style.background='rgba(255,255,255,.1)'">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- KPI Strip -->
+    <div id="regCardModalKpis" style="display:grid;grid-template-columns:repeat(4,1fr);background:#f8faff;border-bottom:1px solid #e8ecf5;flex-shrink:0">
+    </div>
+
+    <!-- Search bar -->
+    <div style="padding:12px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;flex-shrink:0;background:white">
+      <div style="position:relative;flex:1;max-width:340px">
+        <i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400);font-size:12px;pointer-events:none"></i>
+        <input id="regCardModalSearch" type="text" placeholder="Search records…"
+          style="width:100%;padding:8px 12px 8px 32px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:12.5px;color:var(--gray-800);outline:none;transition:border-color .15s"
+          oninput="filterRegCardModal()"
+          onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-200)'">
+      </div>
+      <span id="regCardModalCount" style="font-size:11.5px;color:var(--gray-500);font-weight:600"></span>
+    </div>
+
+    <!-- Table -->
+    <div style="flex:1;overflow:auto;min-height:0">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+        <thead id="regCardModalThead" style="position:sticky;top:0;z-index:1;background:white"></thead>
+        <tbody id="regCardModalBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:12px 18px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafaf8">
+      <span id="regCardModalFooterNote" style="font-size:10.5px;color:var(--gray-400)"></span>
+      <button onclick="closeRegCardModal()" style="background:var(--gray-100);border:1px solid var(--gray-200);color:var(--gray-700);padding:7px 18px;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:background .15s" onmouseenter="this.style.background='var(--gray-200)'" onmouseleave="this.style.background='var(--gray-100)'">
+        Close
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══════ PAYMENT DETAIL MODAL ══════ -->
 <div id="paymentDetailModal" class="modal-wrapper" onclick="if(event.target===this)closeModal('paymentDetailModal')">
   <div class="modal modal-lg">
@@ -6442,6 +6707,9 @@ const viewTitles = {
   'registrar-transcripts':'Transcripts',
   'registrar-clearance':'Clearance',
   'registrar-reports':'Statistical Reports',
+  'registrar-graduation':'Graduation Tracking',
+  'registrar-deferral':'Deferrals & Withdrawals',
+  'registrar-analytics':'Analytics & Insights',
   // SuperAdmin
   'cashier-admissions':'Applicants — newstudents',
   'cashier-adm-payments':'Admission Payments',
@@ -6494,6 +6762,8 @@ function showView(name) {
   if (name === 'registrar-enrollment') loadRegistrarEnrollment();
   if (name === 'registrar-clearance') loadRegistrarClearance();
   if (name === 'registrar-reports') loadRegistrarReports();
+  if (name === 'registrar-graduation') loadRegistrarGraduation();
+  if (name === 'registrar-analytics') loadRegistrarAnalytics();
   if (name === 'cashier-admissions')   loadCashierAdmNS();
   if (name === 'cashier-adm-payments') loadCashierAdmAP();
   if (name === 'superadmin-admissions') loadSuperAdminAdmissions();
@@ -7211,8 +7481,6 @@ async function submitPayment() {
     status: status,
     source_table: 'cashier_manual',
     source_payload: sourcePayload,
-    academic_year: academicYear,
-    ecobank_validation_status: 'unused'
   };
 
   try {
@@ -7520,7 +7788,7 @@ async function loadPayments() {
     const db = getDB();
     const { data, error } = await db
       .from('payments')
-      .select('id,student_id,student_name,student_email,department,level,amount,phone,fee_type,fee_breakdown,payment_coverage,coverage_percent,transaction_ref,receipt_number,payment_date,status,source_table,source_payload,academic_year,ecobank_validation_status,created_at,updated_at')
+      .select('id,student_id,student_name,student_email,department,level,amount,phone,fee_type,fee_breakdown,payment_coverage,coverage_percent,transaction_ref,receipt_number,payment_date,status,source_table,source_payload,created_at,updated_at')
       .order('created_at', { ascending: false })
       .limit(2000);
     if (error) throw error;
@@ -7611,8 +7879,7 @@ function filterPayments() {
     if (ft  && p.fee_type !== ft) return false;
     if (pm  && (p.source_payload?.payment_method || p.source_payload?.method) !== pm) return false;
     if (lv  && String(p.level) !== lv) return false;
-    if (eco && p.ecobank_validation_status !== eco) return false;
-    if (yr  && p.academic_year !== yr) return false;
+    // academic_year / ecobank_validation_status not in this DB — filters skipped
     if (dfrom && (p.payment_date || '') < dfrom) return false;
     if (dto  && (p.payment_date || '').substr(0,10) > dto) return false;
     if (q) {
@@ -7816,7 +8083,7 @@ function renderPaymentsTable() {
     const isSelected = _selectedPaymentIds.has(p.id || globalIdx);
     const rowBg = isSelected ? 'background:rgba(192,57,43,.04)' : '';
     const method = p.source_payload?.payment_method || p.source_payload?.method || '—';
-    const eco = p.ecobank_validation_status || 'unused';
+    const eco = null; // ecobank_validation_status not in this DB
     return `
     <tr style="${rowBg}">
       <td><input type="checkbox" data-idx="${globalIdx}" data-id="${p.id||''}" onchange="togglePaymentRow(this)" ${isSelected?'checked':''} style="cursor:pointer"></td>
@@ -7935,8 +8202,8 @@ function bulkExportSelected() {
     p.receipt_number||'', p.student_id||'', p.student_name||'', p.student_email||'', p.phone||'',
     p.department||'', p.level||'', p.fee_type||'', p.fee_breakdown||'',
     p.amount||'', p.payment_coverage||'', p.coverage_percent||'',
-    p.payment_method||(p.source_payload?.payment_method||p.source_payload?.method)||'', p.transaction_ref||'', p.academic_year||'',
-    p.status||'', p.ecobank_validation_status||'', p.payment_date||'', p.source_table||''
+    p.payment_method||(p.source_payload?.payment_method||p.source_payload?.method)||'', p.transaction_ref||'',
+    p.status||'', p.payment_date||'', p.source_table||''
   ]);
   const csv = [headers,...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
@@ -8011,7 +8278,7 @@ function viewPaymentDetail(p) {
     <div style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:var(--radius-sm);font-size:12px">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div><span style="color:var(--gray-500)">Academic Year: </span><strong>${p.academic_year||'—'}</strong></div>
-        <div><span style="color:var(--gray-500)">Ecobank Status: </span><strong>${p.ecobank_validation_status||'—'}</strong></div>
+        
         <div><span style="color:var(--gray-500)">Payment Method: </span><strong>${p.payment_method||'—'}</strong></div>
         <div><span style="color:var(--gray-500)">Source: </span><strong>${p.source_table||'—'}</strong></div>
         <div><span style="color:var(--gray-500)">Created: </span><strong>${formatDate(p.created_at)}</strong></div>
@@ -8041,10 +8308,10 @@ async function loadAnalytics() {
 
     // Build query — filter by year only when one is selected and isn't empty
     let query = db.from('payments')
-      .select('student_id,amount,fee_type,level,status,payment_date,created_at,academic_year')
+      .select('student_id,amount,fee_type,level,status,payment_date,created_at')
       .order('created_at', { ascending: false })
       .limit(5000);
-    if (year) query = query.eq('academic_year', year);
+    // academic_year not in payments table — year filter skipped
 
     const { data, error } = await query;
     if (error) throw error;
@@ -8237,7 +8504,7 @@ function exportCSV() {
     p.fee_type||'', p.fee_breakdown||'', p.amount||'',
     p.payment_coverage||'', p.coverage_percent||'',
     p.payment_method||'', p.status||'', p.academic_year||'',
-    p.ecobank_validation_status||'', p.payment_date||'', p.source_table||'',
+    p.payment_date||'', p.source_table||'',
     p.created_at||'', p.updated_at||''
   ]);
   const csv = [headers, ...rows]
@@ -8557,7 +8824,7 @@ async function loadOutstanding() {
   const year = document.getElementById('outstandingYear')?.value || '';
   try {
     const db = getDB();
-    const { data, error } = await db.from('payments').select('*').eq('status','pending').eq('academic_year', year).order('payment_date',{ascending:false});
+    const { data, error } = await db.from('payments').select('*').eq('status','pending').order('payment_date',{ascending:false});
     if (error) throw error;
     _outstandingData = data || [];
     _outstandingFiltered = [..._outstandingData];
@@ -10772,7 +11039,6 @@ async function submitQuickCollect() {
         transaction_ref: txRef,
         receipt_number: receiptNumber,
         amount: amount,
-        academic_year: year,
         payment_date: new Date().toISOString(),
       }).eq('id', origId);
       if (error) throw error;
@@ -10794,11 +11060,9 @@ async function submitQuickCollect() {
         receipt_number: receiptNumber,
         payment_date: new Date().toISOString(),
         status: 'approved',
-        academic_year: year,
         payment_coverage: 'Full Payment',
         coverage_percent: 100,
         source_table: 'cashier_manual',
-        ecobank_validation_status: 'unused',
       };
       const { error } = await db.from('payments').insert([payload]);
       if (error) throw error;
@@ -10982,11 +11246,9 @@ async function recordInstallmentPayment() {
       transaction_ref:   genTxRef(),
       payment_date:      new Date().toISOString(),
       status:            'approved',
-      academic_year:     plan.academic_year,
       payment_coverage:  'Installment ' + nextInst.number + '/' + plan.installment_count,
       coverage_percent:  Math.round((nextInst.amount / plan.total_amount) * 100),
       source_table:      'payment_plan',
-      ecobank_validation_status: 'unused',
     };
     await db.from('payments').insert([payPayload]);
 
@@ -12157,8 +12419,6 @@ async function submitAdmissionPayment() {
       email:           s.email,
       payment_method:  method,
     },
-    academic_year:   new Date().getFullYear() + '/' + (new Date().getFullYear() + 1),
-    ecobank_validation_status: 'unused',
   };
 
   try {
@@ -12986,8 +13246,6 @@ async function submitGenLevelPayment() {
       payment_date:     new Date().toISOString(),
       status:           'approved',
       source_table:     'cashier_general',
-      academic_year:    acYear,
-      ecobank_validation_status: 'unused',
     };
   });
 
@@ -13077,8 +13335,6 @@ async function submitGeneralPayment() {
       payment_date:     new Date().toISOString(),
       status:           'approved',
       source_table:     'cashier_general',
-      academic_year:    acYear,
-      ecobank_validation_status: 'unused',
     };
   });
 
@@ -13371,7 +13627,7 @@ async function loadFinanceRevenue() {
   try {
     const db = getDB();
     let q = db.from('payments').select('*').order('created_at',{ascending:false}).limit(300);
-    if (year) q = q.eq('academic_year', year);
+    // academic_year not in payments table
     const { data, error } = await q;
     if (error) throw error;
     const rows = data || [];
@@ -13624,7 +13880,7 @@ async function openRegCardModal(cardKey) {
       let rows = [], from = 0, done = false;
       while (!done) {
         const { data: batch, error } = await db.from('student_master_db')
-          .select('student_id,full_name,school,pathway,program,level,gender,created_at')
+          .select('student_id,first_name,surname,school,pathway,program,level,created_at')
           .order('student_id', {ascending:true}).range(from, from+999);
         if (error) throw error;
         rows = rows.concat(batch || []);
@@ -13660,12 +13916,12 @@ async function openRegCardModal(cardKey) {
     const lvlColor = {'100':'#16a34a','200':'#d4a017','300':'#c0392b','400':'#6366f1'}[String(s.level)] || '#6b7280';
     return `<tr style="border-bottom:1px solid #f5f5f5;${i%2===0?'background:#fff':'background:#fafafa'}">
       <td style="padding:10px 14px;font-family:monospace;font-size:11px;color:#6b7280">${s.student_id||'—'}</td>
-      <td style="padding:10px 14px;font-weight:600;color:#1a1a2e">${s.full_name||'—'}</td>
+      <td style="padding:10px 14px;font-weight:600;color:#1a1a2e">${[s.first_name,s.surname].filter(Boolean).join(' ')||'—'}</td>
       <td style="padding:10px 14px;font-size:12px">${s.school||'—'}</td>
       <td style="padding:10px 14px;font-size:12px;color:#4b5563">${s.pathway||'—'}</td>
       <td style="padding:10px 14px;font-size:12px;color:#4b5563">${s.program||'—'}</td>
       <td style="padding:10px 14px;text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${lvlColor}18;color:${lvlColor};border:1px solid ${lvlColor}44">Lvl ${s.level||'—'}</span></td>
-      <td style="padding:10px 14px;font-size:12px;text-transform:capitalize;color:#4b5563">${s.gender||'—'}</td>
+      <td style="padding:10px 14px;font-size:12px;color:#4b5563">—</td>
       <td style="padding:10px 14px;font-size:11px;color:#9ca3af">${s.created_at?new Date(s.created_at).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}):'—'}</td>
     </tr>`;
   };
@@ -13917,10 +14173,20 @@ async function openRegCardModal(cardKey) {
 async function loadRegistrarDashboard() {
   document.getElementById('registrarDate').textContent =
     'Today — ' + new Date().toLocaleDateString('en-GH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const el = id => document.getElementById(id);
+  const set = (id,v) => { const e=el(id); if(e) e.textContent=v; };
+
+  // ── Spinner placeholders for charts
+  const chartIds = ['regLevelBarChart','regStatusDonut','regGenderChart','regProgTypeChart','regSchoolBreakTable','regRecentApps'];
+  chartIds.forEach(id => {
+    const e = el(id);
+    if (e) e.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin" style="font-size:20px"></i></div>';
+  });
+
   try {
     const db = getDB();
 
-    // ── 1. Fetch ALL continuing students from student_master_db (batched) ──
+    // ── 1. Fetch ALL continuing students (batched) ──
     let cont = [], _cFrom = 0, _cDone = false;
     while (!_cDone) {
       const { data: _cBatch, error: contErr } = await db.from('student_master_db')
@@ -13933,16 +14199,20 @@ async function loadRegistrarDashboard() {
     }
 
     const totalCont = cont.length;
-    const lvlCount = l => cont.filter(s => String(s.level||'') === String(l)).length;
-    document.getElementById('regContTotal').textContent = totalCont.toLocaleString();
-    document.getElementById('regContL1').textContent    = lvlCount('100').toLocaleString();
-    document.getElementById('regContL2').textContent    = lvlCount('200').toLocaleString();
-    document.getElementById('regContL3').textContent    = lvlCount('300').toLocaleString();
-    document.getElementById('regContL4').textContent    = lvlCount('400').toLocaleString();
+    const lvlCount  = l => cont.filter(s => String(s.level||'') === String(l)).length;
+    const l1 = lvlCount('100'), l2 = lvlCount('200'), l3 = lvlCount('300'), l4 = lvlCount('400');
+    const pct = (n,d) => d>0 ? Math.round(n/d*100)+'%' : '0%';
 
-    // ── 2. Fetch new applicants from newstudents ──
+    set('regContTotal', totalCont.toLocaleString());
+    set('regContL1', l1.toLocaleString()); set('regContL1Pct', pct(l1,totalCont) + ' of total');
+    set('regContL2', l2.toLocaleString()); set('regContL2Pct', pct(l2,totalCont) + ' of total');
+    set('regContL3', l3.toLocaleString()); set('regContL3Pct', pct(l3,totalCont) + ' of total');
+    set('regContL4', l4.toLocaleString()); set('regContL4Pct', pct(l4,totalCont) + ' of total');
+    set('regStudentBreak', `${totalCont.toLocaleString()} continuing`);
+
+    // ── 2. Fetch new applicants ──
     const { data: nsData, error: nsErr } = await db.from('newstudents')
-      .select('school_selected,program_duration,course_type,status,created_at').limit(3000);
+      .select('school_selected,program_duration,course_type,status,gender,region,first_name,middle_name,last_name,student_id,reference_code,created_at').limit(5000);
     if (nsErr) throw nsErr;
     const ns = nsData || [];
 
@@ -13950,15 +14220,253 @@ async function loadRegistrarDashboard() {
     const todayCount = ns.filter(s=>(s.created_at||'').startsWith(today)).length;
     const approved   = ns.filter(s=>(s.status||'').toLowerCase()==='approved').length;
     const pending    = ns.filter(s=>!s.status||(s.status||'').toLowerCase()==='pending').length;
+    const rejected   = ns.filter(s=>(s.status||'').toLowerCase()==='rejected').length;
 
-    document.getElementById('regTotalStudents').textContent  = ns.length.toLocaleString();
-    document.getElementById('regNewEnrollments').textContent = todayCount.toLocaleString();
-    document.getElementById('regClearancePending').textContent = pending.toLocaleString();
-    document.getElementById('regTranscriptReqs').textContent   = approved.toLocaleString();
-    if (document.getElementById('regStudentBreak'))
-      document.getElementById('regStudentBreak').textContent = `${cont.length.toLocaleString()} continuing`;
+    set('regTotalStudents',   ns.length.toLocaleString());
+    set('regNewEnrollments',  todayCount.toLocaleString());
+    set('regClearancePending',pending.toLocaleString());
+    set('regTranscriptReqs',  approved.toLocaleString());
 
-  } catch(e) { toast('Registrar dashboard error: ' + e.message, 'error'); }
+    // ── Hero Banner ──
+    const heroTotal = totalCont + ns.length;
+    set('regHeroTotal',    heroTotal.toLocaleString());
+    set('regHeroCont',     totalCont.toLocaleString());
+    set('regHeroNew',      ns.length.toLocaleString());
+    set('regHeroToday',    todayCount.toLocaleString());
+    set('regHeroPending',  pending.toLocaleString());
+    set('regHeroApproved', approved.toLocaleString());
+
+    // Timestamp
+    set('regLastUpdated', 'Updated ' + new Date().toLocaleTimeString('en-GH',{hour:'2-digit',minute:'2-digit'}));
+    set('regSchoolBreakTimestamp', new Date().toLocaleTimeString('en-GH',{hour:'2-digit',minute:'2-digit'}));
+
+    const COLORS = ['#c0392b','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#6366f1'];
+
+    // ── CHART 1: Level Bar Chart ──
+    (() => {
+      const data = [
+        {label:'Level 100', count:l1, color:'#16a34a'},
+        {label:'Level 200', count:l2, color:'#d4a017'},
+        {label:'Level 300', count:l3, color:'#c0392b'},
+        {label:'Level 400', count:l4, color:'#6366f1'},
+      ];
+      const maxV = Math.max(...data.map(d=>d.count), 1);
+      const BAR_H=38, LABEL_W=90, GAP=10, PAD=16, CHART_W=420, BAR_AREA=CHART_W-LABEL_W-60;
+      const svgH = PAD + data.length*(BAR_H+GAP) - GAP + PAD;
+      const bars = data.map(({label,count,color},i) => {
+        const barW = Math.round(count/maxV*BAR_AREA);
+        const y = PAD + i*(BAR_H+GAP);
+        const mid = y + BAR_H/2;
+        return `
+          <text x="${LABEL_W-8}" y="${mid+5}" text-anchor="end" font-family="DM Sans,sans-serif" font-size="12" font-weight="700" fill="#374151">${label}</text>
+          <rect x="${LABEL_W}" y="${y+4}" width="${barW||4}" height="${BAR_H-8}" rx="6" fill="${color}" opacity=".88"/>
+          <text x="${LABEL_W+barW+8}" y="${mid+5}" font-family="DM Sans,sans-serif" font-size="12" font-weight="800" fill="#111827">${count.toLocaleString()}</text>
+          <text x="${CHART_W-4}" y="${mid+5}" text-anchor="end" font-family="DM Sans,sans-serif" font-size="11" fill="#9ca3af">${totalCont>0?Math.round(count/totalCont*100):0}%</text>`;
+      }).join('');
+      const svgEl = el('regLevelBarChart');
+      if (svgEl) svgEl.innerHTML = `<svg viewBox="0 0 ${CHART_W} ${svgH}" width="100%" style="max-width:${CHART_W}px;display:block">${bars}</svg>`;
+    })();
+
+    // ── CHART 2: Application Status Donut ──
+    (() => {
+      const slicesData = [
+        {label:'Approved', count:approved, color:'#16a34a'},
+        {label:'Pending',  count:pending,  color:'#d4a017'},
+        {label:'Rejected', count:rejected, color:'#c0392b'},
+      ].filter(d=>d.count>0);
+      const totalNS = ns.length || 1;
+      const CX=90, CY=90, R_OUT=72, R_IN=42;
+      let ang = -Math.PI/2;
+      const paths = slicesData.map(({label,count,color}) => {
+        const a = (count/totalNS)*2*Math.PI;
+        const x1=CX+R_OUT*Math.cos(ang), y1=CY+R_OUT*Math.sin(ang);
+        const x2=CX+R_OUT*Math.cos(ang+a), y2=CY+R_OUT*Math.sin(ang+a);
+        const ix1=CX+R_IN*Math.cos(ang+a), iy1=CY+R_IN*Math.sin(ang+a);
+        const ix2=CX+R_IN*Math.cos(ang), iy2=CY+R_IN*Math.sin(ang);
+        const lg = a>Math.PI?1:0;
+        const d = `M${x1},${y1} A${R_OUT},${R_OUT} 0 ${lg} 1 ${x2},${y2} L${ix1},${iy1} A${R_IN},${R_IN} 0 ${lg} 0 ${ix2},${iy2} Z`;
+        ang += a;
+        return `<path d="${d}" fill="${color}" opacity=".9" stroke="#fff" stroke-width="2"/>`;
+      }).join('');
+      const legend = slicesData.map(({label,count,color})=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="width:12px;height:12px;border-radius:3px;background:${color};display:inline-block;flex-shrink:0"></span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:#111827">${count.toLocaleString()}</div>
+            <div style="font-size:10.5px;color:#6b7280">${label} (${Math.round(count/totalNS*100)}%)</div>
+          </div>
+        </div>`).join('');
+      const donutEl = el('regStatusDonut');
+      if (donutEl) donutEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:4px">
+          <svg viewBox="0 0 180 180" width="140" height="140" style="flex-shrink:0">
+            ${paths}
+            <text x="${CX}" y="${CY-6}" text-anchor="middle" font-family="DM Sans" font-size="20" font-weight="800" fill="#111827">${ns.length.toLocaleString()}</text>
+            <text x="${CX}" y="${CY+12}" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#6b7280">Total</text>
+          </svg>
+          <div style="flex:1;min-width:100px">${legend}</div>
+        </div>`;
+    })();
+
+    // ── CHART 3: Gender Breakdown (combined) ──
+    (() => {
+      const allStudents = [...cont, ...ns.map(s=>({gender:(s.gender||'').toLowerCase()}))];
+      const male   = allStudents.filter(s=>(s.gender||'').toLowerCase()==='male').length;
+      const female = allStudents.filter(s=>(s.gender||'').toLowerCase()==='female').length;
+      const other  = allStudents.length - male - female;
+      const total  = allStudents.length || 1;
+      const genderEl = el('regGenderChart');
+      if (genderEl) genderEl.innerHTML = `
+        <div style="padding:8px 0">
+          ${[['Male',male,'#2563eb'],['Female',female,'#db2777'],['Other/Unknown',other,'#9ca3af']].map(([lbl,n,c])=>{
+            const w = Math.round(n/total*100);
+            return `<div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                <span style="font-weight:600;color:#374151">${lbl}</span>
+                <span style="font-weight:700;color:${c}">${n.toLocaleString()} (${w}%)</span>
+              </div>
+              <div style="height:10px;background:#f3f4f6;border-radius:99px;overflow:hidden">
+                <div style="width:${w}%;height:100%;background:${c};border-radius:99px;transition:width .5s ease"></div>
+              </div>
+            </div>`;
+          }).join('')}
+          <div style="font-size:11px;color:#9ca3af;margin-top:8px">Total: ${allStudents.length.toLocaleString()} students combined</div>
+        </div>`;
+    })();
+
+    // ── CHART 4: Programme Type Split ──
+    (() => {
+      const _nsType = s => {
+        const ct = (s.course_type||s.program_duration||'').toLowerCase();
+        return ct.includes('coc')||ct.includes('cert') ? 'coc' : 'diploma';
+      };
+      const diploma = ns.filter(s=>_nsType(s)==='diploma').length;
+      const coc     = ns.filter(s=>_nsType(s)==='coc').length;
+      const total   = ns.length || 1;
+      const progEl  = el('regProgTypeChart');
+      if (progEl) progEl.innerHTML = `
+        <div style="padding:8px 0">
+          ${[['Diploma (2-Year)',diploma,'#16a34a'],['COC / Certificate',coc,'#d97706']].map(([lbl,n,c])=>{
+            const w = Math.round(n/total*100);
+            return `<div style="margin-bottom:16px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+                <span style="font-weight:700;color:#374151;display:flex;align-items:center;gap:6px">
+                  <span style="width:10px;height:10px;border-radius:3px;background:${c};display:inline-block"></span>${lbl}
+                </span>
+                <span style="font-weight:800;font-size:15px;color:${c}">${n.toLocaleString()}</span>
+              </div>
+              <div style="height:12px;background:#f3f4f6;border-radius:99px;overflow:hidden">
+                <div style="width:${w}%;height:100%;background:${c};border-radius:99px;transition:width .5s ease"></div>
+              </div>
+              <div style="font-size:10.5px;color:#9ca3af;margin-top:3px">${w}% of all new applicants</div>
+            </div>`;
+          }).join('')}
+        </div>`;
+    })();
+
+    // ── School Breakdown Table ──
+    (() => {
+      const schoolLabel = raw => {
+        if (!raw) return 'Unknown';
+        return raw.replace(/^GH\s+/i,'').replace(/\s+SCHOOL$/i,'').trim()
+          .split(' ').map(w=>w.charAt(0)+w.slice(1).toLowerCase()).join(' ');
+      };
+      const seen = new Set();
+      const bySchool = {};
+      const bySchoolLevel = {};
+      cont.forEach(s => {
+        const uid = s.student_id||Math.random();
+        if (seen.has(uid)) return; seen.add(uid);
+        const k = schoolLabel(s.school);
+        bySchool[k] = (bySchool[k]||0) + 1;
+        if (!bySchoolLevel[k]) bySchoolLevel[k] = {100:0,200:0,300:0,400:0};
+        const lvl = String(s.level||'');
+        if (['100','200','300','400'].includes(lvl)) bySchoolLevel[k][lvl]++;
+      });
+      const sorted = Object.entries(bySchool).sort((a,b)=>b[1]-a[1]);
+      const maxV = Math.max(...sorted.map(([,c])=>c), 1);
+      const tEl = el('regSchoolBreakTable');
+      if (!tEl) return;
+      if (!sorted.length) { tEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--gray-400)">No data available</div>'; return; }
+      tEl.innerHTML = `
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+            <thead>
+              <tr style="background:#f8faff;border-bottom:2px solid #e5e7eb">
+                <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em">School</th>
+                <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Total</th>
+                <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase">L100</th>
+                <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#d4a017;text-transform:uppercase">L200</th>
+                <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#c0392b;text-transform:uppercase">L300</th>
+                <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#6366f1;text-transform:uppercase">L400</th>
+                <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sorted.map(([school,count],i)=>{
+                const lvls = bySchoolLevel[school]||{};
+                const barW = Math.round(count/maxV*100);
+                const schoolTotal = cont.length||1;
+                const pct2 = Math.round(count/schoolTotal*100);
+                return `<tr style="border-bottom:1px solid #f5f5f5;${i%2===0?'':'background:#fafafa'}">
+                  <td style="padding:10px 14px;font-weight:700;color:#111827">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="width:8px;height:8px;border-radius:50%;background:${COLORS[i%COLORS.length]};display:inline-block;flex-shrink:0"></span>
+                      ${school}
+                    </div>
+                  </td>
+                  <td style="padding:10px 14px;text-align:right;font-weight:800;font-size:14px;color:#111827">${count.toLocaleString()}</td>
+                  <td style="padding:10px 14px;text-align:right;color:#16a34a;font-weight:600">${(lvls[100]||0).toLocaleString()}</td>
+                  <td style="padding:10px 14px;text-align:right;color:#d4a017;font-weight:600">${(lvls[200]||0).toLocaleString()}</td>
+                  <td style="padding:10px 14px;text-align:right;color:#c0392b;font-weight:600">${(lvls[300]||0).toLocaleString()}</td>
+                  <td style="padding:10px 14px;text-align:right;color:#6366f1;font-weight:600">${(lvls[400]||0).toLocaleString()}</td>
+                  <td style="padding:10px 14px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="flex:1;height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;min-width:60px">
+                        <div style="width:${barW}%;height:100%;background:${COLORS[i%COLORS.length]};border-radius:99px"></div>
+                      </div>
+                      <span style="font-size:11px;color:#6b7280;font-weight:600;white-space:nowrap">${pct2}%</span>
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    })();
+
+    // ── Recent Applications ──
+    (() => {
+      const recent = [...ns].sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'')).slice(0,10);
+      const rEl = el('regRecentApps');
+      const cEl = el('regRecentCount');
+      if (cEl) cEl.textContent = todayCount + ' today';
+      if (!rEl) return;
+      if (!recent.length) { rEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:12px">No recent applications</div>'; return; }
+      rEl.innerHTML = recent.map((s,i)=>{
+        const name = [s.first_name,s.middle_name,s.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const st = (s.status||'pending').toLowerCase();
+        const stColor = st==='approved'?'#16a34a':st==='rejected'?'#c0392b':'#d4a017';
+        const stBg    = st==='approved'?'#f0fdf4':st==='rejected'?'#fdf2f2':'#fffdf0';
+        const initials= name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        const avatarColor = ['#c0392b','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2'][i%6];
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--gray-100);${i===0?'border-top:none':''}">
+          <div style="width:34px;height:34px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0">${initials}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:12.5px;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+            <div style="font-size:11px;color:#6b7280;margin-top:1px">${s.school_selected||'—'} · ${s.program_applying_for||s.course_type||'—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <span style="display:inline-block;padding:3px 9px;border-radius:99px;font-size:10.5px;font-weight:700;background:${stBg};color:${stColor};border:1px solid ${stColor}33;text-transform:capitalize">${st}</span>
+            <div style="font-size:10px;color:#9ca3af;margin-top:3px">${s.created_at?new Date(s.created_at).toLocaleDateString('en-GH',{day:'2-digit',month:'short'}):'—'}</div>
+          </div>
+        </div>`;
+      }).join('');
+    })();
+
+  } catch(e) {
+    toast('Registrar dashboard error: ' + e.message, 'error');
+  }
 }
 
 async function loadRegistrarStudents() {
@@ -14214,6 +14722,158 @@ async function loadRegistrarEnrollment() {
 
 async function loadRegistrarClearance() {
   toast('Clearance table not configured yet. Contact your database admin.','info');
+}
+
+async function loadRegistrarGraduation() {
+  const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  const wEl = document.getElementById('gradTableWrap');
+  if (wEl) wEl.innerHTML = '<div style="text-align:center;padding:48px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin" style="font-size:22px;display:block;margin-bottom:12px"></i>Loading Level 400 students…</div>';
+  try {
+    const db = getDB();
+    let students = [], from = 0, done = false;
+    while (!done) {
+      const { data: batch } = await db.from('student_master_db')
+        .select('student_id,first_name,surname,school,pathway,program,level,created_at')
+        .eq('level','400')
+        .order('student_id',{ascending:true}).range(from, from+999);
+      if (!batch || !batch.length) { done = true; break; }
+      students = students.concat(batch);
+      if (batch.length < 1000) done = true; else from += 1000;
+    }
+    const schoolSet = new Set(students.map(s=>s.school).filter(Boolean));
+    set('gradL400Total', students.length.toLocaleString());
+    set('gradEligible', students.length.toLocaleString());
+    set('gradPending', '0');
+    set('gradSchools', schoolSet.size.toLocaleString());
+
+    const COLORS = ['#c0392b','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2'];
+    if (wEl) {
+      if (!students.length) {
+        wEl.innerHTML = '<div style="text-align:center;padding:48px;color:var(--gray-400)"><i class="fas fa-graduation-cap" style="font-size:32px;display:block;margin-bottom:12px;opacity:.4"></i>No Level 400 students found</div>';
+        return;
+      }
+      wEl.innerHTML = `
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+            <thead><tr style="background:#f8faff;border-bottom:2px solid #e5e7eb">
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Student ID</th>
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Full Name</th>
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">School</th>
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Programme</th>
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Enrolled</th>
+              <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase">Status</th>
+            </tr></thead>
+            <tbody>
+              ${students.map((s,i)=>`<tr style="border-bottom:1px solid #f5f5f5;${i%2===0?'':'background:#fafafa'}">
+                <td style="padding:10px 14px;font-family:monospace;font-size:11px;color:#6b7280">${s.student_id||'—'}</td>
+                <td style="padding:10px 14px;font-weight:600;color:#111827">${[s.first_name,s.surname].filter(Boolean).join(' ')||'—'}</td>
+                <td style="padding:10px 14px;font-size:12px">${s.school||'—'}</td>
+                <td style="padding:10px 14px;font-size:12px;color:#4b5563">${s.program||s.pathway||'—'}</td>
+                <td style="padding:10px 14px;font-size:11px;color:#9ca3af">${s.created_at?new Date(s.created_at).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}):'—'}</td>
+                <td style="padding:10px 14px"><span style="padding:3px 10px;border-radius:99px;font-size:10.5px;font-weight:700;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">Eligible</span></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+  } catch(e) { toast('Graduation load error: '+e.message,'error'); }
+}
+
+async function loadRegistrarAnalytics() {
+  const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  const spinners = ['anSchoolChart','anLevelChart','anMatrixTable'];
+  spinners.forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML='<div style="text-align:center;padding:32px;color:var(--gray-400)"><i class="fas fa-spinner fa-spin"></i></div>'; });
+  try {
+    const db = getDB();
+    let cont = [], from = 0, done = false;
+    while (!done) {
+      const { data: batch } = await db.from('student_master_db')
+        .select('student_id,school,pathway,program,level')
+        .order('student_id',{ascending:true}).range(from, from+999);
+      if (!batch || !batch.length) { done = true; break; }
+      cont = cont.concat(batch);
+      if (batch.length < 1000) done = true; else from += 1000;
+    }
+    // Dedup
+    const seen = new Set();
+    const students = cont.filter(s=>{ const uid=s.student_id; if(!uid||seen.has(uid)) return false; seen.add(uid); return true; });
+    const total = students.length;
+    const schoolLabel = raw => (!raw?'Unknown':raw.replace(/^GH\s+/i,'').replace(/\s+SCHOOL$/i,'').trim().split(' ').map(w=>w.charAt(0)+w.slice(1).toLowerCase()).join(' '));
+    const bySchool = {}; const byLevel = {100:0,200:0,300:0,400:0}; const byProgram = {};
+    const male = students.filter(s=>(s.gender||'').toLowerCase()==='male').length;
+    const female = students.filter(s=>(s.gender||'').toLowerCase()==='female').length;
+    students.forEach(s=>{
+      const k = schoolLabel(s.school); bySchool[k]=(bySchool[k]||0)+1;
+      const lvl = parseInt(s.level||0); if([100,200,300,400].includes(lvl)) byLevel[lvl]++;
+      const p = s.program||'Unknown'; byProgram[p]=(byProgram[p]||0)+1;
+    });
+    const schoolsSorted = Object.entries(bySchool).sort((a,b)=>b[1]-a[1]);
+    const mRatio = female>0 ? (male/female).toFixed(1) : male>0 ? '∞' : 'N/A';
+    set('anKpiTotal', total.toLocaleString());
+    set('anKpiSchools', schoolsSorted.length.toLocaleString());
+    set('anKpiPrograms', Object.keys(byProgram).length.toLocaleString());
+    set('anKpiGenderRatio', mRatio+':1');
+
+    const COLORS = ['#c0392b','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#6366f1'];
+    const maxV = Math.max(...schoolsSorted.map(([,c])=>c),1);
+    const BAR_H=32,LABEL_W=110,GAP=8,PAD=14,CHART_W=400,BAR_AREA=CHART_W-LABEL_W-60;
+    const svgH = PAD + schoolsSorted.length*(BAR_H+GAP) - GAP + PAD;
+    const schoolBars = schoolsSorted.map(([label,count],i)=>{
+      const barW=Math.round(count/maxV*BAR_AREA), y=PAD+i*(BAR_H+GAP), mid=y+BAR_H/2;
+      return `<text x="${LABEL_W-8}" y="${mid+5}" text-anchor="end" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="#374151">${label}</text>
+        <rect x="${LABEL_W}" y="${y+3}" width="${barW||4}" height="${BAR_H-6}" rx="5" fill="${COLORS[i%COLORS.length]}" opacity=".88"/>
+        <text x="${LABEL_W+barW+7}" y="${mid+5}" font-family="DM Sans,sans-serif" font-size="11" font-weight="800" fill="#111827">${count.toLocaleString()}</text>`;
+    }).join('');
+    const sEl = document.getElementById('anSchoolChart');
+    if (sEl) sEl.innerHTML = `<div style="overflow-x:auto"><svg viewBox="0 0 ${CHART_W} ${svgH}" width="100%">${schoolBars}</svg></div>`;
+
+    // Level donut
+    const lSlicesData = [{label:'L100',count:byLevel[100],color:'#16a34a'},{label:'L200',count:byLevel[200],color:'#d4a017'},{label:'L300',count:byLevel[300],color:'#c0392b'},{label:'L400',count:byLevel[400],color:'#6366f1'}].filter(d=>d.count>0);
+    const CX=90,CY=90,R_OUT=72,R_IN=42; let ang=-Math.PI/2;
+    const lPaths = lSlicesData.map(({count,color})=>{
+      const a=(count/total)*2*Math.PI;
+      const x1=CX+R_OUT*Math.cos(ang),y1=CY+R_OUT*Math.sin(ang),x2=CX+R_OUT*Math.cos(ang+a),y2=CY+R_OUT*Math.sin(ang+a);
+      const ix1=CX+R_IN*Math.cos(ang+a),iy1=CY+R_IN*Math.sin(ang+a),ix2=CX+R_IN*Math.cos(ang),iy2=CY+R_IN*Math.sin(ang);
+      const lg=a>Math.PI?1:0;
+      const d=`M${x1},${y1} A${R_OUT},${R_OUT} 0 ${lg} 1 ${x2},${y2} L${ix1},${iy1} A${R_IN},${R_IN} 0 ${lg} 0 ${ix2},${iy2} Z`;
+      ang+=a;
+      return `<path d="${d}" fill="${color}" opacity=".9" stroke="#fff" stroke-width="2"/>`;
+    }).join('');
+    const lLegend = lSlicesData.map(({label,count,color})=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:12px;height:12px;border-radius:3px;background:${color};display:inline-block;flex-shrink:0"></span><div><div style="font-weight:700;font-size:13px;color:#111827">${count.toLocaleString()}</div><div style="font-size:10.5px;color:#6b7280">${label} (${total>0?Math.round(count/total*100):0}%)</div></div></div>`).join('');
+    const lEl = document.getElementById('anLevelChart');
+    if (lEl) lEl.innerHTML = `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:4px"><svg viewBox="0 0 180 180" width="140" height="140" style="flex-shrink:0">${lPaths}<text x="${CX}" y="${CY-6}" text-anchor="middle" font-family="DM Sans" font-size="20" font-weight="800" fill="#111827">${total.toLocaleString()}</text><text x="${CX}" y="${CY+12}" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#6b7280">Students</text></svg><div style="flex:1;min-width:100px">${lLegend}</div></div>`;
+
+    // School × Level Matrix
+    const matEl = document.getElementById('anMatrixTable');
+    if (matEl && schoolsSorted.length) {
+      const bySchoolLevel2 = {};
+      students.forEach(s=>{
+        const k=schoolLabel(s.school); if(!bySchoolLevel2[k]) bySchoolLevel2[k]={100:0,200:0,300:0,400:0};
+        const lvl=parseInt(s.level||0); if([100,200,300,400].includes(lvl)) bySchoolLevel2[k][lvl]++;
+      });
+      matEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f8faff;border-bottom:2px solid #e5e7eb">
+          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">School</th>
+          ${[100,200,300,400].map(l=>`<th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase">Level ${l}</th>`).join('')}
+          <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:700;color:#374151;text-transform:uppercase">Total</th>
+        </tr></thead>
+        <tbody>${schoolsSorted.map(([school,count],i)=>{
+          const lvls = bySchoolLevel2[school]||{};
+          return `<tr style="border-bottom:1px solid #f5f5f5;${i%2===0?'':'background:#fafafa'}">
+            <td style="padding:9px 12px;font-weight:600;color:#111827">${school}</td>
+            ${[100,200,300,400].map(l=>`<td style="padding:9px 12px;text-align:center;color:#374151">${(lvls[l]||0).toLocaleString()}</td>`).join('')}
+            <td style="padding:9px 12px;text-align:center;font-weight:800;color:var(--primary)">${count.toLocaleString()}</td>
+          </tr>`;
+        }).join('')}
+        <tr style="background:#f8faff;border-top:2px solid #e5e7eb;font-weight:800">
+          <td style="padding:9px 12px;font-weight:800;color:#374151">TOTALS</td>
+          ${[100,200,300,400].map(l=>`<td style="padding:9px 12px;text-align:center;font-weight:800;color:var(--primary)">${byLevel[l].toLocaleString()}</td>`).join('')}
+          <td style="padding:9px 12px;text-align:center;font-weight:800;color:var(--primary)">${total.toLocaleString()}</td>
+        </tr>
+        </tbody>
+      </table>`;
+    }
+  } catch(e) { toast('Analytics error: '+e.message,'error'); }
 }
 
 async function loadRegistrarReports() {
@@ -15352,7 +16012,7 @@ async function loadSuperAdminAudit() {
     // ── Fetch ALL rows (no artificial limits) ─────────────────────────────────
     const [feePayments, admPayments, newStudents, enrolledStudents] = await Promise.all([
       _fetchAll(db, 'payments',
-        'id,created_at,updated_at,student_id,student_name,student_email,phone,fee_type,fee_breakdown,amount,status,department,level,receipt_number,transaction_ref,source_table,source_payload,academic_year,ecobank_validation_status,payment_date,payment_coverage,coverage_percent'),
+        'id,created_at,updated_at,student_id,student_name,student_email,phone,fee_type,fee_breakdown,amount,status,department,level,receipt_number,transaction_ref,source_table,source_payload,payment_date,payment_coverage,coverage_percent'),
       _fetchAll(db, 'admission_payments',
         'id,created_at,first_name,last_name,phone,email,amount,currency,payment_status,reference_code,portal_username,paystack_transaction_id'),
       _fetchAll(db, 'newstudents',
@@ -15458,8 +16118,8 @@ async function loadSuperAdminAudit() {
         p.payment_coverage? `<span style="font-size:9.5px;padding:1px 6px;border-radius:99px;background:#dbeafe;color:#1e40af">${p.payment_coverage}${p.coverage_percent?` (${p.coverage_percent}%)`:''}</span>` : '',
         p.receipt_number? `<span style="font-family:monospace;font-size:10px;background:var(--gray-100);padding:1px 5px;border-radius:4px">RCP#${p.receipt_number}</span>` : '',
         p.transaction_ref? `<span style="font-family:monospace;font-size:9.5px;color:var(--gray-400)">Tx:${p.transaction_ref}</span>` : '',
-        p.ecobank_validation_status && p.ecobank_validation_status!=='pending' && p.ecobank_validation_status!=='unused'
-          ? `<span style="font-size:9px;font-weight:700;color:#065f46;background:#d1fae5;padding:1px 6px;border-radius:99px">Ecobank:${p.ecobank_validation_status}</span>` : '',
+        false /* ecobank_validation_status not in this DB */
+          ? '' : '',
       ].filter(Boolean).join(' · ');
       const actor = [p.student_name, p.student_id?`(${p.student_id})`:'' , (p.student_email||p.phone)?`<span style="color:var(--gray-400);font-size:10px">${p.student_email||p.phone}</span>`:''].filter(Boolean).join(' ');
       entries.push({ dt:p.created_at, role, action, actor, detail, amount:p.amount, status:p.status, _raw:p, _table:'payments' });
@@ -15721,11 +16381,11 @@ function _showAuditDetail(idx) {
     if(r.fee_breakdown)   rows.push(['Fee Breakdown',  r.fee_breakdown]);
     if(r.department)      rows.push(['Department',     r.department]);
     if(r.level)           rows.push(['Level',          r.level]);
-    if(r.academic_year)   rows.push(['Academic Year',  r.academic_year]);
+    // academic_year not in payments table
     if(r.payment_coverage)rows.push(['Coverage',       r.payment_coverage+(r.coverage_percent?` (${r.coverage_percent}%)`:'')]);
     if(r.receipt_number)  rows.push(['Receipt No.',    r.receipt_number]);
     if(r.transaction_ref) rows.push(['Transaction Ref',r.transaction_ref]);
-    if(r.ecobank_validation_status) rows.push(['Ecobank Status',r.ecobank_validation_status]);
+    // ecobank_validation_status not in payments table
     if(r.payment_date)    rows.push(['Payment Date',   new Date(r.payment_date).toLocaleString('en-GH')]);
   } else if(e._table==='admission_payments'){
     if(r.reference_code)  rows.push(['Reference Code', r.reference_code]);
@@ -15945,7 +16605,7 @@ function renderCashierTable(){
     <td style="font-family:monospace;font-size:10px;color:var(--gray-400);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.transaction_ref||''}">${r.transaction_ref||'—'}</td>
     <td>${paySourceBadge(r)}</td>
     <td style="font-size:11px;font-weight:600;color:var(--gray-700)">${collectedBy?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:#fef3c7;color:#92400e;border:1px solid #fde68a"><i class="fas fa-user-tie" style="font-size:9px"></i>${collectedBy}</span>`:'<span style="color:var(--gray-300);font-size:11px">—</span>'}</td>
-    <td style="font-size:11px">${r.ecobank_validation_status||'—'}</td>
+    <td style="font-size:11px">—</td>
     <td>${statusBadge(r.status||'pending')}</td>
   </tr>`;}).join('');
   renderSacPagination();
@@ -18650,7 +19310,7 @@ async function cmdAIGatherContext() {
     // Confirmed columns: student_id, first_name, middle_name, surname, school, program, level
     db.from('student_master_db').select('student_id,first_name,surname,school,program,level,created_at', {count:'exact'}).limit(2000),
     // payments table — fully confirmed columns
-    db.from('payments').select('id,student_id,student_name,department,level,amount,fee_type,status,payment_date,created_at,source_table,source_payload,transaction_ref,receipt_number,academic_year,payment_coverage').order('created_at',{ascending:false}).limit(3000),
+    db.from('payments').select('id,student_id,student_name,department,level,amount,fee_type,status,payment_date,created_at,source_table,source_payload,transaction_ref,receipt_number,payment_coverage').order('created_at',{ascending:false}).limit(3000),
     // admission_payments — confirmed: amount, payment_status, created_at, first_name, last_name
     db.from('admission_payments').select('id,first_name,last_name,amount,payment_status,created_at').limit(1000),
     // newstudents — confirmed: id, school_selected, status, created_at

@@ -758,6 +758,12 @@
       height: 150px;
       background: rgba(255, 255, 255, .08);
       border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .register-banner-text {
+      position: relative;
+      z-index: 1;
     }
 
     .register-banner-text h3 {
@@ -1012,6 +1018,7 @@
       height: 100px;
       background: rgba(255, 255, 255, .08);
       border-radius: 50%;
+      pointer-events: none;
     }
 
     .arrears-banner-icon {
@@ -1042,65 +1049,120 @@
       opacity: .85;
     }
 
-    /* Receipt styled */
+    /* ═══════════════════════════════════════════════════
+       OFFICIAL RECEIPT — BLACK & WHITE FORMAL DOCUMENT
+    ═══════════════════════════════════════════════════ */
     .receipt-document {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border: 2px solid #111;
+      border-radius: 0;
       overflow: hidden;
+      background: #fff;
+      color: #111;
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    /* Top border accent line */
+    .receipt-document::before {
+      content: '';
+      display: block;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #111 0px, #111 8px, #fff 8px, #fff 12px);
     }
 
     .receipt-header-strip {
-      background: var(--primary);
-      padding: 24px;
+      background: #111;
+      padding: 28px 24px 22px;
       text-align: center;
       color: #fff;
+      position: relative;
+    }
+
+    .receipt-header-strip::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: repeating-linear-gradient(90deg, #555 0px, #555 6px, #111 6px, #111 10px);
     }
 
     .receipt-school-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .receipt-school-subtitle {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.65);
+      margin-top: 4px;
     }
 
     .receipt-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 255, 255, .15);
-      border: 1px solid rgba(255, 255, 255, .25);
-      border-radius: 30px;
-      padding: 5px 14px;
-      font-size: 12px;
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,.5);
+      border-radius: 0;
+      padding: 5px 16px;
+      font-size: 11px;
       font-weight: 700;
-      margin-top: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 12px;
     }
 
     .receipt-amount-hero {
-      background: var(--success-light);
-      padding: 20px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #ccc;
+      padding: 22px 24px;
       text-align: center;
-      border-bottom: 1px solid rgba(0, 196, 140, .15);
+      position: relative;
     }
 
+    .receipt-amount-hero::before,
+    .receipt-amount-hero::after {
+      content: '✦';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #999;
+    }
+    .receipt-amount-hero::before { left: 20px; }
+    .receipt-amount-hero::after  { right: 20px; }
+
     .receipt-amount-label {
-      font-size: 12px;
-      color: var(--text-muted);
+      font-size: 10px;
+      color: #666;
       font-weight: 600;
-      margin-bottom: 4px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
 
     .receipt-amount-value {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 36px;
-      font-weight: 800;
-      color: var(--success);
+      font-size: 40px;
+      font-weight: 900;
+      color: #111;
       letter-spacing: -1px;
       animation: successPop 0.5s cubic-bezier(.34, 1.56, .64, 1) both;
     }
 
     .receipt-body {
-      padding: 20px;
+      padding: 20px 24px;
+    }
+
+    /* Horizontal rule dividers */
+    .receipt-body hr {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 12px 0;
     }
 
     .receipt-row {
@@ -1108,8 +1170,8 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 9px 0;
+      border-bottom: 1px dashed #ddd;
       font-size: 13px;
     }
 
@@ -1118,50 +1180,59 @@
     }
 
     .receipt-row-label {
-      color: var(--text-muted);
-      font-weight: 500;
+      color: #555;
+      font-weight: 400;
+      font-size: 12px;
+      letter-spacing: 0.3px;
       flex-shrink: 0;
     }
 
     .receipt-row-value {
       font-weight: 700;
       text-align: right;
-      color: var(--text);
+      color: #111;
       word-break: break-all;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
     }
 
     .receipt-section-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 9px;
+      font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin: 16px 0 8px;
+      letter-spacing: 2px;
+      color: #999;
+      margin: 18px 0 6px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #111;
     }
 
     .receipt-outstanding-box {
-      background: var(--danger-light);
-      border: 1.5px solid rgba(255, 77, 79, .2);
-      border-radius: 10px;
-      padding: 14px;
-      margin-top: 12px;
+      background: #f0f0f0;
+      border: 2px solid #111;
+      border-radius: 0;
+      padding: 14px 16px;
+      margin-top: 14px;
     }
 
     .receipt-outstanding-box.cleared {
-      background: var(--success-light);
-      border-color: rgba(0, 196, 140, .2);
+      background: #f5f5f5;
+      border: 2px solid #111;
+      border-left: 5px solid #111;
     }
 
     .receipt-fee-breakdown-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 12px;
-      background: var(--bg);
-      border-radius: 8px;
-      margin-bottom: 6px;
-      font-size: 13px;
+      padding: 9px 12px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-left: 3px solid #111;
+      border-radius: 0;
+      margin-bottom: 5px;
+      font-size: 12px;
     }
 
     .receipt-fee-breakdown-item:last-child {
@@ -1169,34 +1240,56 @@
     }
 
     .receipt-fee-name {
-      font-weight: 600;
+      font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      color: #111;
     }
 
     .receipt-fee-status {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
     .receipt-fee-status.paid {
-      color: var(--success);
+      color: #111;
     }
 
     .receipt-fee-status.partial {
-      color: #8B6200;
+      color: #555;
     }
 
     .receipt-fee-status.unpaid {
-      color: var(--danger);
+      color: #111;
     }
 
     .receipt-watermark {
       text-align: center;
-      padding: 14px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px dashed var(--border);
+      padding: 14px 16px;
+      font-size: 10px;
+      color: #888;
+      border-top: 1px solid #ccc;
       margin-top: 4px;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
+      font-style: italic;
+    }
+
+    /* Official seal row */
+    .receipt-seal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #f7f7f7;
+      border-top: 2px solid #111;
+    }
+
+    /* Bottom decorative strip */
+    .receipt-bottom-strip {
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #111 0px, #111 8px, #fff 8px, #fff 12px);
     }
 
     /* ── SETTINGS TOGGLE SWITCH ─────────────────────────── */
@@ -1506,90 +1599,84 @@
     }
 
     .co-hero {
-      border-radius: 20px;
-      padding: 32px 28px;
+      border-radius: 18px;
+      padding: 22px 20px;
       color: #fff;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       position: relative;
       overflow: hidden;
     }
 
-    .co-hero.orange {
-      background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
-    }
-
-    .co-hero.green {
-      background: linear-gradient(135deg, #00C48C 0%, #00A878 100%);
-    }
-
-    .co-hero.indigo {
-      background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-    }
+    .co-hero.orange { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); }
+    .co-hero.green  { background: linear-gradient(135deg, #00C48C 0%, #00A878 100%); }
+    .co-hero.indigo { background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); }
 
     .co-hero::before {
       content: '';
       position: absolute;
-      top: -50px;
-      right: -50px;
-      width: 180px;
-      height: 180px;
-      background: rgba(255, 255, 255, .08);
+      top: -40px; right: -40px;
+      width: 140px; height: 140px;
+      background: rgba(255,255,255,.08);
       border-radius: 50%;
+      pointer-events: none;
     }
 
     .co-hero::after {
       content: '';
       position: absolute;
-      bottom: -60px;
-      left: -30px;
-      width: 150px;
-      height: 150px;
-      background: rgba(255, 255, 255, .05);
+      bottom: -40px; left: -20px;
+      width: 110px; height: 110px;
+      background: rgba(255,255,255,.05);
       border-radius: 50%;
+      pointer-events: none;
     }
 
     .co-hero-icon {
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, .18);
-      border-radius: 18px;
+      width: 50px;
+      height: 50px;
+      min-width: 50px;
+      background: rgba(255,255,255,.18);
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      margin: 0 auto 16px;
+      font-size: 22px;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .co-hero-body {
+      flex: 1;
+      min-width: 0;
       position: relative;
       z-index: 1;
     }
 
     .co-hero-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: .9px;
       opacity: .75;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
+      margin-bottom: 3px;
     }
 
     .co-hero-amount {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 44px;
+      font-size: 26px;
       font-weight: 900;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 3px;
     }
 
     .co-hero-desc {
-      font-size: 13px;
+      font-size: 12px;
       opacity: .8;
-      line-height: 1.5;
-      position: relative;
-      z-index: 1;
+      line-height: 1.4;
     }
 
     .co-card {
@@ -2879,6 +2966,10 @@
 
     .toast.success {
       background: var(--success);
+    }
+
+    .toast.info {
+      background: #3B82F6;
     }
 
     @keyframes toastIn {
@@ -4251,8 +4342,11 @@
       </button>
 
       <div class="sidebar-brand">
-        <div class="brand-icon"><img src="images/favicon.png" alt="GH Schools"
-            style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;" /></div>
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff"/>
+          </svg>
+        </div>
         <div>
           <h2>GH SCHOOLS</h2>
           <small>Student Portal</small>
@@ -4368,8 +4462,23 @@
                   id="pillYearText">–</span></span>
             </div>
           </div>
-          <div class="welcome-art"><img src="images/favicon.png" class="gh-icon" alt="GH Schools"></div>
+          <div class="welcome-art">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="rgba(255,255,255,0.9)"/>
+            </svg>
+          </div>
         </div>
+
+        <!-- Hidden stubs for JS compatibility -->
+        <div id="arrearsBannerContainer" style="display:none;"><span id="arrearsBannerTitle"></span><span id="arrearsBannerSub"></span></div>
+        <div id="feeGrid" style="display:none;"></div>
+        <span id="progressPct" style="display:none;"></span>
+        <span id="progressBar" style="display:none;"></span>
+        <span id="progressLabel" style="display:none;"></span>
+        <span id="progressPaidAmt" style="display:none;"></span>
+        <span id="progressTotalAmt" style="display:none;"></span>
+        <span id="feeScheduleInfo" style="display:none;"></span>
+        <span id="payAllBtn" style="display:none;"></span>
 
         <!-- Stats Row -->
         <div class="stats-row">
@@ -4378,7 +4487,7 @@
             <div class="stat-body">
               <div class="stat-label">Total Payable</div>
               <div class="stat-value" id="statTotalPayable">GHS 0.00</div>
-              <div class="stat-sub" id="statPayableSub">Loading...</div>
+              <div class="stat-sub" id="statPayableSub">This academic year</div>
             </div>
           </div>
           <div class="stat-card">
@@ -4395,57 +4504,6 @@
               <div class="stat-label">Outstanding</div>
               <div class="stat-value" id="statOutstanding">GHS 0.00</div>
               <div class="stat-sub" id="statOutstandingSub">Balance remaining</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment Progress -->
-        <div class="fee-progress-wrap">
-          <div class="fee-progress-header">
-            <div class="fee-progress-title">Payment Progress</div>
-            <div class="fee-progress-pct" id="progressPct">0%</div>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" id="progressBar"></div>
-          </div>
-          <div
-            style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color: var(--text-muted);">
-            <span id="progressLabel">Loading fee schedule…</span>
-            <span>
-              <span id="progressPaidAmt">GHS 0</span> /
-              <span id="progressTotalAmt">GHS 0</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Fee Payment Cards -->
-        <div>
-          <div class="section-header" style="margin-bottom: 14px;">
-            <div>
-              <div class="section-title">Make Payments</div>
-              <div class="section-sub" id="feeScheduleInfo">Fetching your fee schedule…</div>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button class="btn-ghost" onclick="openHistoryModal()"><i class="fas fa-history"
-                  style="margin-right:5px;"></i>History</button>
-              <button class="btn-solid" id="payAllBtn" onclick="openPayAllModal()"
-                style="font-size:12.5px;padding:8px 14px;gap:6px;display:flex;align-items:center;white-space:nowrap;">
-                <i class="fas fa-layer-group"></i> Pay All
-              </button>
-            </div>
-          </div>
-          <div class="fee-grid" id="feeGrid">
-            <!-- Fee cards rendered here -->
-            <div class="fee-card" style="opacity:.5;">
-              <div class="fee-card-header">
-                <div class="fee-card-icon blue skeleton" style="width:42px;height:42px;"></div>
-                <div style="flex:1;">
-                  <div class="skeleton skeleton-text" style="width:80%;"></div>
-                  <div class="skeleton skeleton-text" style="width:50%;margin-top:6px;"></div>
-                </div>
-              </div>
-              <div class="skeleton skeleton-text" style="width:50%;height:28px;"></div>
-              <div class="skeleton" style="height:40px;border-radius:10px;"></div>
             </div>
           </div>
         </div>
@@ -4654,54 +4712,59 @@
     </div>
   </div>
 
-  <!-- Tuition Modal -->
+  <!-- ══ TUITION FEES MODAL — Premium Redesign ══ -->
   <div class="modal-overlay" id="tuitionModal" onclick="closeModalBackdrop(event,'tuitionModal')">
-    <div class="modal-box" style="max-width:540px;">
-      <div class="modal-header"
-        style="background:#F97316;border-radius:var(--radius) var(--radius) 0 0;padding:24px 24px 20px;margin:-24px -24px 0;">
-        <div style="display:flex;align-items:center;gap:14px;flex:1;">
-          <div
-            style="width:48px;height:48px;background:rgba(255,255,255,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">
-            <img src="images/favicon.png" class="gh-icon" alt="GH Schools">
+    <div class="modal-box" style="max-width:560px;padding:0;overflow:hidden;border-radius:20px;">
+
+      <!-- Gradient Header -->
+      <div style="background:linear-gradient(135deg,#F97316 0%,#EA580C 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
+        <!-- Decorative circles -->
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;"></div>
+        <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
+          <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff"/>
+            </svg>
           </div>
-          <div>
-            <div
-              style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:-0.3px;">
-              Pay Tuition Fee</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px;" id="tuitionModalAcadYear">Academic
-              Year —</div>
+          <div style="flex:1;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">Tuition Fee Payment</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;" id="tuitionModalAcadYear">Academic Year —</div>
           </div>
+          <button onclick="closeModal('tuitionModal')" aria-label="Close" style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
         </div>
-        <button class="modal-close" onclick="closeModal('tuitionModal')" aria-label="Close"
-          style="color:#fff;background:rgba(255,255,255,.15);border-color:transparent;">&times;</button>
       </div>
-      <div class="modal-body" style="padding-top:20px;">
-        <!-- Summary bar -->
+
+      <!-- Body -->
+      <div style="padding:22px 24px 6px;">
+
+        <!-- Summary stats -->
         <div id="tuitionInfoSection"></div>
 
-        <!-- Payment percentage chooser -->
-        <div style="margin:16px 0 0;">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">Choose payment amount:</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tuitionPctCards">
-            <!-- rendered by JS -->
-          </div>
-        </div>
+        <!-- Payment option chooser label -->
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin:16px 0 10px;">Choose payment plan</div>
 
-        <!-- Detailed fee items (collapsible) -->
+        <!-- % cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tuitionPctCards"><!-- rendered by JS --></div>
+
+        <!-- Detailed items -->
         <div id="tuitionOptionsContainer" style="margin-top:14px;"></div>
 
-        <!-- Selected total -->
-        <div
-          style="background:var(--primary-light);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
-          <div style="font-size:13px;font-weight:700;color:var(--text);">Amount to Pay</div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:var(--primary);"
-            id="tuitionModalSelectedTotal">GHS 0.00</div>
+        <!-- Total strip -->
+        <div style="background:linear-gradient(135deg,#FFF7ED,#FFF3E6);border:1.5px solid rgba(249,115,22,.25);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:4px;">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;">Total to Pay</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="tuitionModalSelectionHint">Select a plan above</div>
+          </div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;color:var(--primary);letter-spacing:-0.5px;" id="tuitionModalSelectedTotal">GHS 0.00</div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-outline" onclick="closeModal('tuitionModal')">Cancel</button>
-        <button id="tuitionProceedBtn" class="btn-solid" onclick="payTuition()" disabled
-          style="min-width:150px;display:flex;align-items:center;justify-content:center;gap:8px;">
+
+      <!-- Footer -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px 22px;border-top:1px solid var(--border);margin-top:10px;">
+        <button onclick="closeModal('tuitionModal')" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Cancel</button>
+        <button id="tuitionProceedBtn" onclick="payTuition()" disabled
+          style="background:linear-gradient(135deg,#F97316,#EA580C);border:none;border-radius:10px;padding:12px 26px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;min-width:170px;justify-content:center;box-shadow:0 4px 14px rgba(249,115,22,.3);transition:opacity .15s;opacity:.5;">
           <i class="fas fa-lock" style="font-size:12px;"></i>
           <span>Proceed to Pay</span>
           <div class="spinner-inline" id="tuitionPaySpinner"></div>
@@ -4710,23 +4773,61 @@
     </div>
   </div>
 
-  <!-- Other Fees Modal -->
-  <div class="modal-overlay" id="otherFeesModal" onclick="closeModalBackdrop(event,'otherFeesModal')">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-icon" style="background:var(--accent-light);color:var(--accent);"><i
-            class="fas fa-receipt"></i></div>
-        <div class="modal-title">Other Fees</div>
-        <button class="modal-close" onclick="closeModal('otherFeesModal')" aria-label="Close">&times;</button>
+  <!-- ══ OTHER FEES PAYMENT MODAL — Premium Redesign ══ -->
+  <div class="modal-overlay" id="otherFeesPayModal" onclick="closeModalBackdrop(event,'otherFeesPayModal')">
+    <div class="modal-box" style="max-width:520px;padding:0;overflow:hidden;border-radius:20px;">
+
+      <!-- Gradient Header -->
+      <div style="background:linear-gradient(135deg,#00C48C 0%,#00A878 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;"></div>
+        <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
+          <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
+            <i class="fas fa-receipt" style="color:#fff;font-size:22px;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">Other Fees Payment</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;">SRC, Medical &amp; Departmental fees</div>
+          </div>
+          <button onclick="closeModal('otherFeesPayModal')" aria-label="Close" style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
+        </div>
       </div>
-      <div class="modal-body">
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Select a fee below to pay it directly. Tap
-          any unpaid fee to proceed.</p>
-        <div id="otherFeesList"></div>
+
+      <!-- Stats bar -->
+      <div style="background:#f0fdf9;border-bottom:1px solid rgba(0,196,140,.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;" id="otherFeesPayStatsBar">
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Total Fees</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;" id="otherFeesPayTotal">GHS —</div>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(0,196,140,.2);"></div>
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Amount Paid</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;" id="otherFeesPayPaid">GHS —</div>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(0,196,140,.2);"></div>
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Outstanding</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:var(--danger);" id="otherFeesPayOutstanding">GHS —</div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-outline" onclick="closeModal('otherFeesModal')">Close</button>
+
+      <!-- Fee list -->
+      <div style="padding:20px 24px 6px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Select fees to pay</div>
+        <div id="otherFeesPayList" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
       </div>
+
+      <!-- Footer -->
+      <div style="padding:16px 24px 22px;border-top:1px solid var(--border);margin-top:14px;">
+        <button onclick="closeModal('otherFeesPayModal')" style="width:100%;background:none;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other Fees Modal (legacy — kept for backward-compat, hidden) -->
+  <div class="modal-overlay" id="otherFeesModal" onclick="closeModalBackdrop(event,'otherFeesModal')" style="display:none!important;">
+    <div class="modal-box" style="display:none;">
+      <div id="otherFeesList"></div>
     </div>
   </div>
 
@@ -4949,19 +5050,25 @@
   <!-- Receipt Modal -->
   <div class="modal-overlay" id="receiptModal" onclick="closeModalBackdrop(event,'receiptModal')">
     <div class="modal-box" style="max-width:560px;">
-      <div class="modal-header">
-        <div class="modal-icon" style="background:var(--success-light);color:var(--success);"><i
-            class="fas fa-receipt"></i></div>
-        <div class="modal-title">Payment Receipt</div>
-        <button class="modal-close" onclick="closeModal('receiptModal')" aria-label="Close">&times;</button>
+      <div class="modal-header" style="background:#111;border-radius:var(--radius) var(--radius) 0 0;padding:18px 24px 16px;margin:-24px -24px 0;">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;">
+          <div style="width:40px;height:40px;background:rgba(255,255,255,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-receipt" style="color:#fff;font-size:16px;"></i>
+          </div>
+          <div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:0.5px;">PAYMENT RECEIPT</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:0.5px;">Official Document — GH Schools</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('receiptModal')" aria-label="Close" style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:none;">&times;</button>
       </div>
-      <div class="modal-body" id="receiptContent"></div>
-      <div class="modal-footer" style="gap:8px;">
-        <button class="btn-outline" onclick="closeModal('receiptModal')">Close</button>
-        <button class="btn-ghost" onclick="window.print()" style="display:flex;align-items:center;gap:6px;"
+      <div class="modal-body" id="receiptContent" style="padding:0;"></div>
+      <div class="modal-footer" style="gap:8px;border-top:2px solid #111;">
+        <button class="btn-outline" onclick="closeModal('receiptModal')" style="border-color:#111;color:#111;">Close</button>
+        <button class="btn-ghost" onclick="window.print()" style="display:flex;align-items:center;gap:6px;border:1px solid #ccc;"
           title="Print Receipt"><i class="fas fa-print"></i> Print</button>
-        <button class="btn-solid" onclick="downloadReceiptPDF(window._lastReceipt)"
-          style="display:flex;align-items:center;gap:6px;"><i class="fas fa-download"></i> Download PDF</button>
+        <button onclick="downloadReceiptPDF(window._lastReceipt)"
+          style="background:#111;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-download"></i> Download PDF</button>
       </div>
     </div>
   </div>
@@ -5368,7 +5475,7 @@
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
     /* ── CREDENTIALS ───────────────────────────────────── */
-    const PAYSTACK_PUBLIC_KEY = 'pk_live_0563b84aae2c983dcbf04ec1fad441f04ef25d07';
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_0ae6db537388a8f81fc9c70d75a87be1a69c1844';
     const SUPABASE_URL = 'https://fyriapqeztevzkcaaiqw.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
     const AVATAR_BUCKET = 'student-avatars';
@@ -6395,52 +6502,108 @@
       if (!sid) return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, rows: [] };
       try {
         let payments = [];
-        // Primary: by student_id + approved status
+
+        // FIX (Bug 3): Normalise student_id to uppercase before querying so that
+        // case differences between localStorage and the DB don't cause a miss.
+        const sidNorm = String(sid).toUpperCase().trim();
+
+        // Primary: exact student_id match (normalised) + approved status only
         try {
           const { data, error } = await supabase.from('payments').select('*')
-            .eq('student_id', sid).in('status', ['approved']);
-          if (!error) payments = data || [];
+            .eq('student_id', sidNorm).in('status', ['approved']);
+          if (!error && data && data.length) payments = data;
         } catch (_) { }
 
-        // Fallback: no status filter
+        // Secondary: try original casing in case DB stores it lower/mixed
         if (!payments.length) {
           try {
-            const { data } = await supabase.from('payments').select('*').eq('student_id', sid);
+            const { data, error } = await supabase.from('payments').select('*')
+              .eq('student_id', String(sid).trim()).in('status', ['approved']);
+            if (!error && data && data.length) payments = data;
+          } catch (_) { }
+        }
+
+        // FIX (Bug 2): REMOVED the unsafe "no status filter" fallback that was
+        // incorrectly crediting pending/failed payments as if they were approved.
+        // The email fallback below still filters to approved only.
+
+        // Fallback: by email — approved only
+        if (!payments.length && window.studentEmail) {
+          try {
+            const { data } = await supabase.from('payments').select('*')
+              .ilike('student_email', window.studentEmail)
+              .in('status', ['approved'])
+              .limit(200);
             if (data && data.length) payments = data;
           } catch (_) { }
         }
 
-        // Fallback: by email
-        if (!payments.length && window.studentEmail) {
-          try {
-            const { data } = await supabase.from('payments').select('*').ilike('student_email', window.studentEmail).limit(200);
-            if (data && data.length) payments = data;
-          } catch (_) { }
+        // FIX (Bug 4): Ensure fee schedule is loaded before we try to match payments.
+        // If _currentFeeSchedule is empty here the multi-fee allocation silently zeroes out.
+        if (!_currentFeeSchedule || !_currentFeeSchedule.length) {
+          try { await loadCanonicalFeesForStudent(sid); } catch (_) { }
+        }
+
+        // Build a lookup: fee_type_id → category string, using the canonical fee schedule.
+        // This is the primary (reliable) matching path.
+        const schedule = _currentFeeSchedule || [];
+        const idToCategory = {};
+        schedule.forEach(f => {
+          if (!f.fee_type_id) return;
+          const n = (f.fee_name || '').toLowerCase();
+          if (n.includes('tuition')) idToCategory[f.fee_type_id] = 'tuition';
+          else if (n.includes('src')) idToCategory[f.fee_type_id] = 'src';
+          else if (n.includes('medical')) idToCategory[f.fee_type_id] = 'medical';
+          else if (n.includes('departmental') || n.includes('department')) idToCategory[f.fee_type_id] = 'dept';
+          else if (n.includes('admission')) idToCategory[f.fee_type_id] = 'admission';
+          else idToCategory[f.fee_type_id] = 'other';
+        });
+
+        // Helper: map fee name keyword to category (text-based fallback)
+        function catFromName(name) {
+          const n = (name || '').toLowerCase();
+          if (n.includes('tuition')) return 'tuition';
+          if (n.includes('admission')) return 'admission';
+          if (n.includes('src')) return 'src';
+          if (n.includes('medical')) return 'medical';
+          if (n.includes('departmental') || n.includes('department')) return 'dept';
+          return null;
         }
 
         let tuitionPaid = 0, srcPaid = 0, medPaid = 0, deptPaid = 0, admissionPaid = 0, total = 0;
         (payments || []).forEach(p => {
           const amt = Number(p.amount || 0);
           total += amt;
-          const type = (p.fee_type || p.fee_breakdown || '').toLowerCase();
 
-          // BUG FIX 4: A combined payment like "SRC Dues, Medical Dues" contains multiple
-          // fee keywords. The old else-if chain only matched the FIRST keyword found,
-          // leaving the remaining categories uncredited (showing them as unpaid).
-          // Fix: split on commas and credit each named category proportionally by its
-          // schedule amount; for simple single-fee payments the old logic still applies.
+          // FIX (Bug 1 — primary path): if payment stores fee_type_id, use UUID match.
+          // This is 100% reliable and immune to text/label mismatches.
+          if (p.fee_type_id && idToCategory[p.fee_type_id]) {
+            const cat = idToCategory[p.fee_type_id];
+            if (cat === 'tuition') tuitionPaid += amt;
+            else if (cat === 'src') srcPaid += amt;
+            else if (cat === 'medical') medPaid += amt;
+            else if (cat === 'dept') deptPaid += amt;
+            else if (cat === 'admission') admissionPaid += amt;
+            return; // done for this payment
+          }
+
+          // FIX (Bug 1 — fallback path): text-based matching for older payments that
+          // don't have fee_type_id stored. Split on commas to handle combined payments.
+          const type = (p.fee_type || p.fee_breakdown || '').toLowerCase();
           const parts = type.split(',').map(s => s.trim()).filter(Boolean);
+
           if (parts.length <= 1) {
             // Single-fee payment — simple keyword match
-            if (type.includes('tuition')) tuitionPaid += amt;
-            else if (type.includes('admission')) admissionPaid += amt;
-            else if (type.includes('src')) srcPaid += amt;
-            else if (type.includes('medical')) medPaid += amt;
-            else if (type.includes('departmental') || type.includes('department')) deptPaid += amt;
-            // else: unclassified payment still counts in total
+            const cat = catFromName(type);
+            if (cat === 'tuition') tuitionPaid += amt;
+            else if (cat === 'admission') admissionPaid += amt;
+            else if (cat === 'src') srcPaid += amt;
+            else if (cat === 'medical') medPaid += amt;
+            else if (cat === 'dept') deptPaid += amt;
+            // else: unclassified but still counts in total
           } else {
-            // Multi-fee combined payment — allocate proportionally using schedule amounts
-            const schedule = _currentFeeSchedule || [];
+            // FIX (Bug 4): Multi-fee combined payment — allocate proportionally using
+            // schedule amounts so each fee gets the correct credit share.
             const matchedFees = [];
             parts.forEach(part => {
               const fee = schedule.find(f => {
@@ -6449,16 +6612,30 @@
               });
               if (fee) matchedFees.push(fee);
             });
-            const scheduleTotal = matchedFees.reduce((s, f) => s + Number(f.amount || 0), 0);
-            matchedFees.forEach(fee => {
-              const share = scheduleTotal > 0 ? (Number(fee.amount || 0) / scheduleTotal) * amt : amt / matchedFees.length;
-              const fn = (fee.fee_name || '').toLowerCase();
-              if (fn.includes('tuition')) tuitionPaid += share;
-              else if (fn.includes('admission')) admissionPaid += share;
-              else if (fn.includes('src')) srcPaid += share;
-              else if (fn.includes('medical')) medPaid += share;
-              else if (fn.includes('departmental') || fn.includes('department')) deptPaid += share;
-            });
+
+            if (matchedFees.length) {
+              const scheduleTotal = matchedFees.reduce((s, f) => s + Number(f.amount || 0), 0);
+              matchedFees.forEach(fee => {
+                const share = scheduleTotal > 0 ? (Number(fee.amount || 0) / scheduleTotal) * amt : amt / matchedFees.length;
+                const cat = catFromName(fee.fee_name);
+                if (cat === 'tuition') tuitionPaid += share;
+                else if (cat === 'admission') admissionPaid += share;
+                else if (cat === 'src') srcPaid += share;
+                else if (cat === 'medical') medPaid += share;
+                else if (cat === 'dept') deptPaid += share;
+              });
+            } else {
+              // No schedule match — fall back to keyword on each part
+              parts.forEach(part => {
+                const cat = catFromName(part);
+                const share = amt / parts.length;
+                if (cat === 'tuition') tuitionPaid += share;
+                else if (cat === 'admission') admissionPaid += share;
+                else if (cat === 'src') srcPaid += share;
+                else if (cat === 'medical') medPaid += share;
+                else if (cat === 'dept') deptPaid += share;
+              });
+            }
           }
         });
 
@@ -6685,31 +6862,58 @@
             </div>
           `);
         } else {
-          // Non-tuition individual fee card (no progress bar)
-          const btnContent = fullyPaid ? `<i class="fas fa-check"></i> Fully Paid`
-            : paid > 0 ? `<i class="fas fa-money-bill"></i> Pay Remaining (GHS ${gh(feeOut)})`
-              : `<i class="fas fa-money-bill"></i> Pay Now`;
-          const onclick = `openOtherFeesModal('${escapeHtml(fee.fee_name)}')`;
-          parts.push(`
-            <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}">
-              <div class="fee-card-header">
-                <div class="fee-card-icon" style="background:${style.bg};color:${style.color};">
-                  <i class="fas ${style.icon}"></i>
+          // Non-tuition individual fee card (SRC, Medical, Departmental, etc.)
+          if (fullyPaid) {
+            // PAID: render a locked green card — no pay button active
+            parts.push(`
+              <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}" style="border-color:rgba(0,196,140,.3);background:linear-gradient(135deg,var(--success-light),#f0fdf9);">
+                <div class="fee-card-header">
+                  <div class="fee-card-icon" style="background:rgba(0,196,140,.15);color:var(--success);">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
+                    <div class="fee-card-meta">${fee.semester && fee.academic_year ? escapeHtml(fee.semester + ' ' + fee.academic_year) : escapeHtml(fee.academic_year || '')}</div>
+                  </div>
+                  <span style="background:var(--success);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;">
+                    <i class="fas fa-check"></i> PAID
+                  </span>
                 </div>
                 <div>
-                  <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
-                  <div class="fee-card-meta">${fee.semester && fee.academic_year ? escapeHtml(fee.semester + ' ' + fee.academic_year) : escapeHtml(fee.academic_year || '')} </div>
+                  <div class="fee-card-amount" style="color:var(--success);">GHS <span>${gh(fee.amount)}</span></div>
+                  <div style="font-size:12px;color:var(--success);margin-top:3px;font-weight:600;"><i class="fas fa-check-circle"></i> Fully settled — no further payment required</div>
                 </div>
+                <button class="btn-pay success" disabled style="background:var(--success-light);color:var(--success);border:1.5px solid rgba(0,196,140,.3);cursor:not-allowed;opacity:.8;">
+                  <i class="fas fa-check-circle"></i> Fully Paid
+                </button>
               </div>
-              <div>
-                <div class="fee-card-amount">GHS <span>${gh(fee.amount)}</span></div>
-                ${paid > 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Paid: GHS ${gh(paid)} &nbsp;|&nbsp; Outstanding: GHS ${gh(feeOut)}</div>` : ''}
+            `);
+          } else {
+            // UNPAID / PARTIAL: show pay button
+            const btnContent = paid > 0
+              ? `<i class="fas fa-money-bill"></i> Pay Remaining (GHS ${gh(feeOut)})`
+              : `<i class="fas fa-money-bill"></i> Pay Now`;
+            const onclick = `openOtherFeesModal('${escapeHtml(fee.fee_name)}')`;
+            parts.push(`
+              <div class="fee-card" data-fee="${escapeHtml(fee.fee_name)}">
+                <div class="fee-card-header">
+                  <div class="fee-card-icon" style="background:${style.bg};color:${style.color};">
+                    <i class="fas ${style.icon}"></i>
+                  </div>
+                  <div>
+                    <div class="fee-card-name">${escapeHtml(fee.fee_name)}</div>
+                    <div class="fee-card-meta">${fee.semester && fee.academic_year ? escapeHtml(fee.semester + ' ' + fee.academic_year) : escapeHtml(fee.academic_year || '')}</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="fee-card-amount">GHS <span>${gh(fee.amount)}</span></div>
+                  ${paid > 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Paid: GHS ${gh(paid)} &nbsp;|&nbsp; Outstanding: GHS ${gh(feeOut)}</div>` : ''}
+                </div>
+                ${statusBadge}
+                <button class="btn-pay" onclick="${onclick}">${btnContent}</button>
               </div>
-              ${statusBadge}
-              ${!fullyPaid ? `<button class="btn-pay" onclick="${onclick}">${btnContent}</button>`
-              : `<button class="btn-pay success" disabled>${btnContent}</button>`}
-            </div>
-          `);
+            `);
+          }
         }
       });
 
@@ -7259,7 +7463,15 @@
       if (el) el.textContent = `GHS ${gh(Math.round((total + pendingTotal) * 100) / 100)}`;
       try {
         const btn = document.getElementById('tuitionProceedBtn');
-        if (btn) btn.disabled = !((total > 0) || (pendingTotal > 0));
+        const enabled = (total > 0) || (pendingTotal > 0);
+        if (btn) {
+          btn.disabled = !enabled;
+          btn.style.opacity = enabled ? '1' : '.5';
+          btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+        }
+        // Update hint text
+        const hint = document.getElementById('tuitionModalSelectionHint');
+        if (hint) hint.textContent = enabled ? (window._tuitionSelectedPct ? window._tuitionSelectedPct + '% payment plan selected' : 'Custom selection') : 'Select a plan above';
       } catch (_) { }
       return { total, names };
     }
@@ -7360,9 +7572,99 @@
       if (total <= 0) { showToast('Selected fees have no outstanding amount', 'error'); return; }
       const feeType = parts.join(', ');
       const feeBreakdown = parts.map((p, i) => `${p}`).join(' + ');
-      payWithPaystack(feeType, total, feeBreakdown);
       closeModal('tuitionModal');
+      // Route through other-fees-first engine
+      routePaymentWithOtherFeesFirst(feeType, total, feeBreakdown);
     };
+
+    /* ══════════════════════════════════════════════════════
+       OTHER-FEES-FIRST PAYMENT ENGINE
+       Rule: Other fees (SRC, Medical, Departmental) must be
+       fully settled before any payment counts toward tuition.
+       If a student pays an amount that covers other fees +
+       more, the remainder flows into tuition automatically.
+    ══════════════════════════════════════════════════════ */
+
+    /* Helper — returns outstanding other fees from current schedule + summary */
+    function getOtherFeesOutstanding(summary) {
+      const fees = _currentFeeSchedule || [];
+      const otherKeys = ['src', 'medical', 'department', 'departmental'];
+      const items = fees.filter(f => {
+        const n = (f.fee_name || '').toLowerCase();
+        return otherKeys.some(k => n.includes(k));
+      }).map(f => {
+        const n = (f.fee_name || '').toLowerCase();
+        let paid = 0;
+        if (n.includes('src')) paid = Number(summary.srcPaid || 0);
+        else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
+        else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        paid = Math.min(paid, Number(f.amount || 0));
+        return { name: f.fee_name, amount: Number(f.amount || 0), paid, outstanding: Math.max(0, Number(f.amount || 0) - paid) };
+      });
+      const totalOutstanding = items.reduce((s, f) => s + f.outstanding, 0);
+      return { items, totalOutstanding };
+    }
+
+    /* Core router — called by ALL payment paths.
+       Enforces: other fees first, then tuition with remainder. */
+    async function routePaymentWithOtherFeesFirst(requestedFeeType, requestedAmount, requestedBreakdown) {
+      const amt = Number(requestedAmount);
+      if (!Number.isFinite(amt) || amt <= 0) { showToast('Invalid payment amount', 'error'); return; }
+
+      // Refresh summary
+      if (studentId) await loadCanonicalFeesForStudent(studentId);
+      const summary = await fetchPaymentsSummary(studentId);
+      window._lastPaymentSummary = summary;
+
+      const { items: otherItems, totalOutstanding: otherOwed } = getOtherFeesOutstanding(summary);
+      const isTuitionRequest = (requestedFeeType || '').toLowerCase().includes('tuition') ||
+                               (requestedBreakdown || '').toLowerCase().includes('tuition');
+
+      // ── Case 1: Other fees already settled — pay as requested ──
+      if (otherOwed <= 0.01) {
+        payWithPaystack(requestedFeeType, amt, requestedBreakdown);
+        return;
+      }
+
+      // ── Case 2: This IS a tuition payment and other fees are still owed ──
+      if (isTuitionRequest) {
+        const otherNames = otherItems.filter(f => f.outstanding > 0.01).map(f => f.name);
+        const otherList = otherNames.map(n => `• ${n}`).join('\n');
+
+        // Show the student a clear breakdown modal
+        const confirmed = await showConfirm(
+          `Other fees must be settled before tuition.\n\n` +
+          `Outstanding other fees (GHS ${gh(otherOwed)}):\n${otherList}\n\n` +
+          `Your payment of GHS ${gh(amt)} will first cover the other fees ` +
+          `(GHS ${gh(otherOwed)}), and the remaining GHS ${gh(Math.max(0, amt - otherOwed))} ` +
+          `will be applied to tuition.\n\nProceed?`
+        );
+        if (!confirmed) return;
+
+        if (amt <= otherOwed) {
+          // Entire amount goes to other fees only — not enough to reach tuition
+          const feeType = otherNames.join(', ');
+          const breakdown = otherNames.join(' + ');
+          payWithPaystack(feeType, amt, breakdown);
+          showToast(`GHS ${gh(amt)} will be applied to other fees. Pay tuition after they are cleared.`, 'info', 6000);
+        } else {
+          // Enough to cover other fees + some tuition
+          const tuitionPortion = Math.round((amt - otherOwed) * 100) / 100;
+          const tuitionFee = (_currentFeeSchedule || []).find(f => (f.fee_name || '').toLowerCase().includes('tuition'));
+          const tuitionName = tuitionFee ? tuitionFee.fee_name : 'Tuition Fee';
+          const allNames = [...otherNames, tuitionName];
+          const feeType = allNames.join(', ');
+          const breakdown = `${otherNames.join(' + ')} + Tuition (GHS ${gh(tuitionPortion)})`;
+          showToast(`Other fees (GHS ${gh(otherOwed)}) will be settled first. GHS ${gh(tuitionPortion)} goes to tuition.`, 'success', 5000);
+          payWithPaystack(feeType, amt, breakdown);
+        }
+        return;
+      }
+
+      // ── Case 3: This is an other-fee payment — pay normally ──
+      payWithPaystack(requestedFeeType, amt, requestedBreakdown);
+    }
+    window.routePaymentWithOtherFeesFirst = routePaymentWithOtherFeesFirst;
 
     /* ── OTHER FEES MODAL ───────────────────────────────── */
     function openOtherFeesModal(feeName) {
@@ -7389,7 +7691,6 @@
         const bal = Math.max(0, f.amount - paid);
         const fullyPaid = bal <= 0.01;
         const style = getFeeStyle(f.fee_name);
-        const feeVal = encodeURIComponent(`${f.fee_name}|${bal}`);
         return `
           <div class="fee-option-row ${fullyPaid ? 'paid-row' : ''}" style="cursor:${fullyPaid ? 'default' : 'pointer'};border-radius:12px;margin-bottom:10px;display:flex;align-items:center;gap:14px;padding:14px 16px;" ${!fullyPaid ? `onclick="directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"` : ''}>
             <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:${fullyPaid ? 'var(--success-light)' : style.bg};color:${fullyPaid ? 'var(--success)' : style.color};">
@@ -7398,40 +7699,178 @@
             <div style="flex:1;min-width:0;">
               <div style="font-weight:700;font-size:14px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
               ${fullyPaid
-            ? `<div style="font-size:11px;color:var(--success);margin-top:2px;"><i class="fas fa-check-circle"></i> Fully paid</div>`
-            : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Outstanding: <strong>GHS ${gh(bal)}</strong></div>`}
+                ? `<div style="font-size:11px;color:var(--success);margin-top:2px;"><i class="fas fa-check-circle"></i> Fully paid</div>`
+                : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Outstanding: <strong>GHS ${gh(bal)}</strong></div>`}
             </div>
             ${fullyPaid
-            ? `<span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--success);">Paid</span>`
-            : `<button class="fs-pay-btn" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>GHS ${gh(bal)}</button>`
-          }
+              ? `<span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--success);">Paid</span>`
+              : `<button class="fs-pay-btn" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>GHS ${gh(bal)}</button>`
+            }
           </div>
         `;
       }).join('');
-      openModal('otherFeesModal');
+      // Route to the new redesigned other fees modal instead of the old hidden one
+      window.openOtherFeesPayModal();
     }
     window.openOtherFeesModal = openOtherFeesModal;
 
-    // Direct pay a single other fee (no separate proceed button needed)
+    /* ════════════════════════════════════════════════════════
+       NEW DEDICATED MODAL OPENERS (from payment page cards)
+    ════════════════════════════════════════════════════════ */
+
+    // Opens the redesigned Tuition Fees modal
+    window.openTuitionPayModal = async function () {
+      await openTuitionModal();
+    };
+
+    // Opens the redesigned Other Fees Pay modal
+    window.openOtherFeesPayModal = async function () {
+      const modal = document.getElementById('otherFeesPayModal');
+      if (!modal) return;
+
+      // Load fees and summary
+      if (!totalPayable) await loadCanonicalFeesForStudent(studentId);
+      const summary = await fetchPaymentsSummary(studentId);
+      window._lastPaymentSummary = summary;
+
+      const fees = (_currentFeeSchedule || []).filter(f => {
+        const n = (f.fee_name || '').toLowerCase();
+        return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+      });
+
+      // Compute stats
+      let totalReq = 0, totalPd = 0;
+      fees.forEach(f => {
+        const n = (f.fee_name || '').toLowerCase();
+        let paid = 0;
+        if (n.includes('src')) paid = Number(summary.srcPaid || 0);
+        else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
+        else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        paid = Math.min(paid, Number(f.amount || 0));
+        totalReq += Number(f.amount || 0);
+        totalPd += paid;
+      });
+      const totalOut = Math.max(0, totalReq - totalPd);
+
+      // Update stats bar
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setTxt('otherFeesPayTotal', cedis(totalReq));
+      setTxt('otherFeesPayPaid', cedis(totalPd));
+      setTxt('otherFeesPayOutstanding', cedis(totalOut));
+
+      // Render fee rows
+      const list = document.getElementById('otherFeesPayList');
+      if (list) {
+        if (!fees.length) {
+          list.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--text-muted);">
+            <i class="fas fa-check-circle" style="font-size:36px;color:var(--success);margin-bottom:10px;display:block;"></i>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;margin-bottom:4px;">No Other Fees</div>
+            <div style="font-size:13px;">No additional fees are scheduled for your profile.</div>
+          </div>`;
+        } else {
+          list.innerHTML = fees.map(f => {
+            const n = (f.fee_name || '').toLowerCase();
+            let paid = 0;
+            if (n.includes('src')) paid = Number(summary.srcPaid || 0);
+            else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
+            else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+            paid = Math.min(paid, Number(f.amount || 0));
+            const bal = Math.max(0, Number(f.amount || 0) - paid);
+            const fullyPaid = bal <= 0.01;
+            const pct = Number(f.amount || 0) > 0 ? Math.min(100, Math.round((paid / Number(f.amount || 0)) * 100)) : 100;
+            const style = getFeeStyle(f.fee_name);
+
+            if (fullyPaid) {
+              return `
+                <div style="background:linear-gradient(135deg,#f0fdf9,#e6faf5);border:1.5px solid rgba(0,196,140,.25);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
+                  <div style="width:44px;height:44px;background:rgba(0,196,140,.15);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-check-circle" style="color:var(--success);font-size:20px;"></i>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
+                    <div style="font-size:12px;color:var(--success);margin-top:3px;font-weight:600;"><i class="fas fa-check-circle"></i> Fully paid — GHS ${gh(f.amount)}</div>
+                  </div>
+                  <span style="background:var(--success);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;">PAID</span>
+                </div>`;
+            } else {
+              return `
+                <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow .15s,border-color .15s;" onclick="directPayOtherFee('${escapeHtml(f.fee_name)}',${bal});closeModal('otherFeesPayModal');" onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,.09)';this.style.borderColor='rgba(249,115,22,.3)';" onmouseleave="this.style.boxShadow='none';this.style.borderColor='var(--border)';">
+                  <div style="width:44px;height:44px;background:${style.bg};border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas ${style.icon}" style="color:${style.color};font-size:18px;"></i>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--text);margin-bottom:4px;">${escapeHtml(f.fee_name)}</div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                      ${paid > 0 ? `<span style="font-size:11px;color:var(--text-muted);">Paid: GHS ${gh(paid)}</span><span style="font-size:11px;color:var(--text-muted);">·</span>` : ''}
+                      <span style="font-size:11px;color:var(--danger);font-weight:700;">Due: GHS ${gh(bal)}</span>
+                    </div>
+                    <div style="height:5px;background:var(--bg);border-radius:4px;overflow:hidden;">
+                      <div style="height:100%;width:${pct}%;background:${pct >= 80 ? 'var(--success)' : pct > 0 ? 'var(--warning)' : 'var(--danger)'};border-radius:4px;transition:width .5s ease;"></div>
+                    </div>
+                  </div>
+                  <button style="background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal});closeModal('otherFeesPayModal');">
+                    <i class="fas fa-arrow-right" style="font-size:11px;"></i> Pay Now
+                  </button>
+                </div>`;
+            }
+          }).join('');
+        }
+      }
+
+      openModal('otherFeesPayModal');
+    };
+
+    /* ── Other-fee double-payment guard ──────────────────── */
+    // Tracks fees currently being processed so a student can't tap "Pay" twice
+    // before Paystack opens. Keys are "studentId:feeName" (lowercased).
+    window._otherFeePaymentInProgress = new Set();
+
+    function _otherFeeKey(feeName) {
+      return `${(studentId || 'anon').toUpperCase()}:${(feeName || '').toLowerCase().trim()}`;
+    }
+
+    // Returns true if the fee is genuinely outstanding (not fully paid in the DB summary)
+    function _isOtherFeeOutstanding(feeName) {
+      const summary = window._lastPaymentSummary || {};
+      const schedule = _currentFeeSchedule || [];
+      const fee = schedule.find(f => (f.fee_name || '').toLowerCase() === (feeName || '').toLowerCase());
+      if (!fee) return true; // can't verify — allow
+      const required = Number(fee.amount || 0);
+      const n = (feeName || '').toLowerCase();
+      let paid = 0;
+      if (n.includes('src')) paid = Number(summary.srcPaid || 0);
+      else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
+      else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+      paid = Math.min(paid, required);
+      return required - paid > 0.01;
+    }
+
+    // Direct pay a single other fee — always allowed, no redirect to tuition
     window.directPayOtherFee = async function (feeName, amount) {
       try {
-        if (studentId) await loadCanonicalFeesForStudent(studentId);
-        const summary = await fetchPaymentsSummary(studentId);
-        const tPaid = Number(summary.tuitionPaid || 0);
-        const eightyPct = Math.round((TUITION || 0) * 0.8);
+        if (amount <= 0) { showToast('No outstanding amount for this fee', 'error'); return; }
 
-        if (tPaid < eightyPct) {
-          const ok = await showConfirm('You have not yet paid 80% of tuition. Would you like to combine this fee with a tuition payment?');
-          if (!ok) return;
-          window.pendingOtherFeesSelection = [`${feeName}|${amount}`];
+        // ── Double-payment guard: block if already fully paid ──
+        if (!_isOtherFeeOutstanding(feeName)) {
+          showToast(`${feeName} has already been paid.`, 'success');
           closeModal('otherFeesModal');
-          setTimeout(() => openTuitionModal(), 80);
           return;
         }
 
-        if (amount <= 0) { showToast('No outstanding amount for this fee', 'error'); return; }
+        // ── In-progress guard: block duplicate taps ──
+        const key = _otherFeeKey(feeName);
+        if (window._otherFeePaymentInProgress.has(key)) {
+          showToast('Payment already in progress for this fee. Please wait.', 'error');
+          return;
+        }
+        window._otherFeePaymentInProgress.add(key);
+
         closeModal('otherFeesModal');
+        // Other fee payments go straight through — NO subaccount split
         payWithPaystack(feeName, amount, feeName);
+
+        // Clear the in-progress flag once Paystack modal has had time to open
+        setTimeout(() => window._otherFeePaymentInProgress.delete(key), 10000);
       } catch (e) { console.error('[directPayOtherFee]', e); showToast('Could not process fee', 'error'); }
     };
 
@@ -7465,7 +7904,54 @@
       if (!window.PaystackPop?.setup) { showToast('Payment service unavailable. Try again.', 'error'); return; }
       closeModal('payChannelModal');
       const ref = `GHTU-${Date.now()}-${Math.floor(Math.random() * 1e4)}`;
-      const handler = window.PaystackPop.setup({
+
+      // ══ SUBACCOUNT ROUTING LOGIC ══════════════════════════════════════════
+      // Rule: ONLY the tuition portion of a payment goes to the subaccount.
+      //   • Pure tuition payment         → full amount to subaccount
+      //   • Pure other fees              → full amount to main account (no subaccount)
+      //   • Combined (tuition + others)  → subaccount gets ONLY the tuition portion
+      //     via Paystack's transaction_charge (kobo); other fees stay in main account.
+      //
+      // Paystack split mechanism for combined payments:
+      //   subaccount + bearer:'subaccount' + transaction_charge = tuition amount in kobo
+      //   → subaccount receives exactly `transaction_charge` kobo (tuition)
+      //   → main account receives the remainder (other fees)
+      const TUITION_SUBACCOUNT = 'ACCT_e4nqda0p7tk9rl9';
+
+      // Categorise this payment
+      const _bd = (feeBreakdown || feeType || '').toLowerCase();
+      const _hasTuition = _bd.includes('tuition');
+      const _otherFeeKw = ['src', 'medical', 'departmental', 'department', 'admission'];
+      const _bdParts = _bd.split(/[,+]/).map(s => s.trim()).filter(Boolean);
+      const _hasOtherFees = _bdParts.some(p => _otherFeeKw.some(k => p.includes(k)));
+
+      // Calculate how much of `amt` is tuition vs other fees for proportional routing
+      let _tuitionAmt = 0;
+      let _otherAmt   = 0;
+      if (_hasTuition && _hasOtherFees) {
+        // Combined payment: derive tuition portion from the fee schedule outstanding
+        const _sched   = _currentFeeSchedule || [];
+        const _summary = window._lastPaymentSummary || {};
+        const _tuitionScheduleTotal = _sched
+          .filter(f => (f.fee_name || '').toLowerCase().includes('tuition'))
+          .reduce((s, f) => s + Number(f.amount || 0), 0);
+        const _tuitionAlreadyPaid  = Math.min(Number(_summary.tuitionPaid || 0), _tuitionScheduleTotal);
+        const _tuitionOutstanding  = Math.max(0, _tuitionScheduleTotal - _tuitionAlreadyPaid);
+        // Other portion = whatever is not tuition outstanding (capped at 0)
+        _otherAmt   = Math.max(0, amt - _tuitionOutstanding);
+        _tuitionAmt = Math.round((amt - _otherAmt) * 100) / 100;
+        _otherAmt   = Math.round(_otherAmt * 100) / 100;
+      } else if (_hasTuition) {
+        _tuitionAmt = amt;  // pure tuition payment
+        _otherAmt   = 0;
+      } else {
+        _tuitionAmt = 0;    // pure other-fees payment
+        _otherAmt   = amt;
+      }
+
+      const finalIsTuition = _tuitionAmt > 0.01;
+      const finalIsMixed   = finalIsTuition && _otherAmt > 0.01; // combined payment
+      const paystackConfig = {
         key: PAYSTACK_PUBLIC_KEY,
         email,
         amount: Math.round(amt * 100),
@@ -7485,14 +7971,44 @@
         },
         callback: function (response) {
           const refn = (response && (response.reference || response.ref)) || ref;
+          // Clear in-progress flag for other fees so UI unlocks correctly after payment
+          if (!finalIsTuition && window._otherFeePaymentInProgress) {
+            const key = (studentId || 'anon').toUpperCase() + ':' + (feeType || '').toLowerCase().trim();
+            window._otherFeePaymentInProgress.delete(key);
+          }
           if (!refn) { showToast('Payment completed but no reference returned. Contact support.', 'error'); return; }
           savePaymentWithReceipt(feeType, amt, refn, feeBreakdown).catch(e => {
             console.error('[Paystack callback] save failed', e);
             showToast('Payment succeeded but could not save. Contact support with ref: ' + refn, 'error', 10000);
           });
         },
-        onClose: function () { showToast('Payment window closed. If you paid, check your email.', 'error', 5000); }
-      });
+        onClose: function () {
+          // Clear in-progress flag if user closes without paying
+          if (window._otherFeePaymentInProgress) {
+            const key = (studentId || 'anon').toUpperCase() + ':' + (feeType || '').toLowerCase().trim();
+            window._otherFeePaymentInProgress.delete(key);
+          }
+          showToast('Payment window closed. If you paid, check your email.', 'error', 5000);
+        }
+      };
+
+      // ── Apply Paystack subaccount routing ───────────────────────────────
+      if (finalIsMixed) {
+        // COMBINED payment (tuition + other fees together):
+        // Use transaction_charge to send ONLY the tuition kobo amount to the subaccount.
+        // bearer:'subaccount' means the subaccount absorbs its own share; the remainder
+        // (other fees) stays in the main account automatically.
+        paystackConfig.subaccount       = TUITION_SUBACCOUNT;
+        paystackConfig.bearer           = 'subaccount';
+        paystackConfig.transaction_charge = Math.round(_tuitionAmt * 100); // kobo
+      } else if (finalIsTuition) {
+        // PURE tuition payment: full amount goes to subaccount
+        paystackConfig.subaccount = TUITION_SUBACCOUNT;
+        paystackConfig.bearer     = 'account'; // main account bears transaction fees
+      }
+      // PURE other-fees payment: no subaccount — full amount lands in main account.
+
+      const handler = window.PaystackPop.setup(paystackConfig);
       handler.openIframe();
     }
     window.launchPaystack = launchPaystack;
@@ -7675,7 +8191,7 @@
       const feeType = feeNames.join(', ');
       const feeBreakdown = feeNames.join(' + ');
       closeModal('payAllModal');
-      payWithPaystack(feeType, total, feeBreakdown);
+      routePaymentWithOtherFeesFirst(feeType, total, feeBreakdown);
     };
 
     /* ── SAVE PAYMENT ───────────────────────────────────── */
@@ -7684,7 +8200,7 @@
     async function savePaymentWithReceipt(feeType, amount, reference, feeBreakdown = '') {
       try {
         const receipt = {
-          student_id: studentId,
+          student_id: String(studentId).toUpperCase().trim(), // FIX (Bug 3): normalise casing
           student_name: window.studentName || '',
           student_email: window.studentEmail || getValidEmail(),
           department: window.studentDept || '',
@@ -7704,7 +8220,7 @@
         window._lastReceipt = receipt;
 
         const payload = {
-          student_id: receipt.student_id,
+          student_id: String(studentId).toUpperCase().trim(), // FIX (Bug 3): always store uppercase so queries match
           student_name: receipt.student_name,
           student_email: receipt.student_email,
           department: receipt.department,
@@ -7713,6 +8229,16 @@
           phone: receipt.phone,
           fee_type: receipt.fee_type,
           fee_breakdown: receipt.fee_breakdown,
+          // FIX (Bug 1): persist fee_type_id so future queries can match by UUID instead
+          // of fragile text. Derive it from the schedule using the first matching fee name.
+          fee_type_id: (function() {
+            try {
+              const sched = _currentFeeSchedule || [];
+              const bd = (receipt.fee_breakdown || receipt.fee_type || '').toLowerCase();
+              const match = sched.find(f => bd.includes((f.fee_name || '').toLowerCase()));
+              return match ? match.fee_type_id : null;
+            } catch(_) { return null; }
+          })(),
           transaction_ref: reference,
           receipt_number: receipt.receipt_number,
           payment_date: receipt.date_iso,
@@ -7794,9 +8320,9 @@
               }
             }
 
-            // If still remaining, allocate by priority: tuition, src, dept, medical
+            // If still remaining, allocate by priority: OTHER FEES FIRST, then tuition
             if (remaining > 0) {
-              const priority = ['tuition', 'src', 'dept', 'medical'];
+              const priority = ['src', 'dept', 'medical', 'tuition'];
               for (const p of priority) {
                 if (remaining <= 0) break;
                 // sum outstanding across schedule items of this category
@@ -7926,27 +8452,31 @@
         <div class="receipt-document">
           <!-- Header strip -->
           <div class="receipt-header-strip">
-            <div style="font-size:32px;margin-bottom:8px;"><img src="images/favicon.png" class="gh-icon" alt="GH Schools"></div>
-            <div class="receipt-school-name">GH SCHOOLS</div>
-            <div style="font-size:12px;opacity:.8;margin-top:2px;">Official Student Payment Receipt</div>
-            <div class="receipt-badge">
-              <i class="fas fa-check-circle"></i> PAYMENT CONFIRMED
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:.9;flex-shrink:0;"><path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff"/></svg>
+              <div>
+                <div class="receipt-school-name">GH SCHOOLS</div>
+                <div class="receipt-school-subtitle">Official Student Portal</div>
+              </div>
             </div>
+            <div style="width:40px;height:1px;background:rgba(255,255,255,.3);margin:0 auto 10px;"></div>
+            <div class="receipt-badge"><i class="fas fa-check" style="font-size:9px;"></i> PAYMENT CONFIRMED</div>
           </div>
 
           <!-- Amount hero -->
           <div class="receipt-amount-hero">
-            <div class="receipt-amount-label">AMOUNT PAID</div>
+            <div class="receipt-amount-label">Amount Paid</div>
             <div class="receipt-amount-value">GHS ${gh(paidAmt)}</div>
-            <div style="font-size:12px;color:var(--success);font-weight:600;margin-top:4px;">${escapeHtml(receipt.fee_type || breakdown || 'Payment')}</div>
+            <div style="font-size:11px;color:#555;font-weight:600;margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">${escapeHtml(receipt.fee_type || breakdown || 'Payment')}</div>
           </div>
 
           <!-- Body -->
           <div class="receipt-body">
-            <div class="receipt-section-title"><i class="fas fa-user" style="margin-right:6px;color:var(--primary);"></i>Student Details</div>
+
+            <div class="receipt-section-title">Student Information</div>
             <div class="receipt-row">
               <span class="receipt-row-label">Student ID</span>
-              <span class="receipt-row-value" style="font-family:monospace;">${escapeHtml(String(receipt.student_id || '–'))}</span>
+              <span class="receipt-row-value" style="font-family:monospace;letter-spacing:1px;">${escapeHtml(String(receipt.student_id || '–'))}</span>
             </div>
             <div class="receipt-row">
               <span class="receipt-row-label">Full Name</span>
@@ -7957,55 +8487,55 @@
               <span class="receipt-row-value">${escapeHtml(String(receipt.level || window.studentLevel || '–'))}</span>
             </div>
             <div class="receipt-row">
-              <span class="receipt-row-label">Department</span>
+              <span class="receipt-row-label">Department / School</span>
               <span class="receipt-row-value">${escapeHtml(String(receipt.department || window.studentDept || '–'))}</span>
             </div>
             ${receipt.student_email || window.studentEmail ? `
             <div class="receipt-row">
-              <span class="receipt-row-label">Email</span>
-              <span class="receipt-row-value" style="font-size:12px;">${escapeHtml(String(receipt.student_email || window.studentEmail || '–'))}</span>
+              <span class="receipt-row-label">Email Address</span>
+              <span class="receipt-row-value" style="font-size:11px;">${escapeHtml(String(receipt.student_email || window.studentEmail || '–'))}</span>
             </div>` : ''}
 
-            <div class="receipt-section-title" style="margin-top:18px;"><i class="fas fa-receipt" style="margin-right:6px;color:var(--primary);"></i>Payment Details</div>
+            <div class="receipt-section-title" style="margin-top:20px;">Transaction Details</div>
             <div class="receipt-row">
-              <span class="receipt-row-label">Receipt #</span>
-              <span class="receipt-row-value" style="font-family:monospace;font-size:12px;color:var(--primary);">${escapeHtml(rcptNum)}</span>
+              <span class="receipt-row-label">Receipt No.</span>
+              <span class="receipt-row-value" style="font-family:monospace;letter-spacing:1px;">${escapeHtml(rcptNum)}</span>
             </div>
             <div class="receipt-row">
-              <span class="receipt-row-label">Transaction Ref</span>
-              <span class="receipt-row-value" style="font-family:monospace;font-size:11px;">${escapeHtml(txRef)}</span>
+              <span class="receipt-row-label">Transaction Ref.</span>
+              <span class="receipt-row-value" style="font-family:monospace;font-size:10px;">${escapeHtml(txRef)}</span>
             </div>
             <div class="receipt-row">
               <span class="receipt-row-label">Date & Time</span>
-              <span class="receipt-row-value" style="font-size:12px;">${escapeHtml(dateStr)}</span>
+              <span class="receipt-row-value">${escapeHtml(dateStr)}</span>
             </div>
             <div class="receipt-row">
-              <span class="receipt-row-label">Intake Period</span>
+              <span class="receipt-row-label">Academic Period</span>
               <span class="receipt-row-value">${escapeHtml(receipt.intake_period || (_intakeSemester && _academicYear ? _intakeSemester + ' ' + _academicYear : (_academicYear || '–')))}</span>
             </div>
-            <div class="receipt-row" style="border-bottom:2px solid var(--border);">
+            <div class="receipt-row" style="border-bottom:2px solid #111;">
               <span class="receipt-row-label">Payment Method</span>
-              <span class="receipt-row-value"><i class="fas fa-credit-card" style="color:var(--primary);margin-right:4px;"></i>Paystack (Card/Mobile)</span>
+              <span class="receipt-row-value">Paystack — Card / Mobile Money</span>
             </div>
 
             <!-- Per-fee outstanding breakdown -->
             ${feeItems.length > 0 ? `
-            <div class="receipt-section-title" style="margin-top:18px;"><i class="fas fa-balance-scale" style="margin-right:6px;color:var(--danger);"></i>Outstanding Balance Breakdown</div>
+            <div class="receipt-section-title" style="margin-top:20px;">Balance Breakdown</div>
             ${feeItems.map(f => {
         const barW = f.amount > 0 ? Math.round((f.prevPaid / f.amount) * 100) : 100;
         const statusClass = f.fullyPaid ? 'paid' : f.partial ? 'partial' : 'unpaid';
-        const statusLabel = f.fullyPaid ? `<i class="fas fa-check-circle" style="color:var(--success);"></i> Cleared` : f.partial ? `<i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> Partial (${f.pct}%)` : `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Unpaid`;
+        const statusLabel = f.fullyPaid ? '&#10003; CLEARED' : f.partial ? `PARTIAL (${f.pct}%)` : 'OUTSTANDING';
         return `<div class="receipt-fee-breakdown-item">
-                <div>
+                <div style="flex:1;">
                   <div class="receipt-fee-name">${escapeHtml(f.fee_name)}</div>
-                  <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Total: GHS ${gh(f.amount)} &nbsp;·&nbsp; Paid: GHS ${gh(f.prevPaid)}</div>
-                  <div style="margin-top:5px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;">
-                    <div style="height:100%;width:${barW}%;background:${f.fullyPaid ? 'var(--success)' : f.partial ? 'var(--warning)' : 'var(--danger)'};border-radius:4px;transition:width .6s;"></div>
+                  <div style="font-size:10px;color:#777;margin-top:3px;letter-spacing:0.3px;">Required: GHS ${gh(f.amount)} &nbsp;&nbsp; Paid: GHS ${gh(f.prevPaid)}</div>
+                  <div style="margin-top:6px;height:3px;background:#ddd;overflow:hidden;">
+                    <div style="height:100%;width:${barW}%;background:#111;transition:width .6s;"></div>
                   </div>
                 </div>
-                <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+                <div style="text-align:right;flex-shrink:0;margin-left:16px;">
                   <div class="receipt-fee-status ${statusClass}">${statusLabel}</div>
-                  ${!f.fullyPaid ? `<div style="font-size:12px;color:var(--danger);font-weight:800;margin-top:4px;">GHS ${gh(f.outstanding)} due</div>` : ''}
+                  ${!f.fullyPaid ? `<div style="font-size:12px;color:#111;font-weight:800;margin-top:4px;font-family:'Plus Jakarta Sans',sans-serif;">GHS ${gh(f.outstanding)}</div>` : ''}
                 </div>
               </div>`;
       }).join('')}
@@ -8013,19 +8543,37 @@
             <div class="receipt-outstanding-box ${allCleared ? 'cleared' : ''}">
               <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                  <div style="font-size:11px;font-weight:700;${allCleared ? 'color:var(--success)' : 'color:var(--danger)'};text-transform:uppercase;letter-spacing:.5px;">${allCleared ? '<i class="fas fa-check-circle" style="color:var(--success);"></i> All Fees Cleared' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> Total Outstanding'}</div>
-                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;${allCleared ? 'color:var(--success)' : 'color:var(--danger)'};letter-spacing:-0.5px;margin-top:2px;">GHS ${gh(totalOutstanding)}</div>
-                  ${!allCleared ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Please settle this balance to avoid penalties</div>` : `<div style="font-size:11px;color:var(--success);margin-top:3px;">You're fully cleared for this semester <i class="fas fa-star"></i></div>`}
+                  <div style="font-size:9px;font-weight:800;color:#555;text-transform:uppercase;letter-spacing:1.5px;">${allCleared ? 'Status' : 'Total Outstanding'}</div>
+                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:900;font-size:22px;color:#111;letter-spacing:-0.5px;margin-top:4px;">${allCleared ? 'ALL FEES CLEARED' : 'GHS ' + gh(totalOutstanding)}</div>
+                  <div style="font-size:10px;color:#666;margin-top:4px;">${!allCleared ? 'Please settle this balance to avoid penalties' : 'Fully cleared for this semester'}</div>
                 </div>
-                <div style="font-size:32px;">${allCleared ? '<i class="fas fa-star"></i>' : '<i class="fas fa-clipboard-list"></i>'}</div>
+                <div style="font-size:28px;color:#111;opacity:.15;">${allCleared ? '&#10003;' : '!'}</div>
               </div>
             </div>` : ''}
           </div>
 
-          <div class="receipt-watermark">
-            <i class="fas fa-shield-check" style="color:var(--success);margin-right:5px;"></i>
-            This is an officially verified payment receipt from GH Schools · ${new Date().getFullYear()}
+          <!-- Official seal row -->
+          <div class="receipt-seal-row">
+            <div style="font-size:10px;color:#555;letter-spacing:0.5px;">
+              <div style="font-weight:700;color:#111;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;">GH SCHOOLS</div>
+              <div>Finance & Fees Office</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:52px;height:52px;border:2px solid #111;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#111"/></svg>
+              </div>
+              <div style="font-size:8px;color:#777;margin-top:4px;letter-spacing:1px;">OFFICIAL SEAL</div>
+            </div>
+            <div style="text-align:right;font-size:10px;color:#555;">
+              <div style="font-weight:700;color:#111;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;">APPROVED</div>
+              <div>${new Date().getFullYear()}</div>
+            </div>
           </div>
+
+          <div class="receipt-watermark">
+            This is an officially verified payment receipt issued by GH Schools · Keep this for your records
+          </div>
+          <div class="receipt-bottom-strip"></div>
         </div>
       `;
       openModal('receiptModal');
@@ -8307,12 +8855,31 @@
     /* ── REGISTRATION ───────────────────────────────────── */
     window.registerCourses = async function () {
       if (!studentId) { showToast('No student ID. Please log in.', 'error'); return; }
-      const allowed = await hasRegistrationAccess(studentId);
-      if (!allowed) { openModal('restrictionModal'); return; }
-      openModal('loadingModal');
+
+      // Show immediate loading feedback on the button itself
+      const btn = document.getElementById('registerCoursesBtn');
+      const originalHTML = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(0,196,140,.4);border-top-color:var(--success);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;"></span> Checking…';
+      }
+
       try {
+        const allowed = await hasRegistrationAccess(studentId);
+        if (!allowed) {
+          if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+          openModal('restrictionModal');
+          return;
+        }
+        if (btn) btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(0,196,140,.4);border-top-color:var(--success);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;"></span> Loading…';
+        openModal('loadingModal');
         await window.openCourseRegister();
-      } catch (e) { closeModal('loadingModal'); showMsg('Error', 'Could not open course registration. Please try again.'); }
+      } catch (e) {
+        closeModal('loadingModal');
+        showMsg('Error', 'Could not open course registration. Please try again.');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+      }
     };
 
     /* ══════════════════════════════════════════════════════
@@ -9087,10 +9654,14 @@
           else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
           paid = Math.min(paid, Number(f.amount || 0));
           const outstanding = Math.max(0, Number(f.amount || 0) - paid);
-          return { name: f.fee_name || 'Fee', outstanding };
-        }).filter(f => f.outstanding > 0.01);
+          const isPaid = outstanding <= 0.01;
+          return { name: f.fee_name || 'Fee', required: Number(f.amount || 0), paid, outstanding, isPaid };
+        });
 
-        const otherTotal = otherFeeItems.reduce((s, f) => s + f.outstanding, 0);
+        // Only unpaid other fees enter the payment total
+        const unpaidOtherFees = otherFeeItems.filter(f => !f.isPaid);
+        const paidOtherFees   = otherFeeItems.filter(f => f.isPaid);
+        const otherTotal = unpaidOtherFees.reduce((s, f) => s + f.outstanding, 0);
 
         let tuitionCharge, grandTotal, heroDesc, feeRows;
         const dotColors = ['#F97316', '#6366F1', '#00C48C', '#FFB800', '#EF4444'];
@@ -9103,16 +9674,17 @@
           heroDesc = 'Pays 80% of tuition + all outstanding other fees. Unlocks course registration.';
           feeRows = [
             ...(need80 > 0.01 ? [{ name: 'Tuition (80% instalment)', amt: need80, dot: dotColors[0] }] : []),
-            ...otherFeeItems.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }))
+            ...unpaidOtherFees.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }))
           ];
         } else if (pct === 'custom') {
           tuitionCharge = 0;
-          grandTotal = otherTotal; // other fees always included; custom tuition amount added on top
-          heroDesc = 'Enter a tuition amount and all outstanding other fees will be included automatically.';
-          feeRows = otherFeeItems.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }));
-          // Store for updater
-          window._customOtherTotal = otherTotal;
-          window._customOtherFeeRows = feeRows;
+          grandTotal = 0; // starts at 0; student enters tuition amount
+          heroDesc = tBal <= 0.01
+            ? 'Tuition is fully cleared. Nothing outstanding.'
+            : 'Enter the tuition amount you want to pay right now.';
+          feeRows = []; // no other fees in custom mode
+          window._customOtherTotal = 0; // other fees not included
+          window._customOtherFeeRows = [];
           window._customTuitionBal = tBal;
         } else {
           tuitionCharge = tBal;
@@ -9120,7 +9692,7 @@
           heroDesc = 'Clears 100% of tuition and all outstanding fees. Full academic clearance.';
           feeRows = [
             ...(tBal > 0.01 ? [{ name: 'Tuition (full clearance)', amt: tBal, dot: dotColors[0] }] : []),
-            ...otherFeeItems.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }))
+            ...unpaidOtherFees.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }))
           ];
         }
 
@@ -9137,25 +9709,56 @@
             <div class="co-fee-row-amt">GHS ${gh(r.amt)}</div>
           </div>`).join('');
 
+        // Build the "already cleared" other fees panel shown below the payment breakdown
+        const paidOtherFeesHTML = paidOtherFees.length ? `
+          <div class="co-card" style="border-color:rgba(0,196,140,.3);background:var(--success-light);">
+            <div class="co-card-header" style="padding-bottom:12px;">
+              <div class="co-card-header-icon" style="background:rgba(0,196,140,.15);color:var(--success);">
+                <i class="fas fa-check-double"></i>
+              </div>
+              <div>
+                <div class="co-card-title" style="color:var(--success);">Already Paid — No Charge</div>
+                <div class="co-card-subtitle">These fees are fully settled and will not be included in this payment.</div>
+              </div>
+            </div>
+            <div style="padding:0 20px 16px;display:flex;flex-direction:column;gap:8px;">
+              ${paidOtherFees.map(f => `
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,196,140,.08);border:1px solid rgba(0,196,140,.2);border-radius:10px;padding:10px 14px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:22px;height:22px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <i class="fas fa-check" style="color:#fff;font-size:10px;"></i>
+                    </div>
+                    <div>
+                      <div style="font-weight:700;font-size:13px;color:var(--text);">${escapeHtml(f.name)}</div>
+                      <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">GHS ${gh(f.required)} fully paid</div>
+                    </div>
+                  </div>
+                  <span style="background:var(--success);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;white-space:nowrap;">CLEARED</span>
+                </div>`).join('')}
+            </div>
+          </div>` : '';
+
         // Store for payment
         window._checkoutTotal = grandTotal;
         window._checkoutPct = pct;
         window._checkoutFeeBreakdown = feeRows.map(r => r.name + ' ' + gh(r.amt)).join(', ');
-        window._checkoutFeeType = pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Tuition + Other Fees' : '100% Full Clearance';
-        // For custom mode, initialize total to other fees so button works immediately
+        window._checkoutFeeType = pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Tuition Payment' : '100% Full Clearance';
+        // For custom mode, start at 0 — student enters the tuition amount they want to pay
         if (pct === 'custom') {
-          window._checkoutTotal = Math.round(otherTotal * 100) / 100;
-          window._checkoutFeeType = otherTotal > 0.01 ? 'Other Fees Payment' : 'Custom Tuition + Other Fees';
-          window._checkoutFeeBreakdown = feeRows.map(r => r.name + ' ' + gh(r.amt)).join(', ');
+          window._checkoutTotal = 0;
+          window._checkoutFeeType = 'Custom Tuition Payment';
+          window._checkoutFeeBreakdown = '';
         }
 
         body.innerHTML = `
           <!-- Hero amount card -->
           <div class="co-hero ${colorClass}">
             <div class="co-hero-icon"><i class="fas ${iconClass}"></i></div>
-            <div class="co-hero-label">${pct === 80 ? '80% + Other Fees' : pct === 'custom' ? 'Custom Payment' : '100% Full Clearance'}</div>
-            <div class="co-hero-amount" id="coHeroAmount">${pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal)}</div>
-            <div class="co-hero-desc">${heroDesc}</div>
+            <div class="co-hero-body">
+              <div class="co-hero-label">${pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Payment' : 'Full Clearance'}</div>
+              <div class="co-hero-amount" id="coHeroAmount">${pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal)}</div>
+              <div class="co-hero-desc">${heroDesc}</div>
+            </div>
           </div>
 
           ${pct === 'custom' ? `
@@ -9180,7 +9783,7 @@
                   max="${tBal}"
                   step="0.01"
                   placeholder="0.00"
-                  oninput="updateCustomCheckout(this.value, ${tBal}, ${otherTotal})"
+                  oninput="updateCustomCheckout(this.value, ${tBal})"
                   style="width:100%;padding:14px 14px 14px 56px;border:2px solid #6366F1;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#4F46E5;outline:none;background:#F5F3FF;-moz-appearance:textfield;"
                 />
               </div>
@@ -9189,36 +9792,19 @@
                 ${[0.25, 0.5, 0.75, 1].map(f => {
           const v = Math.round(tBal * f * 100) / 100;
           const lbl = f === 1 ? 'Full' : '' + Math.round(f * 100) + '%';
-          return `<button onclick="document.getElementById('customAmtInput').value=${v};updateCustomCheckout(${v},${tBal},${otherTotal})" style="flex:1;min-width:60px;padding:8px 6px;border:1.5px solid #6366F1;border-radius:8px;background:#EEF2FF;color:#4F46E5;font-size:12px;font-weight:700;cursor:pointer;">${lbl}<br><span style="font-size:10px;font-weight:600;opacity:.8;">GHS ${gh(v)}</span></button>`;
+          return `<button onclick="document.getElementById('customAmtInput').value=${v};updateCustomCheckout(${v},${tBal})" style="flex:1;min-width:60px;padding:8px 6px;border:1.5px solid #6366F1;border-radius:8px;background:#EEF2FF;color:#4F46E5;font-size:12px;font-weight:700;cursor:pointer;">${lbl}<br><span style="font-size:10px;font-weight:600;opacity:.8;">GHS ${gh(v)}</span></button>`;
         }).join('')}
               </div>
               <div id="customAmtError" style="color:var(--danger);font-size:12px;font-weight:600;min-height:16px;margin-top:4px;"></div>
             </div>
           </div>
 
-          ${feeRows.length > 0 ? `
-          <!-- Other fees always included card -->
-          <div class="co-card">
-            <div class="co-card-header">
-              <div class="co-card-header-icon">
-                <i class="fas fa-list-ul"></i>
-              </div>
-              <div>
-                <div class="co-card-title">Other Fees (Always Included)</div>
-                <div class="co-card-subtitle">${feeRows.length} fee item${feeRows.length !== 1 ? 's' : ''} added automatically</div>
-              </div>
-            </div>
-            ${feeRowsHTML}
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:var(--bg);border-radius:0 0 12px 12px;font-size:13px;font-weight:700;">
-              <span style="color:var(--text-muted);">Other Fees Total</span>
-              <span style="color:var(--primary);">GHS ${gh(otherTotal)}</span>
-            </div>
-          </div>` : ''}` : `
+          <!-- Other fees not included in custom payment — tuition only -->` : `
           <!-- Student info card -->
           <div class="co-card">
             <div class="co-card-header">
               <div class="co-card-header-icon${pct === 100 ? ' green' : ''}">
-                        <img src="images/favicon.png" class="gh-icon" alt="GH Schools">
+                        <i class="fas fa-user-graduate"></i>
                       </div>
               <div>
                 <div class="co-card-title">Paying As</div>
@@ -9249,31 +9835,44 @@
             ${feeRowsHTML || '<div style="padding:16px 20px;color:var(--text-muted);font-size:13px;">No outstanding fees in this category.</div>'}
           </div>` : ''}
 
+          ${paidOtherFeesHTML}
+
           <!-- Total bar -->
-          <div class="co-total-bar ${colorClass}" id="coTotalBar" style="${pct === 'custom' && otherTotal <= 0.01 ? 'opacity:.4;pointer-events:none;' : ''}">
-            <div>
-              <div class="co-total-label">Total Amount Due</div>
-              <div class="co-total-sub">Secured via Paystack</div>
-            </div>
-            <div class="co-total-amt ${colorClass}" id="coTotalAmt">${pct === 'custom' ? (otherTotal > 0.01 ? 'GHS ' + gh(otherTotal) + ' + tuition' : 'GHS —') : 'GHS ' + gh(grandTotal)}</div>
-          </div>
+          ${(function() {
+            if (pct === 'custom' && tBal <= 0.01) return '';
+            const tbStyle = pct === 'custom' ? 'opacity:.4;pointer-events:none;' : '';
+            const tbAmt = pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal);
+            return '<div class="co-total-bar ' + colorClass + '" id="coTotalBar" style="' + tbStyle + '">'
+              + '<div><div class="co-total-label">Total Amount Due</div><div class="co-total-sub">Secured via Paystack</div></div>'
+              + '<div class="co-total-amt ' + colorClass + '" id="coTotalAmt">' + tbAmt + '</div>'
+              + '</div>';
+          })()}
 
           <!-- Pay button -->
-          ${pct === 'custom' ? `
-          <button class="co-pay-btn" id="coPayBtn" ${otherTotal > 0.01 ? '' : 'disabled'} onclick="triggerCheckoutPayment()"
-            style="background:#6366F1;${otherTotal > 0.01 ? '' : 'opacity:.5;cursor:not-allowed;'}">
-            <i class="fas fa-lock" style="font-size:14px;"></i>
-            ${otherTotal > 0.01 ? 'Pay GHS ' + gh(otherTotal) + ' + Enter Tuition Amount' : 'Enter an amount above'}
-          </button>` : grandTotal > 0.01 ? `
-          <button class="co-pay-btn ${colorClass}" id="coPayBtn" onclick="triggerCheckoutPayment()">
-            <i class="fas fa-lock" style="font-size:14px;"></i>
-            Pay GHS ${gh(grandTotal)} Securely
-          </button>` : `
-          <div style="background:var(--success-light);border-radius:14px;padding:20px;text-align:center;color:var(--success);">
-            <i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;">All fees cleared!</div>
-            <div style="font-size:12px;margin-top:4px;opacity:.8;">Nothing outstanding in this category.</div>
-          </div>`}
+          ${(function() {
+            if (pct === 'custom' && tBal <= 0.01) {
+              return '<div style="background:var(--success-light);border-radius:14px;padding:20px;text-align:center;color:var(--success);">'
+                + '<i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>'
+                + '<div style="font-weight:800;font-size:15px;">Tuition fully cleared!</div>'
+                + '<div style="font-size:12px;margin-top:4px;opacity:.8;">Nothing outstanding. No payment needed.</div>'
+                + '</div>';
+            }
+            if (pct === 'custom') {
+              return '<button class="co-pay-btn" id="coPayBtn" disabled style="background:#6366F1;opacity:.5;cursor:not-allowed;">'
+                + '<i class="fas fa-lock" style="font-size:14px;"></i> Enter a tuition amount above'
+                + '</button>';
+            }
+            if (grandTotal > 0.01) {
+              return '<button class="co-pay-btn ' + colorClass + '" id="coPayBtn" onclick="triggerCheckoutPayment()">'
+                + '<i class="fas fa-lock" style="font-size:14px;"></i> Pay GHS ' + gh(grandTotal) + ' Securely'
+                + '</button>';
+            }
+            return '<div style="background:var(--success-light);border-radius:14px;padding:20px;text-align:center;color:var(--success);">'
+              + '<i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>'
+              + '<div style="font-weight:800;font-size:15px;">All fees cleared!</div>'
+              + '<div style="font-size:12px;margin-top:4px;opacity:.8;">Nothing outstanding in this category.</div>'
+              + '</div>';
+          })()}
 
           <!-- Trust strip -->
           <div class="co-trust-strip">
@@ -9298,10 +9897,9 @@
       document.body.style.overflow = '';
     };
 
-    /* ── Custom amount live updater ── */
-    window.updateCustomCheckout = function (val, maxAmt, otherTotal) {
+    /* ── Custom amount live updater — tuition only ── */
+    window.updateCustomCheckout = function (val, maxAmt) {
       const v = parseFloat(val);
-      const oTotal = parseFloat(otherTotal) || window._customOtherTotal || 0;
       const btn = document.getElementById('coPayBtn');
       const heroAmt = document.getElementById('coHeroAmount');
       const totalAmt = document.getElementById('coTotalAmt');
@@ -9312,30 +9910,14 @@
 
       if (isNaN(v) || v <= 0) {
         if (errEl) errEl.textContent = '';
-        // If there are other fees, still allow payment with just those
-        if (oTotal > 0.01) {
-          const grandWithOther = Math.round(oTotal * 100) / 100;
-          if (heroAmt) heroAmt.textContent = 'GHS ' + gh(grandWithOther);
-          if (totalAmt) totalAmt.textContent = 'GHS ' + gh(grandWithOther);
-          if (totalBar) { totalBar.style.opacity = '1'; totalBar.style.pointerEvents = ''; }
-          window._checkoutTotal = grandWithOther;
-          window._checkoutFeeType = 'Other Fees Payment';
-          const otherRows = window._customOtherFeeRows || [];
-          window._checkoutFeeBreakdown = otherRows.map(r => r.name + ' ' + gh(r.amt)).join(', ');
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.style.cursor = 'pointer';
-          btn.innerHTML = `<i class="fas fa-lock" style="font-size:14px;"></i> Pay GHS ${gh(grandWithOther)} (Other Fees Only)`;
-        } else {
-          if (heroAmt) heroAmt.textContent = 'GHS —';
-          if (totalAmt) totalAmt.textContent = 'GHS —';
-          if (totalBar) { totalBar.style.opacity = '.4'; totalBar.style.pointerEvents = 'none'; }
-          btn.disabled = true;
-          btn.style.opacity = '.5';
-          btn.style.cursor = 'not-allowed';
-          btn.innerHTML = '<i class="fas fa-lock" style="font-size:14px;"></i> Enter an amount above';
-          window._checkoutTotal = 0;
-        }
+        if (heroAmt) heroAmt.textContent = 'GHS —';
+        if (totalAmt) totalAmt.textContent = 'GHS —';
+        if (totalBar) { totalBar.style.opacity = '.4'; totalBar.style.pointerEvents = 'none'; }
+        btn.disabled = true;
+        btn.style.opacity = '.5';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = '<i class="fas fa-lock" style="font-size:14px;"></i> Enter a tuition amount above';
+        window._checkoutTotal = 0;
         return;
       }
 
@@ -9351,40 +9933,115 @@
       }
 
       if (errEl) errEl.textContent = '';
-      const grandTotal = Math.round((rounded + oTotal) * 100) / 100;
-      if (heroAmt) heroAmt.textContent = 'GHS ' + gh(grandTotal);
-      if (totalAmt) totalAmt.textContent = 'GHS ' + gh(grandTotal);
+      if (heroAmt) heroAmt.textContent = 'GHS ' + gh(rounded);
+      if (totalAmt) totalAmt.textContent = 'GHS ' + gh(rounded);
       if (totalBar) { totalBar.style.opacity = '1'; totalBar.style.pointerEvents = ''; }
 
-      window._checkoutTotal = grandTotal;
-      window._checkoutFeeType = 'Custom Tuition + Other Fees';
-      const otherRows = window._customOtherFeeRows || [];
-      const otherBreakdown = otherRows.map(r => r.name + ' ' + gh(r.amt)).join(', ');
-      window._checkoutFeeBreakdown = `Custom tuition: GHS ${gh(rounded)}` + (otherBreakdown ? ', ' + otherBreakdown : '');
+      window._checkoutTotal = rounded;
+      window._checkoutFeeType = 'Custom Tuition Payment';
+      window._checkoutFeeBreakdown = `Custom tuition: GHS ${gh(rounded)}`;
 
       btn.disabled = false;
       btn.style.opacity = '1';
       btn.style.cursor = 'pointer';
-      btn.innerHTML = `<i class="fas fa-lock" style="font-size:14px;"></i> Pay GHS ${gh(grandTotal)} Securely`;
+      btn.innerHTML = `<i class="fas fa-lock" style="font-size:14px;"></i> Pay GHS ${gh(rounded)} Securely`;
     };
 
 
-    window.triggerCheckoutPayment = function () {
+    window.triggerCheckoutPayment = async function () {
       const total = window._checkoutTotal || 0;
       if (total <= 0.01) { showToast('Nothing to pay', 'error'); return; }
+
+      // Re-validate: fetch fresh payment summary to make sure fees are still outstanding
       const btn = document.getElementById('coPayBtn');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner-inline" style="width:18px;height:18px;border-width:2px;"></div> Verifying…'; }
+
+      try {
+        if (studentId) await loadCanonicalFeesForStudent(studentId);
+        const freshSummary = await fetchPaymentsSummary(studentId);
+        window._lastPaymentSummary = freshSummary;
+
+        const fees = _currentFeeSchedule || [];
+
+        // Check if all other fees are already paid
+        const otherFeeItems = fees.filter(f => {
+          const n = (f.fee_name || '').toLowerCase();
+          return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+        }).map(f => {
+          const n = (f.fee_name || '').toLowerCase();
+          let paid = 0;
+          if (n.includes('src')) paid = Number(freshSummary.srcPaid || 0);
+          else if (n.includes('medical')) paid = Number(freshSummary.medPaid || 0);
+          else if (n.includes('departmental') || n.includes('department')) paid = Number(freshSummary.deptPaid || 0);
+          paid = Math.min(paid, Number(f.amount || 0));
+          return { name: f.fee_name, outstanding: Math.max(0, Number(f.amount || 0) - paid) };
+        });
+
+        const tuitionFee = fees.find(f => (f.fee_name || '').toLowerCase().includes('tuition'));
+        const tTotal = tuitionFee ? Number(tuitionFee.amount || 0) : 0;
+        const tPaid  = Math.min(Number(freshSummary.tuitionPaid || 0), tTotal);
+        const tBal   = Math.max(0, tTotal - tPaid);
+
+        const freshOtherTotal = otherFeeItems.reduce((s, f) => s + f.outstanding, 0);
+        const freshGrandTotal = freshOtherTotal + tBal;
+
+        // Determine what this checkout is actually paying
+        const pct = window._checkoutPct;
+        const isCustom = pct === 'custom';
+        const is80     = pct === 80;
+
+        // For custom mode: tuition-only — the entered amount IS the total
+        let verifiedTotal = 0;
+        if (isCustom) {
+          const userTuitionAmt = total; // no other fees mixed in
+          const freshTuition = Math.min(Math.max(0, userTuitionAmt), tBal);
+          verifiedTotal = freshTuition;
+        } else if (is80) {
+          const need80 = Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid);
+          verifiedTotal = Math.round((need80 + freshOtherTotal) * 100) / 100;
+        } else {
+          verifiedTotal = Math.round(freshGrandTotal * 100) / 100;
+        }
+
+        if (verifiedTotal <= 0.01) {
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock" style="font-size:14px;"></i> Pay Securely'; }
+          showToast('All fees are already paid! Nothing outstanding.', 'success', 5000);
+          // Refresh the checkout page to show cleared state
+          setTimeout(() => openPayCheckoutPage(pct), 300);
+          return;
+        }
+
+        // Update stored total to fresh verified value
+        window._checkoutTotal = verifiedTotal;
+
+        // Rebuild fee breakdown from fresh data
+        const freshRows = [];
+        if (!isCustom) {
+          if (tBal > 0.01) {
+            const lbl = is80 ? 'Tuition (80% instalment)' : 'Tuition (full clearance)';
+            const amt  = is80 ? Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid) : tBal;
+            if (amt > 0.01) freshRows.push({ name: lbl, amt });
+          }
+          otherFeeItems.filter(f => f.outstanding > 0.01).forEach(f => freshRows.push({ name: f.name, amt: f.outstanding }));
+          window._checkoutFeeBreakdown = freshRows.map(r => r.name + ' GHS ' + gh(r.amt)).join(', ');
+        }
+      } catch (e) {
+        console.warn('[triggerCheckoutPayment] re-validation failed, proceeding with cached total', e);
+      }
+
       if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner-inline" style="width:18px;height:18px;border-width:2px;"></div> Processing…'; }
       closePayCheckoutPage();
       setTimeout(() => {
-        payWithPaystack(
+        routePaymentWithOtherFeesFirst(
           window._checkoutFeeType || 'Fee Payment',
-          total,
+          window._checkoutTotal || total,
           window._checkoutFeeBreakdown || ''
         );
       }, 120);
     };
 
     async function _renderPaymentsOverviewContent() {
+      window._renderPaymentsOverviewContent = _renderPaymentsOverviewContent;
       const body = document.getElementById('paymentsOverviewBody');
       if (!body) return;
       body.innerHTML = `<div class="pmov-loading"><div class="pmov-spinner"></div><p>Loading fee summary…</p></div>`;
@@ -9421,10 +10078,20 @@
           if (seen[nm]) return false; seen[nm] = true; return true;
         });
 
-        // Fetch payments
+        // Fetch payments — approved only, normalised student_id (FIX Bug 2 & 3)
         let allPay = [];
-        try { const pr = await supabase.from('payments').select('*').eq('student_id', studentId).in('status', ['approved']); if (!pr.error) allPay = pr.data || []; } catch (_) { }
-        if (!allPay.length) { try { const pr2 = await supabase.from('payments').select('*').eq('student_id', studentId); allPay = pr2.data || []; } catch (_) { } }
+        try {
+          const sidNorm = String(studentId).toUpperCase().trim();
+          const pr = await supabase.from('payments').select('*')
+            .eq('student_id', sidNorm).in('status', ['approved']);
+          if (!pr.error && pr.data && pr.data.length) allPay = pr.data;
+          // Try original casing if normalised form returned nothing
+          if (!allPay.length) {
+            const pr2 = await supabase.from('payments').select('*')
+              .eq('student_id', studentId).in('status', ['approved']);
+            if (!pr2.error) allPay = pr2.data || [];
+          }
+        } catch (_) { }
 
         function sumPaid(pays) {
           let t = 0, s = 0, m = 0, d = 0, a = 0;
@@ -9522,23 +10189,34 @@
         // ── Build body HTML ─────────────────────────────────
         let html = '';
 
-        // Action cards (80% and 100%)
+        // Action cards — Tuition Fees, Other Fees, Custom Payment
         if (!allClr) {
+          // Compute tuition-only balance for the tuition card
+          const tFeeCalc = (_currentFeeSchedule || []).find(f => (f.fee_name || '').toLowerCase().includes('tuition'));
+          const tTotalCalc = tFeeCalc ? Number(tFeeCalc.amount || 0) : 0;
+          const tPaidCalc = Number((window._lastPaymentSummary || {}).tuitionPaid || 0);
+          const tBalCalc = Math.max(0, tTotalCalc - tPaidCalc);
+          const tPctCalc = tTotalCalc > 0 ? Math.min(100, Math.round((tPaidCalc / tTotalCalc) * 100)) : 100;
+          const tuitionCleared = tBalCalc <= 0.01;
+
           html += `<div class="pmov-action-cards">
-            <div class="pmov-action-card orange" onclick="${met80 ? '' : 'openPayCheckoutPage(80)'}">
-              <div class="pmov-ac-icon"><i class="fas fa-unlock"></i></div>
-              <div class="pmov-ac-label">80% + Other Fees</div>
-              <div class="pmov-ac-amount">${met80 ? 'Met ✓' : 'GHS ' + gh(amt80)}</div>
-              <div class="pmov-ac-desc">${met80 ? 'Registration already unlocked' : 'Unlocks course registration'}</div>
-              ${!met80 ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openPayCheckoutPage(80)"><i class="fas fa-arrow-right"></i> Pay Now</button>` : `<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> Already unlocked</div>`}
+            <!-- Tuition Fees Card -->
+            <div class="pmov-action-card orange" onclick="${tuitionCleared ? '' : 'openTuitionPayModal()'}" style="${tuitionCleared ? 'opacity:.85;cursor:default;' : 'cursor:pointer;'}">
+              <div class="pmov-ac-icon"><i class="fas fa-graduation-cap"></i></div>
+              <div class="pmov-ac-label">Tuition Fees</div>
+              <div class="pmov-ac-amount">${tuitionCleared ? 'Cleared ✓' : 'GHS ' + gh(tBalCalc)}</div>
+              <div class="pmov-ac-desc">${tuitionCleared ? 'Tuition fully settled' : tPctCalc + '% paid · ' + (100 - tPctCalc) + '% outstanding'}</div>
+              ${!tuitionCleared ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openTuitionPayModal()"><i class="fas fa-arrow-right"></i> Pay Tuition</button>` : `<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> Fully cleared</div>`}
             </div>
-            <div class="pmov-action-card green" onclick="${met100 ? '' : 'openPayCheckoutPage(100)'}">
-              <div class="pmov-ac-icon"><i class="fas fa-trophy"></i></div>
-              <div class="pmov-ac-label">100% Full Clearance</div>
-              <div class="pmov-ac-amount">${met100 ? 'Cleared ✓' : 'GHS ' + gh(amt100)}</div>
-              <div class="pmov-ac-desc">${met100 ? 'All fees fully settled' : 'Clears all outstanding fees'}</div>
-              ${!met100 ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openPayCheckoutPage(100)"><i class="fas fa-arrow-right"></i> Pay All</button>` : `<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> Fully cleared</div>`}
+            <!-- Other Fees Card -->
+            <div class="pmov-action-card green" onclick="${otherBal <= 0.01 ? '' : 'openOtherFeesPayModal()'}" style="${otherBal <= 0.01 ? 'opacity:.85;cursor:default;' : 'cursor:pointer;'}">
+              <div class="pmov-ac-icon"><i class="fas fa-receipt"></i></div>
+              <div class="pmov-ac-label">Other Fees</div>
+              <div class="pmov-ac-amount">${otherBal <= 0.01 ? 'Cleared ✓' : 'GHS ' + gh(otherBal)}</div>
+              <div class="pmov-ac-desc">${otherBal <= 0.01 ? 'All other fees settled' : 'SRC, Medical, Departmental'}</div>
+              ${otherBal > 0.01 ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openOtherFeesPayModal()"><i class="fas fa-arrow-right"></i> Pay Fees</button>` : `<div style="font-size:12px;opacity:.8;"><i class="fas fa-check-circle"></i> All cleared</div>`}
             </div>
+            <!-- Custom Payment Card -->
             <div class="pmov-action-card custom-amt-card" onclick="openPayCheckoutPage('custom')" style="grid-column:1/-1;background:linear-gradient(135deg,#EEF2FF,#F5F3FF);border:2px solid #6366F1;">
               <div class="pmov-ac-icon" style="background:rgba(99,102,241,.12);color:#6366F1;"><i class="fas fa-keyboard"></i></div>
               <div class="pmov-ac-label" style="color:#4F46E5;">Pay Custom Amount</div>
@@ -9774,20 +10452,54 @@
             else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
             paid = Math.min(paid, Number(f.amount || 0));
             const outstanding = Math.max(0, Number(f.amount || 0) - paid);
-            const disabled = outstanding <= 0.01 ? 'disabled' : '';
-            return `
-              <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
-                <input type="checkbox" name="otherFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" ${disabled}>
-                <div style="flex:1;min-width:0;">
-                  <div style="font-weight:700;font-size:13px;">${escapeHtml(f.fee_name)}</div>
-                  <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
-                </div>
-                <div style="color:${outstanding <= 0.01 ? 'var(--success)' : 'var(--danger)'};font-weight:800;font-size:13px;flex-shrink:0;">${outstanding <= 0.01 ? '&#10003; Paid' : cedis(outstanding)}</div>
-              </div>`;
+            const isPaid = outstanding <= 0.01;
+
+            if (isPaid) {
+              // FULLY PAID: show a locked "Paid" row — no checkbox, no re-payment possible
+              return `
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);opacity:.85;">
+                  <div style="width:16px;height:16px;border-radius:4px;background:var(--success);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-check" style="color:#fff;font-size:9px;"></i>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:13px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                    <span style="background:var(--success-light);color:var(--success);font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;border:1px solid rgba(0,196,140,.25);">
+                      <i class="fas fa-check-circle"></i> PAID
+                    </span>
+                  </div>
+                </div>`;
+            } else {
+              // UNPAID: show checkbox, auto-checked, user can uncheck if they want
+              return `
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+                  <input type="checkbox" name="otherFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" checked>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:13px;">${escapeHtml(f.fee_name)}</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
+                  </div>
+                  <div style="color:var(--danger);font-weight:800;font-size:13px;flex-shrink:0;">${cedis(outstanding)}</div>
+                </div>`;
+            }
           }).join('');
+
+          const allOtherPaid = otherFeeItems.every(f => {
+            const n = (f.fee_name || '').toLowerCase();
+            let paid = 0;
+            if (n.includes('src')) paid = Number(summary.srcPaid || 0);
+            else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
+            else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+            return Math.min(paid, Number(f.amount || 0)) >= Number(f.amount || 0) - 0.01;
+          });
+
           html += `
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-top:16px;margin-bottom:6px;">Other Fees (Included in Payment)</div>
-            <div style="max-height:180px;overflow:auto;">${otherRows}</div>`;
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-top:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+              Other Fees
+              ${allOtherPaid ? `<span style="background:var(--success-light);color:var(--success);font-size:10px;font-weight:800;padding:3px 8px;border-radius:12px;border:1px solid rgba(0,196,140,.2);text-transform:none;letter-spacing:0;">All Cleared ✓</span>` : `<span style="background:var(--warning-light);color:#7a5400;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;text-transform:none;letter-spacing:0;">Included in payment</span>`}
+            </div>
+            <div style="max-height:220px;overflow:auto;">${otherRows}</div>`;
         }
 
         if (html) container.innerHTML = html;
@@ -9848,14 +10560,13 @@
       await fetchStudentProfile();
       updateStudentInfoUI();
 
-      // Load fee schedule for student's level/program/year
-      document.getElementById('feeGrid').innerHTML =
-        `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text-muted);"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px;"></div>Loading fee schedule…</div>`;
-
+      // FIX (Bug 4): Load fee schedule FIRST and await it fully before fetching
+      // payment summary — avoids the race where _currentFeeSchedule is empty when
+      // fetchPaymentsSummary tries to do proportional allocation of combined payments.
       const feeResult = await loadCanonicalFeesForStudent(studentId);
       updateStudentInfoUI(); // refresh pills with academic year now set
 
-      // Fetch payments summary
+      // Fetch payments summary only AFTER fee schedule is confirmed loaded
       const summary = await fetchPaymentsSummary(studentId);
       window._lastPaymentSummary = summary;
       totalPaid = Number(summary.totalPaid || 0);

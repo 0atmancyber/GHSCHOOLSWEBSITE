@@ -7426,31 +7426,19 @@
       const names = [];
 
       if (window._tuitionSelectedAmt > 0.01) {
-        // % card selected: exact tuition amount + auto-check all outstanding other fees
+        // % card selected: exact tuition amount ONLY — other fees are paid separately via Other Fees card
         total = window._tuitionSelectedAmt;
         checked.forEach(cb => names.push((cb.value || '').split('|')[0] || ''));
-
-        // Auto-check every unpaid other fee and add their amounts
-        otherInputs.forEach(cb => { cb.checked = true; });
-        otherInputs.forEach(cb => {
-          const v = (cb.value || '').split('|');
-          const amt = Number(v[1] || 0);
-          if (Number.isFinite(amt) && amt > 0) { total += amt; names.push(v[0] || ''); }
-        });
+        // Do NOT auto-check or include other fees here — they belong to the Other Fees card
       } else {
-        // Manual selection
+        // Manual selection — tuition items only
         checked.forEach(cb => {
           const v = (cb.value || '').split('|');
           const amt = Number(v[1] || 0);
           if (Number.isFinite(amt)) total += amt;
           names.push(v[0] || '');
         });
-        otherChecked.forEach(cb => {
-          const v = (cb.value || '').split('|');
-          const amt = Number(v[1] || 0);
-          if (Number.isFinite(amt)) total += amt;
-          names.push(v[0] || '');
-        });
+        // NOTE: other fee checkboxes (otherFeeSelect) are intentionally excluded from tuition modal totals
       }
 
       const el = document.getElementById('tuitionModalSelectedTotal');
@@ -7519,15 +7507,14 @@
     /* ── PAY TUITION ────────────────────────────────────── */
     window.payTuition = function () {
       const checked = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]:checked'));
-      // Re-query other fees AFTER updateTuitionModalTotal may have auto-checked them
-      const otherChecked = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]:checked:not(:disabled)'));
-      if (!checked.length && !otherChecked.length && !(window.pendingOtherFeesSelection && window.pendingOtherFeesSelection.length)) { showToast('Select at least one fee to pay', 'error'); return; }
+      // Tuition card pays ONLY tuition — other fees are paid via the Other Fees card
+      if (!checked.length && !(window._tuitionSelectedAmt > 0.01)) { showToast('Select at least one tuition plan to pay', 'error'); return; }
 
       // If the user selected via the % cards, use the exact stored amount (not checkbox values)
       // This fixes 80% only charging the exact 80% amount, not the full outstanding
       let total = 0; const parts = [];
       if (window._tuitionSelectedAmt > 0.01) {
-        // Use the exact % amount computed by selectTuitionPercent
+        // Use the exact % amount computed by selectTuitionPercent — tuition ONLY
         total = window._tuitionSelectedAmt;
         // Get fee name from first checked item
         const firstChecked = checked[0];
@@ -7536,45 +7523,22 @@
         // Reset so manual checkbox changes work correctly next time
         window._tuitionSelectedAmt = 0;
         window._tuitionSelectedPct = 0;
-        // Include all checked other fees on top of the % tuition amount
-        otherChecked.forEach(cb => {
-          const [name, amt] = (cb.value || '').split('|');
-          const a = Number(amt || 0);
-          if (Number.isFinite(a) && a > 0) { total += a; parts.push(name); }
-        });
+        // Do NOT add other fees — they are only paid via the Other Fees card
       } else {
         checked.forEach(cb => {
           const [name, amt] = (cb.value || '').split('|');
           const a = Number(amt || 0);
           if (Number.isFinite(a) && a > 0) { total += a; parts.push(name); }
         });
-        otherChecked.forEach(cb => {
-          const [name, amt] = (cb.value || '').split('|');
-          const a = Number(amt || 0);
-          if (Number.isFinite(a) && a > 0) { total += a; parts.push(name); }
-        });
       }
-
-      // If this flow was opened to combine other-fees, include them too
-      try {
-        if (window.pendingOtherFeesSelection && Array.isArray(window.pendingOtherFeesSelection) && window.pendingOtherFeesSelection.length) {
-          window.pendingOtherFeesSelection.forEach(s => {
-            const [name, amt] = (s || '').split('|');
-            const a = Number(amt || 0);
-            if (Number.isFinite(a) && a > 0) { total += a; parts.push(name); }
-          });
-          // clear pending selections after including
-          window.pendingOtherFeesSelection = null;
-        }
-      } catch (e) { console.warn('include pendingOtherFeesSelection failed', e); }
 
       total = Number(total.toFixed(2));
       if (total <= 0) { showToast('Selected fees have no outstanding amount', 'error'); return; }
       const feeType = parts.join(', ');
-      const feeBreakdown = parts.map((p, i) => `${p}`).join(' + ');
+      const feeBreakdown = parts.join(' + ');
       closeModal('tuitionModal');
-      // Route through other-fees-first engine
-      routePaymentWithOtherFeesFirst(feeType, total, feeBreakdown);
+      // Tuition card pays tuition directly — no other-fees-first interception
+      payWithPaystack(feeType || 'Tuition Fee', total, feeBreakdown || 'Tuition Fee');
     };
 
     /* ══════════════════════════════════════════════════════
@@ -7720,7 +7684,12 @@
 
     // Opens the redesigned Tuition Fees modal
     window.openTuitionPayModal = async function () {
-      await openTuitionModal();
+      // Open the tuition-only checkout — other fees are paid separately via the Other Fees card
+      if (window.openPayCheckoutPage) {
+        window.openPayCheckoutPage('tuition');
+      } else {
+        await openTuitionModal();
+      }
     };
 
     // Opens the redesigned Other Fees Pay modal
@@ -9624,7 +9593,7 @@
       // Show page
       page.classList.add('show');
       document.body.style.overflow = 'hidden';
-      if (titleEl) titleEl.textContent = pct === 80 ? 'Pay 80% + Other Fees' : pct === 'custom' ? 'Pay Custom Amount' : 'Pay All Fees';
+      if (titleEl) titleEl.textContent = pct === 80 ? 'Pay 80% + Other Fees' : pct === 'custom' ? 'Pay Custom Amount' : pct === 'tuition' ? 'Pay Tuition Fees' : 'Pay All Fees';
 
       // Loading state
       body.innerHTML = `<div style="text-align:center;padding:80px 20px;color:var(--text-muted);">
@@ -9676,6 +9645,14 @@
             ...(need80 > 0.01 ? [{ name: 'Tuition (80% instalment)', amt: need80, dot: dotColors[0] }] : []),
             ...unpaidOtherFees.map((f, i) => ({ name: f.name, amt: f.outstanding, dot: dotColors[(i + 1) % dotColors.length] }))
           ];
+        } else if (pct === 'tuition') {
+          // Tuition-only checkout — no other fees included
+          tuitionCharge = tBal;
+          grandTotal = Math.round(tBal * 100) / 100;
+          heroDesc = tBal <= 0.01
+            ? 'Tuition is fully cleared. Nothing outstanding.'
+            : 'Pay your full outstanding tuition balance. Other fees are paid separately.';
+          feeRows = tBal > 0.01 ? [{ name: 'Tuition (full clearance)', amt: tBal, dot: dotColors[0] }] : [];
         } else if (pct === 'custom') {
           tuitionCharge = 0;
           grandTotal = 0; // starts at 0; student enters tuition amount
@@ -9696,8 +9673,8 @@
           ];
         }
 
-        const colorClass = pct === 80 ? 'orange' : pct === 'custom' ? 'indigo' : 'green';
-        const iconClass = pct === 80 ? 'fa-unlock' : pct === 'custom' ? 'fa-keyboard' : 'fa-trophy';
+        const colorClass = pct === 80 ? 'orange' : pct === 'custom' ? 'indigo' : pct === 'tuition' ? 'orange' : 'green';
+        const iconClass = pct === 80 ? 'fa-unlock' : pct === 'custom' ? 'fa-keyboard' : pct === 'tuition' ? 'fa-graduation-cap' : 'fa-trophy';
         const studentInitial = (window.studentName || 'S').charAt(0).toUpperCase();
 
         const feeRowsHTML = feeRows.map(r => `
@@ -9742,7 +9719,7 @@
         window._checkoutTotal = grandTotal;
         window._checkoutPct = pct;
         window._checkoutFeeBreakdown = feeRows.map(r => r.name + ' ' + gh(r.amt)).join(', ');
-        window._checkoutFeeType = pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Tuition Payment' : '100% Full Clearance';
+        window._checkoutFeeType = pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Tuition Payment' : pct === 'tuition' ? 'Tuition Fee' : '100% Full Clearance';
         // For custom mode, start at 0 — student enters the tuition amount they want to pay
         if (pct === 'custom') {
           window._checkoutTotal = 0;
@@ -9755,7 +9732,7 @@
           <div class="co-hero ${colorClass}">
             <div class="co-hero-icon"><i class="fas ${iconClass}"></i></div>
             <div class="co-hero-body">
-              <div class="co-hero-label">${pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Payment' : 'Full Clearance'}</div>
+              <div class="co-hero-label">${pct === 80 ? '80% Tuition + Other Fees' : pct === 'custom' ? 'Custom Payment' : pct === 'tuition' ? 'Tuition Fees Only' : 'Full Clearance'}</div>
               <div class="co-hero-amount" id="coHeroAmount">${pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal)}</div>
               <div class="co-hero-desc">${heroDesc}</div>
             </div>
@@ -9803,9 +9780,9 @@
           <!-- Student info card -->
           <div class="co-card">
             <div class="co-card-header">
-              <div class="co-card-header-icon${pct === 100 ? ' green' : ''}">
-                        <i class="fas fa-user-graduate"></i>
-                      </div>
+              <div class="co-card-header-icon${(pct === 100 || pct === 'tuition') ? ' green' : ''}">
+                <i class="fas fa-user-graduate"></i>
+              </div>
               <div>
                 <div class="co-card-title">Paying As</div>
                 <div class="co-card-subtitle">Verified student account</div>
@@ -9824,7 +9801,7 @@
           <!-- Fee breakdown card -->
           <div class="co-card">
             <div class="co-card-header">
-              <div class="co-card-header-icon${pct === 100 ? ' green' : ''}">
+              <div class="co-card-header-icon${(pct === 100 || pct === 'tuition') ? ' green' : ''}">
                 <i class="fas fa-list-ul"></i>
               </div>
               <div>
@@ -9858,7 +9835,7 @@
                 + '</div>';
             }
             if (pct === 'custom') {
-              return '<button class="co-pay-btn" id="coPayBtn" disabled style="background:#6366F1;opacity:.5;cursor:not-allowed;">'
+              return '<button class="co-pay-btn" id="coPayBtn" onclick="triggerCheckoutPayment()" disabled style="background:#6366F1;opacity:.5;cursor:not-allowed;">'
                 + '<i class="fas fa-lock" style="font-size:14px;"></i> Enter a tuition amount above'
                 + '</button>';
             }
@@ -9988,14 +9965,17 @@
         // Determine what this checkout is actually paying
         const pct = window._checkoutPct;
         const isCustom = pct === 'custom';
+        const isTuitionOnly = pct === 'tuition';
         const is80     = pct === 80;
 
-        // For custom mode: tuition-only — the entered amount IS the total
+        // For custom/tuition-only mode: tuition-only — the entered amount IS the total
         let verifiedTotal = 0;
         if (isCustom) {
           const userTuitionAmt = total; // no other fees mixed in
           const freshTuition = Math.min(Math.max(0, userTuitionAmt), tBal);
           verifiedTotal = freshTuition;
+        } else if (isTuitionOnly) {
+          verifiedTotal = Math.round(tBal * 100) / 100;
         } else if (is80) {
           const need80 = Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid);
           verifiedTotal = Math.round((need80 + freshOtherTotal) * 100) / 100;
@@ -10016,13 +9996,17 @@
 
         // Rebuild fee breakdown from fresh data
         const freshRows = [];
-        if (!isCustom) {
+        if (!isCustom && !isTuitionOnly) {
           if (tBal > 0.01) {
             const lbl = is80 ? 'Tuition (80% instalment)' : 'Tuition (full clearance)';
             const amt  = is80 ? Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid) : tBal;
             if (amt > 0.01) freshRows.push({ name: lbl, amt });
           }
           otherFeeItems.filter(f => f.outstanding > 0.01).forEach(f => freshRows.push({ name: f.name, amt: f.outstanding }));
+          window._checkoutFeeBreakdown = freshRows.map(r => r.name + ' GHS ' + gh(r.amt)).join(', ');
+        } else if (isTuitionOnly) {
+          // Tuition-only: only include tuition in breakdown
+          if (tBal > 0.01) freshRows.push({ name: 'Tuition (full clearance)', amt: tBal });
           window._checkoutFeeBreakdown = freshRows.map(r => r.name + ' GHS ' + gh(r.amt)).join(', ');
         }
       } catch (e) {
@@ -10032,11 +10016,21 @@
       if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner-inline" style="width:18px;height:18px;border-width:2px;"></div> Processing…'; }
       closePayCheckoutPage();
       setTimeout(() => {
-        routePaymentWithOtherFeesFirst(
-          window._checkoutFeeType || 'Fee Payment',
-          window._checkoutTotal || total,
-          window._checkoutFeeBreakdown || ''
-        );
+        const pct = window._checkoutPct;
+        if (pct === 'custom' || pct === 'tuition') {
+          // Custom and tuition-only modes pay directly — no other-fees-first re-routing
+          payWithPaystack(
+            window._checkoutFeeType || 'Tuition Fee',
+            window._checkoutTotal || total,
+            window._checkoutFeeBreakdown || ''
+          );
+        } else {
+          routePaymentWithOtherFeesFirst(
+            window._checkoutFeeType || 'Fee Payment',
+            window._checkoutTotal || total,
+            window._checkoutFeeBreakdown || ''
+          );
+        }
       }, 120);
     };
 
@@ -10442,75 +10436,16 @@
           html += `<div id="tuitionHiddenInputs" style="display:none;">${hiddenInputs}</div>`;
         }
 
-        // Other Fees section
-        if (otherFeeItems.length) {
-          const otherRows = otherFeeItems.map(f => {
-            const n = (f.fee_name || '').toLowerCase();
-            let paid = 0;
-            if (n.includes('src')) paid = Number(summary.srcPaid || 0);
-            else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
-            else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
-            paid = Math.min(paid, Number(f.amount || 0));
-            const outstanding = Math.max(0, Number(f.amount || 0) - paid);
-            const isPaid = outstanding <= 0.01;
-
-            if (isPaid) {
-              // FULLY PAID: show a locked "Paid" row — no checkbox, no re-payment possible
-              return `
-                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);opacity:.85;">
-                  <div style="width:16px;height:16px;border-radius:4px;background:var(--success);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fas fa-check" style="color:#fff;font-size:9px;"></i>
-                  </div>
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-weight:700;font-size:13px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                    <span style="background:var(--success-light);color:var(--success);font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;border:1px solid rgba(0,196,140,.25);">
-                      <i class="fas fa-check-circle"></i> PAID
-                    </span>
-                  </div>
-                </div>`;
-            } else {
-              // UNPAID: show checkbox, auto-checked, user can uncheck if they want
-              return `
-                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
-                  <input type="checkbox" name="otherFeeSelect" value="${escapeHtml(f.fee_name)}|${Number(outstanding).toFixed(2)}" checked>
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-weight:700;font-size:13px;">${escapeHtml(f.fee_name)}</div>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Required: ${cedis(f.amount)} · Paid: ${cedis(paid)}</div>
-                  </div>
-                  <div style="color:var(--danger);font-weight:800;font-size:13px;flex-shrink:0;">${cedis(outstanding)}</div>
-                </div>`;
-            }
-          }).join('');
-
-          const allOtherPaid = otherFeeItems.every(f => {
-            const n = (f.fee_name || '').toLowerCase();
-            let paid = 0;
-            if (n.includes('src')) paid = Number(summary.srcPaid || 0);
-            else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
-            else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
-            return Math.min(paid, Number(f.amount || 0)) >= Number(f.amount || 0) - 0.01;
-          });
-
-          html += `
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-top:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
-              Other Fees
-              ${allOtherPaid ? `<span style="background:var(--success-light);color:var(--success);font-size:10px;font-weight:800;padding:3px 8px;border-radius:12px;border:1px solid rgba(0,196,140,.2);text-transform:none;letter-spacing:0;">All Cleared ✓</span>` : `<span style="background:var(--warning-light);color:#7a5400;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;text-transform:none;letter-spacing:0;">Included in payment</span>`}
-            </div>
-            <div style="max-height:220px;overflow:auto;">${otherRows}</div>`;
-        }
+        // NOTE: Other fees (SRC, Medical, Departmental) are intentionally NOT shown here.
+        // Students must pay other fees separately using the "Other Fees" card.
 
         if (html) container.innerHTML = html;
       }
 
-      // Wire up checkboxes
+      // Wire up tuition checkboxes only
       setTimeout(() => {
         const tuitionInputs = Array.from(document.querySelectorAll('#tuitionModal input[name="tuitionFeeSelect"]'));
-        const otherInputs = Array.from(document.querySelectorAll('#tuitionModal input[name="otherFeeSelect"]'));
         tuitionInputs.forEach(i => i.addEventListener('change', () => updateTuitionModalTotal(true)));
-        otherInputs.forEach(i => i.addEventListener('change', () => updateTuitionModalTotal(true)));
         updateTuitionModalTotal();
       }, 50);
     }
@@ -10529,8 +10464,8 @@
     }
     window.selectTuitionPercentCard = selectTuitionPercentCard;
 
-    // Override the old openTuitionModal — now routes to the checkout page
-    openTuitionModal = function () { return window.openPayCheckoutPage ? window.openPayCheckoutPage(100) : openTuitionModalEnhanced(); };
+    // Override the old openTuitionModal — now routes to the tuition-only checkout page
+    openTuitionModal = function () { return window.openPayCheckoutPage ? window.openPayCheckoutPage('tuition') : openTuitionModalEnhanced(); };
     window.openTuitionModal = openTuitionModal;
 
     /* ══════════════════════════════════════════════════════

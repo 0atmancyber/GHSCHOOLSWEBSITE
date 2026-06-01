@@ -4863,11 +4863,12 @@
           Available channels</div>
         <button class="pay-channel-card" onclick="selectPaymentChannel('paystack')">
           <div class="pay-channel-left">
-            <div class="pay-channel-icon" style="background:#00C3F5;color:#fff;"><i class="fas fa-credit-card"></i>
+            <div class="pay-channel-icon" style="background:#F59E0B;color:#fff;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:22px;height:22px;"><path d="M6.6 10.8c0-2.98 2.42-5.4 5.4-5.4s5.4 2.42 5.4 5.4v.6H6.6v-.6ZM4 12v1.2C4 17.46 7.58 21 12 21s8-3.54 8-7.8V12H4Zm8 6a3.6 3.6 0 0 1-3.6-3.6H15.6A3.6 3.6 0 0 1 12 18Z"/><path d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1ZM4.22 4.22a1 1 0 0 1 1.42 0l.7.7a1 1 0 0 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41ZM18.36 5.64a1 1 0 0 1 0-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42l-.71.7a1 1 0 0 1-1.41-1.41l.7-.7Z"/></svg>
             </div>
             <div>
-              <div class="pay-channel-name">Paystack</div>
-              <div class="pay-channel-desc">Card, Mobile Money &amp; Bank Transfer — instant confirmation</div>
+              <div class="pay-channel-name">Mobile Money</div>
+              <div class="pay-channel-desc">MTN MoMo, Telecel Cash, AirtelTigo — instant confirmation</div>
             </div>
           </div>
           <span class="pay-channel-badge" style="background:#E0F9FF;color:#0891B2;margin-right:6px;">Online</span>
@@ -8484,7 +8485,7 @@
             </div>
             <div class="receipt-row" style="border-bottom:2px solid #111;">
               <span class="receipt-row-label">Payment Method</span>
-              <span class="receipt-row-value">Paystack — Card / Mobile Money</span>
+              <span class="receipt-row-value">Mobile Money</span>
             </div>
 
             <!-- Per-fee outstanding breakdown -->
@@ -8651,7 +8652,7 @@
           ['Payment Date', receipt.date_display || new Date().toLocaleString()],
           ['Fee Type', receipt.fee_type || '–'],
           ['Fee Breakdown', receipt.fee_breakdown || '–'],
-          ['Payment Method', 'Paystack (Card/Mobile Money)'],
+          ['Payment Method', 'Mobile Money'],
           ['Status', 'APPROVED &#10003;'],
         ];
         paymentFields.forEach(([l, v]) => { y = rowText(l, v, y); });
@@ -9820,7 +9821,7 @@
             const tbStyle = pct === 'custom' ? 'opacity:.4;pointer-events:none;' : '';
             const tbAmt = pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal);
             return '<div class="co-total-bar ' + colorClass + '" id="coTotalBar" style="' + tbStyle + '">'
-              + '<div><div class="co-total-label">Total Amount Due</div><div class="co-total-sub">Secured via Paystack</div></div>'
+              + '<div><div class="co-total-label">Total Amount Due</div><div class="co-total-sub">Secured via Mobile Money</div></div>'
               + '<div class="co-total-amt ' + colorClass + '" id="coTotalAmt">' + tbAmt + '</div>'
               + '</div>';
           })()}
@@ -9854,7 +9855,7 @@
           <!-- Trust strip -->
           <div class="co-trust-strip">
             <i class="fas fa-shield-alt"></i>
-            Payments are 256-bit SSL encrypted and processed securely via Paystack
+            Payments are 256-bit SSL encrypted and processed securely via Mobile Money
           </div>
         `;
       } catch (e) {

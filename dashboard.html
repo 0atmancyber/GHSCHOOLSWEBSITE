@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7CX5CYYXG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-Y7CX5CYYXG');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>GH Schools — Student Portal</title>
@@ -1080,7 +1089,9 @@
     .receipt-header-strip::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: 3px;
       background: repeating-linear-gradient(90deg, #555 0px, #555 6px, #111 6px, #111 10px);
     }
@@ -1097,7 +1108,7 @@
       font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255,255,255,.65);
+      color: rgba(255, 255, 255, .65);
       margin-top: 4px;
     }
 
@@ -1106,7 +1117,7 @@
       align-items: center;
       gap: 6px;
       background: transparent;
-      border: 1.5px solid rgba(255,255,255,.5);
+      border: 1.5px solid rgba(255, 255, 255, .5);
       border-radius: 0;
       padding: 5px 16px;
       font-size: 11px;
@@ -1133,8 +1144,14 @@
       font-size: 18px;
       color: #999;
     }
-    .receipt-amount-hero::before { left: 20px; }
-    .receipt-amount-hero::after  { right: 20px; }
+
+    .receipt-amount-hero::before {
+      left: 20px;
+    }
+
+    .receipt-amount-hero::after {
+      right: 20px;
+    }
 
     .receipt-amount-label {
       font-size: 10px;
@@ -1609,16 +1626,26 @@
       overflow: hidden;
     }
 
-    .co-hero.orange { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); }
-    .co-hero.green  { background: linear-gradient(135deg, #00C48C 0%, #00A878 100%); }
-    .co-hero.indigo { background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); }
+    .co-hero.orange {
+      background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    }
+
+    .co-hero.green {
+      background: linear-gradient(135deg, #00C48C 0%, #00A878 100%);
+    }
+
+    .co-hero.indigo {
+      background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+    }
 
     .co-hero::before {
       content: '';
       position: absolute;
-      top: -40px; right: -40px;
-      width: 140px; height: 140px;
-      background: rgba(255,255,255,.08);
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255, 255, 255, .08);
       border-radius: 50%;
       pointer-events: none;
     }
@@ -1626,9 +1653,11 @@
     .co-hero::after {
       content: '';
       position: absolute;
-      bottom: -40px; left: -20px;
-      width: 110px; height: 110px;
-      background: rgba(255,255,255,.05);
+      bottom: -40px;
+      left: -20px;
+      width: 110px;
+      height: 110px;
+      background: rgba(255, 255, 255, .05);
       border-radius: 50%;
       pointer-events: none;
     }
@@ -1637,7 +1666,7 @@
       width: 50px;
       height: 50px;
       min-width: 50px;
-      background: rgba(255,255,255,.18);
+      background: rgba(255, 255, 255, .18);
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -4344,7 +4373,7 @@
       <div class="sidebar-brand">
         <div class="brand-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff"/>
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff" />
           </svg>
         </div>
         <div>
@@ -4464,13 +4493,15 @@
           </div>
           <div class="welcome-art">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="rgba(255,255,255,0.9)"/>
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
+                fill="rgba(255,255,255,0.9)" />
             </svg>
           </div>
         </div>
 
         <!-- Hidden stubs for JS compatibility -->
-        <div id="arrearsBannerContainer" style="display:none;"><span id="arrearsBannerTitle"></span><span id="arrearsBannerSub"></span></div>
+        <div id="arrearsBannerContainer" style="display:none;"><span id="arrearsBannerTitle"></span><span
+            id="arrearsBannerSub"></span></div>
         <div id="feeGrid" style="display:none;"></div>
         <span id="progressPct" style="display:none;"></span>
         <span id="progressBar" style="display:none;"></span>
@@ -4717,21 +4748,32 @@
     <div class="modal-box" style="max-width:560px;padding:0;overflow:hidden;border-radius:20px;">
 
       <!-- Gradient Header -->
-      <div style="background:linear-gradient(135deg,#F97316 0%,#EA580C 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
+      <div
+        style="background:linear-gradient(135deg,#F97316 0%,#EA580C 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
         <!-- Decorative circles -->
-        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;"></div>
-        <div style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;"></div>
+        <div
+          style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;">
+        </div>
+        <div
+          style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;">
+        </div>
         <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
-          <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
+          <div
+            style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#fff"/>
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
+                fill="#fff" />
             </svg>
           </div>
           <div style="flex:1;">
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">Tuition Fee Payment</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;" id="tuitionModalAcadYear">Academic Year —</div>
+            <div
+              style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">
+              Tuition Fee Payment</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;" id="tuitionModalAcadYear">Academic
+              Year —</div>
           </div>
-          <button onclick="closeModal('tuitionModal')" aria-label="Close" style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
+          <button onclick="closeModal('tuitionModal')" aria-label="Close"
+            style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
         </div>
       </div>
 
@@ -4742,27 +4784,38 @@
         <div id="tuitionInfoSection"></div>
 
         <!-- Payment option chooser label -->
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin:16px 0 10px;">Choose payment plan</div>
+        <div
+          style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin:16px 0 10px;">
+          Choose payment plan</div>
 
         <!-- % cards -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tuitionPctCards"><!-- rendered by JS --></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tuitionPctCards"><!-- rendered by JS -->
+        </div>
 
         <!-- Detailed items -->
         <div id="tuitionOptionsContainer" style="margin-top:14px;"></div>
 
         <!-- Total strip -->
-        <div style="background:linear-gradient(135deg,#FFF7ED,#FFF3E6);border:1.5px solid rgba(249,115,22,.25);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:4px;">
+        <div
+          style="background:linear-gradient(135deg,#FFF7ED,#FFF3E6);border:1.5px solid rgba(249,115,22,.25);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:4px;">
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;">Total to Pay</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="tuitionModalSelectionHint">Select a plan above</div>
+            <div
+              style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;">
+              Total to Pay</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="tuitionModalSelectionHint">Select a
+              plan above</div>
           </div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;color:var(--primary);letter-spacing:-0.5px;" id="tuitionModalSelectedTotal">GHS 0.00</div>
+          <div
+            style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;color:var(--primary);letter-spacing:-0.5px;"
+            id="tuitionModalSelectedTotal">GHS 0.00</div>
         </div>
       </div>
 
       <!-- Footer -->
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px 22px;border-top:1px solid var(--border);margin-top:10px;">
-        <button onclick="closeModal('tuitionModal')" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Cancel</button>
+      <div
+        style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px 22px;border-top:1px solid var(--border);margin-top:10px;">
+        <button onclick="closeModal('tuitionModal')"
+          style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Cancel</button>
         <button id="tuitionProceedBtn" onclick="payTuition()" disabled
           style="background:linear-gradient(135deg,#F97316,#EA580C);border:none;border-radius:10px;padding:12px 26px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;min-width:170px;justify-content:center;box-shadow:0 4px 14px rgba(249,115,22,.3);transition:opacity .15s;opacity:.5;">
           <i class="fas fa-lock" style="font-size:12px;"></i>
@@ -4778,54 +4831,74 @@
     <div class="modal-box" style="max-width:520px;padding:0;overflow:hidden;border-radius:20px;">
 
       <!-- Gradient Header -->
-      <div style="background:linear-gradient(135deg,#00C48C 0%,#00A878 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;"></div>
-        <div style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;"></div>
+      <div
+        style="background:linear-gradient(135deg,#00C48C 0%,#00A878 100%);padding:26px 26px 22px;position:relative;overflow:hidden;">
+        <div
+          style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;">
+        </div>
+        <div
+          style="position:absolute;bottom:-50px;right:60px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none;">
+        </div>
         <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
-          <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
+          <div
+            style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px);">
             <i class="fas fa-receipt" style="color:#fff;font-size:22px;"></i>
           </div>
           <div style="flex:1;">
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">Other Fees Payment</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;">SRC, Medical &amp; Departmental fees</div>
+            <div
+              style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.4px;">
+              Other Fees Payment</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;">SRC, Medical &amp; Departmental fees
+            </div>
           </div>
-          <button onclick="closeModal('otherFeesPayModal')" aria-label="Close" style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
+          <button onclick="closeModal('otherFeesPayModal')" aria-label="Close"
+            style="width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">&times;</button>
         </div>
       </div>
 
       <!-- Stats bar -->
-      <div style="background:#f0fdf9;border-bottom:1px solid rgba(0,196,140,.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;" id="otherFeesPayStatsBar">
+      <div
+        style="background:#f0fdf9;border-bottom:1px solid rgba(0,196,140,.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;"
+        id="otherFeesPayStatsBar">
         <div style="text-align:center;flex:1;">
           <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Total Fees</div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;" id="otherFeesPayTotal">GHS —</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;"
+            id="otherFeesPayTotal">GHS —</div>
         </div>
         <div style="width:1px;height:30px;background:rgba(0,196,140,.2);"></div>
         <div style="text-align:center;flex:1;">
           <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Amount Paid</div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;" id="otherFeesPayPaid">GHS —</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#00A878;"
+            id="otherFeesPayPaid">GHS —</div>
         </div>
         <div style="width:1px;height:30px;background:rgba(0,196,140,.2);"></div>
         <div style="text-align:center;flex:1;">
           <div style="font-size:11px;color:#4b9d85;font-weight:600;margin-bottom:3px;">Outstanding</div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:var(--danger);" id="otherFeesPayOutstanding">GHS —</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:var(--danger);"
+            id="otherFeesPayOutstanding">GHS —</div>
         </div>
       </div>
 
       <!-- Fee list -->
       <div style="padding:20px 24px 6px;">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Select fees to pay</div>
-        <div id="otherFeesPayList" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
+        <div
+          style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">
+          Select fees to pay</div>
+        <div id="otherFeesPayList"
+          style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
       </div>
 
       <!-- Footer -->
       <div style="padding:16px 24px 22px;border-top:1px solid var(--border);margin-top:14px;">
-        <button onclick="closeModal('otherFeesPayModal')" style="width:100%;background:none;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Close</button>
+        <button onclick="closeModal('otherFeesPayModal')"
+          style="width:100%;background:none;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);">Close</button>
       </div>
     </div>
   </div>
 
   <!-- Other Fees Modal (legacy — kept for backward-compat, hidden) -->
-  <div class="modal-overlay" id="otherFeesModal" onclick="closeModalBackdrop(event,'otherFeesModal')" style="display:none!important;">
+  <div class="modal-overlay" id="otherFeesModal" onclick="closeModalBackdrop(event,'otherFeesModal')"
+    style="display:none!important;">
     <div class="modal-box" style="display:none;">
       <div id="otherFeesList"></div>
     </div>
@@ -4863,11 +4936,18 @@
           Available channels</div>
         <button class="pay-channel-card" onclick="selectPaymentChannel('paystack')">
           <div class="pay-channel-left">
-            <div class="pay-channel-icon" style="background:#00C3F5;color:#fff;"><i class="fas fa-credit-card"></i>
+            <div class="pay-channel-icon" style="background:#F59E0B;color:#fff;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                style="width:22px;height:22px;">
+                <path
+                  d="M6.6 10.8c0-2.98 2.42-5.4 5.4-5.4s5.4 2.42 5.4 5.4v.6H6.6v-.6ZM4 12v1.2C4 17.46 7.58 21 12 21s8-3.54 8-7.8V12H4Zm8 6a3.6 3.6 0 0 1-3.6-3.6H15.6A3.6 3.6 0 0 1 12 18Z" />
+                <path
+                  d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1ZM4.22 4.22a1 1 0 0 1 1.42 0l.7.7a1 1 0 0 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41ZM18.36 5.64a1 1 0 0 1 0-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42l-.71.7a1 1 0 0 1-1.41-1.41l.7-.7Z" />
+              </svg>
             </div>
             <div>
-              <div class="pay-channel-name">Paystack</div>
-              <div class="pay-channel-desc">Card, Mobile Money &amp; Bank Transfer — instant confirmation</div>
+              <div class="pay-channel-name">Mobile Money</div>
+              <div class="pay-channel-desc">MTN MoMo, Telecel Cash, AirtelTigo — instant confirmation</div>
             </div>
           </div>
           <span class="pay-channel-badge" style="background:#E0F9FF;color:#0891B2;margin-right:6px;">Online</span>
@@ -5050,25 +5130,34 @@
   <!-- Receipt Modal -->
   <div class="modal-overlay" id="receiptModal" onclick="closeModalBackdrop(event,'receiptModal')">
     <div class="modal-box" style="max-width:560px;">
-      <div class="modal-header" style="background:#111;border-radius:var(--radius) var(--radius) 0 0;padding:18px 24px 16px;margin:-24px -24px 0;">
+      <div class="modal-header"
+        style="background:#111;border-radius:var(--radius) var(--radius) 0 0;padding:18px 24px 16px;margin:-24px -24px 0;">
         <div style="display:flex;align-items:center;gap:12px;flex:1;">
-          <div style="width:40px;height:40px;background:rgba(255,255,255,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div
+            style="width:40px;height:40px;background:rgba(255,255,255,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fas fa-receipt" style="color:#fff;font-size:16px;"></i>
           </div>
           <div>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:0.5px;">PAYMENT RECEIPT</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:0.5px;">Official Document — GH Schools</div>
+            <div
+              style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:0.5px;">
+              PAYMENT RECEIPT</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:0.5px;">Official
+              Document — GH Schools</div>
           </div>
         </div>
-        <button class="modal-close" onclick="closeModal('receiptModal')" aria-label="Close" style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:none;">&times;</button>
+        <button class="modal-close" onclick="closeModal('receiptModal')" aria-label="Close"
+          style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:none;">&times;</button>
       </div>
       <div class="modal-body" id="receiptContent" style="padding:0;"></div>
       <div class="modal-footer" style="gap:8px;border-top:2px solid #111;">
-        <button class="btn-outline" onclick="closeModal('receiptModal')" style="border-color:#111;color:#111;">Close</button>
-        <button class="btn-ghost" onclick="window.print()" style="display:flex;align-items:center;gap:6px;border:1px solid #ccc;"
-          title="Print Receipt"><i class="fas fa-print"></i> Print</button>
+        <button class="btn-outline" onclick="closeModal('receiptModal')"
+          style="border-color:#111;color:#111;">Close</button>
+        <button class="btn-ghost" onclick="window.print()"
+          style="display:flex;align-items:center;gap:6px;border:1px solid #ccc;" title="Print Receipt"><i
+            class="fas fa-print"></i> Print</button>
         <button onclick="downloadReceiptPDF(window._lastReceipt)"
-          style="background:#111;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-download"></i> Download PDF</button>
+          style="background:#111;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i
+            class="fas fa-download"></i> Download PDF</button>
       </div>
     </div>
   </div>
@@ -5643,25 +5732,33 @@
     };
 
     /**
-     * Triggers the actual API call after user fills the modal
+     * Phase 1: Consolidated Portal-Aware Function
+     * Gathers all profile data to ensure the database record is 100% complete.
      */
     window.executeStanbicPayNow = async function () {
       const phoneInput = document.getElementById('spnPhone');
-      const phone = phoneInput.value.replace(/\D/g, '');
+      const momoNumber = phoneInput.value.replace(/\D/g, ''); // The number typed in the modal
       const ctx = window._spnCtx; // Contains {feeType, amount, feeBreakdown}
       const btn = document.getElementById('spnPayBtn');
       const msg = document.getElementById('spnPhoneMsg');
 
       // 1. Validation
-      if (phone.length < 10 || !phone.startsWith('0')) {
-        msg.textContent = '⚠ Enter a valid 10-digit number';
+      if (momoNumber.length < 10 || !momoNumber.startsWith('0')) {
+        msg.textContent = '⚠ Enter a valid 10-digit number starting with 0';
+        msg.style.color = 'var(--danger)';
+        phoneInput.focus();
+        return;
+      }
+
+      if (!detectedNetwork) {
+        msg.textContent = '⚠ Network not recognized. Please check the prefix.';
         msg.style.color = 'var(--danger)';
         return;
       }
 
       // 2. UI Feedback
       btn.disabled = true;
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Triggering MoMo Prompt...`;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Connecting to Stanbic...`;
 
       const returnUrl = window.location.origin + window.location.pathname;
 
@@ -5673,25 +5770,36 @@
             'Authorization': `Bearer ${SUPABASE_ANON}`
           },
           body: JSON.stringify({
+            // Payment Data
             amount: ctx.amount,
-            studentId: window.studentId,
-            studentName: window.studentName,
-            phone: phone,
             feeType: ctx.feeType,
-            feeBreakdown: ctx.feeBreakdown, // Passing breakdown for invoiceItems
+            feeBreakdown: ctx.feeBreakdown,
+
+            // MoMo Data
+            phone: momoNumber,
+            network: detectedNetwork,
+
+            // Full Student Profile (Using your Portal variables)
+            studentId: (window.studentId || "").toUpperCase().trim(),
+            studentName: window.studentName,
+            studentEmail: window.studentEmail,
+            department: window.studentDept,
+            level: window.studentLevel,
+            academicYear: window._academicYear,
+
             returnUrl: returnUrl
           })
         });
 
         const data = await response.json();
 
-        if (!response.ok) throw new Error(data.error || 'Payment initiation failed');
+        if (!response.ok) {
+          throw new Error(data.error || 'Payment initiation failed');
+        }
 
-        // 3. Redirect to Checkout
-        // Even though the prompt hits the phone, we redirect to the checkout 
-        // page so the student sees the "Waiting for PIN" screen on Kowri.
+        // 3. Redirect to the pre-filled Stanbic Page
         if (data.checkoutUrl) {
-          showToast("Prompt sent! Redirecting to status page...", "success");
+          showToast("Redirecting to secure payment page...", "success");
           setTimeout(() => {
             window.location.href = data.checkoutUrl;
           }, 800);
@@ -5699,7 +5807,7 @@
 
       } catch (err) {
         console.error('[Stanbic Error]', err);
-        showToast(err.message, 'error');
+        showToast(err.message || 'Payment Service Busy', 'error');
         btn.disabled = false;
         btn.innerHTML = 'Authorize Payment';
       }
@@ -5785,6 +5893,88 @@
       }
     }
 
+    function checkEcobankResponse() {
+      const params = new URLSearchParams(window.location.search);
+      const ecoInvoice = params.get('eco_invoice');
+      const ecoStatus = params.get('eco_status');
+
+      if (!ecoInvoice) return;
+
+      // Clean URL immediately so a refresh doesn't re-trigger this
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      if (ecoStatus === 'paid') {
+        showToast('Confirming your payment...', 'info');
+        confirmEcobankPayment(ecoInvoice, 0);
+
+      } else if (ecoStatus === 'cancelled') {
+        showToast('EcobankPay payment was cancelled.', 'error');
+
+      } else {
+        showMsg(
+          'Payment Incomplete',
+          'Your EcobankPay transaction did not complete. Please try again or use a different payment method.'
+        );
+        showToast('EcobankPay payment did not complete.', 'error');
+      }
+    }
+
+    // Called by checkEcobankResponse — queries ecobank-status edge function directly.
+    // Retries up to MAX_ATTEMPTS times with a 3s gap if status is still pending.
+    async function confirmEcobankPayment(invoice_id, attempt) {
+      const MAX_ATTEMPTS = 4;   // 4 attempts × 3s = up to 12s total wait
+      const RETRY_DELAY = 3000;
+
+      try {
+        const response = await fetch(
+          'https://fyriapqeztevzkcaaiqw.supabase.co/functions/v1/ecobank-status',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invoice_id })
+          }
+        );
+
+        const data = await response.json();
+        const status = data.status;
+
+        if (status === 'approved') {
+          showMsg(
+            'Payment Confirmed ✓',
+            'Your EcobankPay payment has been received and confirmed.',
+            true
+          );
+          showToast('Payment confirmed!', 'success');
+          refreshTotalsFromDB();
+
+        } else if (status === 'cancelled' || status === 'failed') {
+          showMsg(
+            'Payment Unsuccessful',
+            `Your EcobankPay transaction was not completed. ${data.reason || ''} Please try again or use a different payment method.`
+          );
+          showToast('EcobankPay payment was not successful.', 'error');
+
+        } else if (attempt < MAX_ATTEMPTS) {
+          // Still pending — wait 3s and try again
+          setTimeout(() => confirmEcobankPayment(invoice_id, attempt + 1), RETRY_DELAY);
+
+        } else {
+          // Exhausted retries — EcobankPay hasn't confirmed yet
+          showMsg(
+            'Payment Processing',
+            'Your payment is still being processed by EcobankPay. Your balance will update automatically once confirmed — you do not need to pay again.',
+            true
+          );
+          showToast('Payment is still processing.', 'warning');
+        }
+
+      } catch (err) {
+        console.warn('EcobankPay status check error:', err.message);
+        if (attempt < MAX_ATTEMPTS) {
+          setTimeout(() => confirmEcobankPayment(invoice_id, attempt + 1), RETRY_DELAY);
+        }
+      }
+    }
 
     /* ── LOCAL STATE ───────────────────────────────────── */
     let studentId = localStorage.getItem('studentId') || null;
@@ -7582,7 +7772,7 @@
 
       const { items: otherItems, totalOutstanding: otherOwed } = getOtherFeesOutstanding(summary);
       const isTuitionRequest = (requestedFeeType || '').toLowerCase().includes('tuition') ||
-                               (requestedBreakdown || '').toLowerCase().includes('tuition');
+        (requestedBreakdown || '').toLowerCase().includes('tuition');
 
       // ── Case 1: Other fees already settled — pay as requested ──
       if (otherOwed <= 0.01) {
@@ -7663,13 +7853,13 @@
             <div style="flex:1;min-width:0;">
               <div style="font-weight:700;font-size:14px;color:var(--text);">${escapeHtml(f.fee_name)}</div>
               ${fullyPaid
-                ? `<div style="font-size:11px;color:var(--success);margin-top:2px;"><i class="fas fa-check-circle"></i> Fully paid</div>`
-                : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Outstanding: <strong>GHS ${gh(bal)}</strong></div>`}
+            ? `<div style="font-size:11px;color:var(--success);margin-top:2px;"><i class="fas fa-check-circle"></i> Fully paid</div>`
+            : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Outstanding: <strong>GHS ${gh(bal)}</strong></div>`}
             </div>
             ${fullyPaid
-              ? `<span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--success);">Paid</span>`
-              : `<button class="fs-pay-btn" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>GHS ${gh(bal)}</button>`
-            }
+            ? `<span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:var(--success);">Paid</span>`
+            : `<button class="fs-pay-btn" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation();directPayOtherFee('${escapeHtml(f.fee_name)}',${bal})"><i class="fas fa-money-bill-wave" style="margin-right:5px;"></i>GHS ${gh(bal)}</button>`
+          }
           </div>
         `;
       }).join('');
@@ -7896,30 +8086,30 @@
 
       // Calculate how much of `amt` is tuition vs other fees for proportional routing
       let _tuitionAmt = 0;
-      let _otherAmt   = 0;
+      let _otherAmt = 0;
       if (_hasTuition && _hasOtherFees) {
         // Combined payment: derive tuition portion from the fee schedule outstanding
-        const _sched   = _currentFeeSchedule || [];
+        const _sched = _currentFeeSchedule || [];
         const _summary = window._lastPaymentSummary || {};
         const _tuitionScheduleTotal = _sched
           .filter(f => (f.fee_name || '').toLowerCase().includes('tuition'))
           .reduce((s, f) => s + Number(f.amount || 0), 0);
-        const _tuitionAlreadyPaid  = Math.min(Number(_summary.tuitionPaid || 0), _tuitionScheduleTotal);
-        const _tuitionOutstanding  = Math.max(0, _tuitionScheduleTotal - _tuitionAlreadyPaid);
+        const _tuitionAlreadyPaid = Math.min(Number(_summary.tuitionPaid || 0), _tuitionScheduleTotal);
+        const _tuitionOutstanding = Math.max(0, _tuitionScheduleTotal - _tuitionAlreadyPaid);
         // Other portion = whatever is not tuition outstanding (capped at 0)
-        _otherAmt   = Math.max(0, amt - _tuitionOutstanding);
+        _otherAmt = Math.max(0, amt - _tuitionOutstanding);
         _tuitionAmt = Math.round((amt - _otherAmt) * 100) / 100;
-        _otherAmt   = Math.round(_otherAmt * 100) / 100;
+        _otherAmt = Math.round(_otherAmt * 100) / 100;
       } else if (_hasTuition) {
         _tuitionAmt = amt;  // pure tuition payment
-        _otherAmt   = 0;
+        _otherAmt = 0;
       } else {
         _tuitionAmt = 0;    // pure other-fees payment
-        _otherAmt   = amt;
+        _otherAmt = amt;
       }
 
       const finalIsTuition = _tuitionAmt > 0.01;
-      const finalIsMixed   = finalIsTuition && _otherAmt > 0.01; // combined payment
+      const finalIsMixed = finalIsTuition && _otherAmt > 0.01; // combined payment
       const paystackConfig = {
         key: PAYSTACK_PUBLIC_KEY,
         email,
@@ -7967,13 +8157,13 @@
         // Use transaction_charge to send ONLY the tuition kobo amount to the subaccount.
         // bearer:'subaccount' means the subaccount absorbs its own share; the remainder
         // (other fees) stays in the main account automatically.
-        paystackConfig.subaccount       = TUITION_SUBACCOUNT;
-        paystackConfig.bearer           = 'subaccount';
+        paystackConfig.subaccount = TUITION_SUBACCOUNT;
+        paystackConfig.bearer = 'subaccount';
         paystackConfig.transaction_charge = Math.round(_tuitionAmt * 100); // kobo
       } else if (finalIsTuition) {
         // PURE tuition payment: full amount goes to subaccount
         paystackConfig.subaccount = TUITION_SUBACCOUNT;
-        paystackConfig.bearer     = 'account'; // main account bears transaction fees
+        paystackConfig.bearer = 'account'; // main account bears transaction fees
       }
       // PURE other-fees payment: no subaccount — full amount lands in main account.
 
@@ -8001,17 +8191,71 @@
     };
     window._copyText = '';
 
-    /* ── Channel selection handler ── */
-    window.selectPaymentChannel = function (channel) {
+    /* ── Channel selection handler (Updated for Ecobank API) ── */
+    window.selectPaymentChannel = async function (channel) {
       const ctx = window._pendingPayCtx;
       if (!ctx) { showToast('No payment in progress', 'error'); return; }
-      if (channel === 'paystack') { launchPaystack(ctx.feeType, ctx.amount, ctx.feeBreakdown); return; }
+
+      // 1. PAYSTACK
+      if (channel === 'paystack') {
+        launchPaystack(ctx.feeType, ctx.amount, ctx.feeBreakdown);
+        return;
+      }
+
+      // 2. STANBIC (Kowri API)
       if (channel === 'stanbic') {
         launchStanbicKowri(ctx.feeType, ctx.amount, ctx.feeBreakdown);
         return;
       }
+
+      // 3. ECOBANK (New API Integration)
+      if (channel === 'ecobank') {
+        closeModal('payChannelModal');
+        showToast('Connecting to Ecobank Pay...', 'info');
+
+        try {
+          const response = await fetch('https://fyriapqeztevzkcaaiqw.supabase.co/functions/v1/ecobank-pay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: ctx.amount,
+              student_id: studentId,
+              student_name: window.studentName,
+              student_email: window.studentEmail,
+              student_phone: window.studentPhone || '',
+              level: window.studentLevel,
+              department: window.studentDept,
+              academic_year: window._academicYear,
+              fee_type_id: (function () {
+                try {
+                  const sched = _currentFeeSchedule || [];
+                  const match = sched.find(f => (f.fee_name || '').toLowerCase().includes('tuition'));
+                  return match ? match.fee_type_id : null;
+                } catch (e) { return null; }
+              })(),
+              return_url: window.location.href.split('#')[0]
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.url) {
+            // Redirect to the real Ecobank checkout page
+            window.location.href = data.url;
+          } else {
+            throw new Error(data.error || 'Initiation failed');
+          }
+        } catch (err) {
+          console.error('Ecobank Error:', err);
+          showToast('Ecobank service is busy. Please use Paystack or Stanbic.', 'error');
+        }
+        return;
+      }
+
+      // 4. MANUAL BANK DETAILS (Fallback)
       const bank = BANK_DETAILS[channel];
       if (!bank) { showToast('Channel not available', 'error'); return; }
+
       document.getElementById('bankInstHeader').style.background = bank.gradient;
       const iconEl = document.getElementById('bankInstIcon');
       iconEl.style.background = 'rgba(255,255,255,.18)'; iconEl.style.color = '#fff';
@@ -8200,13 +8444,13 @@
           fee_breakdown: receipt.fee_breakdown,
           // FIX (Bug 1): persist fee_type_id so future queries can match by UUID instead
           // of fragile text. Derive it from the schedule using the first matching fee name.
-          fee_type_id: (function() {
+          fee_type_id: (function () {
             try {
               const sched = _currentFeeSchedule || [];
               const bd = (receipt.fee_breakdown || receipt.fee_type || '').toLowerCase();
               const match = sched.find(f => bd.includes((f.fee_name || '').toLowerCase()));
               return match ? match.fee_type_id : null;
-            } catch(_) { return null; }
+            } catch (_) { return null; }
           })(),
           transaction_ref: reference,
           receipt_number: receipt.receipt_number,
@@ -8484,7 +8728,7 @@
             </div>
             <div class="receipt-row" style="border-bottom:2px solid #111;">
               <span class="receipt-row-label">Payment Method</span>
-              <span class="receipt-row-value">Paystack — Card / Mobile Money</span>
+              <span class="receipt-row-value">Mobile Money</span>
             </div>
 
             <!-- Per-fee outstanding breakdown -->
@@ -8651,7 +8895,7 @@
           ['Payment Date', receipt.date_display || new Date().toLocaleString()],
           ['Fee Type', receipt.fee_type || '–'],
           ['Fee Breakdown', receipt.fee_breakdown || '–'],
-          ['Payment Method', 'Paystack (Card/Mobile Money)'],
+          ['Payment Method', 'Mobile Money'],
           ['Status', 'APPROVED &#10003;'],
         ];
         paymentFields.forEach(([l, v]) => { y = rowText(l, v, y); });
@@ -9629,7 +9873,7 @@
 
         // Only unpaid other fees enter the payment total
         const unpaidOtherFees = otherFeeItems.filter(f => !f.isPaid);
-        const paidOtherFees   = otherFeeItems.filter(f => f.isPaid);
+        const paidOtherFees = otherFeeItems.filter(f => f.isPaid);
         const otherTotal = unpaidOtherFees.reduce((s, f) => s + f.outstanding, 0);
 
         let tuitionCharge, grandTotal, heroDesc, feeRows;
@@ -9815,18 +10059,18 @@
           ${paidOtherFeesHTML}
 
           <!-- Total bar -->
-          ${(function() {
+          ${(function () {
             if (pct === 'custom' && tBal <= 0.01) return '';
             const tbStyle = pct === 'custom' ? 'opacity:.4;pointer-events:none;' : '';
             const tbAmt = pct === 'custom' ? 'GHS —' : 'GHS ' + gh(grandTotal);
             return '<div class="co-total-bar ' + colorClass + '" id="coTotalBar" style="' + tbStyle + '">'
-              + '<div><div class="co-total-label">Total Amount Due</div><div class="co-total-sub">Secured via Paystack</div></div>'
+              + '<div><div class="co-total-label">Total Amount Due</div><div class="co-total-sub">Secured via Mobile Money</div></div>'
               + '<div class="co-total-amt ' + colorClass + '" id="coTotalAmt">' + tbAmt + '</div>'
               + '</div>';
           })()}
 
           <!-- Pay button -->
-          ${(function() {
+          ${(function () {
             if (pct === 'custom' && tBal <= 0.01) {
               return '<div style="background:var(--success-light);border-radius:14px;padding:20px;text-align:center;color:var(--success);">'
                 + '<i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>'
@@ -9854,7 +10098,7 @@
           <!-- Trust strip -->
           <div class="co-trust-strip">
             <i class="fas fa-shield-alt"></i>
-            Payments are 256-bit SSL encrypted and processed securely via Paystack
+            Payments are 256-bit SSL encrypted and processed securely via Mobile Money
           </div>
         `;
       } catch (e) {
@@ -9956,8 +10200,8 @@
 
         const tuitionFee = fees.find(f => (f.fee_name || '').toLowerCase().includes('tuition'));
         const tTotal = tuitionFee ? Number(tuitionFee.amount || 0) : 0;
-        const tPaid  = Math.min(Number(freshSummary.tuitionPaid || 0), tTotal);
-        const tBal   = Math.max(0, tTotal - tPaid);
+        const tPaid = Math.min(Number(freshSummary.tuitionPaid || 0), tTotal);
+        const tBal = Math.max(0, tTotal - tPaid);
 
         const freshOtherTotal = otherFeeItems.reduce((s, f) => s + f.outstanding, 0);
         const freshGrandTotal = freshOtherTotal + tBal;
@@ -9966,7 +10210,7 @@
         const pct = window._checkoutPct;
         const isCustom = pct === 'custom';
         const isTuitionOnly = pct === 'tuition';
-        const is80     = pct === 80;
+        const is80 = pct === 80;
 
         // For custom/tuition-only mode: tuition-only — the entered amount IS the total
         let verifiedTotal = 0;
@@ -9999,7 +10243,7 @@
         if (!isCustom && !isTuitionOnly) {
           if (tBal > 0.01) {
             const lbl = is80 ? 'Tuition (80% instalment)' : 'Tuition (full clearance)';
-            const amt  = is80 ? Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid) : tBal;
+            const amt = is80 ? Math.max(0, Math.round(tTotal * 0.8 * 100) / 100 - tPaid) : tBal;
             if (amt > 0.01) freshRows.push({ name: lbl, amt });
           }
           otherFeeItems.filter(f => f.outstanding > 0.01).forEach(f => freshRows.push({ name: f.name, amt: f.outstanding }));
@@ -10473,6 +10717,7 @@
     ══════════════════════════════════════════════════════ */
     async function initDashboard() {
       checkKowriResponse();
+      checkEcobankResponse();
       // Restore cached totals immediately
       try {
         const cached = JSON.parse(localStorage.getItem('dashboardTotals') || 'null');

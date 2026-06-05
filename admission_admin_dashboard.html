@@ -1841,6 +1841,12 @@
       Payments
       <span class="nav-count" id="nav-count-payments">—</span>
     </div>
+    <div class="nav-section-label">Follow-Up</div>
+    <div class="nav-item" onclick="openPendingSubmissionsPanel();setNav(this,'pending-submissions')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Pending Submissions
+      <span class="nav-count" id="nav-count-pending-submissions" style="background:rgba(217,119,6,0.3);color:#fcd34d;">—</span>
+    </div>
   </nav>
   <div class="sidebar-footer">
     <div class="admin-chip">
@@ -12001,6 +12007,504 @@ window.VAM = {
     if (body) body.scrollBy({ top: delta, behavior: 'smooth' });
   },
 };
+
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     PENDING SUBMISSIONS PANEL
+     Students who purchased a form (admission_payments, payment_status='success')
+     but have NOT yet submitted their admission form (not in newstudents table).
+     ══════════════════════════════════════════════════════════ -->
+<div id="pendingSubmissionsOverlay" style="
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(10,5,0,0.6);backdrop-filter:blur(4px);
+  overflow-y:auto;
+">
+  <div style="
+    min-height:100vh;padding:28px;display:flex;align-items:flex-start;justify-content:center;
+  " onclick="if(event.target===this)closePendingSubmissionsPanel()">
+    <div style="
+      background:#fff;border-radius:20px;width:100%;max-width:1150px;
+      box-shadow:0 24px 70px rgba(0,0,0,0.35);
+      overflow:hidden;animation:contentFadeIn 0.3s ease;
+    ">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#92400e 0%,#d97706 60%,#f59e0b 100%);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">
+            <svg width="22" height="22" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Pending Submissions
+          </div>
+          <div id="psm-sub" style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px;">Applicants who purchased a form but have not yet submitted</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button onclick="loadPendingSubmissions()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+            Refresh
+          </button>
+          <button onclick="psmExportCSV()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <button onclick="closePendingSubmissionsPanel()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border:none;border-radius:8px;cursor:pointer;color:#fff;" onmouseover="this.style.background='rgba(255,255,255,0.28)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Strip -->
+      <div id="psm-summary" style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);">
+        <div style="padding:16px 20px;background:#fffbeb;border-right:1px solid var(--border);">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);font-weight:700;margin-bottom:4px;">Forms Purchased</div>
+          <div id="psm-stat-purchased" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#d97706;">—</div>
+        </div>
+        <div style="padding:16px 20px;background:#fef2f2;border-right:1px solid var(--border);">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);font-weight:700;margin-bottom:4px;">Not Yet Submitted</div>
+          <div id="psm-stat-pending" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#dc2626;">—</div>
+        </div>
+        <div style="padding:16px 20px;background:#f0fdf4;border-right:1px solid var(--border);">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);font-weight:700;margin-bottom:4px;">Submitted</div>
+          <div id="psm-stat-submitted" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#16a34a;">—</div>
+        </div>
+        <div style="padding:16px 20px;background:#eff6ff;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);font-weight:700;margin-bottom:4px;">Submission Rate</div>
+          <div id="psm-stat-rate" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#1d4ed8;">—</div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div style="padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:#fafafa;">
+        <div class="search-wrap" style="min-width:240px;flex:1;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" id="psm-search" placeholder="Search by name, phone, email, ref code…" oninput="psmApplyFilters()">
+        </div>
+        <select class="filter-select" id="psm-filter-days" onchange="psmApplyFilters()" style="min-width:160px;">
+          <option value="">All Time</option>
+          <option value="7">Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="60">Last 60 days</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="psmClearFilters()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Clear
+        </button>
+        <span id="psm-last-updated" style="font-size:11px;color:var(--text-secondary);margin-left:auto;"></span>
+      </div>
+
+      <!-- Table -->
+      <div style="padding:20px;">
+        <div class="table-card" style="margin-bottom:0;">
+          <div class="table-header">
+            <div>
+              <div class="table-title" style="color:#d97706;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:-2px;margin-right:5px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Applicants Awaiting Submission
+              </div>
+              <div class="table-count" id="psm-table-count">Loading…</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;padding:4px 10px;background:#fef3c7;border-radius:6px;border:1px solid #fcd34d;color:#92400e;font-weight:600;">
+                ⏳ Awaiting form submission
+              </span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table style="min-width:900px;">
+              <thead>
+                <tr>
+                  <th style="background:#92400e;color:#fff;border-bottom:3px solid #78350f;">#</th>
+                  <th style="background:#b45309;color:#fff;border-bottom:3px solid #92400e;" onclick="psmSort('first_name')">Full Name <span id="psmsort-name">↕</span></th>
+                  <th style="background:#d97706;color:#fff;border-bottom:3px solid #b45309;" onclick="psmSort('phone')">Phone <span id="psmsort-phone">↕</span></th>
+                  <th style="background:#f59e0b;color:#fff;border-bottom:3px solid #d97706;" onclick="psmSort('email')">Email <span id="psmsort-email">↕</span></th>
+                  <th style="background:#ca8a04;color:#fff;border-bottom:3px solid #a16207;" onclick="psmSort('reference_code')">Ref Code <span id="psmsort-ref">↕</span></th>
+                  <th style="background:#854d0e;color:#fff;border-bottom:3px solid #713f12;" onclick="psmSort('portal_username')">Portal Username <span id="psmsort-user">↕</span></th>
+                  <th style="background:#a16207;color:#fff;border-bottom:3px solid #854d0e;" onclick="psmSort('amount')">Amount Paid <span id="psmsort-amt">↕</span></th>
+                  <th style="background:#78350f;color:#fff;border-bottom:3px solid #431407;" onclick="psmSort('created_at')">Purchased On <span id="psmsort-date">↕</span></th>
+                  <th style="background:#6b21a8;color:#fff;border-bottom:3px solid #581c87;" class="no-sort">Days Since Purchase</th>
+                  <th style="background:#1d4ed8;color:#fff;border-bottom:3px solid #1e40af;" class="no-sort">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="psm-tbody">
+                <tr class="loading-row"><td colspan="10"><div class="spinner"></div>Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div class="pagination-info" id="psm-pagination-info"></div>
+            <div class="pagination-btns" id="psm-pagination-btns"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PENDING SUBMISSION DETAIL MODAL -->
+<div id="psmDetailModal" style="
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(10,5,0,0.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+" onclick="if(event.target===this)closePsmDetail()">
+  <div style="
+    background:#fff;border-radius:18px;width:100%;max-width:560px;margin:20px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.4);
+    animation:contentFadeIn 0.25s ease;overflow:hidden;
+  ">
+    <div style="background:linear-gradient(135deg,#92400e,#d97706);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div id="psmDetailName" style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;"></div>
+        <div id="psmDetailSub" style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px;">Form purchased — not yet submitted</div>
+      </div>
+      <button onclick="closePsmDetail()" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='rgba(255,255,255,0.28)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="psmDetailBody" style="padding:24px;"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+// ══════════════════════════════════════════════════════════
+//  PENDING SUBMISSIONS MODULE
+//  Logic: fetch all admission_payments WHERE payment_status='success',
+//  then fetch all portal_usernames from newstudents,
+//  cross-reference to find buyers who have NOT submitted yet.
+// ══════════════════════════════════════════════════════════
+
+let _psmAllRecords   = []   // all non-submitted buyers
+let _psmFiltered     = []
+let _psmSortField    = 'created_at'
+let _psmSortAsc      = false
+let _psmCurrentPage  = 1
+const PSM_PAGE_SIZE  = 25
+
+window.openPendingSubmissionsPanel = function() {
+  document.getElementById('pendingSubmissionsOverlay').style.display = 'block'
+  document.querySelector('.main').style.overflow = 'hidden'
+  if (!_psmAllRecords.length) loadPendingSubmissions()
+}
+
+window.closePendingSubmissionsPanel = function() {
+  document.getElementById('pendingSubmissionsOverlay').style.display = 'none'
+  document.querySelector('.main').style.overflow = ''
+}
+
+window.loadPendingSubmissions = async function() {
+  _psmShowLoading()
+  try {
+    const sb = window.supabase || (window.getSupabase && window.getSupabase())
+    if (!sb) throw new Error('Supabase client not ready')
+
+    // 1. Fetch all successful form purchases
+    const { data: buyers, error: buyErr } = await sb
+      .from('admission_payments')
+      .select('id,first_name,last_name,email,phone,amount,currency,payment_status,reference_code,portal_username,portal_password,created_at,updated_at,paystack_transaction_id')
+      .eq('payment_status', 'success')
+      .order('created_at', { ascending: false })
+
+    if (buyErr) throw buyErr
+
+    // 2. Fetch all portal_usernames that exist in newstudents
+    //    (meaning those applicants DID submit their form)
+    const { data: submitted, error: subErr } = await sb
+      .from('newstudents')
+      .select('portal_username')
+      .not('portal_username', 'is', null)
+
+    if (subErr) throw subErr
+
+    const submittedUsernames = new Set(
+      (submitted || []).map(r => (r.portal_username || '').trim().toLowerCase())
+    )
+
+    // 3. Keep only buyers whose portal_username is NOT in newstudents
+    _psmAllRecords = (buyers || []).filter(r => {
+      const u = (r.portal_username || '').trim().toLowerCase()
+      return u && !submittedUsernames.has(u)
+    })
+
+    // 4. Update stats
+    const totalBuyers   = (buyers || []).length
+    const totalSubmitted = totalBuyers - _psmAllRecords.length
+    const rate = totalBuyers ? Math.round((totalSubmitted / totalBuyers) * 100) : 0
+
+    _setStat('psm-stat-purchased', totalBuyers)
+    _setStat('psm-stat-pending',   _psmAllRecords.length)
+    _setStat('psm-stat-submitted', totalSubmitted)
+    _setStat('psm-stat-rate',      rate + '%')
+
+    // Update nav badge
+    const nc = document.getElementById('nav-count-pending-submissions')
+    if (nc) nc.textContent = _psmAllRecords.length
+
+    document.getElementById('psm-last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString()
+    document.getElementById('psm-sub').textContent =
+      `${_psmAllRecords.length} applicant${_psmAllRecords.length !== 1 ? 's' : ''} purchased a form but have not yet submitted · ${totalBuyers} total purchases`
+
+    psmApplyFilters()
+    if (window.showToast) showToast(`Loaded — ${_psmAllRecords.length} pending submission${_psmAllRecords.length !== 1 ? 's' : ''}`, 'success')
+
+  } catch(err) {
+    console.error('Pending submissions error:', err)
+    document.getElementById('psm-tbody').innerHTML = `
+      <tr><td colspan="10" style="text-align:center;padding:40px;color:#dc2626;">
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 10px;opacity:0.4;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Failed to load: ${_esc(err.message)}
+      </td></tr>`
+    document.getElementById('psm-table-count').textContent = 'Error loading data'
+    if (window.showToast) showToast('Failed to load pending submissions: ' + err.message, 'error')
+  }
+}
+
+function _setStat(id, val) {
+  const el = document.getElementById(id)
+  if (el) el.textContent = val
+}
+
+function _psmShowLoading() {
+  document.getElementById('psm-tbody').innerHTML = `<tr class="loading-row"><td colspan="10"><div class="spinner"></div>Fetching records from Supabase…</td></tr>`
+  document.getElementById('psm-table-count').textContent = 'Loading…'
+  ;['psm-stat-purchased','psm-stat-pending','psm-stat-submitted','psm-stat-rate'].forEach(id => _setStat(id, '…'))
+}
+
+window.psmApplyFilters = function() {
+  const q     = (document.getElementById('psm-search')?.value || '').toLowerCase().trim()
+  const days  = parseInt(document.getElementById('psm-filter-days')?.value || '0')
+
+  _psmFiltered = _psmAllRecords.filter(r => {
+    if (days) {
+      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
+      if (new Date(r.created_at).getTime() < cutoff) return false
+    }
+    if (q) {
+      const hay = [r.first_name, r.last_name, r.phone, r.email, r.reference_code, r.portal_username]
+        .filter(Boolean).join(' ').toLowerCase()
+      if (!hay.includes(q)) return false
+    }
+    return true
+  })
+
+  // Apply current sort
+  _psmSortData()
+  _psmCurrentPage = 1
+  _psmRenderTable()
+}
+
+window.psmClearFilters = function() {
+  const s = document.getElementById('psm-search')
+  const d = document.getElementById('psm-filter-days')
+  if (s) s.value = ''
+  if (d) d.value = ''
+  psmApplyFilters()
+}
+
+window.psmSort = function(field) {
+  if (_psmSortField === field) _psmSortAsc = !_psmSortAsc
+  else { _psmSortField = field; _psmSortAsc = true }
+  // Reset all sort indicators
+  ;['psmsort-name','psmsort-phone','psmsort-email','psmsort-ref','psmsort-user','psmsort-amt','psmsort-date'].forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.textContent = '↕'
+  })
+  const fieldMap = { first_name:'psmsort-name', phone:'psmsort-phone', email:'psmsort-email', reference_code:'psmsort-ref', portal_username:'psmsort-user', amount:'psmsort-amt', created_at:'psmsort-date' }
+  const indicator = document.getElementById(fieldMap[field])
+  if (indicator) indicator.textContent = _psmSortAsc ? '↑' : '↓'
+  _psmSortData()
+  _psmRenderTable()
+}
+
+function _psmSortData() {
+  _psmFiltered.sort((a, b) => {
+    let va = a[_psmSortField] ?? ''
+    let vb = b[_psmSortField] ?? ''
+    if (_psmSortField === 'amount') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0 }
+    else if (_psmSortField === 'created_at') { va = new Date(va); vb = new Date(vb) }
+    else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase() }
+    if (va < vb) return _psmSortAsc ? -1 : 1
+    if (va > vb) return _psmSortAsc ? 1 : -1
+    return 0
+  })
+}
+
+function _psmRenderTable() {
+  const total  = _psmFiltered.length
+  const start  = (_psmCurrentPage - 1) * PSM_PAGE_SIZE
+  const end    = Math.min(start + PSM_PAGE_SIZE, total)
+  const page   = _psmFiltered.slice(start, end)
+
+  document.getElementById('psm-table-count').textContent =
+    total === _psmAllRecords.length
+      ? `${total} applicant${total !== 1 ? 's' : ''} awaiting submission`
+      : `${total} of ${_psmAllRecords.length} (filtered)`
+
+  if (!page.length) {
+    document.getElementById('psm-tbody').innerHTML = `
+      <tr><td colspan="10" style="text-align:center;padding:48px;color:var(--text-secondary);">
+        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 12px;opacity:0.3;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        ${_psmAllRecords.length ? 'No records match your filter.' : 'All purchased forms have been submitted! 🎉'}
+      </td></tr>`
+    document.getElementById('psm-pagination-info').textContent = ''
+    document.getElementById('psm-pagination-btns').innerHTML = ''
+    return
+  }
+
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'}) : '—'
+  const daysSince = d => {
+    if (!d) return '—'
+    const diff = Math.floor((Date.now() - new Date(d).getTime()) / 86400000)
+    const color = diff > 14 ? '#dc2626' : diff > 7 ? '#d97706' : '#16a34a'
+    const bg    = diff > 14 ? '#fee2e2' : diff > 7 ? '#fef3c7' : '#dcfce7'
+    return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${bg};color:${color};">${diff}d ago</span>`
+  }
+
+  document.getElementById('psm-tbody').innerHTML = page.map((r, i) => `
+    <tr style="transition:background 0.12s;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background=''">
+      <td style="color:var(--text-secondary);font-size:12px;border-left:3px solid #fef3c7;">${start + i + 1}</td>
+      <td style="border-left:3px solid #fde68a;">
+        <div style="font-weight:700;font-size:13px;color:#1a0a00;">${_esc((r.first_name||'') + ' ' + (r.last_name||''))}</div>
+      </td>
+      <td style="border-left:3px solid #fcd34d;font-weight:600;color:#92400e;">${_esc(r.phone||'—')}</td>
+      <td style="border-left:3px solid #fbbf24;font-size:12px;color:var(--text-secondary);word-break:break-all;">${_esc(r.email||'—')}</td>
+      <td style="border-left:3px solid #f59e0b;font-family:monospace;font-size:12px;font-weight:700;color:#6d28d9;">${_esc(r.reference_code||'—')}</td>
+      <td style="border-left:3px solid #d97706;font-family:monospace;font-size:12px;color:#0284c7;">${_esc(r.portal_username||'—')}</td>
+      <td style="border-left:3px solid #b45309;font-weight:700;color:#15803d;text-align:right;">${(r.currency||'GHS')} ${parseFloat(r.amount||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td style="border-left:3px solid #92400e;font-size:12px;color:var(--text-secondary);white-space:nowrap;">${fmtDate(r.created_at)}</td>
+      <td style="border-left:3px solid #78350f;text-align:center;">${daysSince(r.created_at)}</td>
+      <td style="border-left:3px solid #e0e7ff;">
+        <div style="display:flex;gap:5px;align-items:center;">
+          <button class="btn btn-sm btn-warning" onclick="openPsmDetail('${_esc(r.id)}')" style="gap:5px;">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            View
+          </button>
+          ${r.phone ? `<a href="https://wa.me/${_waPhone(r.phone)}" target="_blank" class="btn btn-sm btn-success" style="gap:5px;text-decoration:none;"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>WhatsApp</a>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('')
+
+  // Pagination
+  document.getElementById('psm-pagination-info').textContent = `Showing ${start+1}–${end} of ${total}`
+  const totalPages = Math.ceil(total / PSM_PAGE_SIZE)
+  const btns = []
+  for (let p = 1; p <= totalPages; p++) {
+    const active = p === _psmCurrentPage
+    btns.push(`<button class="page-btn${active?' active':''}" onclick="psmGoPage(${p})" ${active?'disabled':''}>${p}</button>`)
+  }
+  document.getElementById('psm-pagination-btns').innerHTML = btns.join('')
+}
+
+window.psmGoPage = function(p) {
+  _psmCurrentPage = p
+  _psmRenderTable()
+}
+
+// ── Detail Modal ────────────────────────────────────────
+window.openPsmDetail = function(id) {
+  const r = _psmAllRecords.find(x => x.id === id)
+  if (!r) return
+
+  const fmtDate = d => d ? new Date(d).toLocaleString('en-GH',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—'
+  const daysSince = d => d ? Math.floor((Date.now() - new Date(d).getTime()) / 86400000) : null
+  const days = daysSince(r.created_at)
+  const urgency = days > 14 ? { color:'#dc2626', bg:'#fee2e2', label:'Overdue' } :
+                  days > 7  ? { color:'#d97706', bg:'#fef3c7', label:'Follow up' } :
+                              { color:'#16a34a', bg:'#dcfce7', label:'Recent' }
+
+  document.getElementById('psmDetailName').textContent = (r.first_name||'') + ' ' + (r.last_name||'')
+  document.getElementById('psmDetailSub').textContent  = `Ref: ${r.reference_code||'—'} · Purchased ${days !== null ? days + ' days ago' : ''}`
+
+  document.getElementById('psmDetailBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+      <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:14px 16px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#92400e;margin-bottom:8px;">Contact Info</div>
+        <div style="display:grid;gap:6px;">
+          <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Phone</span><div style="font-weight:700;font-size:14px;color:#1a0a00;">${_esc(r.phone||'—')}</div></div>
+          <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Email</span><div style="font-size:13px;word-break:break-all;color:#1a0a00;">${_esc(r.email||'—')}</div></div>
+        </div>
+      </div>
+      <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:12px;padding:14px 16px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6d28d9;margin-bottom:8px;">Portal Credentials</div>
+        <div style="display:grid;gap:6px;">
+          <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Username</span><div style="font-family:monospace;font-weight:700;font-size:13px;color:#0284c7;">${_esc(r.portal_username||'—')}</div></div>
+          <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Password</span><div style="font-family:monospace;font-size:13px;color:#1a0a00;">${_esc(r.portal_password||'—')}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;">
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Amount Paid</div>
+        <div style="font-size:15px;font-weight:800;color:#16a34a;">${(r.currency||'GHS')} ${parseFloat(r.amount||0).toLocaleString('en-GH',{minimumFractionDigits:2})}</div>
+      </div>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Ref Code</div>
+        <div style="font-size:13px;font-weight:700;font-family:monospace;color:#4f46e5;">${_esc(r.reference_code||'—')}</div>
+      </div>
+      <div style="background:${urgency.bg};border:1px solid ${urgency.color}33;border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Status</div>
+        <div style="font-size:13px;font-weight:800;color:${urgency.color};">${urgency.label} · ${days !== null ? days + 'd' : '—'}</div>
+      </div>
+    </div>
+
+    <div style="background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:8px;">Timestamps</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Purchased</span><div style="font-size:12px;font-weight:600;">${fmtDate(r.created_at)}</div></div>
+        <div><span style="font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Last Updated</span><div style="font-size:12px;font-weight:600;">${fmtDate(r.updated_at)}</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      ${r.phone ? `<a href="tel:${_esc(r.phone)}" class="btn btn-primary btn-sm" style="text-decoration:none;gap:6px;"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.62 4.9 2 2 0 0 1 3.62 2.72h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 10.5a16 16 0 0 0 6 6l.97-.97a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17.92z"/></svg>Call</a>` : ''}
+      ${r.phone ? `<a href="https://wa.me/${_waPhone(r.phone)}" target="_blank" class="btn btn-success btn-sm" style="text-decoration:none;gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>WhatsApp</a>` : ''}
+      ${r.email ? `<a href="mailto:${_esc(r.email)}" class="btn btn-outline btn-sm" style="text-decoration:none;gap:6px;"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</a>` : ''}
+      <button class="btn btn-outline btn-sm" onclick="closePsmDetail()" style="margin-left:auto;">Close</button>
+    </div>
+  `
+
+  document.getElementById('psmDetailModal').style.display = 'flex'
+}
+
+window.closePsmDetail = function() {
+  document.getElementById('psmDetailModal').style.display = 'none'
+}
+
+window.psmExportCSV = function() {
+  const rows = _psmFiltered.length ? _psmFiltered : _psmAllRecords
+  if (!rows.length) { if (window.showToast) showToast('No records to export', 'info'); return }
+
+  const headers = ['First Name','Last Name','Phone','Email','Reference Code','Portal Username','Amount','Currency','Days Since Purchase','Purchased On']
+  const data = rows.map(r => {
+    const days = r.created_at ? Math.floor((Date.now() - new Date(r.created_at).getTime()) / 86400000) : ''
+    return [r.first_name, r.last_name, r.phone, r.email, r.reference_code, r.portal_username, r.amount, r.currency, days, r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB') : '']
+  })
+  const csv = [headers, ...data].map(row => row.map(v => `"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+  a.download = 'pending_submissions_' + new Date().toISOString().slice(0,10) + '.csv'
+  a.click()
+  URL.revokeObjectURL(a.href)
+  if (window.showToast) showToast(`Exported ${rows.length} records`, 'success')
+}
+
+// ── Helpers ─────────────────────────────────────────────
+function _esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+function _waPhone(phone) {
+  // Strip spaces/dashes, ensure country code for GH (+233)
+  let p = String(phone||'').replace(/[\s\-()]/g,'')
+  if (p.startsWith('0')) p = '233' + p.slice(1)
+  if (!p.startsWith('+') && !p.startsWith('233')) p = '233' + p
+  return p.replace(/^\+/,'')
+}
 
 })();
 </script>

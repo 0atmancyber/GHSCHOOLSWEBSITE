@@ -4429,7 +4429,7 @@ const DRAFT_FIELDS = [
   'first_name','middle_name','last_name','dob','gender','phone','email','address',
   'nationality','region','national_id_type','national_id_number','current_residence',
   'hostel_pref','present_job','language_spoken','any_medical','medical_spec',
-  'disability_spec','heard_source_select','heard_spec','passport',
+  'disability_spec','heard_source_select','heard_spec',
   'sponsor_name','sponsor_relationship','sponsor_occupation','sponsor_phone','sponsor_address',
   'school_name','school_location','school_year','school_qualification',
   'grade_english','grade_mathematics','grade_social_studies','grade_integrated_science',
@@ -4478,8 +4478,13 @@ function saveDraft() {
 }
 
 function restoreDraft(userId) {
-  // Never restore a draft for a student who already submitted — they cannot re-enter the form
-  if (App.loggedInRecord && App.loggedInRecord.is_admission_form === true) { return false; }
+  // Never restore a draft for a student who already submitted — they cannot re-enter the form.
+  // Check both the DB flag AND the in-session _savedToDb flag (set after confirmApplication).
+  if (App.loggedInRecord && (App.loggedInRecord.is_admission_form === true || App._savedToDb)) {
+    // Also wipe the stale draft so this check is instant next time
+    try { localStorage.removeItem(draftKey(userId)); } catch(e) {}
+    return false;
+  }
   try {
     const raw = localStorage.getItem(draftKey(userId));
     if (!raw) return false;
@@ -4498,7 +4503,7 @@ function restoreDraft(userId) {
     setTimeout(() => {
       DRAFT_FIELDS.forEach(id => {
         const el = document.getElementById(id);
-        if (el && draft.fields[id] !== undefined) {
+        if (el && draft.fields[id] !== undefined && el.type !== 'file') {
           el.value = draft.fields[id];
           // Trigger dependent UI
           if (id === 'any_medical') toggleMedSpec();
@@ -4577,101 +4582,104 @@ function hideSaveBanner() {
 // Route student after successful credential check based on form + payment status
 async function loginSuccess(record) {
   App.loggedInRecord = record;
-  App.studentId = (record.reference_code && String(record.reference_code).trim())
-    ? String(record.reference_code).trim()
-    : String(record.id);
+
+  // App.studentId: prefer newstudents.student_id (canonical payments key),
+  // then reference_code, then the admission_payments id.
+  App.studentId = (record.student_id && String(record.student_id).trim())
+    ? String(record.student_id).trim()
+    : (record.reference_code && String(record.reference_code).trim())
+      ? String(record.reference_code).trim()
+      : String(record.id);
 
   document.getElementById('global-nav').classList.add('visible');
 
-  const firstName = record.first_name || 'Student';
+  const firstName  = record.first_name || 'Student';
   const formSubmitted = record.is_admission_form === true;
 
-  // ── Check payment status ────────────────────────────────────────────────────
-  // If record came from admission_payments it carries _ap_paid (already verified above).
-  // Otherwise query the payments table for an approved row.
-  let hasPaid = false;
-  if (record._ap_paid === true) {
-    // Student authenticated via admission_payments and payment_status = 'success'
-    hasPaid = true;
-  } else if (formSubmitted && supabaseClient) {
-    try {
-      const { data: payRows } = await supabaseClient
-        .from('payments')
-        .select('id, status')
-        .eq('student_id', record.student_id || record.id)
-        .eq('status', 'approved')
-        .limit(1);
-      hasPaid = !!(payRows && payRows.length > 0);
-    } catch(e) {
-      console.warn('[loginSuccess] payments check failed:', e);
-      // On error, treat as unpaid — safer than granting access
-      hasPaid = false;
-    }
+  // Wipe stale drafts for submitted students so restoreDraft() never re-opens the form.
+  if (formSubmitted) {
+    try { localStorage.removeItem(draftKey(App.studentId)); } catch(e) {}
+    try { if (record.id) localStorage.removeItem(draftKey(String(record.id))); } catch(e) {}
+    try { if (record.reference_code) localStorage.removeItem(draftKey(String(record.reference_code))); } catch(e) {}
   }
 
-  // Stamp the verified state onto App so the screen gate can use it
-  App._hasPaid = hasPaid;
+  // doLogin already queried the payments table and set _ap_paid — trust it directly.
+  const hasPaid = record._ap_paid === true;
+  App._hasPaid  = hasPaid;
 
   hideLoading();
 
   if (!formSubmitted) {
-    // Student has NOT yet filled the form — let them fill it
+    // ── Case 1: student has NOT submitted their form yet ──────────────────────
     var restored = restoreDraft(App.studentId);
     if (restored) {
       toast('Welcome back, ' + firstName + '! Your progress has been restored.', 'ok');
     } else {
       showScreen('screen-program');
       setStageActive('st-program');
-      toast('Welcome, ' + firstName + '! Please fill in your application form.', 'ok');
+      toast('Welcome, ' + firstName + '! Please select a programme to begin your application.', 'ok');
     }
-  } else if (!hasPaid) {
-    // Form already submitted but admission fee not yet paid —
-    // Restore App.programType from the student DB record so loadFeeBreakdown
-    // can use the correct programme level for the fee lookup.
-    var nsRow = record._nsRow;
-    if (nsRow) {
-      var progType = nsRow.program_type || nsRow.course_type || '';
-      if (progType) App.programType = progType;
-      // Apply CoC theme if needed
-      if (App.programType === 'CoC') document.body.classList.add('coc-theme');
 
-      // ── Populate App.formData from DB record so Paystack has name/email/phone ──
-      // Without this, launchPaystack() would fail with "No email address found".
-      App.formData = {
-        first_name:        nsRow.first_name  || record.first_name  || '',
-        last_name:         nsRow.last_name   || record.last_name   || '',
-        email:             nsRow.email       || '',
-        phone_number:      nsRow.phone_number || record.phone_number || '',
-        phone:             nsRow.phone_number || record.phone_number || '',
-        school_selected:   nsRow.school_selected   || '',
-        program_applying_for: nsRow.program_applying_for || '',
-        student_id:        nsRow.student_id  || record.student_id  || ''
-      };
-    } else {
-      // nsRow is null (no newstudents row found) — seed formData from admission_payments
-      App.formData = {
-        first_name:   record.first_name  || '',
-        last_name:    record.last_name   || '',
-        email:        '',
-        phone_number: record.phone_number || '',
-        phone:        record.phone_number || '',
-        student_id:   record.student_id  || ''
-      };
+  } else if (!hasPaid) {
+    // ── Case 2: form submitted, admission fee NOT yet paid ────────────────────
+    var nsRow = record._nsRow;
+
+    if (!nsRow) {
+      console.warn('[loginSuccess] formSubmitted=true but _nsRow is null');
+      toast('We found your application but could not load your details. Please contact the Admissions Office.', 'error');
+      showScreen('screen-payment');
+      setStageActive('st-payment');
+      loadFeeBreakdown();
+      return;
     }
-    // Land on the payment screen then immediately pop the fee modal.
-    showScreen('screen-payment', 'Setting up Payment…');
+
+    // Apply programme theme so fee tier + colours are correct
+    var progType = nsRow.program_type || nsRow.course_type || '';
+    if (progType) App.programType = progType;
+    if (App.programType === 'CoC') document.body.classList.add('coc-theme');
+    else document.body.classList.remove('coc-theme');
+
+    // Seed App.formData — everything Paystack + recordPaymentToSupabase need
+    App.formData = {
+      first_name:           nsRow.first_name           || record.first_name   || '',
+      last_name:            nsRow.last_name            || record.last_name    || '',
+      email:                nsRow.email                || record.email        || '',
+      phone_number:         nsRow.phone_number         || record.phone_number || '',
+      phone:                nsRow.phone_number         || record.phone_number || '',
+      school_selected:      nsRow.school_selected      || '',
+      program_applying_for: nsRow.program_applying_for || '',
+      student_id:           nsRow.student_id           || record.student_id   || '',
+      reference_code:       nsRow.reference_code       || record.reference_code || ''
+    };
+
+    // Make sure App.studentId matches newstudents.student_id for payment recording
+    if (nsRow.student_id) App.studentId = nsRow.student_id;
+
+    showScreen('screen-payment');
     setStageActive('st-payment');
-    loadFeeBreakdown();   // pre-load fee in background
-    // Small delay so the screen renders before the modal opens
+    loadFeeBreakdown();
     setTimeout(function() {
-      toast('Welcome back, ' + firstName + '! Your form is submitted. Please pay your admission fee to continue.', 'ok');
+      toast('Welcome back, ' + firstName + '! Your form is submitted. Please pay the admission fee to proceed.', 'ok');
       showFeeInfoModal();
-    }, 400);
+    }, 500);
+
   } else {
-    // Form submitted AND paid — go to feedback/letter flow
-    toast('Welcome back, ' + firstName + '! Your application and payment are complete.', 'ok');
+    // ── Case 3: form submitted AND admission fee paid ──────────────────────────
+    // Show the feedback screen behind the modal, then pop the admitted modal.
     showScreen('screen-feedback');
     setStageActive('st-feedback');
+    // Show the admitted modal with the student's details
+    var nsRowPaid = record._nsRow;
+    setTimeout(function() {
+      showAdmittedModal({
+        name:      [record.first_name, record.last_name].filter(Boolean).join(' ') || firstName,
+        ref:       (nsRowPaid && nsRowPaid.reference_code) || record.reference_code || '—',
+        programme: (nsRowPaid && nsRowPaid.program_applying_for) || '—',
+        type:      (nsRowPaid && (nsRowPaid.program_type || nsRowPaid.course_type)) || record._nsRow && record._nsRow.course_type || '—',
+        school:    (nsRowPaid && nsRowPaid.school_selected)      || '—',
+        duration:  (nsRowPaid && nsRowPaid.program_duration)     || '—'
+      });
+    }, 350);
   }
 }
 
@@ -4692,7 +4700,7 @@ async function doLogin() {
     // ── Step 1: verify credentials from admission_payments ────────────────────
     var apResult = await supabaseClient
       .from('admission_payments')
-      .select('id, first_name, last_name, phone, portal_username, portal_password, payment_status, reference_code')
+      .select('id, first_name, last_name, phone, email, portal_username, portal_password, payment_status, reference_code')
       .eq('portal_username', inputId)
       .limit(1);
 
@@ -4718,10 +4726,10 @@ async function doLogin() {
       return;
     }
 
-    // ── Step 3: check if student record exists in newstudents ────────────────
-    // Fetch ALL columns needed for auto-fill AND routing.
-    // Also try portal_username as a fallback if reference_code lookup misses.
-    var nsRow = null;
+    // ── Step 3: look up the student's row in newstudents ─────────────────────
+    // We try EVERY available identifier so a row is found regardless of which
+    // columns were populated when the student registered / submitted their form.
+    // Order: reference_code (most reliable shared key) → phone → email → portal_username
     var nsSelectCols = [
       'id','student_id','is_admission_form','reference_code',
       'first_name','middle_name','last_name','dob','gender',
@@ -4742,63 +4750,127 @@ async function doLogin() {
       'portal_username','portal_password','status'
     ].join(',');
 
-    // Try reference_code first, then portal_username as fallback
-    if (apRecord.reference_code) {
-      var nsResult = await supabaseClient
-        .from('newstudents')
-        .select(nsSelectCols)
-        .eq('reference_code', apRecord.reference_code)
-        .limit(1);
-      if (!nsResult.error && nsResult.data && nsResult.data.length > 0) {
-        nsRow = nsResult.data[0];
+    var nsRow = null;
+    var apEmail = (apRecord.email || '').trim().toLowerCase();
+    var apPhone = (apRecord.phone || '').trim();
+
+    console.log('[login] searching newstudents with:', {
+      reference_code: apRecord.reference_code,
+      phone: apPhone,
+      email: apEmail,
+      portal_username: apRecord.portal_username
+    });
+
+    // ── Try 1: reference_code (the shared key written into both tables) ───────
+    if (!nsRow && apRecord.reference_code) {
+      var r1 = await supabaseClient
+        .from('newstudents').select(nsSelectCols)
+        .eq('reference_code', apRecord.reference_code).limit(1);
+      console.log('[login] ref lookup:', r1.error || (r1.data && r1.data.length) + ' row(s)');
+      if (!r1.error && r1.data && r1.data.length > 0) nsRow = r1.data[0];
+    }
+
+    // ── Try 2: phone number (required in both tables — most likely to match) ──
+    if (!nsRow && apPhone) {
+      // Normalise: strip spaces/dashes, accept both 0XXXXXXXXX and +233XXXXXXXXX
+      var phoneCandidates = [apPhone];
+      if (apPhone.startsWith('0') && apPhone.length >= 10) {
+        phoneCandidates.push('233' + apPhone.slice(1));
+        phoneCandidates.push('+233' + apPhone.slice(1));
+      } else if (apPhone.startsWith('233') && apPhone.length >= 12) {
+        phoneCandidates.push('0' + apPhone.slice(3));
+      } else if (apPhone.startsWith('+233')) {
+        phoneCandidates.push('0' + apPhone.slice(4));
+        phoneCandidates.push(apPhone.slice(1)); // without +
+      }
+      for (var _phi = 0; _phi < phoneCandidates.length && !nsRow; _phi++) {
+        var r2 = await supabaseClient
+          .from('newstudents').select(nsSelectCols)
+          .eq('phone_number', phoneCandidates[_phi]).limit(1);
+        console.log('[login] phone lookup (' + phoneCandidates[_phi] + '):', r2.error || (r2.data && r2.data.length) + ' row(s)');
+        if (!r2.error && r2.data && r2.data.length > 0) nsRow = r2.data[0];
       }
     }
-    // Fallback: match by portal_username in case reference_code differs
+
+    // ── Try 3: email ──────────────────────────────────────────────────────────
+    if (!nsRow && apEmail) {
+      var r3 = await supabaseClient
+        .from('newstudents').select(nsSelectCols)
+        .ilike('email', apEmail).limit(1);
+      console.log('[login] email lookup:', r3.error || (r3.data && r3.data.length) + ' row(s)');
+      if (!r3.error && r3.data && r3.data.length > 0) nsRow = r3.data[0];
+    }
+
+    // ── Try 4: portal_username stored on the newstudents row ─────────────────
     if (!nsRow && apRecord.portal_username) {
-      var nsResult2 = await supabaseClient
-        .from('newstudents')
-        .select(nsSelectCols)
-        .eq('portal_username', apRecord.portal_username)
-        .limit(1);
-      if (!nsResult2.error && nsResult2.data && nsResult2.data.length > 0) {
-        nsRow = nsResult2.data[0];
-      }
+      var r4 = await supabaseClient
+        .from('newstudents').select(nsSelectCols)
+        .eq('portal_username', apRecord.portal_username).limit(1);
+      console.log('[login] portal_username lookup:', r4.error || (r4.data && r4.data.length) + ' row(s)');
+      if (!r4.error && r4.data && r4.data.length > 0) nsRow = r4.data[0];
     }
 
-    // ── Step 4: check if student has a payment record in payments table ───────
+    // ── Step 4: determine form-submission state ───────────────────────────────
+    // A student is considered "submitted" if a row exists in newstudents at all.
+    // We do NOT gate on is_admission_form because it may be false/null on older rows.
+    var formIsSubmitted = !!(nsRow);
+
+    console.log('[login] RESULT — nsRow found:', !!nsRow,
+      '| student_id:', nsRow ? nsRow.student_id : 'n/a',
+      '| reference_code:', nsRow ? nsRow.reference_code : 'n/a',
+      '| is_admission_form:', nsRow ? nsRow.is_admission_form : 'n/a',
+      '| formIsSubmitted:', formIsSubmitted);
+
+    // ── Step 5: check for approved admission fee payment ─────────────────────
+    // Only runs if the student has submitted their form.
+    // payments.student_id (citext) stores the newstudents.student_id value.
+    // We try every available identifier to avoid missing a payment record.
     var payRow = null;
-    if (nsRow && apRecord.reference_code) {
-      var payResult = await supabaseClient
-        .from('payments')
-        .select('id, status')
-        .eq('student_id', apRecord.reference_code)
-        .eq('status', 'approved')
-        .limit(1);
-      if (!payResult.error && payResult.data && payResult.data.length > 0) {
-        payRow = payResult.data[0];
-      }
-      // Also accept payment_status = 'success' on admission_payments itself
-      if (!payRow && apRecord.payment_status === 'success') {
-        payRow = { id: 'ap', status: 'approved' };
+    if (formIsSubmitted && nsRow) {
+      // Build a deduplicated list of IDs to try — student_id is the canonical key,
+      // but we also try reference_code in case it was used when recording the payment.
+      var payLookupIds = [
+        nsRow.student_id,
+        nsRow.reference_code,
+        apRecord.reference_code
+      ].filter(Boolean).filter(function(v, i, a) { return a.indexOf(v) === i; });
+
+      console.log('[login] payment lookup IDs:', payLookupIds);
+
+      for (var _pi = 0; _pi < payLookupIds.length && !payRow; _pi++) {
+        var payResult = await supabaseClient
+          .from('payments')
+          .select('id, status, student_id, fee_type, amount')
+          .eq('student_id', payLookupIds[_pi])
+          .eq('status', 'approved')
+          .limit(1);
+        if (!payResult.error && payResult.data && payResult.data.length > 0) {
+          payRow = payResult.data[0];
+          console.log('[login] payment found:', payRow);
+        }
       }
     }
 
-    // ── Step 5: build unified record and route ────────────────────────────────
+    var hasPaidAlready = !!(payRow);
+
+    console.log('[login] formIsSubmitted:', formIsSubmitted, '| hasPaidAdmissionFee:', hasPaidAlready);
+
+    // ── Step 6: build unified record and pass to loginSuccess ─────────────────
     var record = {
       id:                apRecord.id,
       student_id:        nsRow ? nsRow.student_id : null,
-      first_name:        apRecord.first_name,
-      last_name:         apRecord.last_name,
-      phone_number:      apRecord.phone || null,
+      email:             apEmail || (nsRow ? nsRow.email : null),
+      first_name:        apRecord.first_name || (nsRow ? nsRow.first_name : ''),
+      last_name:         apRecord.last_name  || (nsRow ? nsRow.last_name  : ''),
+      phone_number:      apRecord.phone      || (nsRow ? nsRow.phone_number : null),
       portal_username:   apRecord.portal_username,
       portal_password:   apRecord.portal_password,
-      reference_code:    apRecord.reference_code,
-      // exists in newstudents = form has been filled and submitted
-      // Check BOTH the DB flag AND whether a newstudents row exists at all
-      is_admission_form: !!(nsRow && (nsRow.is_admission_form === true || nsRow.id)),
-      // has a payment row = admission fee paid
-      _ap_paid:          !!(payRow),
-      // Full newstudents row for auto-fill (null if form not yet submitted)
+      reference_code:    apRecord.reference_code || (nsRow ? nsRow.reference_code : null),
+      // TRUE when a row exists in newstudents for this student (form submitted)
+      is_admission_form: formIsSubmitted,
+      // TRUE when an approved row exists in the payments table
+      _ap_paid:          hasPaidAlready,
+      // Full newstudents row (used to seed Paystack and auto-fill)
       _nsRow:            nsRow || null
     };
 
@@ -6336,50 +6408,127 @@ async function recordPaymentToSupabase(paystackResponse) {
   // Build fee_breakdown string from App.feeBreakdown
   const feeBreakdownStr = App.feeBreakdown.map(r => r.name + ': GHS ' + r.amount.toFixed(2)).join('; ');
 
+  // Generate a receipt number: RCP-YYYYMMDD-<random 6 chars>
+  const now = new Date();
+  const datePart = now.getFullYear().toString()
+    + String(now.getMonth() + 1).padStart(2, '0')
+    + String(now.getDate()).padStart(2, '0');
+  const randPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const receiptNumber = 'RCP-' + datePart + '-' + randPart;
+
   try {
     if (supabaseClient) {
-      // 1. Record the payment
-      await supabaseClient.from('payments').insert({
-        student_id: App.studentId,
-        student_name: [fd.first_name, fd.last_name].filter(Boolean).join(' '),
-        student_email: fd.email,
-        department: fd.school_selected || null,
-        level: App.programType || null,
-        amount: App.feeTotalAmount,
-        phone: fd.phone_number || fd.phone || null,
-        fee_type: 'Admission',
-        fee_breakdown: feeBreakdownStr,
+      // ── 1. Look up the fee_type_id for 'Admission Fee' / 'Admission' ──────────
+      // Matches the same priority logic used in loadFeeBreakdown so the FK is
+      // always consistent with whichever fee_types row we loaded the amount from.
+      let feeTypeId = null;
+      try {
+        for (const candidateName of ['Admission Fee', 'Admission']) {
+          const { data: ftRows, error: ftErr } = await supabaseClient
+            .from('fee_types')
+            .select('id')
+            .ilike('name', candidateName)
+            .limit(1);
+          if (!ftErr && ftRows && ftRows.length > 0) {
+            feeTypeId = ftRows[0].id;
+            break;
+          }
+        }
+      } catch(ftLookupErr) {
+        // Non-fatal — fee_type_id is nullable; we log and continue.
+        console.warn('[recordPayment] fee_type_id lookup failed (non-fatal):', ftLookupErr);
+      }
+
+      // ── 2. Determine the student_id value for the payments table ─────────────
+      // payments.student_id is citext and is used for lookups by reference_code
+      // OR student_id. We prefer reference_code (the primary link between tables).
+      const payStudentId = (fd.reference_code && String(fd.reference_code).trim())
+        ? String(fd.reference_code).trim()
+        : (App.studentId ? String(App.studentId).trim() : null);
+
+      if (!payStudentId) {
+        throw new Error('Cannot record payment: student identifier is missing.');
+      }
+
+      // ── 3. Insert into payments ───────────────────────────────────────────────
+      const { error: insertErr } = await supabaseClient.from('payments').insert({
+        student_id:       payStudentId,
+        student_name:     [fd.first_name, fd.last_name].filter(Boolean).join(' ') || null,
+        student_email:    fd.email || null,
+        department:       fd.school_selected || null,
+        level:            App.programType || null,
+        amount:           App.feeTotalAmount,
+        phone:            fd.phone_number || fd.phone || null,
+        fee_type:         'Admission Fee',
+        fee_type_id:      feeTypeId,   // nullable FK → fee_types.id
+        fee_breakdown:    feeBreakdownStr,
         payment_coverage: 'Full',
         coverage_percent: 100,
-        transaction_ref: paystackResponse.reference,
-        payment_date: new Date().toISOString(),
-        status: paystackResponse.status === 'success' ? 'approved' : paystackResponse.status,
-        source_table: 'admission_payments',
-        source_payload: { paystack: paystackResponse, form: fd }
+        transaction_ref:  paystackResponse.reference,
+        receipt_number:   receiptNumber,
+        payment_date:     now.toISOString(),
+        status:           'approved',
+        source_table:     'admission_payments',
+        source_payload:   { paystack: paystackResponse, form: fd },
+        academic_year:    (now.getFullYear()) + '/' + (now.getFullYear() + 1),
+        ecobank_validation_status: 'unused'
       });
 
-      // 2. Update the student record status to 'admitted' and store the payment ref
-      if (App.studentId) {
-        await supabaseClient
-          .from('newstudents')
-          .update({
-            status: 'admitted',
-            updated_at: new Date().toISOString()
-          })
-          .eq('student_id', App.studentId);
+      if (insertErr) {
+        console.error('[recordPayment] payments insert error:', insertErr);
+        throw new Error(insertErr.message || JSON.stringify(insertErr));
       }
+
+      // ── 4. Update newstudents to 'admitted' ───────────────────────────────────
+      // newstudents is linked by reference_code (primary) or student_id.
+      // We try both so the update always lands even if one column differs.
+      const nsUpdates = { status: 'admitted', updated_at: now.toISOString() };
+      const refCode = fd.reference_code || (App.loggedInRecord && App.loggedInRecord.reference_code) || null;
+      const nsStudentId = fd.student_id || null;
+
+      if (refCode) {
+        const { error: upErr } = await supabaseClient
+          .from('newstudents')
+          .update(nsUpdates)
+          .eq('reference_code', refCode);
+        if (upErr) console.warn('[recordPayment] newstudents update by reference_code failed:', upErr.message);
+      } else if (nsStudentId) {
+        const { error: upErr } = await supabaseClient
+          .from('newstudents')
+          .update(nsUpdates)
+          .eq('student_id', nsStudentId);
+        if (upErr) console.warn('[recordPayment] newstudents update by student_id failed:', upErr.message);
+      }
+
+      // Stamp hasPaid flag in-session so screen gate allows feedback screen immediately
+      App._hasPaid = true;
     }
   } catch (err) {
-    console.warn('[recordPayment] Could not write to DB:', err);
+    console.error('[recordPayment] Could not write to DB:', err);
     hideLoading();
-    toast('Payment was received by Paystack but we could not save your record. Please contact support with your reference: ' + paystackResponse.reference, 'error');
+    toast(
+      'Payment was received by Paystack but we could not save your record. ' +
+      'Please contact support with your reference: ' + paystackResponse.reference,
+      'error'
+    );
     return;
   }
 
   hideLoading();
   showScreen('screen-feedback', 'Almost there…');
   setStageActive('st-feedback');
-  toast('Payment confirmed! ✓', 'ok');
+  // Show admitted modal after a brief delay so the screen transition finishes first
+  var fd2 = App.formData || {};
+  setTimeout(function() {
+    showAdmittedModal({
+      name:      [fd2.first_name, fd2.last_name].filter(Boolean).join(' ') || 'Student',
+      ref:       fd2.reference_code || fd2.student_id || '—',
+      programme: fd2.program_applying_for || '—',
+      type:      App.programType || '—',
+      school:    fd2.school_selected || '—',
+      duration:  '—'
+    });
+  }, 600);
 }
 
 // ── PREVIEW SCREEN ──────────────────────────────────────────────────────────
@@ -7126,6 +7275,56 @@ function closeFeeInfoAndPay() {
     loadFeeBreakdown();
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ADMITTED MODAL
+// ══════════════════════════════════════════════════════════════════════════
+
+function showAdmittedModal(data) {
+  // Populate name + ref
+  var nameEl = document.getElementById('adm-student-name');
+  var refEl  = document.getElementById('adm-ref-code');
+  if (nameEl) nameEl.textContent = data.name || 'Student';
+  if (refEl)  refEl.textContent  = data.ref  || '—';
+
+  // Build info grid
+  var grid = document.getElementById('adm-info-grid');
+  if (grid) {
+    var schoolDisplay = SCHOOL_DISPLAY[data.school] || data.school || '—';
+    var typeDisplay   = data.type === 'CoC' ? 'Certificate of Competence' : (data.type || '—');
+    grid.innerHTML = [
+      _admCell('Programme', data.programme || '—'),
+      _admCell('Type',      typeDisplay),
+      _admCell('School',    schoolDisplay),
+      _admCell('Duration',  data.duration  || '—')
+    ].join('');
+  }
+
+  // Open overlay
+  var overlay = document.getElementById('admitted-overlay');
+  if (overlay) overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Animate confetti text
+  var conf = document.getElementById('adm-confetti');
+  if (conf) { conf.style.animation = 'none'; void conf.offsetWidth; conf.style.animation = ''; }
+}
+
+function _admCell(label, value) {
+  return '<div class="adm-info-cell">' +
+    '<div class="adm-info-label">' + label + '</div>' +
+    '<div class="adm-info-value">' + (value || '—') + '</div>' +
+    '</div>';
+}
+
+function closeAdmittedModal(evt) {
+  // If called from onclick on overlay, only close when clicking the backdrop itself
+  if (evt && evt.target !== document.getElementById('admitted-overlay')) return;
+  var overlay = document.getElementById('admitted-overlay');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 </script>
 
 

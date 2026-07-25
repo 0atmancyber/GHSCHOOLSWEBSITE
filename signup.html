@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GH SCHOOLS - Student Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VZTBV2YJBX"></script>
@@ -16,165 +16,103 @@
   </script>
   <style>
     :root {
-      --ink: #1a1a2e;
-      --paper: #fdfaf4;
-      --paper-2: #f5f0e8;
-      --red: #dc2626;
-      --red-dark: #991b1b;
-      --teal: #0f766e;
-      --teal-light: #14b8a6;
-      --yellow: #fbbf24;
-      --yellow-light: #fef3c7;
-      --chalk: #ffffff;
-      --line-color: #d1c9b8;
-      --shadow-card: 0 4px 0 0 #c8bfa8, 0 8px 32px rgba(0,0,0,0.12);
-      --shadow-btn: 0 4px 0 0 #991b1b;
-      --radius: 4px;
+      --primary: #0052cc;
+      --primary-dark: #003d99;
+      --primary-light: #e8f0ff;
+      --secondary: #1f2937;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-tertiary: #9ca3af;
+      --border: #e5e7eb;
+      --border-dark: #d1d5db;
+      --background: #ffffff;
+      --background-alt: #f9fafb;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --error: #ef4444;
+      --error-light: #fef2f2;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 8px;
       --radius-lg: 12px;
-      --radius-xl: 20px;
+      --radius-xl: 16px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     html, body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-text-size-adjust: 100%;
       touch-action: manipulation;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      min-height: 100vh;
     }
 
     body {
-      min-height: 100vh;
-      background-color: #1a3a2e;
-      background-image:
-        /* Chalkboard texture lines */
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 38px,
-          rgba(255,255,255,0.04) 38px,
-          rgba(255,255,255,0.04) 40px
-        ),
-        /* Vertical subtle grain */
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 80px,
-          rgba(255,255,255,0.02) 80px,
-          rgba(255,255,255,0.02) 82px
-        );
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 16px 40px;
+      padding: 24px 16px;
       position: relative;
       overflow-x: hidden;
     }
 
-    /* Decorative chalk doodles in background */
-    .bg-doodles {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .bg-doodles svg {
-      position: absolute;
-      opacity: 0.07;
-    }
-
-    /* Page */
+    /* Page container */
     .page {
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
     }
 
-    /* Notebook card */
-    .notebook {
-      background: var(--paper);
+    /* Main card */
+    .auth-card {
+      background: var(--background);
       border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-card);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    /* Header section */
+    .card-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 48px 32px 32px;
+      text-align: center;
       position: relative;
     }
 
-    /* Spiral binding */
-    .spiral-strip {
-      background: var(--red);
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      padding: 0 16px;
-      position: relative;
-    }
-
-    .spiral-strip::before {
+    .card-header::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 10px,
-        rgba(0,0,0,0.15) 10px,
-        rgba(0,0,0,0.15) 11px
-      );
-    }
-
-    .spiral-hole {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #1a3a2e;
-      border: 3px solid #0f2920;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Red margin line */
-    .card-body {
-      padding: 32px 36px 36px 64px;
-      position: relative;
-      /* Notebook ruled lines */
-      background-image:
-        /* Margin line (red vertical) */
-        linear-gradient(90deg, transparent 47px, rgba(220,38,38,0.25) 47px, rgba(220,38,38,0.25) 49px, transparent 49px),
-        /* Ruled lines */
-        repeating-linear-gradient(
-          transparent,
-          transparent 31px,
-          var(--line-color) 31px,
-          var(--line-color) 32px
-        );
-      background-size: 100% 100%, 100% 32px;
-      background-position: 0 0, 0 64px;
-    }
-
-    /* Brand header */
-    .brand-section {
-      text-align: center;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .brand-logo {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 12px;
-      background: white;
-      border-radius: 12px;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 0 #c8bfa8, 0 4px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .brand-logo img {
@@ -184,646 +122,682 @@
     }
 
     .brand-title {
-      font-family: 'Caveat', cursive;
-      font-size: 38px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
       font-weight: 700;
-      color: var(--red);
-      line-height: 1;
-      margin-bottom: 4px;
-      letter-spacing: 1px;
+      color: white;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
     }
 
     .brand-subtitle {
       font-size: 13px;
-      font-weight: 600;
-      color: var(--teal);
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      letter-spacing: 0.3px;
       text-transform: uppercase;
-      letter-spacing: 2px;
     }
 
-    /* Sticker badge */
-    .sticker {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 70px;
-      height: 70px;
-      background: var(--yellow);
-      border-radius: 50%;
+    /* Body section */
+    .card-body {
+      padding: 40px 32px;
+    }
+
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 24px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 0 #d97706, 0 6px 12px rgba(0,0,0,0.15);
-      transform: rotate(8deg);
-      font-family: 'Caveat', cursive;
-      line-height: 1.1;
-      text-align: center;
+      gap: 12px;
     }
 
-    .sticker-line1 { font-size: 9px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.5px; }
-    .sticker-line2 { font-size: 20px; font-weight: 700; color: #78350f; }
-
-    /* Form */
-    .section-label {
-      font-family: 'Caveat', cursive;
+    .section-title i {
+      color: var(--primary);
       font-size: 22px;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .section-label .underline-squiggle {
-      display: block;
-      height: 3px;
-      background: var(--red);
-      border-radius: 2px;
-      flex: 1;
-      margin-top: 3px;
-      opacity: 0.4;
-    }
-
+    /* Form group */
     .form-group {
-      margin-bottom: 22px;
+      margin-bottom: 24px;
     }
 
     .form-label {
       display: block;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--teal);
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
-    .input-field {
+    .form-label .required {
+      color: var(--error);
+    }
+
+    .input-wrapper {
       position: relative;
     }
 
-    .input-field i {
+    .input-wrapper i {
       position: absolute;
       left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--teal-light);
-      font-size: 14px;
+      color: var(--text-tertiary);
+      font-size: 16px;
       z-index: 1;
+      transition: color 0.2s;
     }
 
-    .input-field input {
+    .input-wrapper input {
       width: 100%;
-      padding: 13px 14px 13px 42px;
-      border: 2px solid var(--line-color);
-      border-radius: var(--radius-lg);
+      padding: 12px 14px 12px 44px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
       font-size: 15px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-weight: 500;
-      background: white;
-      color: var(--ink);
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: var(--background);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
       outline: none;
     }
 
-    .input-field input:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px rgba(15,118,110,0.12);
-      transform: translateY(-1px);
+    .input-wrapper input:hover {
+      border-color: var(--border-dark);
     }
 
-    .input-field input::placeholder {
-      color: #b5aca0;
+    .input-wrapper input:focus {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+    }
+
+    .input-wrapper input:focus + i {
+      color: var(--primary);
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--text-tertiary);
       font-weight: 400;
     }
 
     /* Submit button */
-    .login-btn {
+    .submit-btn {
       width: 100%;
-      padding: 16px;
-      background: var(--red);
+      padding: 14px 16px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: white;
       border: none;
-      border-radius: var(--radius-lg);
-      font-family: 'Caveat', cursive;
-      font-weight: 700;
-      font-size: 22px;
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
       cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      letter-spacing: 0.5px;
-      box-shadow: var(--shadow-btn);
+      letter-spacing: 0.3px;
+      box-shadow: var(--shadow-md);
       margin-top: 8px;
       position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
       top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      transition: left 0.3s ease;
     }
 
-    .login-btn:hover {
-      background: var(--red-dark);
+    .submit-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 0 0 #7f1d1d;
+      box-shadow: var(--shadow-lg);
     }
 
-    .login-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 0 #7f1d1d;
+    .submit-btn:hover::before {
+      left: 100%;
     }
 
-    /* Help notes section */
-    .help-text {
-      margin-top: 24px;
-      padding: 18px;
-      background: var(--yellow-light);
-      border-radius: var(--radius-lg);
-      border: 2px dashed var(--yellow);
+    .submit-btn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-md);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Info box */
+    .info-box {
+      margin-top: 28px;
+      padding: 16px;
+      background: var(--primary-light);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary);
       position: relative;
     }
 
-    .help-text::before {
-      content: '📌';
-      position: absolute;
-      top: -12px;
-      left: 16px;
-      font-size: 18px;
-    }
-
-    .help-title {
-      font-family: 'Caveat', cursive;
-      font-size: 18px;
-      font-weight: 700;
-      color: #92400e;
+    .info-box-title {
+      font-weight: 600;
+      color: var(--primary-dark);
       margin-bottom: 10px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .help-list {
+    .info-box-title i {
+      font-size: 14px;
+    }
+
+    .info-list {
       list-style: none;
       padding: 0;
     }
 
-    .help-list li {
+    .info-list li {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
+      gap: 10px;
       font-size: 13px;
-      color: #78350f;
-      margin-bottom: 7px;
-      line-height: 1.4;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      line-height: 1.5;
     }
 
-    .help-list li i {
-      color: var(--teal);
-      font-size: 11px;
+    .info-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-list li i {
+      color: var(--primary);
+      font-size: 12px;
       margin-top: 3px;
       flex-shrink: 0;
     }
 
-    /* Footer */
+    /* Footer section */
     .card-footer {
-      background: var(--paper-2);
-      border-top: 2px solid var(--line-color);
-      padding: 16px 36px 16px 64px;
+      background: var(--background-alt);
+      border-top: 1px solid var(--border);
+      padding: 16px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .footer-text {
       font-size: 12px;
-      color: #9e9488;
+      color: var(--text-tertiary);
+      font-weight: 500;
     }
 
     .footer-contact {
       font-size: 12px;
-      color: var(--teal);
+      color: var(--primary);
       font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
     }
 
-    /* ── Loading Screen ── */
+    .footer-contact:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Loading overlay */
     #loadingOverlay {
       display: none;
       position: fixed;
       inset: 0;
       align-items: center;
       justify-content: center;
-      background: rgba(26, 58, 46, 0.97);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 99999;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(4px);
     }
 
     .loading-content {
       text-align: center;
-      color: white;
+      background: var(--background);
+      border-radius: var(--radius-xl);
+      padding: 48px 32px;
       max-width: 400px;
-      padding: 40px 32px;
+      box-shadow: var(--shadow-xl);
     }
 
     .loading-icon {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       margin: 0 auto 24px;
-      background: var(--red);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 40px;
+      font-size: 36px;
       color: white;
       animation: pulse 2s infinite;
-      box-shadow: 0 0 40px rgba(220,38,38,0.4);
+      box-shadow: var(--shadow-lg);
     }
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
+      50% { transform: scale(1.05); }
     }
 
     .loading-content h2 {
-      font-family: 'Caveat', cursive;
-      font-size: 36px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
       font-weight: 700;
-      color: var(--yellow);
-      margin-bottom: 12px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
     }
 
     .loading-content p {
-      font-size: 15px;
-      opacity: 0.8;
-      margin-bottom: 28px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
       line-height: 1.6;
     }
 
     .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(255,255,255,0.15);
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--border);
       border-radius: 50%;
-      border-top-color: var(--yellow);
+      border-top-color: var(--primary);
       margin: 0 auto;
-      animation: spin 0.9s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-    /* ── Modals ── */
+    /* Modals */
     #foundStudentModal, #generatedPasswordModal {
       display: none;
       position: fixed;
       inset: 0;
       align-items: center;
       justify-content: center;
-      background: rgba(26,58,46,0.95);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 99999;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(4px);
       padding: 16px;
     }
 
     #foundStudentModal > div,
     #generatedPasswordModal > div {
-      background: var(--paper);
-      padding: 36px;
+      background: var(--background);
       border-radius: var(--radius-xl);
       max-width: 460px;
       width: 100%;
-      box-shadow: 0 4px 0 #c8bfa8, 0 20px 60px rgba(0,0,0,0.25);
+      box-shadow: var(--shadow-xl);
       animation: slideUp 0.25s ease;
-      border-top: 6px solid var(--red);
+      border: 1px solid var(--border);
     }
 
     @keyframes slideUp {
-      from { transform: translateY(24px); opacity: 0; }
+      from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
 
-    #foundStudentModal h3 {
-      font-family: 'Caveat', cursive;
-      font-size: 28px;
-      color: var(--red);
-      margin-bottom: 16px;
+    /* Found student modal */
+    .modal-header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    #foundStudentBody {
-      font-size: 14px;
-      color: var(--ink);
-      line-height: 1.7;
+    .modal-header i {
+      font-size: 24px;
+      color: var(--error);
+    }
+
+    .modal-header h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 24px 32px;
+    }
+
+    .modal-info {
+      background: var(--warning-light);
+      border-left: 4px solid var(--warning);
+      padding: 16px;
+      border-radius: var(--radius-md);
       margin-bottom: 24px;
-      padding: 18px;
-      background: var(--yellow-light);
-      border-radius: var(--radius-lg);
-      border-left: 4px solid var(--yellow);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
-    #foundStudentBody div { margin-bottom: 8px; }
+    .modal-info strong {
+      color: var(--text-primary);
+    }
 
-    .modal-actions {
+    .modal-footer {
+      padding: 16px 32px;
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
       gap: 12px;
     }
 
-    #foundOkBtn, #closeFoundModal {
-      padding: 11px 28px;
-      border-radius: var(--radius-lg);
+    .modal-btn {
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      font-family: 'Caveat', cursive;
-      font-weight: 700;
-      font-size: 18px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
       border: none;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: all 0.2s ease;
     }
 
-    #foundOkBtn {
-      background: var(--red);
+    .modal-btn-primary {
+      background: var(--primary);
       color: white;
-      box-shadow: 0 3px 0 #991b1b;
+      box-shadow: var(--shadow-sm);
     }
 
-    #foundOkBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #991b1b; }
-    #foundOkBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #991b1b; }
-
-    #closeFoundModal {
-      background: var(--line-color);
-      color: var(--ink);
+    .modal-btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
-    #closeFoundModal:hover { background: #c0b8a8; }
+    .modal-btn-secondary {
+      background: var(--background-alt);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .modal-btn-secondary:hover {
+      background: var(--border);
+    }
 
     /* Success modal */
-    .modal-header {
+    .success-header {
+      padding: 32px 32px 24px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 24px;
     }
 
-    .modal-title-container {
+    .success-title-group {
       display: flex;
       gap: 16px;
       align-items: flex-start;
     }
 
-    .modal-icon {
-      width: 60px;
-      height: 60px;
-      background: var(--teal);
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--success-light);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 26px;
+      color: var(--success);
+      font-size: 24px;
       flex-shrink: 0;
-      box-shadow: 0 3px 0 #0f5e57;
     }
 
-    .modal-title {
-      font-family: 'Caveat', cursive;
-      font-size: 30px;
+    .success-text h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--ink);
+      color: var(--text-primary);
+      margin: 0 0 4px 0;
+    }
+
+    .success-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
       margin: 0;
     }
 
-    .modal-subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; }
-
-    #closeGenModal {
-      background: var(--paper-2);
+    .close-btn {
+      background: var(--background-alt);
       border: none;
-      font-size: 20px;
+      font-size: 24px;
       cursor: pointer;
-      color: #6b7280;
-      width: 40px;
-      height: 40px;
+      color: var(--text-tertiary);
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
-    #closeGenModal:hover { background: var(--line-color); }
+    .close-btn:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
 
-    .password-display-container {
-      background: var(--teal);
+    .credential-box {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border-radius: var(--radius-lg);
       padding: 24px;
-      margin-bottom: 24px;
+      margin: 24px 32px;
       color: white;
     }
 
-    .password-label { font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-
-    #genModalId {
-      font-family: 'Caveat', cursive;
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: 1px;
+    .credential-label {
+      font-size: 11px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
-    .save-status {
-      font-size: 13px;
+    .credential-value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .credential-status {
+      font-size: 12px;
       opacity: 0.85;
-      margin-top: 8px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .password-actions {
+    .modal-actions {
+      padding: 24px 32px;
       display: flex;
       gap: 12px;
     }
 
-    #usePasswordBtn, #copyPasswordBtn {
+    .action-btn {
       flex: 1;
-      padding: 14px;
-      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      font-family: 'Caveat', cursive;
-      font-weight: 700;
-      font-size: 20px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
       border: none;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: all 0.2s ease;
     }
 
-    #usePasswordBtn {
-      background: var(--red);
+    .action-btn-primary {
+      background: var(--primary);
       color: white;
-      box-shadow: 0 3px 0 #991b1b;
+      box-shadow: var(--shadow-sm);
     }
 
-    #usePasswordBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #991b1b; }
-    #usePasswordBtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #991b1b; }
-
-    #copyPasswordBtn {
-      background: var(--paper-2);
-      color: var(--ink);
-      box-shadow: 0 3px 0 #c8bfa8;
+    .action-btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
-    #copyPasswordBtn:hover { background: var(--line-color); }
-
-    .modal-footer {
-      font-size: 13px;
-      color: #6b7280;
-      padding: 16px;
-      background: var(--yellow-light);
-      border-radius: var(--radius-lg);
-      margin-top: 20px;
-      line-height: 1.5;
-      border-left: 3px solid var(--yellow);
+    .action-btn-secondary {
+      background: var(--background-alt);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
     }
 
-    /* ── Responsive ── */
+    .action-btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .modal-note {
+      padding: 16px 32px 24px;
+      background: var(--background-alt);
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
     @media (max-width: 480px) {
-      .card-body { padding: 24px 20px 28px 48px; }
-      .card-footer { padding: 14px 20px 14px 48px; }
-      .brand-title { font-size: 32px; }
-      .sticker { width: 56px; height: 56px; top: 12px; right: 12px; }
-      .sticker-line2 { font-size: 16px; }
-      input, select, textarea, button { font-size: 16px !important; }
+      .card-header {
+        padding: 36px 24px 24px;
+      }
+
+      .card-body {
+        padding: 28px 24px;
+      }
+
+      .card-footer {
+        padding: 12px 24px;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .brand-title {
+        font-size: 24px;
+      }
+
+      .section-title {
+        font-size: 18px;
+      }
+
+      .modal-header,
+      .modal-body,
+      .modal-footer,
+      .modal-actions,
+      .modal-note,
+      .credential-box {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      input, select, textarea, button {
+        font-size: 16px !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Chalk doodles in background -->
-  <div class="bg-doodles">
-    <!-- Book -->
-    <svg width="220" height="160" style="top:5%; left:2%;" viewBox="0 0 220 160" fill="none" stroke="white" stroke-width="3">
-      <rect x="10" y="20" width="90" height="120" rx="4"/>
-      <rect x="120" y="20" width="90" height="120" rx="4"/>
-      <line x1="100" y1="20" x2="120" y2="20"/>
-      <line x1="100" y1="140" x2="120" y2="140"/>
-      <line x1="110" y1="20" x2="110" y2="140"/>
-      <line x1="30" y1="55" x2="80" y2="55"/><line x1="30" y1="70" x2="80" y2="70"/>
-      <line x1="30" y1="85" x2="65" y2="85"/>
-      <line x1="140" y1="55" x2="190" y2="55"/><line x1="140" y1="70" x2="190" y2="70"/>
-      <line x1="140" y1="85" x2="175" y2="85"/>
-    </svg>
-    <!-- Pencil top right -->
-    <svg width="180" height="60" style="top:8%; right:3%; transform:rotate(-30deg);" viewBox="0 0 180 60" fill="none" stroke="white" stroke-width="3">
-      <rect x="20" y="15" width="130" height="30" rx="3"/>
-      <polygon points="150,15 180,30 150,45"/>
-      <line x1="150" y1="15" x2="150" y2="45"/>
-      <line x1="20" y1="15" x2="20" y2="45"/>
-      <rect x="5" y="18" width="16" height="24" rx="2"/>
-    </svg>
-    <!-- Graduation cap bottom right -->
-    <svg width="200" height="140" style="bottom:8%; right:2%;" viewBox="0 0 200 140" fill="none" stroke="white" stroke-width="3">
-      <polygon points="100,10 190,55 100,100 10,55"/>
-      <path d="M150 75 L150 115 Q100 135 50 115 L50 75"/>
-      <line x1="190" y1="55" x2="190" y2="105"/>
-      <circle cx="190" cy="112" r="8"/>
-    </svg>
-    <!-- Star doodles -->
-    <svg width="80" height="80" style="top:45%; left:3%;" viewBox="0 0 80 80" fill="none" stroke="white" stroke-width="2.5">
-      <polygon points="40,5 47,28 70,28 52,43 59,66 40,52 21,66 28,43 10,28 33,28"/>
-    </svg>
-    <!-- Ruler bottom left -->
-    <svg width="200" height="50" style="bottom:5%; left:1%; transform:rotate(10deg);" viewBox="0 0 200 50" fill="none" stroke="white" stroke-width="2.5">
-      <rect x="5" y="5" width="190" height="40" rx="3"/>
-      <line x1="20" y1="5" x2="20" y2="25"/><line x1="35" y1="5" x2="35" y2="18"/>
-      <line x1="50" y1="5" x2="50" y2="25"/><line x1="65" y1="5" x2="65" y2="18"/>
-      <line x1="80" y1="5" x2="80" y2="25"/><line x1="95" y1="5" x2="95" y2="18"/>
-      <line x1="110" y1="5" x2="110" y2="25"/><line x1="125" y1="5" x2="125" y2="18"/>
-      <line x1="140" y1="5" x2="140" y2="25"/><line x1="155" y1="5" x2="155" y2="18"/>
-      <line x1="170" y1="5" x2="170" y2="25"/>
-    </svg>
-    <!-- Atom top middle -->
-    <svg width="140" height="140" style="top:20%; left:50%; transform:translateX(-50%);" viewBox="0 0 140 140" fill="none" stroke="white" stroke-width="2">
-      <ellipse cx="70" cy="70" rx="60" ry="25"/>
-      <ellipse cx="70" cy="70" rx="60" ry="25" transform="rotate(60 70 70)"/>
-      <ellipse cx="70" cy="70" rx="60" ry="25" transform="rotate(120 70 70)"/>
-      <circle cx="70" cy="70" r="8" fill="white" opacity="0.5"/>
-    </svg>
-  </div>
-
   <div class="page">
-    <!-- Notebook card -->
-    <div class="notebook">
+    <!-- Authentication Card -->
+    <div class="auth-card">
 
-      <!-- Spiral strip at top -->
-      <div class="spiral-strip">
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div><div class="spiral-hole"></div>
-        <div class="spiral-hole"></div>
+      <!-- Header -->
+      <div class="card-header">
+        <div class="brand-logo">
+          <img src="images/GH Schools.png" alt="GH Schools Logo">
+        </div>
+        <h1 class="brand-title">GH SCHOOLS</h1>
+        <p class="brand-subtitle">Student Portal Access</p>
       </div>
 
-      <!-- Card body (notebook page) -->
+      <!-- Body -->
       <div class="card-body">
 
-        <!-- Yellow sticker -->
-        <div class="sticker">
-          <span class="sticker-line1">Log In</span>
-          <span class="sticker-line2">📚</span>
+        <!-- Section Title -->
+        <div class="section-title">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
         </div>
 
-        <!-- Brand -->
-        <div class="brand-section">
-          <div class="brand-logo">
-            <img src="images/GH Schools.png" alt="GH Schools Logo">
-          </div>
-          <h1 class="brand-title">GH SCHOOLS</h1>
-          <p class="brand-subtitle">Student Portal Access</p>
-        </div>
-
-        <!-- Login form -->
-        <div class="section-label">
-          Sign in <span class="underline-squiggle"></span>
-        </div>
-
+        <!-- Login Form -->
         <form id="generate-password-form">
           <div class="form-group">
-            <label for="gen-studentid" class="form-label">Student ID</label>
-            <div class="input-field">
+            <label for="gen-studentid" class="form-label">
+              Student ID <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="gen-studentid" placeholder="Enter your student ID (e.g., GHTS7099)" required autocomplete="off">
               <i class="fas fa-id-card"></i>
-              <input type="text" id="gen-studentid" placeholder="e.g. GHTS7099" required autocomplete="off">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="gen-phone" class="form-label">Password</label>
-            <div class="input-field">
+            <label for="gen-phone" class="form-label">
+              Password <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="password" id="gen-phone" placeholder="Enter your password" required autocomplete="off">
               <i class="fas fa-lock"></i>
-              <input type="password" id="gen-phone" placeholder="Enter your phone number" required autocomplete="off">
             </div>
           </div>
 
-          <button type="submit" class="login-btn">
-            <i class="fas fa-sign-in-alt"></i> Access Portal
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-arrow-right"></i> Access Portal
           </button>
         </form>
 
-        <!-- Help notes -->
-        <div class="help-text">
-          <div class="help-title">Quick Notes</div>
-          <ul class="help-list">
-            <li><i class="fas fa-check-circle"></i> Enter your official Student ID</li>
-            <li><i class="fas fa-check-circle"></i> Use your phone number as default password</li>
-            <li><i class="fas fa-check-circle"></i> If you've changed your password, use that instead</li>
-            <li><i class="fas fa-check-circle"></i> Contact support if you encounter issues</li>
+        <!-- Information Box -->
+        <div class="info-box">
+          <div class="info-box-title">
+            <i class="fas fa-info-circle"></i>
+            Important Information
+          </div>
+          <ul class="info-list">
+            <li><i class="fas fa-check"></i> Enter your official Student ID exactly as provided</li>
+            <li><i class="fas fa-check"></i> Default password: last 6 digits of your phone number</li>
+            <li><i class="fas fa-check"></i> Use your custom password if you've changed it</li>
+            <li><i class="fas fa-check"></i> Contact support for account recovery assistance</li>
           </ul>
         </div>
       </div>
 
-      <!-- Footer strip -->
+      <!-- Footer -->
       <div class="card-footer">
-        <span class="footer-text">GH Schools · Student Portal</span>
-        <span class="footer-contact">admissions@ghschools.online</span>
+        <span class="footer-text">© 2024 GH Schools. All rights reserved.</span>
+        <a href="mailto:admissions@ghschools.online" class="footer-contact">admissions@ghschools.online</a>
       </div>
     </div>
   </div>
@@ -834,54 +808,64 @@
       <div class="loading-icon">
         <i class="fas fa-graduation-cap"></i>
       </div>
-      <h2>Welcome Back!</h2>
-      <p>Preparing your personalized dashboard experience. Please wait...</p>
+      <h2>Welcome Back</h2>
+      <p>Preparing your personalized dashboard. Please wait...</p>
       <div class="spinner"></div>
     </div>
   </div>
 
-  <!-- Found-student Modal -->
+  <!-- Found Student Modal -->
   <div id="foundStudentModal">
     <div>
-      <h3><i class="fas fa-exclamation-triangle"></i> Account Verification</h3>
-      <div id="foundStudentBody">Loading…</div>
-      <div class="modal-actions">
-        <button id="closeFoundModal">Close</button>
-        <button id="foundOkBtn">Continue</button>
+      <div class="modal-header">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Account Verification</h3>
+      </div>
+      <div class="modal-body">
+        <div class="modal-info" id="foundStudentBody">Loading…</div>
+      </div>
+      <div class="modal-footer">
+        <button id="closeFoundModal" class="modal-btn modal-btn-secondary">Close</button>
+        <button id="foundOkBtn" class="modal-btn modal-btn-primary">Continue</button>
       </div>
     </div>
   </div>
 
-  <!-- Login Success Modal -->
+  <!-- Success Modal -->
   <div id="generatedPasswordModal">
     <div>
-      <div class="modal-header">
-        <div class="modal-title-container">
-          <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
-          <div>
-            <h3 id="genModalTitle" class="modal-title">Access Granted!</h3>
-            <div class="modal-subtitle">Your credentials have been successfully verified</div>
+      <div class="success-header">
+        <div class="success-title-group">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="success-text">
+            <h3 id="genModalTitle">Access Granted</h3>
+            <p>Your credentials have been verified successfully</p>
           </div>
         </div>
-        <button id="closeGenModal">&times;</button>
+        <button id="closeGenModal" class="close-btn">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
-      <div class="password-display-container">
-        <div class="password-info">
-          <div class="password-label">Welcome back, student</div>
-          <div id="genModalId" class="password-id">Student ID</div>
-          <div id="genSaveStatus" class="save-status">
-            <i class="fas fa-shield-alt"></i> Identity verified successfully
-          </div>
+      <div class="credential-box">
+        <div class="credential-label">Student ID</div>
+        <div class="credential-value" id="genModalId">—</div>
+        <div class="credential-status">
+          <i class="fas fa-shield-alt"></i>
+          <span id="genSaveStatus">Identity verified successfully</span>
         </div>
       </div>
 
-      <div class="password-actions">
-        <button id="usePasswordBtn">Proceed to Dashboard</button>
+      <div class="modal-actions">
+        <button id="usePasswordBtn" class="action-btn action-btn-primary">
+          <i class="fas fa-arrow-right"></i> Go to Dashboard
+        </button>
       </div>
 
-      <div class="modal-footer">
-        <strong>Note:</strong> You will be automatically redirected to your personalized dashboard in a moment.
+      <div class="modal-note">
+        <strong>Note:</strong> You will be automatically redirected to your personalized dashboard in a moment. If not redirected, click the button above.
       </div>
     </div>
   </div>
@@ -911,34 +895,6 @@
       return arr.map(b => b.toString(16).padStart(2,'0')).join('');
     }
 
-    const studentIdInput = document.getElementById('gen-studentid');
-    if (studentIdInput) {
-      studentIdInput.addEventListener('blur', async function() {
-        const studentId = this.value.trim();
-        if (!studentId) return;
-        const waitForSupabase = async () => {
-          if(window.supabaseClient) return window.supabaseClient;
-          let waited = 0;
-          while(!window.supabaseClient && waited < 3000){ await new Promise(r=>setTimeout(r,200)); waited += 200; }
-          return window.supabaseClient || null;
-        };
-        const client = await waitForSupabase();
-        if (!client) return;
-        try {
-          const { data: studentData, error } = await client
-            .from('student_master_db')
-            .select('phone_number_1')
-            .eq('student_id', studentId)
-            .maybeSingle();
-          if (!error && studentData && studentData.phone_number_1) {
-            document.getElementById('gen-phone').value = studentData.phone_number_1;
-          }
-        } catch (err) {
-          console.warn('Error auto-filling phone number:', err);
-        }
-      });
-    }
-
     const genForm = document.getElementById('generate-password-form');
 
     function generatePasswordFrom(name, id){
@@ -965,7 +921,7 @@
         const sid = (document.getElementById('gen-studentid')?.value || '').trim();
         const phone = (document.getElementById('gen-phone')?.value || '').trim();
 
-        if(!sid || !phone){ alert('Please enter both your student ID and phone number.'); return; }
+        if(!sid || !phone){ alert('Please enter both your student ID and password.'); return; }
 
         const waitForSupabase = async () => {
           if(window.supabaseClient) return window.supabaseClient;
@@ -1005,13 +961,14 @@
         if (studentRow) {
           const storedPhone = studentRow.phone_number_1 || studentRow.phone || studentRow.phone_number || '';
           const storedPassword = studentRow.password || '';
-          const normalizePhone = (p) => (p || '').replace(/[\s\-\(\)]/g, '');
-          const enteredPhoneNorm = normalizePhone(phone);
-          const storedPhoneNorm = normalizePhone(storedPhone);
+          const storedPhoneDigits = (storedPhone || '').replace(/\D/g, '');
+          const defaultPassword = storedPhoneDigits.slice(-6);
 
           let authSuccess = false;
+          let needsPasswordChange = false;
 
           if (storedPassword && storedPassword.trim()) {
+            // Student has already set a custom password — check against it.
             if (phone === storedPassword) {
               authSuccess = true;
               if (statusEl) statusEl.textContent = '✓ Password verified';
@@ -1020,15 +977,17 @@
               return;
             }
           } else {
+            // No custom password yet — default password is the last 6 digits of phone number.
             if (!storedPhone) {
               alert('No phone number on file for this student. Please contact support.');
               return;
             }
-            if (enteredPhoneNorm === storedPhoneNorm) {
+            if (defaultPassword && phone === defaultPassword) {
               authSuccess = true;
-              if (statusEl) statusEl.textContent = '✓ Phone number verified';
+              needsPasswordChange = true;
+              if (statusEl) statusEl.textContent = '✓ Default password verified';
             } else {
-              alert('Incorrect phone number. Please try again.');
+              alert('Incorrect password. Please try again.');
               return;
             }
           }
@@ -1051,6 +1010,8 @@
                   localStorage.setItem('studentDepartment', s.department || '');
                   localStorage.setItem('studentLevel', s.level || '');
                   localStorage.setItem('studentInfoSaved', '1');
+                  if (needsPasswordChange) { localStorage.setItem('mustChangePassword', '1'); }
+                  else { localStorage.removeItem('mustChangePassword'); }
                 }catch(e){ console.warn('Could not persist student keys', e); }
                 closeModal();
                 showLoadingAndRedirect('dashboard.html');

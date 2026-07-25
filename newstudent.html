@@ -327,6 +327,7 @@
       <div class="card-header">
         <h2>Student Login</h2>
         <p>Enter your Student ID and Password to access your portal</p>
+
       </div>
 
       <div class="card-body">
@@ -344,13 +345,13 @@
         <div id="loginFormWrap">
           <form id="loginForm">
 
-            <label for="admissionNumber"><i class="fas fa-ticket-alt"></i>&nbsp; Student ID</label>
+            <label for="studentId"><i class="fas fa-id-badge"></i>&nbsp; Student ID</label>
             <div class="input-wrap">
               <input
                 type="text"
-                id="admissionNumber"
+                id="studentId"
                 required
-                placeholder="e.g. ADM-2026-001"
+                placeholder="e.g. GHM-2026-001"
                 autocomplete="off"
                 spellcheck="false"
                 style="text-transform:uppercase;"
@@ -358,13 +359,13 @@
               <span class="input-icon-right"><i class="fas fa-hashtag"></i></span>
             </div>
 
-            <label for="studentId"><i class="fas fa-id-badge"></i>&nbsp; Password</label>
+            <label for="portalPassword"><i class="fas fa-id-badge"></i>&nbsp; Password</label>
             <div class="input-wrap">
               <input
                 type="text"
-                id="studentId"
+                id="portalPassword"
                 required
-                placeholder="e.g. MSD001 or FSC003"
+                placeholder="Enter your portal password"
                 autocomplete="off"
                 spellcheck="false"
                 style="text-transform:uppercase;"
@@ -478,30 +479,35 @@
     /* Auto-fill disabled — student must enter ID manually */
     async function autoFillAdmissionNumber() {}
 
-    /* Fetch from newstudents table by student_id */
+    /* Fetch student from newstudents by student_id, with portal_username fallback */
     async function fetchStudentData(studentId) {
       try {
-        const { data, error } = await supabaseClient
+        // 1. Try exact student_id match
+        const { data: byId, error: err1 } = await supabaseClient
           .from('newstudents')
           .select('*')
           .eq('student_id', studentId)
-          .single();
-        if (error) { console.error('Fetch error:', error); return null; }
-        return data;
-      } catch (err) { console.error('Unexpected error:', err); return null; }
-    }
+          .maybeSingle();
+        if (byId) return byId;
 
-    /* Also try fetching by admission_number in case the fields are swapped */
-    async function fetchStudentByAdmissionNumber(admissionNo) {
-      try {
-        const { data, error } = await supabaseClient
+        // 2. Try portal_username match (student may type their username not their ID)
+        const { data: byUser, error: err2 } = await supabaseClient
           .from('newstudents')
           .select('*')
-          .eq('admission_number', admissionNo)
-          .single();
-        if (error) return null;
-        return data;
-      } catch (err) { return null; }
+          .ilike('portal_username', studentId)
+          .maybeSingle();
+        if (byUser) return byUser;
+
+        // 3. Try case-insensitive student_id (handles lowercase entry)
+        const { data: byIdCI } = await supabaseClient
+          .from('newstudents')
+          .select('*')
+          .ilike('student_id', studentId)
+          .maybeSingle();
+        if (byIdCI) return byIdCI;
+
+        return null;
+      } catch (err) { console.error('Unexpected error:', err); return null; }
     }
 
     /* Display student info */
@@ -552,17 +558,17 @@
       document.getElementById('studentInfo').classList.add('active');
     }
 
-    /* Handle login — requires both Admission Number and Student ID */
+    /* Handle login — Student ID + Password */
     async function handleLogin(event) {
       event.preventDefault();
-      const admissionNumber = document.getElementById('admissionNumber').value.trim().toUpperCase();
-      const studentId       = document.getElementById('studentId').value.trim().toUpperCase();
+      const studentId     = document.getElementById('studentId').value.trim().toUpperCase();
+      const enteredPassword = document.getElementById('portalPassword').value.trim().toUpperCase();
 
-      if (!admissionNumber) {
-        showToast('Please enter your Admission Number', true); return;
-      }
       if (!studentId) {
         showToast('Please enter your Student ID', true); return;
+      }
+      if (!enteredPassword) {
+        showToast('Please enter your Password', true); return;
       }
 
       /* Short-course redirect (Student ID starts with GHWS) */
@@ -577,32 +583,22 @@
       btn.disabled = true;
 
       try {
-        /* Look up by Student ID first */
-        let studentData = await fetchStudentData(studentId);
-
-        /* If not found by student_id, try by admission_number */
-        if (!studentData) {
-          studentData = await fetchStudentByAdmissionNumber(admissionNumber);
-        }
+        const studentData = await fetchStudentData(studentId);
 
         if (!studentData) {
           showToast('Student ID not found. Please check your details and try again.', true);
           return;
         }
 
-        /* Cross-check: the admission_number on the record must match what was entered.
-           Also accept if the record's student_id matches the admissionNumber field
-           (covers cases where the two are the same value). */
-        const recordAdmNo  = (studentData.admission_number || '').toString().toUpperCase().trim();
-        const recordStuId  = (studentData.student_id       || '').toString().toUpperCase().trim();
-
-        const admissionNumberMatches =
-          recordAdmNo  === admissionNumber ||
-          recordStuId  === admissionNumber ||
-          admissionNumber === '';           // fallback: if field somehow empty after trim
-
-        if (!admissionNumberMatches) {
-          showToast('Admission Number does not match our records. Please check and try again.', true);
+        /* Verify password against portal_password column */
+        const recordPassword = (studentData.portal_password || '').trim().toUpperCase();
+        const enteredUpper   = enteredPassword.toUpperCase().trim();
+        if (!recordPassword) {
+          showToast('No password set for this account. Please contact the Admissions Office.', true);
+          return;
+        }
+        if (recordPassword !== enteredUpper) {
+          showToast('Incorrect password. Please try again.', true);
           return;
         }
 

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Welcome</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --yellow-light: #D9C7FA;
+    --yellow-base:  #A98AEB;
+    --yellow-deep:  #7C4FDB;
+    --ink:   #211B2E;
+    --red:   #C8232B;
+    --paper: #FFFFFF;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html,body{
+    height:100%;
+    background:#0000;
+    font-family:'Inter', sans-serif;
+    overflow:hidden;
+  }
+
+  /* ---------- VIEWPORT ---------- */
+  .device{
+    position:fixed; inset:0;
+  }
+
+  .screen{
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background: var(--paper);
+  }
+
+  /* ---------- SPLASH ---------- */
+  #splash{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; 
+    background: var(--paper);
+    transition: opacity 0.6s ease;
+  }
+  #splash.fade-out{ opacity:0; pointer-events:none; }
+
+  /* small institution mark, top-left, unobtrusive */
+  .brand-row{
+    display:flex; align-items:center; gap:8px;
+    padding: max(20px, env(safe-area-inset-top, 0px)) 24px 0;
+  }
+  .brand-row img{
+    width:28px; height:28px; object-fit:contain;
+  }
+  .brand-row img.broken{ display:none; }
+  .brand-row .logo-fallback{
+    display:none;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .brand-row img.broken + .logo-fallback{ display:block; }
+  .brand-row .brand-name{
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    color:#B7A98A;
+  }
+
+  /* illustration stage */
+  .illustration{
+    position:relative;
+    flex:1;
+    display:flex; align-items:center; justify-content:center;
+    min-height:0;
+    padding: 8px 24px 0;
+  }
+  .illustration svg{
+    width:min(94%, 340px);
+    height:auto;
+    filter: drop-shadow(0 10px 18px rgba(27,26,23,0.10));
+  }
+
+  /* copy block */
+  .splash-copy{
+    padding: 6px 30px 0;
+  }
+  .splash-copy h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: clamp(24px, 7.4vw, 30px);
+    line-height:1.18;
+    color: var(--yellow-deep);
+  }
+  .splash-copy p{
+    margin-top:12px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: clamp(13px, 3.6vw, 14px);
+    line-height:1.55;
+    color:#8A8570;
+    max-width: 30ch;
+  }
+
+  /* bottom carousel-style nav */
+  .splash-nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 22px 26px calc(38px + env(safe-area-inset-bottom, 0px));
+  }
+  .nav-arrow{
+    all:unset;
+    cursor:pointer;
+    width:42px; height:42px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--yellow-deep);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
+  .nav-arrow svg{ width:18px; height:18px; }
+  .nav-arrow.prev{ opacity:0.35; cursor:default; }
+  .nav-arrow.next{
+    background: var(--yellow-deep);
+    color:#fff;
+  }
+  .nav-arrow.next:hover{ transform:translateX(2px); }
+  .nav-arrow.next:active{ transform:translateX(0) scale(0.94); }
+  .nav-arrow:focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  .nav-dots{
+    display:flex; align-items:center; gap:7px;
+  }
+  .nav-dots .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: rgba(27,26,23,0.18);
+  }
+  .nav-dots .dot.active{
+    width:20px;
+    border-radius:4px;
+    background: var(--yellow-deep);
+  }
+
+  /* home indicator bar, mimics mobile chrome in the reference */
+  .home-indicator{
+    position:absolute;
+    bottom:10px; left:50%;
+    transform:translateX(-50%);
+    width:134px; height:5px;
+    border-radius:3px;
+    background: rgba(27,26,23,0.55);
+    z-index:3;
+  }
+
+  /* ---------- MODAL ---------- */
+  #overlay{
+    position:absolute; inset:0;
+    background: rgba(33,20,54,0.55);
+    backdrop-filter: blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden;
+    transition: opacity 0.45s ease;
+    z-index:10;
+  }
+  #overlay.show{ opacity:1; visibility:visible; }
+
+  .modal{
+    width:min(92vw, 470px);
+    background: var(--paper);
+    border-radius:0;
+    padding: clamp(22px, 6vw, 34px) clamp(18px, 6vw, 28px) calc(22px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    transform: translateY(0) scale(0.96);
+    opacity:0;
+    transition: transform 0.5s cubic-bezier(.2,.8,.2,1), opacity 0.5s ease;
+    max-height:88vh;
+    overflow-y:auto;
+    border: 1.5px solid rgba(33,27,46,0.12);
+  }
+  #overlay.show .modal{ transform:translateY(0) scale(1); opacity:1; }
+
+  .modal-eyebrow{
+    font-size:11px;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    color:var(--yellow-deep);
+    font-weight:700;
+    margin-bottom:8px;
+  }
+
+  .modal h2{
+    font-family:'Fraunces', serif;
+    font-size: clamp(19px, 5.2vw, 23px);
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:6px;
+    line-height:1.25;
+  }
+
+  .modal p.hint{
+    font-size: clamp(12.5px, 3.4vw, 13.5px);
+    color:#7A7669;
+    margin-bottom:22px;
+    line-height:1.4;
+  }
+
+  .choice-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .choice-btn{
+    all:unset;
+    cursor:pointer;
+    display:flex; flex-direction:column; gap:4px;
+    padding: clamp(14px, 4vw, 18px) clamp(12px, 4vw, 16px);
+    border-radius:0;
+    border:1.5px solid rgba(33,27,46,0.15);
+    background:#fff;
+    min-height:44px;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+  .choice-btn:hover{
+    border-color:var(--yellow-deep);
+    background: #F5EFFF;
+    transform: translateY(-2px);
+  }
+  .choice-btn:active{
+    transform: translateY(0);
+    background: #EEE3FF;
+  }
+  .choice-btn:focus-visible{
+    outline:2px solid var(--red);
+    outline-offset:2px;
+  }
+
+  .choice-label{
+    font-family:'Fraunces', serif;
+    font-size: clamp(15px, 4.2vw, 16.5px);
+    font-weight:600;
+    color:var(--ink);
+  }
+  .choice-desc{
+    font-size: clamp(11px, 3vw, 12px);
+    color:#95917F;
+    line-height:1.4;
+  }
+
+  .modal-foot{
+    margin-top:20px;
+    font-size: clamp(10.5px, 3vw, 11.5px);
+    color:#AFAA97;
+    text-align:center;
+  }
+
+  /* stack choices on very narrow screens so text never gets cramped */
+  @media (max-width:340px){
+    .choice-grid{
+      grid-template-columns:1fr;
+    }
+    .choice-btn{
+      flex-direction:row;
+      align-items:baseline;
+      gap:8px;
+    }
+  }
+
+  /* ---------- REDIRECT LOADING SCREEN ---------- */
+  #redirecting{
+    position:absolute; inset:0;
+    z-index:20;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px;
+    background: var(--paper);
+    opacity:0;
+    visibility:hidden;
+    transition: opacity 0.4s ease;
+  }
+  #redirecting.show{
+    opacity:1;
+    visibility:visible;
+  }
+
+  .redirect-spinner{
+    width:44px; height:44px;
+    border-radius:50%;
+    border:3px solid rgba(27,26,23,0.15);
+    border-top-color: var(--ink);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .redirect-text{
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    color: var(--ink);
+    letter-spacing:0.2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .redirect-spinner{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="screen">
+
+    <div id="splash">
+
+      <div class="brand-row">
+        <img src="images/logo.png" alt="Institution logo" onerror="this.classList.add('broken')">
+        <div class="logo-fallback">Logo</div>
+        <span class="brand-name">STUDENT PORTAL</span>
+      </div>
+
+      <div class="illustration">
+        <svg viewBox="0 0 260 300" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="150" cy="278" rx="78" ry="9" fill="var(--ink)" opacity="0.85"/>
+
+          <!-- back leg -->
+          <path d="M118 190 L96 250 L82 288 L100 288 L122 252 L136 200 Z" fill="#fff" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+          <ellipse cx="86" cy="288" rx="20" ry="9" fill="var(--yellow-deep)" stroke="var(--ink)" stroke-width="4"/>
+
+          <!-- front leg -->
+          <path d="M150 190 L172 244 L192 282 L174 288 L150 250 L128 200 Z" fill="#fff" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+          <ellipse cx="182" cy="286" rx="20" ry="9" fill="var(--yellow-deep)" stroke="var(--ink)" stroke-width="4"/>
+
+          <!-- jacket / torso -->
+          <path d="M108 118 C100 150 100 176 112 200 L162 200 C176 176 176 148 166 118 C158 104 116 104 108 118 Z" fill="var(--yellow-deep)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M137 118 L131 200" stroke="var(--ink)" stroke-width="3" opacity="0.5"/>
+
+          <!-- collar -->
+          <path d="M114 116 L137 138 L128 116 Z" fill="var(--yellow-light)" stroke="var(--ink)" stroke-width="3.5" stroke-linejoin="round"/>
+          <path d="M160 116 L137 138 L146 116 Z" fill="var(--yellow-light)" stroke="var(--ink)" stroke-width="3.5" stroke-linejoin="round"/>
+
+          <!-- back arm, hand on hip -->
+          <path d="M112 128 C92 136 86 156 96 176 C100 184 112 184 116 176 C108 162 108 146 122 132 Z" fill="var(--yellow-deep)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+
+          <!-- front arm, holding phone -->
+          <path d="M160 126 C176 130 184 140 182 156 L168 176 C160 168 158 156 162 144 Z" fill="var(--yellow-deep)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="164" y="150" width="16" height="26" rx="3" fill="var(--ink)" transform="rotate(18 172 163)"/>
+
+          <!-- neck + head -->
+          <rect x="128" y="98" width="14" height="20" fill="#F2C98A" stroke="var(--ink)" stroke-width="3"/>
+          <circle cx="135" cy="82" r="24" fill="#F2C98A" stroke="var(--ink)" stroke-width="4"/>
+
+          <!-- hair -->
+          <path d="M112 74 C110 54 128 46 138 48 C154 50 162 62 160 76 C156 66 150 62 140 62 C128 62 118 66 112 74 Z" fill="var(--ink)"/>
+
+          <!-- sunglasses -->
+          <rect x="115" y="80" width="18" height="11" rx="4" fill="var(--ink)"/>
+          <rect x="138" y="80" width="18" height="11" rx="4" fill="var(--ink)"/>
+          <rect x="133" y="83" width="5" height="3" fill="var(--ink)"/>
+        </svg>
+      </div>
+
+      <div class="splash-copy">
+        <h1>Your portal,<br>wherever you are.</h1>
+        <p>Yeah. As simple as it is. All you need is your phone or any other device.</p>
+      </div>
+
+      <div class="splash-nav">
+        <button class="nav-arrow prev" aria-label="Previous" disabled>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dots">
+          <span class="dot"></span>
+          <span class="dot active"></span>
+          <span class="dot"></span>
+        </div>
+        <button class="nav-arrow next" id="btn-continue" aria-label="Continue">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+
+    <div id="overlay">
+      <div class="modal">
+        <div class="modal-eyebrow">Welcome back</div>
+        <h2>What's your student level?</h2>
+        <p class="hint">We'll take you straight to your portal.</p>
+
+        <div class="choice-grid">
+          <button class="choice-btn" id="btn-freshman">
+            <span class="choice-label">Freshman</span>
+            <span class="choice-desc">First-year student</span>
+          </button>
+          <button class="choice-btn" id="btn-continuing">
+            <span class="choice-label">Continuing</span>
+            <span class="choice-desc">Returning student</span>
+          </button>
+        </div>
+
+        <div class="modal-foot">You can change this later in your profile settings.</div>
+      </div>
+    </div>
+
+    <div id="redirecting">
+      <div class="redirect-spinner"></div>
+      <div class="redirect-text" id="redirect-text">Setting things up…</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const SPLASH_DURATION = 5000;
+  let modalOpened = false;
+
+  function openModal(){
+    if (modalOpened) return;
+    modalOpened = true;
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(openModal, SPLASH_DURATION);
+  });
+
+  document.getElementById('btn-continue').addEventListener('click', openModal);
+
+  document.getElementById('btn-freshman').addEventListener('click', () => handleChoice('freshman'));
+  document.getElementById('btn-continuing').addEventListener('click', () => handleChoice('continuing'));
+
+  function handleChoice(type){
+    const destinations = {
+      freshman: { url: 'newstudent .html', message: 'Taking you to the new student portal…' },
+      continuing: { url: 'signup.html', message: 'Taking you to sign up…' }
+    };
+    const target = destinations[type];
+
+    // close the modal
+    document.getElementById('overlay').classList.remove('show');
+
+    // show the loading screen
+    document.getElementById('redirect-text').textContent = target.message;
+    document.getElementById('redirecting').classList.add('show');
+
+    // redirect after a short beat so the loading state is visible
+    setTimeout(() => {
+      window.location.href = target.url;
+    }, 1600);
+  }
+</script>
+
+</body>
+</html>

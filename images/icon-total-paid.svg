@@ -1,0 +1,17 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="paidGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c0111f"/>
+      <stop offset="1" stop-color="#9b0e1a"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="18" width="52" height="34" rx="8" fill="url(#paidGrad)"/>
+  <rect x="6" y="18" width="52" height="10" rx="8" fill="#ffffff" fill-opacity="0.18"/>
+  <circle cx="44" cy="35" r="7" fill="#ffffff"/>
+  <text x="44" y="39" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#c0111f" text-anchor="middle">₵</text>
+  <path d="M14 12 L30 12 L30 18 L14 18 Z" fill="#ffffff" fill-opacity="0.9"/>
+  <path d="M34 40 L26 40" stroke="#ffffff" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round"/>
+  <path d="M34 45 L22 45" stroke="#ffffff" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="49" cy="14" r="6" fill="#34d399"/>
+  <path d="M46.3 14 L48.2 16 L52 12" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -9,8 +9,6 @@ const StanbicWidget = {
     feeType: '',
     feeBreakdown: '',
     detectedNetwork: '',
-    onSuccess: null,
-    onClose: null,
 
     // Prefix mapping for Ghana Networks
     PREFIX_MAP: {
@@ -40,11 +38,6 @@ const StanbicWidget = {
         this.amount = config.amount || 0;
         this.feeType = config.feeType || "Direct Payment";
         this.feeBreakdown = config.feeBreakdown || "";
-        // BUG FIX: these were previously accepted but never stored, so the
-        // caller's completion logic (saving the payment, generating a
-        // receipt, refreshing the UI) and cancel/unlock logic never ran.
-        this.onSuccess = typeof config.onSuccess === 'function' ? config.onSuccess : null;
-        this.onClose = typeof config.onClose === 'function' ? config.onClose : null;
 
         document.getElementById('sw-amount').textContent = `GHS ${Number(this.amount).toFixed(2)}`;
         document.getElementById('sw-modal').style.display = 'flex';
@@ -76,17 +69,6 @@ const StanbicWidget = {
             this._updateBadge(null);
             msg.textContent = '';
         }
-    },
-
-    /**
-     * BUG FIX: previously the × button only hid the modal inline and never
-     * told the host page the student cancelled, so any "unlock this button"
-     * cleanup the caller wired up via onClose never ran and buttons could
-     * stay stuck in a disabled/loading state.
-     */
-    _close() {
-        document.getElementById('sw-modal').style.display = 'none';
-        if (typeof this.onClose === 'function') this.onClose();
     },
 
     _updateBadge(network) {
@@ -134,83 +116,13 @@ const StanbicWidget = {
             if (error) throw error;
 
             if (data.checkoutUrl) {
-                // BUG FIX: Kowri/Stanbic MoMo completes on an external, redirected
-                // page (window.location.href below navigates away from this app).
-                // Any in-memory onSuccess/onClose callback would be lost the
-                // instant the browser leaves this page, so we persist the pending
-                // payment to localStorage first. On the next load of this app
-                // (when Kowri sends the browser back to returnUrl), resumePendingPayment()
-                // checks for this record and fires the stored completion event.
-                try {
-                    localStorage.setItem('stanbicPendingPayment', JSON.stringify({
-                        reference: data.reference || this.feeBreakdown || null,
-                        amount: this.amount,
-                        feeType: this.feeType,
-                        feeBreakdown: this.feeBreakdown,
-                        studentId: payload.studentId,
-                        createdAt: Date.now()
-                    }));
-                } catch (e) { /* localStorage unavailable — resume check will just no-op */ }
-
                 window.location.href = data.checkoutUrl;
-                return;
-            }
-
-            // No checkoutUrl came back — some integrations resolve immediately
-            // without a redirect. Treat that as success right away.
-            document.getElementById('sw-modal').style.display = 'none';
-            if (typeof this.onSuccess === 'function') {
-                this.onSuccess({ reference: data.reference || this.feeBreakdown, status: 'success', raw: data });
             }
         } catch (err) {
             alert("Payment failed to initialize: " + err.message);
             btn.disabled = false;
             btn.innerHTML = 'Authorize Payment';
-            if (typeof this.onClose === 'function') this.onClose();
         }
-    },
-
-    /**
-     * Call once on app load (after init). If the student was redirected to
-     * Stanbic/Kowri and has come back, this looks for the pending payment
-     * left in localStorage and a reference/status the payment page appended
-     * to the return URL, then dispatches a 'stanbic:payment-complete' event
-     * so the host page can finish recording the payment.
-     *
-     * NOTE: adjust the query-param names below ('reference', 'status') to
-     * match whatever Kowri actually appends to returnUrl — confirm this
-     * against the kowri-initiate / kowri-verify Edge Function contract.
-     */
-    resumePendingPayment() {
-        let pending;
-        try {
-            const raw = localStorage.getItem('stanbicPendingPayment');
-            if (!raw) return;
-            pending = JSON.parse(raw);
-        } catch (e) { return; }
-
-        const params = new URLSearchParams(window.location.search || '');
-        const returnedRef = params.get('reference') || params.get('trxref') || params.get('ref');
-        const returnedStatus = (params.get('status') || '').toLowerCase();
-
-        // Nothing on the URL to confirm against yet — leave the pending
-        // record in place in case the student hasn't returned yet.
-        if (!returnedRef && !returnedStatus) return;
-
-        const matched = !pending.reference || !returnedRef || pending.reference === returnedRef;
-        const succeeded = matched && returnedStatus !== 'failed' && returnedStatus !== 'cancelled';
-
-        try { localStorage.removeItem('stanbicPendingPayment'); } catch (e) {}
-
-        document.dispatchEvent(new CustomEvent('stanbic:payment-complete', {
-            detail: {
-                success: succeeded,
-                reference: returnedRef || pending.reference,
-                amount: pending.amount,
-                feeType: pending.feeType,
-                feeBreakdown: pending.feeBreakdown
-            }
-        }));
     },
 
     _injectStyles() {
@@ -236,7 +148,7 @@ const StanbicWidget = {
                 <div class="sw-box">
                     <div class="sw-header">
                         <span>Stanbic Bank MoMo</span>
-                        <button class="sw-close" onclick="StanbicWidget._close()">&times;</button>
+                        <button class="sw-close" onclick="document.getElementById('sw-modal').style.display='none'">&times;</button>
                     </div>
                     <div class="sw-body">
                         <div style="font-size:12px; color:#666;">AMOUNT TO PAY</div>

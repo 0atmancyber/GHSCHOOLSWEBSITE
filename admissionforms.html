@@ -5679,6 +5679,22 @@ async function generateLocalId() {
   return effectivePrefix + seq + salt;
 }
 
+// ── Admission Cycle (intake) Label ────────────────────────────────────────
+// The school opens admissions twice a year: January and August.
+// This returns which intake cycle "today" belongs to, as a text label
+// like "August 2026" or "January 2027" — stored in newstudents.admission_year.
+//   month 1        → "January <year>"        (currently inside the Jan intake)
+//   months 2–8     → "August <year>"         (upcoming/current Aug intake)
+//   months 9–12    → "January <year+1>"      (upcoming Jan intake, next year)
+function getAdmissionCycleLabel(d) {
+  d = d || new Date()
+  const month = d.getMonth() + 1
+  const year  = d.getFullYear()
+  if (month === 1) return 'January ' + year
+  if (month <= 8)  return 'August ' + year
+  return 'January ' + (year + 1)
+}
+
 // ── INSERT STUDENT INTO newstudents TABLE ──
 async function insertStudentToSupabase(formData) {
   if (!supabaseClient) {
@@ -5755,7 +5771,9 @@ async function insertStudentToSupabase(formData) {
                                    ? String(App.loggedInRecord.reference_code).trim()
                                    : null,
     status:                      'pending',
-    is_admission_form:           true
+    is_admission_form:           true,
+    // Which Jan/Aug intake cycle this application belongs to
+    admission_year:              getAdmissionCycleLabel(),
   };
 
   // Retry up to 5 times if a duplicate student_id collision occurs (race condition)
@@ -6352,9 +6370,14 @@ function launchPaystack() {
 
   if (!email) { toast('No email address found. Please go back and fill in your email.', 'error'); return; }
 
-  // ── FIX 5: Build a clean ref — App.studentId could be undefined/null which Paystack rejects ──
-  const safeStudentId = App.studentId ? String(App.studentId).trim() : 'GUEST';
-  const txRef = 'GHSCH-' + safeStudentId + '-' + Date.now();
+  // ── FIX 5: Build a clean ref — App.studentId could be undefined/null which Paystack rejects,
+  //    AND it could contain characters Paystack's ref field doesn't allow (e.g. "/" from a
+  //    reference_code like "GHS/2026/0001"). Paystack only accepts letters, numbers, "-", ".",
+  //    "_" and "=" in the ref — anything else causes "invalid character in transaction reference"
+  //    once the popup tries to start the charge. Strip everything else out. ──
+  const _sanitizeRef = s => String(s || '').replace(/[^a-zA-Z0-9._=-]/g, '');
+  const safeStudentId = _sanitizeRef(App.studentId ? String(App.studentId).trim() : 'GUEST') || 'GUEST';
+  const txRef = _sanitizeRef('GHSCH-' + safeStudentId + '-' + Date.now());
 
   const PAYSTACK_PUBLIC_KEY = 'pk_live_0ae6db537388a8f81fc9c70d75a87be1a69c1844';
 

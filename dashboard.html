@@ -1726,6 +1726,81 @@ body.dark-mode .blog-ice-note { background: #16232B; border-color: #26404E; colo
 .tpct-desc { font-size: 11px; color: var(--ink-500); }
 
 /* ============================================================
+   TUITION FEE PAYMENT MODAL (legacy fallback — styled)
+   ============================================================ */
+.tfm-box { max-width: 480px; padding: 0; display: flex; flex-direction: column; overflow: hidden; }
+.tfm-header {
+  position: relative; overflow: hidden;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, var(--purple-800), var(--purple-600));
+  color: var(--white);
+}
+.tfm-header-decor {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.tfm-header-decor-1 { width: 140px; height: 140px; top: -60px; right: -40px; }
+.tfm-header-decor-2 { width: 90px; height: 90px; bottom: -50px; right: 60px; }
+.tfm-header-row { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; }
+.tfm-header-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.16);
+  display: flex; align-items: center; justify-content: center;
+}
+.tfm-header-text { flex: 1; min-width: 0; }
+.tfm-header-title { font-size: 16px; font-weight: 800; }
+.tfm-header-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+.tfm-close {
+  background: rgba(255,255,255,0.15);
+  border: none; color: var(--white);
+  width: 32px; height: 32px; border-radius: 50%;
+  font-size: 18px; line-height: 1; flex-shrink: 0; cursor: pointer;
+  transition: background 0.15s ease;
+}
+.tfm-close:hover { background: rgba(255,255,255,0.28); }
+
+.tfm-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.tfm-section-label {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--ink-500);
+}
+.tfm-pct-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.tfm-total-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--purple-100); border-radius: var(--radius-md); padding: 16px 18px;
+}
+.tfm-total-label { font-size: 12.5px; color: var(--purple-700); font-weight: 700; }
+.tfm-total-hint { font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+.tfm-total-amt { font-size: 20px; font-weight: 800; color: var(--purple-800); }
+
+.tfm-footer {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 24px; border-top: 1px solid var(--lavender-100);
+}
+.tfm-footer .btn-outline { flex: 1; }
+.tfm-proceed-btn { flex: 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* Info-section stat grid rendered inside #tuitionInfoSection by JS */
+.tfm-stat-grid {
+  display: flex; align-items: center;
+  background: var(--lavender-50); border-radius: var(--radius-md);
+  padding: 14px 4px;
+}
+.tfm-stat { flex: 1; text-align: center; min-width: 0; }
+.tfm-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--ink-500); }
+.tfm-stat-value { font-size: 14.5px; font-weight: 800; color: var(--ink-900); margin-top: 4px; }
+.tfm-stat-divider { width: 1px; align-self: stretch; background: var(--lavender-100); margin: 0 2px; }
+.tfm-progress-track { height: 6px; border-radius: 999px; background: var(--lavender-100); overflow: hidden; margin-top: 12px; }
+.tfm-progress-fill { height: 100%; border-radius: 999px; background: var(--purple-500); transition: width 0.3s ease; }
+.tfm-progress-caption { font-size: 11.5px; color: var(--ink-500); margin-top: 8px; text-align: center; }
+.tfm-cleared-panel { text-align: center; padding: 20px 12px; }
+.tfm-cleared-panel i { font-size: 28px; color: var(--green); margin-bottom: 8px; }
+.tfm-cleared-panel > div:nth-child(2) { font-size: 14px; font-weight: 800; color: var(--ink-900); margin-top: 6px; }
+.tfm-cleared-panel > div:nth-child(3) { font-size: 12px; color: var(--ink-500); margin-top: 4px; }
+
+/* ============================================================
    PAYMENT CHANNEL CARDS
    ============================================================ */
 /* ============================================================
@@ -2784,6 +2859,20 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 .pmov-ac-desc { font-size: 11.5px; color: var(--ink-500); margin: 3px 0 10px; }
 .pmov-ac-amount { font-size: 15px; font-weight: 800; color: var(--purple-700); margin-bottom: 10px; }
 .pmov-ac-btn { width: 100%; padding: 10px; }
+
+/* ── Locked action card (e.g. Tuition Fees before Other Fees are paid) ── */
+.pmov-action-card.is-locked { cursor: not-allowed; opacity: 0.72; }
+.pmov-action-card.is-locked .pmov-ac-icon { background: #EEE; color: var(--ink-500); }
+.pmov-ac-btn.locked-btn { background: var(--ink-300); cursor: pointer; }
+.pmov-ac-btn.locked-btn:hover { filter: brightness(0.95); }
+
+/* ── Restriction modal: specific unmet requirements ── */
+.restriction-reasons { margin-top: 14px; border-top: 1px solid var(--lavender-100); padding-top: 12px; }
+.restriction-reasons-label { font-size: 11px; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+.restriction-reason-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.restriction-reason-row i { color: var(--red); margin-top: 2px; flex-shrink: 0; }
+.restriction-reason-name { font-size: 13px; font-weight: 700; color: var(--ink-900); }
+.restriction-reason-detail { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
 
 .pmov-cleared-banner {
   background: var(--green-bg); border: 1.5px solid #B7EFD6; border-radius: var(--radius-md);
@@ -3886,66 +3975,58 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
   <!-- ══ TUITION FEES MODAL — Premium Redesign ══ -->
   <div class="modal-overlay" id="tuitionModal" onclick="closeModalBackdrop(event,'tuitionModal')">
-    <div class="modal-box">
+    <div class="modal-box tfm-box">
 
       <!-- Gradient Header -->
-      <div>
+      <div class="tfm-header">
         <!-- Decorative circles -->
-        <div>
-        </div>
-        <div>
-        </div>
-        <div>
-          <div>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="tfm-header-decor tfm-header-decor-1"></div>
+        <div class="tfm-header-decor tfm-header-decor-2"></div>
+        <div class="tfm-header-row">
+          <div class="tfm-header-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
                 fill="#fff" />
             </svg>
           </div>
-          <div>
-            <div>
-              Tuition Fee Payment</div>
-            <div id="tuitionModalAcadYear">Academic
-              Year —</div>
+          <div class="tfm-header-text">
+            <div class="tfm-header-title">Tuition Fee Payment</div>
+            <div class="tfm-header-sub" id="tuitionModalAcadYear">Academic Year —</div>
           </div>
-          <button onclick="closeModal('tuitionModal')" aria-label="Close">&times;</button>
+          <button class="tfm-close" onclick="closeModal('tuitionModal')" aria-label="Close">&times;</button>
         </div>
       </div>
 
       <!-- Body -->
-      <div>
+      <div class="tfm-body">
 
         <!-- Summary stats -->
         <div id="tuitionInfoSection"></div>
 
         <!-- Payment option chooser label -->
-        <div>
-          Choose payment plan</div>
+        <div class="tfm-section-label">Choose payment plan</div>
 
         <!-- % cards -->
-        <div id="tuitionPctCards"><!-- rendered by JS -->
+        <div class="tfm-pct-cards" id="tuitionPctCards"><!-- rendered by JS -->
         </div>
 
         <!-- Detailed items -->
         <div id="tuitionOptionsContainer"></div>
 
         <!-- Total strip -->
-        <div>
+        <div class="tfm-total-bar">
           <div>
-            <div>
-              Total to Pay</div>
-            <div id="tuitionModalSelectionHint">Select a
-              plan above</div>
+            <div class="tfm-total-label">Total to Pay</div>
+            <div class="tfm-total-hint" id="tuitionModalSelectionHint">Select a plan above</div>
           </div>
-          <div
-            id="tuitionModalSelectedTotal">GHS 0.00</div>
+          <div class="tfm-total-amt" id="tuitionModalSelectedTotal">GHS 0.00</div>
         </div>
       </div>
 
       <!-- Footer -->
-      <div>
-        <button onclick="closeModal('tuitionModal')">Cancel</button>
-        <button id="tuitionProceedBtn" onclick="payTuition()" disabled>
+      <div class="tfm-footer">
+        <button class="btn-outline" onclick="closeModal('tuitionModal')">Cancel</button>
+        <button class="btn-solid tfm-proceed-btn" id="tuitionProceedBtn" onclick="payTuition()" disabled>
           <i class="fas fa-lock"></i>
           <span>Proceed to Pay</span>
           <div class="spinner-inline" id="tuitionPaySpinner"></div>
@@ -4227,13 +4308,13 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         <div class="modal-title">Access Restricted</div>
         <button class="modal-close" onclick="closeModal('restrictionModal')" aria-label="Close">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="restrictionModalBody">
         <p>You must pay at least <strong>80% of
             tuition</strong> and all other required fees before registering for courses.</p>
       </div>
       <div class="modal-footer">
         <button class="btn-outline" onclick="closeModal('restrictionModal')">Close</button>
-        <button class="btn-solid" onclick="closeModal('restrictionModal');openModal('tuitionModal')">Pay Now</button>
+        <button class="btn-solid" onclick="closeModal('restrictionModal');window.openTuitionPayModal ? window.openTuitionPayModal() : openModal('tuitionModal')">Pay Now</button>
       </div>
     </div>
   </div>
@@ -6159,7 +6240,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         bar.style.width = `${pct}%`;
         bar.className = 'progress-fill';
         if (pct >= 100) bar.classList.add('full');
-        else if (pct >= 80) bar.classList.add(''); // default blue = ok
+        else if (pct >= 80) { /* default blue = ok, no extra class needed */ }
         else if (pct >= 50) bar.classList.add('warn');
         else bar.classList.add('danger');
       }
@@ -7182,8 +7263,32 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
        NEW DEDICATED MODAL OPENERS (from payment page cards)
     ════════════════════════════════════════════════════════ */
 
+    // Computes total outstanding balance across SRC / Medical / Departmental fees.
+    // Used to gate tuition payment behind other fees being settled first.
+    // (Reuses the existing getOtherFeesOutstanding(summary) helper defined above,
+    // just under a distinct name to avoid redeclaration.)
+    async function computeOtherFeesBalance() {
+      if (!totalPayable) await loadCanonicalFeesForStudent(studentId);
+      const summary = await fetchPaymentsSummary(studentId);
+      window._lastPaymentSummary = summary;
+      const { totalOutstanding } = getOtherFeesOutstanding(summary);
+      return Math.round(totalOutstanding * 100) / 100;
+    }
+    window.computeOtherFeesBalance = computeOtherFeesBalance;
+
     // Opens the redesigned Tuition Fees modal
     window.openTuitionPayModal = async function () {
+      // Other fees (SRC, Medical, Departmental) must be fully paid before tuition can be paid.
+      try {
+        const otherBal = await computeOtherFeesBalance();
+        if (otherBal > 0.01) {
+          showToast('Please clear your Other Fees (SRC, Medical & Departmental) before paying tuition.', 'error');
+          window.openOtherFeesPayModal();
+          return;
+        }
+      } catch (e) {
+        console.error('[openTuitionPayModal] other-fees check failed', e);
+      }
       // Open the tuition-only checkout — other fees are paid separately via the Other Fees card
       if (window.openPayCheckoutPage) {
         window.openPayCheckoutPage('tuition');
@@ -8491,9 +8596,10 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       }
 
       try {
-        const allowed = await hasRegistrationAccess(studentId);
-        if (!allowed) {
+        const details = await getRegistrationAccessDetails(studentId);
+        if (!details.allowed) {
           if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+          renderRestrictionReasons(details.reasons);
           openModal('restrictionModal');
           return;
         }
@@ -8507,6 +8613,32 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
       }
     };
+
+    // Fills the restriction modal with the exact fee requirement(s) still unmet,
+    // so a student who believes they've already qualified can see precisely
+    // what's outstanding rather than a generic "Access Restricted" message.
+    function renderRestrictionReasons(reasons) {
+      const body = document.getElementById('restrictionModalBody');
+      if (!body) return;
+      if (!reasons || !reasons.length) {
+        body.innerHTML = `<p>You must pay at least <strong>80% of tuition</strong> and all other required fees before registering for courses.</p>`;
+        return;
+      }
+      body.innerHTML = `
+        <p>You must pay at least <strong>80% of tuition</strong> and all other required fees before registering for courses.</p>
+        <div class="restriction-reasons">
+          <div class="restriction-reasons-label">Still outstanding:</div>
+          ${reasons.map(r => `
+            <div class="restriction-reason-row">
+              <i class="fas fa-exclamation-circle"></i>
+              <div>
+                <div class="restriction-reason-name">${escapeHtml(r.label)}</div>
+                <div class="restriction-reason-detail">${escapeHtml(r.detail)}</div>
+              </div>
+            </div>`).join('')}
+        </div>`;
+    }
+    window.renderRestrictionReasons = renderRestrictionReasons;
 
     /* ══════════════════════════════════════════════════════
        COURSE REGISTRATION MODAL
@@ -8925,7 +9057,10 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
     }
     window._saveCourseRegistration = _saveCourseRegistration;
 
-    async function hasRegistrationAccess(sid) {
+    /* Detailed version — returns exactly which requirement(s) are unmet so the
+       UI can tell the student precisely why they're blocked, instead of a
+       generic message that's impossible to debug from the student's side. */
+    async function getRegistrationAccessDetails(sid) {
       try {
         await loadCanonicalFeesForStudent(sid);
         const sum = await fetchPaymentsSummary(sid);
@@ -8934,17 +9069,41 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         // (admin hasn't set fees yet — don't lock out all students)
         if (!TUITION && !FEE_SRC && !FEE_MEDICAL && !FEE_DEPT && !totalPayable) {
           console.warn('[hasRegistrationAccess] no fee schedule found — allowing access');
-          return true;
+          return { allowed: true, reasons: [] };
         }
 
-        const tOK = TUITION <= 0.01 || Number(sum.tuitionPaid || 0) >= TUITION * 0.8 - 0.01;
-        const sOK = FEE_SRC <= 0.01 || Number(sum.srcPaid || 0) >= FEE_SRC - 0.01;
-        const mOK = FEE_MEDICAL <= 0.01 || Number(sum.medPaid || 0) >= FEE_MEDICAL - 0.01;
-        const dOK = FEE_DEPT <= 0.01 || Number(sum.deptPaid || 0) >= FEE_DEPT - 0.01;
+        const tuitionPaid = Number(sum.tuitionPaid || 0);
+        const srcPaid = Number(sum.srcPaid || 0);
+        const medPaid = Number(sum.medPaid || 0);
+        const deptPaid = Number(sum.deptPaid || 0);
 
-        console.log('[hasRegistrationAccess]', { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, tOK, sOK, mOK, dOK });
-        return tOK && sOK && mOK && dOK;
-      } catch (e) { console.error('[hasRegistrationAccess]', e); return false; }
+        const tuitionNeeded = Math.round(TUITION * 0.8 * 100) / 100;
+        const tOK = TUITION <= 0.01 || tuitionPaid >= tuitionNeeded - 0.01;
+        const sOK = FEE_SRC <= 0.01 || srcPaid >= FEE_SRC - 0.01;
+        const mOK = FEE_MEDICAL <= 0.01 || medPaid >= FEE_MEDICAL - 0.01;
+        const dOK = FEE_DEPT <= 0.01 || deptPaid >= FEE_DEPT - 0.01;
+
+        const reasons = [];
+        if (!tOK) {
+          const tPct = TUITION > 0 ? Math.round((tuitionPaid / TUITION) * 100) : 0;
+          reasons.push({ label: 'Tuition (80% required)', detail: `${tPct}% paid · needs ${currencyPrefix()}${gh(Math.max(0, tuitionNeeded - tuitionPaid))} more` });
+        }
+        if (!sOK) reasons.push({ label: 'SRC Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_SRC - srcPaid))} outstanding` });
+        if (!mOK) reasons.push({ label: 'Medical Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_MEDICAL - medPaid))} outstanding` });
+        if (!dOK) reasons.push({ label: 'Departmental Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_DEPT - deptPaid))} outstanding` });
+
+        console.log('[hasRegistrationAccess]', { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, tOK, sOK, mOK, dOK, tuitionPaid, srcPaid, medPaid, deptPaid });
+        return { allowed: tOK && sOK && mOK && dOK, reasons };
+      } catch (e) {
+        console.error('[hasRegistrationAccess]', e);
+        return { allowed: false, reasons: [{ label: 'Error', detail: 'Could not verify your fee status. Please try again.' }] };
+      }
+    }
+    window.getRegistrationAccessDetails = getRegistrationAccessDetails;
+
+    async function hasRegistrationAccess(sid) {
+      const details = await getRegistrationAccessDetails(sid);
+      return details.allowed;
     }
     window.hasRegistrationAccess = hasRegistrationAccess;
 
@@ -9422,6 +9581,19 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       const titleEl = document.getElementById('coTopbarTitle');
       if (!page || !body) return;
 
+      // Tuition (and the Custom Amount option nested inside the tuition flow) requires
+      // Other Fees (SRC/Medical/Departmental) to be fully paid first.
+      if (pct === 'tuition' || pct === 'custom') {
+        try {
+          const otherBal = await computeOtherFeesBalance();
+          if (otherBal > 0.01) {
+            showToast('Please clear your Other Fees (SRC, Medical & Departmental) before paying tuition.', 'error');
+            window.openOtherFeesPayModal();
+            return;
+          }
+        } catch (e) { console.error('[openPayCheckoutPage] other-fees check failed', e); }
+      }
+
       // Show page
       page.classList.add('show');
       document.body.style.overflow = 'hidden';
@@ -9645,6 +9817,36 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           </div>` : ''}
 
           ${paidOtherFeesHTML}
+
+          ${pct === 'tuition' && tBal > 0.01 ? `
+          <!-- Custom Amount option — nested inside the Tuition flow -->
+          <div class="co-card custom-amt-card" onclick="openPayCheckoutPage('custom')" style="cursor:pointer;">
+            <div class="co-card-header">
+              <div class="co-card-header-icon">
+                <i class="fas fa-keyboard"></i>
+              </div>
+              <div>
+                <div class="co-card-title">Want to pay a different amount?</div>
+                <div class="co-card-subtitle">Enter exactly what you can afford right now, instead of the full balance.</div>
+              </div>
+            </div>
+            <button class="pmov-ac-btn" style="width:100%;margin-top:8px;" onclick="event.stopPropagation();openPayCheckoutPage('custom')"><i class="fas fa-pen"></i> Enter Custom Amount</button>
+          </div>` : ''}
+
+          ${pct === 'custom' ? `
+          <!-- Link back to full tuition balance payment -->
+          <div class="co-card custom-amt-card" onclick="openPayCheckoutPage('tuition')" style="cursor:pointer;">
+            <div class="co-card-header">
+              <div class="co-card-header-icon">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <div>
+                <div class="co-card-title">Prefer to pay the full balance?</div>
+                <div class="co-card-subtitle">Outstanding tuition: ${currencyPrefix()}${gh(tBal)}</div>
+              </div>
+            </div>
+            <button class="pmov-ac-btn" style="width:100%;margin-top:8px;" onclick="event.stopPropagation();openPayCheckoutPage('tuition')"><i class="fas fa-arrow-right"></i> Pay Full Balance Instead</button>
+          </div>` : ''}
 
           <!-- Total bar -->
           ${(function () {
@@ -10050,30 +10252,25 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           const tPctCalc = tTotalCalc > 0 ? Math.min(100, Math.round((tPaidCalc / tTotalCalc) * 100)) : 100;
           const tuitionCleared = tBalCalc <= 0.01;
 
+          // Tuition can only be paid once other fees (SRC/Medical/Departmental) are fully settled
+          const tuitionLocked = !tuitionCleared && otherBal > 0.01;
+
           html += `<div class="pmov-action-cards">
             <!-- Tuition Fees Card -->
-            <div class="pmov-action-card orange" onclick="${tuitionCleared ? '' : 'openTuitionPayModal()'}">
-              <div class="pmov-ac-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="pmov-action-card orange${tuitionLocked ? ' is-locked' : ''}" onclick="${(tuitionCleared || tuitionLocked) ? '' : 'openTuitionPayModal()'}">
+              <div class="pmov-ac-icon"><i class="fas ${tuitionLocked ? 'fa-lock' : 'fa-graduation-cap'}"></i></div>
               <div class="pmov-ac-label">Tuition Fees</div>
               <div class="pmov-ac-amount">${tuitionCleared ? 'Cleared ✓' : currencyPrefix() + gh(tBalCalc)}</div>
-              <div class="pmov-ac-desc">${tuitionCleared ? 'Tuition fully settled' : tPctCalc + '% paid · ' + (100 - tPctCalc) + '% outstanding'}</div>
-              ${!tuitionCleared ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openTuitionPayModal()"><i class="fas fa-arrow-right"></i> Pay Tuition</button>` : `<div><i class="fas fa-check-circle"></i> Fully cleared</div>`}
+              <div class="pmov-ac-desc">${tuitionCleared ? 'Tuition fully settled' : tuitionLocked ? 'Pay Other Fees first to unlock' : tPctCalc + '% paid · ' + (100 - tPctCalc) + '% outstanding'}</div>
+              ${tuitionCleared ? `<div><i class="fas fa-check-circle"></i> Fully cleared</div>` : tuitionLocked ? `<button class="pmov-ac-btn locked-btn" onclick="event.stopPropagation();openOtherFeesPayModal()"><i class="fas fa-lock"></i> Locked — Pay Other Fees</button>` : `<button class="pmov-ac-btn" onclick="event.stopPropagation();openTuitionPayModal()"><i class="fas fa-arrow-right"></i> Pay Tuition</button>`}
             </div>
             <!-- Other Fees Card -->
             <div class="pmov-action-card green" onclick="${otherBal <= 0.01 ? '' : 'openOtherFeesPayModal()'}">
               <div class="pmov-ac-icon"><i class="fas fa-receipt"></i></div>
               <div class="pmov-ac-label">Other Fees</div>
               <div class="pmov-ac-amount">${otherBal <= 0.01 ? 'Cleared ✓' : currencyPrefix() + gh(otherBal)}</div>
-              <div class="pmov-ac-desc">${otherBal <= 0.01 ? 'All other fees settled' : 'SRC, Medical, Departmental'}</div>
+              <div class="pmov-ac-desc">${otherBal <= 0.01 ? 'All other fees settled' : 'SRC, Medical, Departmental · pay these first'}</div>
               ${otherBal > 0.01 ? `<button class="pmov-ac-btn" onclick="event.stopPropagation();openOtherFeesPayModal()"><i class="fas fa-arrow-right"></i> Pay Fees</button>` : `<div><i class="fas fa-check-circle"></i> All cleared</div>`}
-            </div>
-            <!-- Custom Payment Card -->
-            <div class="pmov-action-card custom-amt-card" onclick="openPayCheckoutPage('custom')">
-              <div class="pmov-ac-icon"><i class="fas fa-keyboard"></i></div>
-              <div class="pmov-ac-label">Pay Custom Amount</div>
-              <div class="pmov-ac-amount">Any amount you choose</div>
-              <div class="pmov-ac-desc">Enter exactly what you can afford right now</div>
-              <button class="pmov-ac-btn" onclick="event.stopPropagation();openPayCheckoutPage('custom')"><i class="fas fa-pen"></i> Enter Amount</button>
             </div>
           </div>`;
         } else {
@@ -10203,24 +10400,26 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       if (info) {
         info.innerHTML = `
           <div>
-            <div>
-              <div>
-                <div>TOTAL TUITION</div>
-                <div>${cedis(tTotal)}</div>
+            <div class="tfm-stat-grid">
+              <div class="tfm-stat">
+                <div class="tfm-stat-label">Total Tuition</div>
+                <div class="tfm-stat-value">${cedis(tTotal)}</div>
               </div>
-              <div>
-                <div>PAID</div>
-                <div>${cedis(tPaid)}</div>
+              <div class="tfm-stat-divider"></div>
+              <div class="tfm-stat">
+                <div class="tfm-stat-label">Paid</div>
+                <div class="tfm-stat-value">${cedis(tPaid)}</div>
               </div>
-              <div>
-                <div>OUTSTANDING</div>
-                <div>${cedis(tBal)}</div>
+              <div class="tfm-stat-divider"></div>
+              <div class="tfm-stat">
+                <div class="tfm-stat-label">Outstanding</div>
+                <div class="tfm-stat-value">${cedis(tBal)}</div>
               </div>
             </div>
-            <div>
-              <div></div>
+            <div class="tfm-progress-track">
+              <div class="tfm-progress-fill" style="width:${Math.min(100, tPct)}%;"></div>
             </div>
-            <div>${tPct}% of tuition cleared</div>
+            <div class="tfm-progress-caption">${tPct}% of tuition cleared</div>
           </div>
         `;
       }
@@ -10251,7 +10450,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         `;
       } else if (pctContainer && tBal <= 0.01) {
         pctContainer.innerHTML = `
-          <div>
+          <div class="tfm-cleared-panel">
             <div><i class="fas fa-check-circle"></i></div>
             <div>Tuition Fully Paid!</div>
             <div>No outstanding tuition for this academic year</div>

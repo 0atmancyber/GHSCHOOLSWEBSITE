@@ -8472,6 +8472,7 @@ async function submitPayment() {
     source_payload: sourcePayload,
     outstanding_balance: s.outstanding_balance || 0,
   };
+  payload['bank_level_type_priority'] = buildBankLevelTypePriority(payMethod, rawLevel, _selectedFeeType);
 
   try {
     const db = getDB();
@@ -12850,6 +12851,7 @@ async function submitQuickCollect() {
         receipt_number: receiptNumber,
         amount: amount,
         payment_date: new Date().toISOString(),
+        'bank_level_type_priority': buildBankLevelTypePriority(method, level, feeType),
       }).eq('id', origId);
       if (error) throw error;
       toast(`Payment approved! Receipt: ${receiptNumber}`, 'success');
@@ -12874,6 +12876,7 @@ async function submitQuickCollect() {
         coverage_percent: 100,
         source_table: 'cashier_manual',
       };
+      payload['bank_level_type_priority'] = buildBankLevelTypePriority(method, normLevel, feeType);
       let _ins = await db.from('payments').insert([payload]);
       // Retry on duplicate receipt_number
       if (_ins.error && _ins.error.code === '23505' && (_ins.error.message||'').includes('receipt_nu')) { payload.receipt_number = genReceiptNumber(); _ins = await db.from('payments').insert([payload]); }
@@ -13063,6 +13066,7 @@ async function recordInstallmentPayment() {
       coverage_percent:  Math.round((nextInst.amount / plan.total_amount) * 100),
       source_table:      'payment_plan',
     };
+    payPayload['bank_level_type_priority'] = buildBankLevelTypePriority('Cash', payPayload.level, plan.fee_type);
     await db.from('payments').insert([payPayload]);
 
     if (planErr) throw planErr;
@@ -14145,6 +14149,9 @@ let _genStudentTotalFees   = 0;   // total fees owed by student (from fee_schedu
 let _genStudentTotalPaid   = 0;   // total already paid (from payments, approved only)
 let _genStudentFeeMap      = {};  // feeType -> required amount (per fee type)
 let _genStudentPaidMap     = {};  // feeType -> total already paid (per fee type)
+let _genAllFeeSchedRows    = [];  // ALL fee_schedules rows (every level) - used so mandatory
+                                   // dues (SRC/Medical/Departmental) are enforced even for
+                                   // levels (e.g. 100) that have no level-specific row of their own
 let _lastCollectPayload    = null; // for receipt printing
 
 // ── Gateway: show/hide sections ──────────────────────────────
@@ -14666,6 +14673,7 @@ async function submitAdmissionPayment() {
       collected_by:    (getSession()?.admin?.full_name || getSession()?.admin?.username || 'cashier'),
     },
   };
+  record['bank_level_type_priority'] = buildBankLevelTypePriority(method, record.level, feeType);
 
   try {
     const db = getDB();
@@ -14910,6 +14918,7 @@ function selectGeneralStudent(s) {
       let query = db.from('fee_schedules').select('fee_type, amount, level');
       if (acYear) query = query.eq('academic_year', acYear);
       const { data: schedRows } = await query.not('fee_type','ilike','%admission%');
+      _genAllFeeSchedRows = schedRows || [];
 
       // Pick best match per fee_type (level-specific beats null/all)
       const bestFee = {};
@@ -15061,6 +15070,29 @@ async function loadGenFeeTypes(levelAmountMap) {
 function genFeeTypeBtn(feeType, amount) {
   const icon = getFeeTypeIcon(feeType);
   const amtStr = amount != null ? `GHS ${parseFloat(amount).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2})}` : '';
+
+  // Lock the Tuition button until SRC / Departmental / Medical dues are fully paid.
+  const lockedDues = (typeof isTuitionFeeType === 'function' && isTuitionFeeType(feeType) && typeof getUnpaidMandatoryDues === 'function')
+    ? getUnpaidMandatoryDues() : [];
+  const isLocked = lockedDues.length > 0;
+
+  if (isLocked) {
+    return `<button class="gen-ft-btn" disabled title="Pay ${lockedDues.join(', ')} first"
+      style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px dashed #d1d5db;border-radius:10px;background:#f9fafb;cursor:not-allowed;font-family:inherit;text-align:left;width:100%;opacity:.75"
+      data-ft="${feeType.replace(/"/g,'&quot;')}" data-amt="${amount != null ? amount : ''}">
+      <div style="width:20px;height:20px;border-radius:6px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#f3f4f6">
+        <i class="fas fa-lock" style="font-size:9px;color:#9ca3af"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px">${icon}</span>
+          <span style="font-size:12px;font-weight:700;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${feeType}</span>
+        </div>
+        <div style="font-size:10.5px;color:#dc2626;font-weight:600;margin-top:2px">Locked — pay ${lockedDues.join(', ')} first</div>
+      </div>
+    </button>`;
+  }
+
   return `<button class="gen-ft-btn" onclick="toggleGenFeeType('${feeType.replace(/'/g,"\\'")}', ${amount != null ? amount : 'null'})"
     style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px;background:white;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s;width:100%"
     data-ft="${feeType.replace(/"/g,'&quot;')}" data-amt="${amount != null ? amount : ''}">
@@ -15092,8 +15124,100 @@ function getFeeTypeIcon(name) {
   return '<i class="fas fa-circle-dollar-to-slot" style="font-size:15px;color:#78716c"></i>';
 }
 
+// ── Tuition-lock helpers ──────────────────────────────────────────────────
+// Cashiers must collect SRC, Departmental, and Medical dues before Tuition
+// can be recorded for a student. These helpers use the same fee-schedule /
+// paid-amount maps (_genStudentFeeMap / _genStudentPaidMap) that are already
+// populated when a student is selected in the General Fee Collection flow.
+// ── bank_level_type_priority column helper ──────────────────────────────
+// NOTE: this column was confirmed INTEGER by a live "invalid input syntax
+// for type integer" error. Returning a labeled text string (e.g.
+// "Type 1 (SRC Dues)") requires the column to be altered to text first:
+//   alter table public.payments
+//     alter column bank_level_type_priority type text
+//     using bank_level_type_priority::text;
+// Run that in Supabase BEFORE recording a payment, or inserts will fail again.
+// Type 1 = SRC Dues, Type 2 = Medical Dues, Type 3 = Departmental Dues,
+// Type 4 = Tuition, Type 5 = everything else.
+function buildBankLevelTypePriority(method, level, feeType) {
+  let priority = 5;
+  let label = (feeType || 'Other').toString().trim() || 'Other';
+  try {
+    const cat = (typeof categorizeFeeType === 'function') ? categorizeFeeType(feeType) : null;
+    if (cat === 'src') {
+      priority = 1;
+    } else if (cat === 'medical') {
+      priority = 2;
+    } else if (cat === 'departmental') {
+      priority = 3;
+    } else if (typeof isTuitionFeeType === 'function' && isTuitionFeeType(feeType)) {
+      priority = 4;
+    }
+  } catch (e) { /* fall back to default priority */ }
+  return `Type ${priority} (${label})`;
+}
+
+function isTuitionFeeType(ft) {
+  const n = (ft || '').toLowerCase();
+  return n.includes('tuition') || n.includes('semester');
+}
+
+function getUnpaidMandatoryDues() {
+  const catLabels     = { src: 'SRC Dues', departmental: 'Departmental Dues', medical: 'Medical Dues' };
+  const requiredByCat = { src: 0, departmental: 0, medical: 0 };
+  const paidByCat     = { src: 0, departmental: 0, medical: 0 };
+
+  const seenReq = new Set();
+  Object.keys(_genStudentFeeMap || {}).forEach(ft => {
+    const cat = categorizeFeeType(ft);
+    if (!(cat in requiredByCat)) return;
+    const nk = normalizeFeeKey(ft);
+    if (seenReq.has(nk)) return;
+    seenReq.add(nk);
+    requiredByCat[cat] += (_genStudentFeeMap[ft] || 0);
+  });
+
+  // Fallback: if the student's own level has no fee_schedules row for a
+  // mandatory due (e.g. Level 100 freshers with no level-specific SRC row),
+  // fall back to ANY configured amount for that due across all levels so
+  // Tuition still gets locked instead of silently skipping the requirement.
+  Object.keys(requiredByCat).forEach(cat => {
+    if (requiredByCat[cat] > 0) return;
+    const fallbackRow = (_genAllFeeSchedRows || []).find(r => categorizeFeeType(r.fee_type) === cat && (parseFloat(r.amount) || 0) > 0);
+    if (fallbackRow) requiredByCat[cat] = parseFloat(fallbackRow.amount) || 0;
+  });
+
+  const seenPaid = new Set();
+  Object.keys(_genStudentPaidMap || {}).forEach(ft => {
+    const cat = categorizeFeeType(ft);
+    if (!(cat in paidByCat)) return;
+    const nk = normalizeFeeKey(ft);
+    if (seenPaid.has(nk)) return;
+    seenPaid.add(nk);
+    paidByCat[cat] += (_genStudentPaidMap[ft] || 0);
+  });
+
+  // Only flag a category as "unpaid" if the school actually has a fee
+  // schedule amount configured for it anywhere (requiredByCat > 0) —
+  // otherwise there is nothing for the student to owe / pay against.
+  return Object.keys(catLabels)
+    .filter(cat => requiredByCat[cat] > 0 && paidByCat[cat] < requiredByCat[cat])
+    .map(cat => catLabels[cat]);
+}
+
+function blockIfTuitionLocked(feeType) {
+  if (!isTuitionFeeType(feeType)) return false;
+  const unpaid = getUnpaidMandatoryDues();
+  if (unpaid.length > 0) {
+    toast(`Tuition is locked: student must first fully pay ${unpaid.join(', ')}.`, 'error');
+    return true;
+  }
+  return false;
+}
+
 function toggleGenFeeType(feeType, amount) {
   const isSelected = _genSelectedFeeTypes.has(feeType);
+  if (!isSelected && blockIfTuitionLocked(feeType)) return;
   if (isSelected) {
     _genSelectedFeeTypes.delete(feeType);
   } else {
@@ -15467,6 +15591,27 @@ async function openGenLevelFeePanel(level, studentLevel) {
     const fullyPaid = pct >= 100;
     const icon = getFeeTypeIcon(f.name);
     const amtStr = f.total > 0 ? formatGHS(remaining) : 'Variable';
+
+    // Lock Tuition until SRC / Departmental / Medical dues are fully paid.
+    const lockedDuesLvl = (typeof isTuitionFeeType === 'function' && isTuitionFeeType(f.name) && typeof getUnpaidMandatoryDues === 'function')
+      ? getUnpaidMandatoryDues() : [];
+    const isLockedLvl = lockedDuesLvl.length > 0;
+
+    if (isLockedLvl) {
+      return `<button class="gen-lvl-fee-btn" disabled title="Pay ${lockedDuesLvl.join(', ')} first"
+        data-ft="${f.name.replace(/"/g,'&quot;')}" data-amt="${remaining > 0 ? remaining : f.total || 0}"
+        style="display:flex;flex-direction:column;gap:6px;padding:11px 12px;border:1.5px dashed #d1d5db;border-radius:11px;background:#f9fafb;cursor:not-allowed;font-family:inherit;text-align:left;width:100%;position:relative;overflow:hidden;opacity:.75">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:20px;height:20px;border-radius:6px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#f3f4f6">
+            <i class="fas fa-lock" style="font-size:9px;color:#9ca3af"></i>
+          </div>
+          <span style="font-size:12px">${icon}</span>
+          <span style="font-size:12px;font-weight:700;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${f.name}</span>
+        </div>
+        <div style="font-size:10.5px;color:#dc2626;font-weight:600">Locked — pay ${lockedDuesLvl.join(', ')} first</div>
+      </button>`;
+    }
+
     return `
     <button class="gen-lvl-fee-btn" data-ft="${f.name.replace(/"/g,'&quot;')}" data-amt="${remaining > 0 ? remaining : f.total || 0}"
       onclick="toggleGenLvlFee('${f.name.replace(/'/g,"\\'")}', ${remaining > 0 ? remaining : (f.total || 0)})"
@@ -15492,7 +15637,9 @@ async function openGenLevelFeePanel(level, studentLevel) {
 }
 
 function toggleGenLvlFee(feeType, amount) {
-  if (_genLvlSelectedFees.has(feeType)) {
+  const isSelectedLvl = _genLvlSelectedFees.has(feeType);
+  if (!isSelectedLvl && blockIfTuitionLocked(feeType)) return;
+  if (isSelectedLvl) {
     _genLvlSelectedFees.delete(feeType);
   } else {
     _genLvlSelectedFees.set(feeType, parseFloat(amount) || 0);
@@ -15593,6 +15740,13 @@ function updateGenLvlFeeAmt(feeType, val) {
 async function submitGenLevelPayment() {
   if (!_genSelectedStudent) { toast('No student selected', 'error'); return; }
   if (_genLvlSelectedFees.size === 0) { toast('Select at least one fee type', 'error'); return; }
+  if (Array.from(_genLvlSelectedFees.keys()).some(isTuitionFeeType)) {
+    const unpaidLvl = getUnpaidMandatoryDues();
+    if (unpaidLvl.length > 0) {
+      toast(`Cannot record Tuition — student must first fully pay: ${unpaidLvl.join(', ')}.`, 'error');
+      return;
+    }
+  }
 
   const s          = _genSelectedStudent;
   const overrideAmt = parseFloat(document.getElementById('genLvlAmount').value) || 0;
@@ -15683,6 +15837,7 @@ async function submitGenLevelPayment() {
       payment_date:     new Date().toISOString(),
       status:           'approved',
       source_table:     'cashier_general',
+      'bank_level_type_priority': buildBankLevelTypePriority(method, normLvl, e.feeType),
     };
   });
 
@@ -15797,6 +15952,13 @@ async function submitGenLevelPayment() {
 async function submitGeneralPayment() {
   if (!_genSelectedStudent) { toast('Please select a student first', 'error'); return; }
   if (_genSelectedFeeTypes.size === 0) { toast('Please select at least one fee type', 'error'); return; }
+  if (Array.from(_genSelectedFeeTypes.keys()).some(isTuitionFeeType)) {
+    const unpaidGen = getUnpaidMandatoryDues();
+    if (unpaidGen.length > 0) {
+      toast(`Cannot record Tuition — student must first fully pay: ${unpaidGen.join(', ')}.`, 'error');
+      return;
+    }
+  }
 
   const overrideAmt = parseFloat(document.getElementById('genAmount').value) || 0;
   const coverage  = document.getElementById('genCoverage').value;
@@ -15880,6 +16042,7 @@ async function submitGeneralPayment() {
       payment_date:     new Date().toISOString(),
       status:           'approved',
       source_table:     'cashier_general',
+      'bank_level_type_priority': buildBankLevelTypePriority(method, normLevel, e.feeType),
     };
   });
 

@@ -6,30 +6,34 @@
   <title>Student Payment Portal — GH Schools</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --navy:    #0b1f3a;
-      --navy2:   #122444;
-      --gold:    #c9960c;
-      --gold2:   #f0b429;
-      --cream:   #fdf8f0;
-      --white:   #ffffff;
-      --ink:     #1a2535;
-      --muted:   #6b7a90;
-      --border:  #dde3ee;
-      --danger:  #b91c1c;
-      --success: #15803d;
+      --ink:      #12332c;
+      --ink2:     #1c463c;
+      --stamp:    #c1481e;
+      --gold:     #c98f2e;
+      --gold2:    #e8b563;
+      --paper:    #e9dfc2;
+      --card:     #fffdf6;
+      --text:     #221d13;
+      --muted:    #7c7355;
+      --line:     #d7c9a0;
+      --line2:    #c9bb8e;
+      --danger:   #b23a2e;
+      --success:  #2f7d5e;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
-      color: var(--ink);
+      font-family: 'Public Sans', sans-serif;
+      background:
+        radial-gradient(circle at 1px 1px, rgba(18,51,44,.07) 1px, transparent 0) 0 0/16px 16px,
+        var(--paper);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -37,43 +41,50 @@
 
     /* HEADER */
     header {
-      background: var(--white);
-      border-bottom: 3px solid var(--gold);
-      padding: 18px 40px;
+      background: var(--ink);
+      padding: 16px 40px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 15px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 20px rgba(11,31,58,.07);
+      border-bottom: 4px solid var(--gold);
     }
-    header img { width: 52px; height: 52px; object-fit: contain; }
+    header img { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,.08); padding: 4px; }
     .header-text h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 22px;
-      color: var(--navy);
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 20px;
+      color: #fff;
       line-height: 1.1;
+      letter-spacing: .2px;
     }
     .header-text p {
-      font-size: 11.5px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: .6px;
+      font-size: 10.5px;
+      color: var(--gold2);
+      font-weight: 700;
+      letter-spacing: 1.4px;
       text-transform: uppercase;
-      margin-top: 2px;
+      margin-top: 3px;
     }
     .header-badge {
       margin-left: auto;
-      background: var(--navy);
-      color: var(--gold2);
-      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #e9dfc2;
+      font-family: 'Space Mono', monospace;
+      font-size: 10.5px;
       font-weight: 700;
-      letter-spacing: .8px;
+      letter-spacing: .6px;
       text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: 20px;
+      padding: 6px 12px;
+      border-radius: 3px;
     }
+    .header-badge i { color: var(--gold2); font-size: 10px; }
 
     /* MAIN LAYOUT */
     main {
@@ -82,124 +93,163 @@
       justify-content: center;
       align-items: flex-start;
       max-width: 500px;
-      margin: 48px auto;
+      margin: 52px auto;
       width: 100%;
-      padding: 0 28px;
+      padding: 0 24px;
     }
+
+    /* File-tab above the card */
+    .file-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--gold);
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 7px 16px 8px;
+      border-radius: 8px 8px 0 0;
+      margin-left: 22px;
+      position: relative;
+      top: 1px;
+    }
+
     /* Login Card */
+    .login-card-wrap { width: 100%; }
     .login-card {
-      background: var(--white);
-      border-radius: 20px;
-      box-shadow: 0 8px 48px rgba(11,31,58,.12);
+      background: var(--card);
+      border-radius: 4px 16px 16px 16px;
+      box-shadow: 0 14px 46px rgba(18,51,44,.16);
       overflow: hidden;
       width: 100%;
+      border: 1px solid var(--line);
     }
 
     .card-header {
-      background: var(--navy);
-      padding: 30px 32px 26px;
+      background: var(--ink);
+      background-image: radial-gradient(circle at 92% -10%, rgba(232,181,99,.18), transparent 55%);
+      padding: 26px 32px 22px;
       position: relative;
-      overflow: hidden;
     }
-    .card-header::after {
-      content: ''; position: absolute;
-      bottom: -22px; right: -22px;
-      width: 110px; height: 110px;
+    .rivet {
+      position: absolute; top: 14px; width: 9px; height: 9px;
       border-radius: 50%;
-      border: 28px solid rgba(201,150,12,.13);
+      background: radial-gradient(circle at 35% 30%, #e9dfc2, #8f814f 70%);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
     }
-    .card-header::before {
-      content: ''; position: absolute;
-      top: -28px; left: -18px;
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      border: 22px solid rgba(201,150,12,.09);
-    }
+    .rivet.left { left: 14px; }
+    .rivet.right { right: 14px; }
     .card-header h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 25px; color: var(--white);
-      margin-bottom: 6px; position: relative;
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 24px; color: var(--card);
+      margin-bottom: 5px;
     }
-    .card-header p { font-size: 13px; color: rgba(255,255,255,.5); position: relative; }
+    .card-header p { font-size: 12.5px; color: rgba(255,253,246,.55); }
 
-    .card-body { padding: 32px; }
+    /* perforated tear line */
+    .perf {
+      height: 0;
+      border-bottom: 2px dashed rgba(18,51,44,.22);
+      position: relative;
+      margin: 0 24px;
+    }
+    .perf::before, .perf::after {
+      content: '';
+      position: absolute; top: -7px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--paper);
+    }
+    .perf::before { left: -31px; }
+    .perf::after  { right: -31px; }
+
+    .card-body { padding: 28px 32px 32px; }
 
     /* Warning inside card */
     .card-notice {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 11px;
-      padding: 15px 17px;
-      margin-bottom: 26px;
-      font-size: 13px;
-      color: #7a4800;
+      background: #fbf1de;
+      border: 1px solid var(--line2);
+      border-left: 3px solid var(--gold);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      font-size: 12.5px;
+      color: #5c4c1f;
       line-height: 1.65;
-      display: flex; gap: 11px; align-items: flex-start;
+      display: flex; gap: 10px; align-items: flex-start;
     }
-    .card-notice i { color: #d97706; font-size: 16px; margin-top: 2px; flex-shrink: 0; }
-    .card-notice strong { color: #5a3400; }
+    .card-notice i { color: var(--gold); font-size: 15px; margin-top: 2px; flex-shrink: 0; }
+    .card-notice strong { color: #40350f; }
 
     label {
       display: block;
-      font-size: 13px; font-weight: 600;
-      color: var(--navy); margin-bottom: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--ink2); margin-bottom: 8px;
     }
 
-    .input-wrap { position: relative; margin-bottom: 22px; }
+    .input-wrap { position: relative; margin-bottom: 20px; }
 
     input[type="text"] {
       width: 100%;
-      padding: 14px 46px 14px 17px;
-      border: 2px solid var(--border);
-      border-radius: 11px;
+      padding: 13px 44px 13px 15px;
+      border: 1.5px solid var(--line2);
+      border-radius: 6px;
       font-size: 14.5px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--ink);
-      background: var(--cream);
-      transition: border-color .2s, box-shadow .2s, background .2s;
-      letter-spacing: .4px;
+      font-family: 'Space Mono', monospace;
+      color: var(--text);
+      background: var(--card);
+      transition: border-color .2s, box-shadow .2s;
+      letter-spacing: .5px;
     }
     input[type="text"]:focus {
       outline: none;
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(11,31,58,.08);
-      background: var(--white);
+      border-color: var(--ink2);
+      box-shadow: 0 0 0 3px rgba(18,51,44,.09);
     }
-    input[type="text"]::placeholder { color: #b0bbc8; }
+    input[type="text"]::placeholder { color: #b7ab84; font-family: 'Public Sans', sans-serif; }
 
     .input-icon-right {
-      position: absolute; right: 15px; top: 50%;
+      position: absolute; right: 14px; top: 50%;
       transform: translateY(-50%);
-      color: var(--muted); font-size: 15px;
+      color: var(--muted); font-size: 14px;
     }
 
     .submit-btn {
-      width: 100%; padding: 15px;
-      background: var(--navy); color: var(--white);
-      border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 700;
-      font-family: 'DM Sans', sans-serif;
+      width: 100%; padding: 14px;
+      background: var(--stamp); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 14.5px; font-weight: 700;
+      font-family: 'Public Sans', sans-serif;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 9px;
       transition: background .2s, transform .15s, box-shadow .2s;
-      box-shadow: 0 4px 18px rgba(11,31,58,.22);
+      box-shadow: 0 5px 18px rgba(193,72,30,.32);
       letter-spacing: .3px;
+      text-transform: uppercase;
     }
-    .submit-btn:hover { background: #162d52; transform: translateY(-2px); box-shadow: 0 8px 26px rgba(11,31,58,.28); }
+    .submit-btn:hover { background: #a83c1a; transform: translateY(-2px); box-shadow: 0 9px 24px rgba(193,72,30,.4); }
     .submit-btn:active { transform: none; }
     .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
     .divider {
       display: flex; align-items: center; gap: 12px;
-      margin: 24px 0; color: var(--muted); font-size: 12.5px;
+      margin: 22px 0; color: var(--muted); font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase; letter-spacing: .8px;
     }
     .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
+      content: ''; flex: 1; height: 1px; background: var(--line);
     }
 
     .help-link { text-align: center; font-size: 13px; color: var(--muted); }
-    .help-link a { color: var(--navy); font-weight: 600; text-decoration: none; }
-    .help-link a:hover { color: var(--gold); }
+    .help-link a { color: var(--stamp); font-weight: 700; text-decoration: none; }
+    .help-link a:hover { text-decoration: underline; }
 
     /* Student info (post-login) */
     .student-info { display: none; }
@@ -213,96 +263,122 @@
     }
 
     .student-profile {
-      background: linear-gradient(135deg, #0b1f3a 0%, #1a3a6b 100%);
-      border-radius: 14px;
-      padding: 20px 22px;
+      background: var(--ink);
+      background-image: radial-gradient(circle at 90% 0%, rgba(232,181,99,.18), transparent 55%);
+      border-radius: 10px;
+      padding: 20px 20px 20px 22px;
       display: flex; align-items: center; gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
     }
     .avatar-circle {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: var(--gold); color: var(--navy);
-      font-family: 'DM Serif Display', serif; font-size: 22px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--gold2); color: var(--ink);
+      font-family: 'Fraunces', serif; font-weight: 700; font-size: 21px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.5);
     }
-    .profile-text .pname { font-size: 16px; font-weight: 700; color: var(--white); }
-    .profile-text .psid  { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .profile-text .pname { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: #fff; }
+    .profile-text .psid  { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--gold2); margin-top: 3px; letter-spacing: .3px; }
+
+    .verified-stamp {
+      position: absolute; top: 12px; right: 16px;
+      border: 2px solid var(--gold2);
+      color: var(--gold2);
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px; font-weight: 700;
+      letter-spacing: 1.4px;
+      padding: 4px 9px;
+      border-radius: 4px;
+      transform: rotate(6deg);
+      text-transform: uppercase;
+      opacity: .85;
+    }
 
     .info-grid {
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; margin-bottom: 22px;
+      gap: 9px; margin-bottom: 22px;
     }
     .info-item {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px 14px;
+      background: #faf5e8;
+      border: 1px solid var(--line);
+      border-radius: 7px; padding: 11px 13px;
     }
     .info-item .lbl {
-      font-size: 10.5px; font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px; font-weight: 700;
       letter-spacing: .7px; text-transform: uppercase;
       color: var(--muted); margin-bottom: 4px;
     }
-    .info-item .val { font-size: 13.5px; font-weight: 600; color: var(--navy); }
+    .info-item .val { font-size: 13.5px; font-weight: 600; color: var(--ink); }
 
     .action-btns { display: flex; flex-direction: column; gap: 10px; }
 
     .btn-portal {
       width: 100%; padding: 14px;
-      background: linear-gradient(135deg, #15803d, #16a34a);
-      color: var(--white); border: none; border-radius: 12px;
+      background: var(--success);
+      color: #fff; border: none; border-radius: 6px;
       font-size: 14.5px; font-weight: 700;
-      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      font-family: 'Public Sans', sans-serif; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 9px;
       transition: all .2s;
-      box-shadow: 0 4px 16px rgba(21,128,61,.28);
+      box-shadow: 0 5px 16px rgba(47,125,94,.3);
+      text-transform: uppercase; letter-spacing: .3px;
     }
-    .btn-portal:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(21,128,61,.36); }
+    .btn-portal:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(47,125,94,.38); }
 
     .btn-letter {
       width: 100%; padding: 13px;
-      background: var(--white); color: var(--navy);
-      border: 2px solid var(--border); border-radius: 12px;
-      font-size: 14px; font-weight: 600;
-      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      background: transparent; color: var(--ink2);
+      border: 1.5px solid var(--line2); border-radius: 6px;
+      font-size: 13.5px; font-weight: 600;
+      font-family: 'Public Sans', sans-serif; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 9px;
       transition: all .2s;
     }
-    .btn-letter:hover { border-color: var(--navy); background: var(--cream); }
+    .btn-letter:hover { border-color: var(--ink2); background: #f2ebd6; }
 
     /* Toast */
     #toast {
       position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--navy); color: var(--white);
-      padding: 14px 24px; border-radius: 12px;
-      font-size: 14px; font-weight: 500;
+      background: var(--ink); color: #fff;
+      padding: 13px 22px; border-radius: 8px;
+      font-size: 13.5px; font-weight: 500;
       display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+      box-shadow: 0 8px 32px rgba(0,0,0,.24);
       transition: transform .35s cubic-bezier(.34,1.56,.64,1);
       z-index: 9999; white-space: nowrap;
+      border-left: 3px solid var(--gold);
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.error { background: var(--danger); }
+    #toast.error { background: var(--danger); border-left-color: #7a2019; }
 
     /* Footer */
     footer {
-      text-align: center; padding: 24px;
-      font-size: 12.5px; color: var(--muted);
-      border-top: 1px solid var(--border);
+      text-align: center; padding: 22px;
+      font-size: 11.5px; color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: .3px;
+      border-top: 1px solid var(--line);
     }
 
     /* Responsive */
     @media (max-width: 880px) {
-      main { margin: 28px auto; }
-      header { padding: 14px 20px; }
+      main { margin: 30px auto; }
+      header { padding: 13px 20px; }
       .header-badge { display: none; }
     }
     @media (max-width: 480px) {
-      header img { width: 40px; height: 40px; }
-      .header-text h1 { font-size: 18px; }
+      header img { width: 36px; height: 36px; }
+      .header-text h1 { font-size: 17px; }
       .card-body { padding: 22px 18px; }
+      .card-header { padding: 22px 20px 18px; }
+      .perf { margin: 0 14px; }
       .info-grid { grid-template-columns: 1fr; }
+      .file-tab { margin-left: 8px; font-size: 9.5px; padding: 6px 12px 7px; }
     }
   </style>
 </head>
@@ -315,131 +391,141 @@
       <h1>GH Schools</h1>
       <p>Student Payment Portal</p>
     </div>
-    <span class="header-badge"><i class="fas fa-lock" style="font-size:10px;margin-right:4px;"></i> Secure Portal</span>
+    <span class="header-badge"><i class="fas fa-lock"></i> Encrypted</span>
   </header>
 
   <!-- Main -->
   <main>
 
-    <!-- Login Card -->
-    <div class="login-card">
+    <div class="login-card-wrap">
 
-      <div class="card-header">
-        <h2>Student Login</h2>
-        <p>Enter your Student ID and Password to access your portal</p>
+      <div class="file-tab"><i class="fas fa-folder"></i> Student Record Access</div>
 
-      </div>
+      <!-- Login Card -->
+      <div class="login-card">
 
-      <div class="card-body">
-
-        <!-- Warning notice -->
-        <div class="card-notice">
-          <i class="fas fa-info-circle"></i>
-          <div>
-            <strong>Your Student ID and Password are both required to log in.</strong><br>
-            These are issued in person at the GH Schools Admissions Office after your documents have been physically verified. If you have not yet visited the school, please do so first before attempting to log in here.
-          </div>
+        <div class="card-header">
+          <span class="rivet left"></span>
+          <span class="rivet right"></span>
+          <h2>Student Login</h2>
+          <p>Enter your Student ID and Password to access your portal</p>
         </div>
 
-        <!-- Login Form -->
-        <div id="loginFormWrap">
-          <form id="loginForm">
+        <div class="perf"></div>
 
-            <label for="studentId"><i class="fas fa-id-badge"></i>&nbsp; Student ID</label>
-            <div class="input-wrap">
-              <input
-                type="text"
-                id="studentId"
-                required
-                placeholder="e.g. GHM-2026-001"
-                autocomplete="off"
-                spellcheck="false"
-                style="text-transform:uppercase;"
-              >
-              <span class="input-icon-right"><i class="fas fa-hashtag"></i></span>
-            </div>
+        <div class="card-body">
 
-            <label for="portalPassword"><i class="fas fa-id-badge"></i>&nbsp; Password</label>
-            <div class="input-wrap">
-              <input
-                type="text"
-                id="portalPassword"
-                required
-                placeholder="Enter your portal password"
-                autocomplete="off"
-                spellcheck="false"
-                style="text-transform:uppercase;"
-              >
-              <span class="input-icon-right"><i class="fas fa-key"></i></span>
-            </div>
-
-            <button type="submit" class="submit-btn" id="loginBtn">
-              <i class="fas fa-sign-in-alt"></i> Verify &amp; Proceed
-            </button>
-          </form>
-
-          <div class="divider">need assistance?</div>
-
-          <div class="help-link">
-            Don't have your credentials yet?&nbsp;
-            <a href="tel:0274622250">Call 0274&nbsp;622250</a>
-          </div>
-        </div>
-
-        <!-- Hidden auto-fill placeholder (unused) -->
-        <div id="autoFillNotification" style="display:none;"></div>
-
-        <!-- Student Info (post-login) -->
-        <div class="student-info" id="studentInfo">
-
-          <div class="student-profile">
-            <div class="avatar-circle" id="avatarCircle">—</div>
-            <div class="profile-text">
-              <div class="pname" id="infoName">—</div>
-              <div class="psid" id="infoAdmissionNo">Student ID: —</div>
+          <!-- Warning notice -->
+          <div class="card-notice">
+            <i class="fas fa-info-circle"></i>
+            <div>
+              <strong>Your Student ID and Password are both required to log in.</strong><br>
+              These are issued in person at the GH Schools Admissions Office after your documents have been physically verified. If you have not yet visited the school, please do so first before attempting to log in here.
             </div>
           </div>
 
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="lbl">Email</div>
-              <div class="val" id="infoEmail">—</div>
-            </div>
-            <div class="info-item">
-              <div class="lbl">Phone</div>
-              <div class="val" id="infoPhone">—</div>
-            </div>
-            <div class="info-item">
-              <div class="lbl">Program</div>
-              <div class="val" id="infoProgram">—</div>
-            </div>
-            <div class="info-item">
-              <div class="lbl">School</div>
-              <div class="val" id="infoSchool">—</div>
-            </div>
-            <div class="info-item">
-              <div class="lbl">Duration</div>
-              <div class="val" id="infoDuration">—</div>
-            </div>
-            <div class="info-item">
-              <div class="lbl">Course Type</div>
-              <div class="val" id="infoCourseType">—</div>
+          <!-- Login Form -->
+          <div id="loginFormWrap">
+            <form id="loginForm">
+
+              <label for="studentId"><i class="fas fa-id-badge"></i>&nbsp; Student ID</label>
+              <div class="input-wrap">
+                <input
+                  type="text"
+                  id="studentId"
+                  required
+                  placeholder="e.g. GHM-2026-001"
+                  autocomplete="off"
+                  spellcheck="false"
+                  style="text-transform:uppercase;"
+                >
+                <span class="input-icon-right"><i class="fas fa-hashtag"></i></span>
+              </div>
+
+              <label for="portalPassword"><i class="fas fa-key"></i>&nbsp; Password</label>
+              <div class="input-wrap">
+                <input
+                  type="text"
+                  id="portalPassword"
+                  required
+                  placeholder="Enter your portal password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  style="text-transform:uppercase;"
+                >
+                <span class="input-icon-right"><i class="fas fa-key"></i></span>
+              </div>
+
+              <button type="submit" class="submit-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Verify &amp; Proceed
+              </button>
+            </form>
+
+            <div class="divider">need assistance?</div>
+
+            <div class="help-link">
+              Don't have your credentials yet?&nbsp;
+              <a href="tel:0274622250">Call 0274&nbsp;622250</a>
             </div>
           </div>
 
-          <div class="action-btns">
-            <button class="btn-portal" id="proceedToPortal">
-              <i class="fas fa-tachometer-alt"></i> Proceed to Student Portal
-            </button>
-            <button class="btn-letter" id="viewAdmissionLetter">
-              <i class="fas fa-file-alt"></i> View Admission Letter
-            </button>
-          </div>
+          <!-- Hidden auto-fill placeholder (unused) -->
+          <div id="autoFillNotification" style="display:none;"></div>
 
-        </div><!-- /studentInfo -->
+          <!-- Student Info (post-login) -->
+          <div class="student-info" id="studentInfo">
 
-      </div><!-- /card-body -->
-    </div><!-- /login-card -->
+            <div class="student-profile">
+              <span class="verified-stamp">Verified</span>
+              <div class="avatar-circle" id="avatarCircle">—</div>
+              <div class="profile-text">
+                <div class="pname" id="infoName">—</div>
+                <div class="psid" id="infoAdmissionNo">Student ID: —</div>
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="lbl">Email</div>
+                <div class="val" id="infoEmail">—</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">Phone</div>
+                <div class="val" id="infoPhone">—</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">Program</div>
+                <div class="val" id="infoProgram">—</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">School</div>
+                <div class="val" id="infoSchool">—</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">Duration</div>
+                <div class="val" id="infoDuration">—</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">Course Type</div>
+                <div class="val" id="infoCourseType">—</div>
+              </div>
+            </div>
+
+            <div class="action-btns">
+              <button class="btn-portal" id="proceedToPortal">
+                <i class="fas fa-tachometer-alt"></i> Proceed to Student Portal
+              </button>
+              <button class="btn-letter" id="viewAdmissionLetter">
+                <i class="fas fa-file-alt"></i> View Admission Letter
+              </button>
+            </div>
+
+          </div><!-- /studentInfo -->
+
+        </div><!-- /card-body -->
+      </div><!-- /login-card -->
+
+    </div><!-- /login-card-wrap -->
 
   </main>
 

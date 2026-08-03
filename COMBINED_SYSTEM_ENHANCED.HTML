@@ -136,6 +136,14 @@
   white-space:nowrap;
 }
 .src-kowri i { font-size:9px; }
+.src-ecobank {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px;
+  background:linear-gradient(135deg,#dbeafe,#bfdbfe);
+  color:#1e3a8a; border:1px solid #93c5fd;
+  white-space:nowrap;
+}
+.src-ecobank i { font-size:9px; }
 
 /* ── Payment Source Breakdown Strip ── */
 .pay-source-strip {
@@ -1185,6 +1193,7 @@ body {
   animation: modalIn .28s cubic-bezier(.34,1.4,.64,1) both;
 }
 .modal-lg { max-width: 700px; }
+#collectSuccessModal { z-index: 1001; }
 .modal-xl { max-width: 900px; }
 @keyframes modalIn { from{ opacity:0; transform:scale(.93) translateY(18px); } to{ opacity:1; transform:scale(1) translateY(0); } }
 .modal-header {
@@ -8936,8 +8945,9 @@ async function loadOverview() {
     const catTotals = { admission:{rev:0,count:0}, tuition:{rev:0,count:0}, src:{rev:0,count:0}, departmental:{rev:0,count:0}, medical:{rev:0,count:0}, other:{rev:0,count:0} };
     approvedPayments.forEach(r => {
       const cat = categorizeFeeType(r.fee_type);
-      catTotals[cat].rev += parseFloat(r.amount || 0);
-      catTotals[cat].count += 1;
+      const bucket = catTotals[cat] || catTotals.other;
+      bucket.rev += parseFloat(r.amount || 0);
+      bucket.count += 1;
     });
 
     // ── Payment Source Breakdown ──
@@ -9835,6 +9845,7 @@ function categorizeFeeType(feeType) {
   if (ft.includes('src')) return 'src';
   if (ft.includes('department')) return 'departmental';
   if (ft.includes('medical') || ft.includes('health')) return 'medical';
+  if (ft.includes('gas') || ft.includes('machine')) return 'gas';
   return 'other';
 }
 
@@ -9898,19 +9909,26 @@ function getPaymentSource(p) {
   // with neither word anywhere on it is a Cashier Desk payment.
   let payloadStr = '';
   try { payloadStr = JSON.stringify(payload || {}); } catch (_) { payloadStr = ''; }
-  const haystack = `${payloadStr} ${p.transaction_ref||''} ${p.receipt_number||''} ${p.source_table||''}`.toLowerCase();
+  // Ecobankpay is a separate payment gateway students use directly (like
+  // Paystack/Kowri) — it is NOT the cashier desk, so it must be included
+  // in this same keyword scan, and also checked against fee_type /
+  // payment_method since Ecobankpay rows are often labelled straight into
+  // the fee type, e.g. "Tuition (Ecobankpay)".
+  const haystack = `${payloadStr} ${p.transaction_ref||''} ${p.receipt_number||''} ${p.source_table||''} ${p.fee_type||''} ${p.payment_method||''}`.toLowerCase();
   const mentionsKowri    = haystack.includes('kowri');
   const mentionsPaystack = haystack.includes('paystack') || txRef.startsWith('PSK-');
-  const gatewayName = mentionsKowri && mentionsPaystack ? 'Paystack/Kowri' : mentionsKowri ? 'Kowri' : 'Paystack';
-  const gatewayCss  = mentionsKowri && !mentionsPaystack ? 'src-kowri' : 'src-paystack';
-  const gatewayIcon = mentionsKowri && !mentionsPaystack ? 'fa-mobile-screen' : 'fa-credit-card';
+  const mentionsEcobank  = haystack.includes('ecobank');
+  const gatewayName = mentionsEcobank ? 'Ecobankpay'
+    : (mentionsKowri && mentionsPaystack) ? 'Paystack/Kowri' : mentionsKowri ? 'Kowri' : 'Paystack';
+  const gatewayCss  = mentionsEcobank ? 'src-ecobank' : (mentionsKowri && !mentionsPaystack) ? 'src-kowri' : 'src-paystack';
+  const gatewayIcon = mentionsEcobank ? 'fa-building-columns' : (mentionsKowri && !mentionsPaystack) ? 'fa-mobile-screen' : 'fa-credit-card';
 
   // -- 0a. Admission Form (Application Form) payments -- normalised from the
   //        admission_payments table as source_table:'admission_form'.
   //        Distinguish Portal (paid online via Paystack by the applicant)
   //        from Cashier Desk (collected in person from a walk-in applicant).
   if (src === 'admission_form') {
-    if (payload.paystack_tx || payload.paystack_reference || mentionsPaystack || mentionsKowri) {
+    if (payload.paystack_tx || payload.paystack_reference || mentionsPaystack || mentionsKowri || mentionsEcobank) {
       return {
         label:     `Admission Form - Portal (${gatewayName})`,
         shortLabel:'Admission Form (Portal)',
@@ -9941,7 +9959,7 @@ function getPaymentSource(p) {
   //             transaction_ref is prefixed 'GHSCH-'.
   //   CASHIER : recorded in person via the "Record Admission Payment" tool.
   if (src === 'admission_payments') {
-    const hasAdmPaystack = !!(payload.paystack && (payload.paystack.reference || payload.paystack.status)) || txRef.startsWith('GHSCH-') || mentionsPaystack || mentionsKowri;
+    const hasAdmPaystack = !!(payload.paystack && (payload.paystack.reference || payload.paystack.status)) || txRef.startsWith('GHSCH-') || mentionsPaystack || mentionsKowri || mentionsEcobank;
     if (hasAdmPaystack) {
       return {
         label:     `Admission Fee - Portal (${gatewayName})`,
@@ -9971,10 +9989,10 @@ function getPaymentSource(p) {
   // source_table:'dashboard' and use a 'GHTU-' prefixed reference rather
   // than 'PSK-', so recognise that combination here too.
   const isDashboardPaystack = src === 'dashboard' && txRef.startsWith('GHTU-');
-  const hasPaystackRef = !!payload.paystack_reference || !!payload.paystack_tx || isDashboardPaystack || mentionsPaystack || mentionsKowri;
+  const hasPaystackRef = !!payload.paystack_reference || !!payload.paystack_tx || isDashboardPaystack || mentionsPaystack || mentionsKowri || mentionsEcobank;
   if (hasPaystackRef) {
     return {
-      label:     `Student Portal${(mentionsKowri && !mentionsPaystack) ? ' - Kowri' : ''}`,
+      label:     `Student Portal${mentionsEcobank ? ' - Ecobankpay' : (mentionsKowri && !mentionsPaystack) ? ' - Kowri' : ''}`,
       shortLabel:'Student Portal',
       icon:      gatewayIcon,
       cssClass:  gatewayCss,
@@ -15067,6 +15085,94 @@ async function loadGenFeeTypes(levelAmountMap) {
   }
 }
 
+// ── Refresh the currently-selected student's fee/paid maps only (no grid render) ──
+// This is the data that getUnpaidMandatoryDues()/blockIfTuitionLocked() read from
+// to decide whether Tuition is locked. Call this right after a dues payment so
+// Tuition unlocks immediately for the SAME student — no need to re-search the student ID.
+async function refreshGenStudentPaidMapsOnly() {
+  const s = _genSelectedStudent;
+  if (!s) return;
+  try {
+    const db = getDB();
+    const sid  = (s.student_id || '').toString().trim();
+    const lvl  = (s.level || '').toString().trim().replace(/^level\s*/i, '');
+    const acYear = document.getElementById('genAcYear')?.value || document.getElementById('genLvlAcYear')?.value || '';
+
+    let query = db.from('fee_schedules').select('fee_type, amount, level');
+    if (acYear) query = query.eq('academic_year', acYear);
+    const { data: schedRows } = await query.not('fee_type','ilike','%admission%');
+    _genAllFeeSchedRows = schedRows || [];
+
+    const bestFee = {};
+    (schedRows || []).forEach(r => {
+      const rowLvl = r.level ? r.level.toString().trim() : null;
+      const isMatch = !rowLvl || rowLvl === lvl;
+      if (!isMatch) return;
+      const existing = bestFee[r.fee_type];
+      if (!existing || (rowLvl && !existing._lvlSpecific)) {
+        bestFee[r.fee_type] = { amount: parseFloat(r.amount) || 0, _lvlSpecific: !!rowLvl };
+      }
+    });
+    _genStudentTotalFees = Object.values(bestFee).reduce((sum, r) => sum + r.amount, 0);
+    _genStudentFeeMap    = {};
+    Object.entries(bestFee).forEach(([ft, r]) => {
+      _genStudentFeeMap[ft] = r.amount;
+      const nk = normalizeFeeKey(ft);
+      if (nk !== ft) _genStudentFeeMap[nk] = r.amount;
+    });
+
+    const { data: paidRows } = await db.from('payments')
+      .select('fee_type, amount').ilike('student_id', sid)
+      .eq('status', 'approved').not('fee_type','ilike','%admission%');
+    _genStudentTotalPaid = (paidRows || []).reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+    _genStudentPaidMap   = {};
+    (paidRows || []).forEach(r => {
+      const ft  = (r.fee_type || '').trim();
+      const nk  = normalizeFeeKey(ft);
+      const amt = parseFloat(r.amount || 0);
+      _genStudentPaidMap[ft] = (_genStudentPaidMap[ft] || 0) + amt;
+      if (nk !== ft) _genStudentPaidMap[nk] = (_genStudentPaidMap[nk] || 0) + amt;
+    });
+
+    s.outstanding_balance = Math.max(0, _genStudentTotalFees - _genStudentTotalPaid);
+    return bestFee;
+  } catch(e) {
+    console.warn('refreshGenStudentPaidMapsOnly failed:', e);
+    return {};
+  }
+}
+
+// Refreshes maps AND re-renders the inline "General Fee Collection" page grid.
+async function refreshGenStudentFeeState() {
+  if (!_genSelectedStudent) return;
+  const bestFee = await refreshGenStudentPaidMapsOnly();
+  const levelAmountMap = {};
+  Object.entries(bestFee || {}).forEach(([name, r]) => { levelAmountMap[name] = r.amount; });
+  await loadGenFeeTypes(levelAmountMap); // re-renders grid — unlocks Tuition if dues are now cleared
+  rebuildGenFeeLineItems();
+}
+
+// Clears only the fee-type selection + payment-form inputs, but keeps the
+// currently-selected student loaded so the cashier can record their next
+// fee type right away instead of searching for the student again.
+function resetGenFeeSelectionKeepStudent() {
+  _genSelectedFeeTypes = new Map();
+  document.querySelectorAll('#genFeeTypesGrid .gen-ft-btn').forEach(b => {
+    b.style.borderColor = '#e5e7eb'; b.style.background = 'white';
+    const check = b.querySelector('.gen-ft-check'); const tick = check && check.querySelector('.fa-check');
+    if (check) { check.style.background = 'white'; check.style.borderColor = '#d1d5db'; }
+    if (tick)  { tick.style.display = 'none'; }
+  });
+  const badge = document.getElementById('genFeeSelCount'); if (badge) badge.style.display = 'none';
+  const flist = document.getElementById('genSelectedFeesList'); if (flist) flist.style.display = 'none';
+  ['genAmount','genTxRef','genFeeBreakdown'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('genPreviewFeeType').textContent = '—';
+  document.getElementById('genPreviewAmount').textContent  = '—';
+  const prevOut = document.getElementById('genPreviewOutstanding'); if (prevOut) prevOut.textContent = '—';
+  const pf = document.getElementById('genPaymentForm');
+  if (pf) { pf.style.opacity = '.5'; pf.style.pointerEvents = 'none'; }
+}
+
 function genFeeTypeBtn(feeType, amount) {
   const icon = getFeeTypeIcon(feeType);
   const amtStr = amount != null ? `GHS ${parseFloat(amount).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2})}` : '';
@@ -15141,7 +15247,6 @@ function getFeeTypeIcon(name) {
 // Type 4 = Tuition, Type 5 = everything else.
 function buildBankLevelTypePriority(method, level, feeType) {
   let priority = 5;
-  let label = (feeType || 'Other').toString().trim() || 'Other';
   try {
     const cat = (typeof categorizeFeeType === 'function') ? categorizeFeeType(feeType) : null;
     if (cat === 'src') {
@@ -15154,7 +15259,10 @@ function buildBankLevelTypePriority(method, level, feeType) {
       priority = 4;
     }
   } catch (e) { /* fall back to default priority */ }
-  return `Type ${priority} (${label})`;
+  // bank_level_type_priority is an INTEGER column in `payments` — must return
+  // a plain number, not a formatted label (was: `Type ${priority} (${label})`,
+  // which caused every insert to fail with 22P02 invalid input syntax for type integer).
+  return priority;
 }
 
 function isTuitionFeeType(ft) {
@@ -15162,10 +15270,36 @@ function isTuitionFeeType(ft) {
   return n.includes('tuition') || n.includes('semester');
 }
 
+// Schools whose students must clear SRC + Medical + Departmental dues before Tuition unlocks.
+const TUITION_LOCK_SCHOOLS_3DUES = ['GH MEDIA SCHOOL', 'GH TECHNOLOGY SCHOOL', 'GH COSMETOLOGY'];
+// Schools whose students must ALSO clear the Gas/Machine User fee (on top of the 3 dues above).
+const TUITION_LOCK_SCHOOLS_4DUES = ['GH CATERING SCHOOL', 'GH FASHION SCHOOL'];
+
+// Resolves the currently-selected general-fee student's school to one of the
+// canonical SCHOOL_BASE_PREFIXES keys (e.g. 'GH CATERING SCHOOL'), or null
+// if the student's school couldn't be determined / isn't one of the five schools.
+function getGenStudentSchoolKey() {
+  const s = _genSelectedStudent;
+  if (!s) return null;
+  return resolveSchoolKey(s.school_selected || s.school, s.program) || normaliseSchoolKey(s.school || s.program || '');
+}
+
 function getUnpaidMandatoryDues() {
+  const schoolKey = getGenStudentSchoolKey();
+  // Students outside Media / Technology / Cosmetology / Catering / Fashion are
+  // not subject to the tuition lock at all.
+  const requiresGas = TUITION_LOCK_SCHOOLS_4DUES.includes(schoolKey);
+  const requires3    = TUITION_LOCK_SCHOOLS_3DUES.includes(schoolKey) || requiresGas;
+  if (!requires3) return [];
+
   const catLabels     = { src: 'SRC Dues', departmental: 'Departmental Dues', medical: 'Medical Dues' };
   const requiredByCat = { src: 0, departmental: 0, medical: 0 };
   const paidByCat     = { src: 0, departmental: 0, medical: 0 };
+  if (requiresGas) {
+    catLabels.gas     = 'Gas/Machine User Fee';
+    requiredByCat.gas  = 0;
+    paidByCat.gas      = 0;
+  }
 
   const seenReq = new Set();
   Object.keys(_genStudentFeeMap || {}).forEach(ft => {
@@ -15921,25 +16055,41 @@ async function submitGenLevelPayment() {
     summary.receipt_number = receiptNum; // show primary receipt number for the batch
     summary.transaction_ref = baseTxRef;
 
-    closeModal('genLevelFeeModal');
     showCollectSuccess('general', summary, method);
-    clearGeneralStudent();
     loadGeneralHistory();
     loadCollectQuickStats();
-    toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded!`, 'success');
-    // ── After General Fees payment: redirect to Receipts page with student name pre-filled ──
-    const _genStudentName = fullName;
-    setTimeout(() => {
-      showView('receipts');
-      const rsEl = document.getElementById('receiptSearch');
-      const refEl = document.getElementById('receiptSearchRef');
-      // Prefer searching by receipt number to ensure the newly created grouped
-      // receipt appears first (exact match). Clear the name search to avoid
-      // accidentally narrowing results.
-      if (rsEl) rsEl.value = '';
-      if (refEl && typeof baseTxRef !== 'undefined') { refEl.value = baseTxRef; }
-      searchReceipt();
-    }, 600);
+
+    // ── Keep the modal open on the same student if Tuition wasn't part of this
+    // payment, so the cashier can record Tuition (or another fee) right after
+    // paying dues — no need to close the modal and re-search the student ID.
+    const paidTuitionNowLvl = feeEntries.some(e => isTuitionFee(e.feeType));
+    if (!paidTuitionNowLvl && _genSelectedStudent) {
+      await refreshGenStudentPaidMapsOnly(); // updates dues-paid status used by getUnpaidMandatoryDues()
+      const activeLvl = _genLvlActiveLevel;
+      if (activeLvl) delete _genLvlFeeData[activeLvl]; // force re-fetch of paid progress for this level
+      const studentLevelStr = (s.level || '').toString().trim();
+      if (activeLvl) await openGenLevelFeePanel(activeLvl, studentLevelStr); // re-renders fee grid — unlocks Tuition if dues now cleared
+      document.getElementById('genLvlTxRef').value = '';
+      document.getElementById('genLvlBreakdown').value = '';
+      toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded! Tuition is now unlocked for this student — select it below to continue.`, 'success');
+    } else {
+      closeModal('genLevelFeeModal');
+      clearGeneralStudent();
+      toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded!`, 'success');
+      // ── After Tuition (or final) payment: redirect to Receipts page with student name pre-filled ──
+      const _genStudentName = fullName;
+      setTimeout(() => {
+        showView('receipts');
+        const rsEl = document.getElementById('receiptSearch');
+        const refEl = document.getElementById('receiptSearchRef');
+        // Prefer searching by receipt number to ensure the newly created grouped
+        // receipt appears first (exact match). Clear the name search to avoid
+        // accidentally narrowing results.
+        if (rsEl) rsEl.value = '';
+        if (refEl && typeof baseTxRef !== 'undefined') { refEl.value = baseTxRef; }
+        searchReceipt();
+      }, 600);
+    }
   } catch(e) {
     toast('Error: ' + (e.message || 'Could not save payment'), 'error');
     console.error('Gen level payment error:', e);
@@ -16105,20 +16255,31 @@ async function submitGeneralPayment() {
     };
 
     showCollectSuccess('general', summary, method);
-    clearGeneralStudent();
     loadGeneralHistory();
     loadCollectQuickStats();
-    toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded!`, 'success');
-    // ── After General Fees payment: redirect to Receipts page with student name pre-filled ──
-    const _genStudentName = fullName;
-    setTimeout(() => {
-      showView('receipts');
-      const rsEl = document.getElementById('receiptSearch');
-      const refEl = document.getElementById('receiptSearchRef');
-      if (rsEl) rsEl.value = '';
-      if (refEl && typeof receiptNum !== 'undefined') { refEl.value = receiptNum; }
-      searchReceipt();
-    }, 600);
+
+    // ── Keep the same student loaded if this payment didn't include Tuition ──
+    // so the cashier can immediately record Tuition (or any other remaining
+    // fee) for that student without searching for the student ID again.
+    const paidTuitionNow = feeEntries.some(e => isTuitionFeeGen(e.feeType));
+    if (!paidTuitionNow && _genSelectedStudent) {
+      resetGenFeeSelectionKeepStudent();
+      await refreshGenStudentFeeState(); // re-checks dues → unlocks Tuition button if now clear
+      toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded! Student stays selected — you can now record Tuition or another fee.`, 'success');
+    } else {
+      clearGeneralStudent();
+      toast(`${feeEntries.length} fee payment${feeEntries.length > 1 ? 's' : ''} recorded!`, 'success');
+      // ── After Tuition (or final) payment: redirect to Receipts page with student name pre-filled ──
+      const _genStudentName = fullName;
+      setTimeout(() => {
+        showView('receipts');
+        const rsEl = document.getElementById('receiptSearch');
+        const refEl = document.getElementById('receiptSearchRef');
+        if (rsEl) rsEl.value = '';
+        if (refEl && typeof receiptNum !== 'undefined') { refEl.value = receiptNum; }
+        searchReceipt();
+      }, 600);
+    }
   } catch(e) {
     toast('Error: ' + (e.message || 'Could not save payment'), 'error');
     console.error('Gen payment error:', e);
@@ -19820,17 +19981,27 @@ function showCollectSuccess(type, record, method) {
         </div>`).join('')}
     </div>`;
 
-  // Print Receipt button — only shown for admission-related payments
+  // Print Receipt button — shown for every payment type right after recording
   const printSlot = document.getElementById('collectSuccessPrintSlot');
   if (printSlot) {
     if (type === 'appform' || type === 'admission') {
       printSlot.innerHTML = `<button onclick="printCollectAdmReceipt()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#111;color:white;border:none;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer"><i class="fas fa-print"></i> Print Receipt</button>`;
     } else {
-      printSlot.innerHTML = '';
+      printSlot.innerHTML = `<button onclick="printCollectReceipt()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#111;color:white;border:none;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer"><i class="fas fa-print"></i> Print Receipt</button>`;
     }
   }
 
   openModal('collectSuccessModal');
+
+  // Auto-print the receipt right after the payment is recorded, so the
+  // cashier doesn't have to go to the receipt search page to print it.
+  setTimeout(() => {
+    if (type === 'appform' || type === 'admission') {
+      printCollectAdmReceipt();
+    } else {
+      printCollectReceipt();
+    }
+  }, 400);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -23824,7 +23995,7 @@ async function loadShiftReport() {
           <div style="font-size:11px;color:#78350f;font-weight:600;margin-top:2px">${cashApproved.length} transaction${cashApproved.length!==1?'s':''}</div>
         </div>
         <div style="background:#eff6ff;border:1px solid #bfdbfe;border-top:3px solid #2563eb;border-radius:var(--radius);padding:14px 18px">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="fas fa-mobile-screen" style="color:#2563eb;font-size:13px"></i><span style="font-size:11.5px;font-weight:700;color:#1e40af">Student Portal (Paystack/Kowri)</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="fas fa-mobile-screen" style="color:#2563eb;font-size:13px"></i><span style="font-size:11.5px;font-weight:700;color:#1e40af">Student Portal (Paystack/Kowri/Ecobankpay)</span></div>
           <div style="font-size:19px;font-weight:800;color:#2563eb;font-family:'Fraunces',serif">${formatGHS(portalApprovedRev)}</div>
           <div style="font-size:11px;color:#1e3a8a;font-weight:600;margin-top:2px">${portalApproved.length} transaction${portalApproved.length!==1?'s':''}</div>
         </div>

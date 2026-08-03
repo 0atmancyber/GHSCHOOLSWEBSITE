@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SMS Resend Dashboard – GH SCHOOLS</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #f8bb05;
+    --primary-dark: #e0a904;
+    --secondary: #1a1a1a;
+    --accent-green: #1a9e46;
+    --accent-red: #d64545;
+    --light: #ffffff;
+    --gray-bg: #f5f5f3;
+    --border: #e6e3dc;
+    --text-dim: #767267;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Inter', sans-serif;
+    background: var(--gray-bg);
+    color: var(--secondary);
+    min-height:100vh;
+  }
+  header {
+    background: var(--secondary);
+    color: #fff;
+    padding: 18px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom: 4px solid var(--primary);
+  }
+  header .brand { display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.3px; }
+  header .brand span.tag {
+    background:var(--primary); color:var(--secondary); font-size:0.65rem; font-weight:800;
+    padding:3px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px;
+  }
+  header .conn-status { font-size:0.78rem; color:#c9c6bd; display:flex; align-items:center; gap:6px; }
+  header .conn-status .dot { width:8px; height:8px; border-radius:50%; background:var(--accent-green); }
+
+  main { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+
+  .lookup-panel {
+    background:var(--light);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.04);
+    margin-bottom:32px;
+  }
+  .lookup-panel h1 { font-size:1.25rem; font-weight:800; margin-bottom:4px; }
+  .lookup-panel p.sub { color:var(--text-dim); font-size:0.88rem; margin-bottom:20px; }
+
+  .search-row { display:flex; gap:10px; }
+  .search-row input {
+    flex:1;
+    padding:13px 16px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    font-size:0.95rem;
+    font-family:'JetBrains Mono', monospace;
+    transition:border-color .15s;
+  }
+  .search-row input:focus { outline:none; border-color:var(--primary); }
+  .search-row button {
+    background:var(--secondary); color:#fff; border:none;
+    padding:0 22px; border-radius:10px; font-weight:600; font-size:0.9rem;
+    cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .15s;
+  }
+  .search-row button:hover { background:#333; }
+  .search-row button:disabled { opacity:0.6; cursor:not-allowed; }
+  .hint { font-size:0.78rem; color:var(--text-dim); margin-top:8px; }
+
+  .result-card { margin-top:22px; border-top:1px solid var(--border); padding-top:22px; display:none; }
+  .result-card.show { display:block; animation:fadeIn .25s ease-out; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+  .result-grid {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:16px; margin-bottom:20px;
+  }
+  .field { background:var(--gray-bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+  .field label { display:block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
+  .field div { font-size:0.92rem; font-weight:600; word-break:break-word; }
+  .field.mono div { font-family:'JetBrains Mono', monospace; font-weight:500; }
+
+  .status-pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; text-transform:uppercase; }
+  .status-pill.success { background:#e2f6e8; color:var(--accent-green); }
+  .status-pill.pending { background:#fff3d6; color:#a17300; }
+  .status-pill.failed { background:#fbe6e6; color:var(--accent-red); }
+
+  .action-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .resend-btn {
+    background:var(--primary); color:var(--secondary); border:none;
+    padding:13px 22px; border-radius:10px; font-weight:700; font-size:0.9rem;
+    cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .15s, transform .1s;
+  }
+  .resend-btn:hover { background:var(--primary-dark); }
+  .resend-btn:active { transform:scale(0.98); }
+  .resend-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .msg { font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .msg.ok { color:var(--accent-green); }
+  .msg.err { color:var(--accent-red); }
+
+  .empty-state, .error-state { display:none; margin-top:20px; padding:16px 18px; border-radius:10px; font-size:0.88rem; }
+  .empty-state.show { display:flex; align-items:center; gap:10px; background:#fff3d6; color:#8a6700; }
+  .error-state.show { display:flex; align-items:center; gap:10px; background:#fbe6e6; color:var(--accent-red); }
+
+  .browse-panel {
+    background:var(--light); border:1px solid var(--border); border-radius:16px;
+    padding:24px 28px 8px; box-shadow:0 4px 24px rgba(0,0,0,0.04);
+  }
+  .browse-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
+  .browse-head h2 { font-size:1.05rem; font-weight:800; }
+  .browse-head .filter { display:flex; align-items:center; gap:8px; }
+  .browse-head input {
+    padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:0.85rem; width:220px;
+  }
+  .browse-head input:focus { outline:none; border-color:var(--primary); }
+  .browse-head button.refresh {
+    background:var(--gray-bg); border:1px solid var(--border); border-radius:8px;
+    padding:9px 12px; cursor:pointer; font-size:0.85rem;
+  }
+
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  thead th {
+    text-align:left; padding:10px 12px; color:var(--text-dim); font-weight:700;
+    text-transform:uppercase; font-size:0.68rem; letter-spacing:0.4px;
+    border-bottom:2px solid var(--border); position:sticky; top:0; background:var(--light);
+  }
+  tbody td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:hover { background:var(--gray-bg); }
+  tbody tr { cursor:pointer; }
+  .ref-cell { font-family:'JetBrains Mono', monospace; font-size:0.8rem; }
+  .table-scroll { max-height:460px; overflow-y:auto; }
+  .table-empty { padding:30px; text-align:center; color:var(--text-dim); font-size:0.88rem; }
+  .use-btn {
+    background:none; border:1px solid var(--border); border-radius:6px;
+    padding:5px 10px; font-size:0.75rem; font-weight:600; cursor:pointer; color:var(--secondary);
+  }
+  .use-btn:hover { border-color:var(--primary); }
+
+  footer.note {
+    max-width:1180px; margin:24px auto 0; padding:0 24px; font-size:0.78rem; color:var(--text-dim); line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">GH SCHOOLS <span class="tag">Admin</span></div>
+  <div class="conn-status"><span class="dot" id="connDot"></span><span id="connText">Connecting…</span></div>
+</header>
+
+<main>
+  <section class="lookup-panel">
+    <h1>Resend admission SMS</h1>
+    <p class="sub">Paste the Paystack reference (or the student's email) a student gives you, hit Enter, and confirm the details before resending.</p>
+
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Paystack reference, transaction ID, reference code, or email…" autocomplete="off" />
+      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Look up</button>
+    </div>
+    <div class="hint">Searches payment reference, Paystack transaction ID, reference code and email in <code>admission_payments</code>.</div>
+
+    <div class="empty-state" id="emptyState"><i class="fa-solid fa-circle-info"></i> No matching record found. Double-check the reference with the student, or try their email instead.</div>
+    <div class="error-state" id="errorState"><i class="fa-solid fa-triangle-exclamation"></i> <span id="errorText">Something went wrong.</span></div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-grid" id="resultGrid"></div>
+      <div class="action-row">
+        <button class="resend-btn" id="resendBtn"><i class="fa-solid fa-paper-plane"></i> Resend SMS</button>
+        <span class="msg" id="resendMsg"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="browse-panel">
+    <div class="browse-head">
+      <h2>Recent transactions</h2>
+      <div class="filter">
+        <input type="text" id="filterInput" placeholder="Filter by name, email or ref…" />
+        <button class="refresh" id="refreshBtn"><i class="fa-solid fa-rotate"></i></button>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Reference</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="table-empty" id="tableEmpty" style="display:none;">No transactions loaded.</div>
+    </div>
+  </section>
+</main>
+
+<footer class="note">
+  Reads and updates the <code>admission_payments</code> table directly with the site's public anon key (protected by Supabase Row Level Security — it cannot read your service-role secrets). "Resend SMS" calls the existing <code>adm-sms-trigger</code> Edge Function with that student's phone, portal username and password. Keep this page behind admin login before sharing the link with staff.
+</footer>
+
+<script>
+  const SUPA_URL = 'https://fyriapqeztevzkcaaiqw.supabase.co';
+  const SUPA_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cmlhcHFlenRldnprY2FhaXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTgyNTcsImV4cCI6MjA3OTU3NDI1N30.Re3EZ2VXE6Z7qWhVlxV6yqqIWB8wj1b1wURNLZXpddY';
+  const SMS_EDGE = SUPA_URL + '/functions/v1/adm-sms-trigger';
+  const TABLE = 'admission_payments';
+  const SELECT_COLS = 'id, first_name, last_name, email, phone, payment_status, payment_reference, paystack_transaction_id, reference_code, portal_username, portal_password, amount, currency, created_at';
+
+  const supa = window.supabase.createClient(SUPA_URL, SUPA_ANON_KEY);
+
+  const els = {
+    connDot: document.getElementById('connDot'),
+    connText: document.getElementById('connText'),
+    searchInput: document.getElementById('searchInput'),
+    searchBtn: document.getElementById('searchBtn'),
+    emptyState: document.getElementById('emptyState'),
+    errorState: document.getElementById('errorState'),
+    errorText: document.getElementById('errorText'),
+    resultCard: document.getElementById('resultCard'),
+    resultGrid: document.getElementById('resultGrid'),
+    resendBtn: document.getElementById('resendBtn'),
+    resendMsg: document.getElementById('resendMsg'),
+    filterInput: document.getElementById('filterInput'),
+    refreshBtn: document.getElementById('refreshBtn'),
+    tableBody: document.getElementById('tableBody'),
+    tableEmpty: document.getElementById('tableEmpty'),
+  };
+
+  let currentRecord = null;
+  let allRows = [];
+
+  function escHtml(s){
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function money(rec){
+    const amt = rec.amount != null ? Number(rec.amount) : null;
+    if (amt == null) return '—';
+    return (rec.currency || 'GHS') + ' ' + amt.toFixed(2);
+  }
+  function statusPill(status){
+    const s = (status || 'unknown').toLowerCase();
+    const cls = s === 'success' || s === 'paid' ? 'success' : (s === 'failed' ? 'failed' : 'pending');
+    return `<span class="status-pill ${cls}">${escHtml(status || 'unknown')}</span>`;
+  }
+
+  function hideStates(){
+    els.emptyState.classList.remove('show');
+    els.errorState.classList.remove('show');
+    els.resultCard.classList.remove('show');
+    els.resendMsg.textContent = '';
+    els.resendMsg.className = 'msg';
+  }
+
+  function showRecord(rec){
+    currentRecord = rec;
+    const name = [rec.first_name, rec.last_name].filter(Boolean).join(' ') || '—';
+    els.resultGrid.innerHTML = `
+      <div class="field"><label>Student</label><div>${escHtml(name)}</div></div>
+      <div class="field"><label>Email</label><div>${escHtml(rec.email || '—')}</div></div>
+      <div class="field"><label>Phone</label><div>${escHtml(rec.phone || '—')}</div></div>
+      <div class="field"><label>Status</label><div>${statusPill(rec.payment_status)}</div></div>
+      <div class="field mono"><label>Payment reference</label><div>${escHtml(rec.payment_reference || '—')}</div></div>
+      <div class="field mono"><label>Paystack transaction ID</label><div>${escHtml(rec.paystack_transaction_id || '—')}</div></div>
+      <div class="field mono"><label>Reference code</label><div>${escHtml(rec.reference_code || '—')}</div></div>
+      <div class="field mono"><label>Portal username</label><div>${escHtml(rec.portal_username || '—')}</div></div>
+      <div class="field"><label>Amount</label><div>${escHtml(money(rec))}</div></div>
+    `;
+    els.resultCard.classList.add('show');
+    els.resendBtn.disabled = !rec.phone || !rec.portal_username;
+    if (els.resendBtn.disabled) {
+      els.resendMsg.textContent = 'Missing phone or portal username on this record — cannot resend.';
+      els.resendMsg.className = 'msg err';
+    }
+  }
+
+  async function runSearch(){
+    const q = els.searchInput.value.trim();
+    hideStates();
+    if (!q) return;
+    els.searchBtn.disabled = true;
+    try {
+      const orFilter = [
+        `payment_reference.eq.${q}`,
+        `paystack_transaction_id.eq.${q}`,
+        `reference_code.eq.${q}`,
+        `email.eq.${q}`,
+      ].join(',');
+      const { data, error } = await supa
+        .from(TABLE)
+        .select(SELECT_COLS)
+        .or(orFilter)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        els.emptyState.classList.add('show');
+        return;
+      }
+      showRecord(data[0]);
+    } catch (err) {
+      els.errorText.textContent = err.message || 'Lookup failed. Check your connection and try again.';
+      els.errorState.classList.add('show');
+      console.error('[lookup]', err);
+    } finally {
+      els.searchBtn.disabled = false;
+    }
+  }
+
+  async function resendSms(){
+    if (!currentRecord) return;
+    const rec = currentRecord;
+    const fullName = [rec.first_name, rec.last_name].filter(Boolean).join(' ') || rec.email;
+    const confirmMsg = `Resend the admission SMS to ${rec.phone} (${fullName})?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    els.resendBtn.disabled = true;
+    els.resendMsg.textContent = 'Sending…';
+    els.resendMsg.className = 'msg';
+    try {
+      const res = await fetch(SMS_EDGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + SUPA_ANON_KEY,
+        },
+        body: JSON.stringify({
+          manual: true,
+          phone: rec.phone,
+          first_name: rec.first_name,
+          portal_username: rec.portal_username,
+          portal_password: rec.portal_password,
+          reference_code: rec.reference_code,
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(`Edge Function returned ${res.status}${txt ? ': ' + txt : ''}`);
+      }
+      els.resendMsg.textContent = 'SMS resent successfully.';
+      els.resendMsg.className = 'msg ok';
+    } catch (err) {
+      els.resendMsg.textContent = err.message || 'Failed to resend SMS.';
+      els.resendMsg.className = 'msg err';
+      console.error('[resend]', err);
+    } finally {
+      els.resendBtn.disabled = false;
+    }
+  }
+
+  function renderTable(rows){
+    if (!rows.length) {
+      els.tableBody.innerHTML = '';
+      els.tableEmpty.style.display = 'block';
+      return;
+    }
+    els.tableEmpty.style.display = 'none';
+    els.tableBody.innerHTML = rows.map(rec => {
+      const name = [rec.first_name, rec.last_name].filter(Boolean).join(' ') || '—';
+      const ref = rec.payment_reference || rec.paystack_transaction_id || rec.reference_code || '—';
+      return `
+        <tr data-ref="${escHtml(ref)}">
+          <td>${escHtml(name)}</td>
+          <td>${escHtml(rec.email || '—')}</td>
+          <td>${escHtml(rec.phone || '—')}</td>
+          <td class="ref-cell">${escHtml(ref)}</td>
+          <td>${escHtml(money(rec))}</td>
+          <td>${statusPill(rec.payment_status)}</td>
+          <td><button class="use-btn">Look up</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function loadTransactions(){
+    els.tableBody.innerHTML = '';
+    els.tableEmpty.style.display = 'block';
+    els.tableEmpty.textContent = 'Loading…';
+    try {
+      const { data, error } = await supa
+        .from(TABLE)
+        .select(SELECT_COLS)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      allRows = data || [];
+      renderTable(allRows);
+      els.connDot.style.background = '#1a9e46';
+      els.connText.textContent = 'Connected';
+    } catch (err) {
+      els.connDot.style.background = '#d64545';
+      els.connText.textContent = 'Connection error';
+      els.tableEmpty.textContent = 'Could not load transactions: ' + (err.message || 'unknown error');
+      console.error('[load]', err);
+    }
+  }
+
+  function applyFilter(){
+    const q = els.filterInput.value.trim().toLowerCase();
+    if (!q) { renderTable(allRows); return; }
+    const filtered = allRows.filter(rec => {
+      const name = [rec.first_name, rec.last_name].filter(Boolean).join(' ').toLowerCase();
+      const ref = (rec.payment_reference || rec.paystack_transaction_id || rec.reference_code || '').toLowerCase();
+      return name.includes(q) || (rec.email || '').toLowerCase().includes(q) || ref.includes(q);
+    });
+    renderTable(filtered);
+  }
+
+  els.searchBtn.addEventListener('click', runSearch);
+  els.searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+  els.resendBtn.addEventListener('click', resendSms);
+  els.filterInput.addEventListener('input', applyFilter);
+  els.refreshBtn.addEventListener('click', loadTransactions);
+  els.tableBody.addEventListener('click', e => {
+    const btn = e.target.closest('.use-btn');
+    const row = e.target.closest('tr');
+    if (!row) return;
+    const ref = row.getAttribute('data-ref');
+    if (!ref || ref === '—') return;
+    els.searchInput.value = ref;
+    runSearch();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  loadTransactions();
+</script>
+
+</body>
+</html>

@@ -2474,6 +2474,153 @@ tbody tr.paid-row td:nth-child(4) { color: var(--green); font-weight: 700; }
 .co-fee-row-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple-400); }
 .co-fee-row-amt { font-weight: 700; }
 
+/* ── "Already Paid — No Charge" panel (Other Fees payment summary
+   shown inside the Tuition checkout). Premium redesign: accented card
+   shell, ribbon flag, gradient summary strip, receipt-style fee list. ── */
+.co-paid-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--green-bg);
+  padding-top: 18px;
+}
+.co-paid-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--green);
+}
+.co-paid-card .co-card-header { margin-bottom: 16px; padding-right: 78px; position: relative; }
+.co-paid-ribbon {
+  position: absolute;
+  top: -18px; right: -20px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid rgba(23, 185, 120, 0.25);
+  padding: 5px 12px 5px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.co-paid-ribbon i { font-size: 9px; }
+
+.co-paid-summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(120deg, var(--green-bg), rgba(23, 185, 120, 0.06));
+  border: 1px dashed rgba(23, 185, 120, 0.35);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 4px;
+}
+.co-paid-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
+}
+.co-paid-summary-amt {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--ink-900);
+  line-height: 1.1;
+}
+.co-paid-summary-icon {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 4px 10px rgba(23, 185, 120, 0.32);
+}
+
+.co-paid-fee-list {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--lavender-100);
+}
+.co-paid-fee-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--lavender-100);
+  transition: background 0.15s ease;
+}
+.co-paid-fee-row:last-child { border-bottom: none; padding-bottom: 2px; }
+.co-paid-fee-row:hover { background: var(--lavender-50); }
+.co-paid-fee-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.co-paid-fee-icon {
+  width: 38px; height: 38px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  position: relative;
+}
+.co-paid-fee-icon::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  bottom: -4px; right: -4px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--white);
+  font-size: 8px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--white);
+}
+.co-paid-fee-check {
+  width: 36px; height: 36px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  background: var(--green-bg);
+  color: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.co-paid-fee-name { font-size: 13.5px; font-weight: 700; color: var(--ink-900); }
+.co-paid-fee-sub { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+.co-paid-fee-badge {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--green);
+  background: var(--green-bg);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.co-paid-fee-badge i { font-size: 9px; }
+
+.co-paid-footnote {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 11px; color: var(--ink-500); line-height: 1.5;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--lavender-100);
+}
+.co-paid-footnote i { margin-top: 1.5px; color: var(--green); flex-shrink: 0; }
+
+body.dark-mode .co-paid-card { border-color: rgba(23, 185, 120, 0.28); }
+body.dark-mode .co-paid-summary { border-color: rgba(23, 185, 120, 0.3); }
+body.dark-mode .co-paid-fee-row:hover { background: var(--lavender-100); }
+
 .co-total-bar {
   display: flex;
   align-items: center;
@@ -5295,7 +5442,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
     window.studentProgram = _localProg;
 
     /* Fee globals */
-    let TUITION = 0, FEE_SRC = 0, FEE_MEDICAL = 0, FEE_DEPT = 0;
+    let TUITION = 0, FEE_SRC = 0, FEE_MEDICAL = 0, FEE_DEPT = 0, FEE_MACHINE = 0;
     let totalPayable = 0, totalPaid = 0, outstandingBalance = 0;
     let _currentFeeSchedule = []; /* [{fee_type_id, fee_name, amount, academic_year, level, program}] */
     let _academicYear = null;
@@ -5883,13 +6030,37 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         let level = rawLevel ? String(rawLevel).replace(/level\s*/i, '').trim() : null;
         if (!['100', '200', '300', '400'].includes(level)) level = '100'; // safe default
 
-        // student_master_db: program = program name, school = school name
+        // student_master_db: program = program name (school column also exists but
+        // is unreliable/often blank — PROGRAM is the source of truth here).
         // newstudents: program_applying_for = program name, school_selected = school name
         const program = (studentRow && (
           studentRow.program || studentRow.program_applying_for ||
           studentRow.school || studentRow.school_selected ||
           studentRow.department || null
         )) || null;
+        const programLower = (program || '').toLowerCase();
+        // PROGRAM GROUP — BUG FIX 4: previously this was derived ONLY from
+        // `program` (the first truthy field in the cascade above). But `program`
+        // and the SCHOOL a student belongs to are two different fields
+        // (window.studentProgram vs window.studentDept elsewhere in this file:
+        // program/program_applying_for = specific program title, e.g. "Fashion
+        // Design and Merchandising"; school/school_selected/department = school
+        // name, e.g. "School of Fashion"). Because `program` takes precedence in
+        // the cascade, whenever a student's specific program title didn't happen
+        // to literally contain "fashion"/"cater" (e.g. an abbreviated title or a
+        // program name that doesn't spell it out), the school-level keyword in
+        // school_selected was NEVER checked — even though it was sitting right
+        // there on the student row — so school-scoped fees like the Machine/Gas
+        // User Fee silently disappeared for those students. Fix: search ALL of
+        // the program/school fields together for the keyword, not just whichever
+        // one won the cascade.
+        const programGroupSearchStr = (studentRow ? [
+          studentRow.program, studentRow.program_applying_for,
+          studentRow.school, studentRow.school_selected, studentRow.department
+        ].filter(Boolean).join(' ') : '').toLowerCase();
+        let programGroup = null;
+        if (programGroupSearchStr.includes('fashion')) programGroup = 'fashion';
+        else if (programGroupSearchStr.includes('cater')) programGroup = 'catering';
 
         // Determine academic year + semester: pick latest intake period in fee_schedules
         let academicYear = null;
@@ -5941,9 +6112,26 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           const fid = r.fee_type_id;
           if (!fid) return;
           if (r.fee_types && r.fee_types.is_mandatory === false) return; // skip optional fees
+          const rProgramLower = (r.program || '').toLowerCase();
+          // ELIGIBILITY: a program-scoped row only applies to this student if it's
+          // unscoped (r.program null → applies to everyone), matches their exact
+          // program, or matches their PROGRAM GROUP by keyword (e.g. a 'Fashion' or
+          // 'Catering' scoped row like the Machine/Gas User Fee, matched because the
+          // student's own program contains "fashion"/"cater"). Otherwise it's a
+          // different program's fee and must be excluded, not merely down-ranked —
+          // previously an unmatched row could still win a fee_type_id slot if it had
+          // no competing row, leaking that fee to students it doesn't apply to.
+          const groupMatch = programGroup === 'fashion' ? rProgramLower.includes('fashion')
+            : programGroup === 'catering' ? rProgramLower.includes('cater')
+            : false;
+          const eligible = !r.program
+            || (program && r.program === program)
+            || groupMatch;
+          if (!eligible) return;
           const feeName = (r.fee_types && r.fee_types.name) || '';
           const score = (r.level === level ? 4 : 0)
             + (r.program && r.program === program ? 2 : 0)
+            + (groupMatch ? 2 : 0)
             + (!r.level ? 1 : 0);
           const existing = map.get(fid);
           if (!existing || score > existing.score) map.set(fid, { row: r, score, feeName });
@@ -5967,7 +6155,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
     async function loadCanonicalFeesForStudent(studentIdParam) {
       try {
         const sid = studentIdParam || studentId;
-        if (!sid) return { TUITION: 0, FEE_SRC: 0, FEE_MEDICAL: 0, FEE_DEPT: 0, totalPayable: 0, schedule: [] };
+        if (!sid) return { TUITION: 0, FEE_SRC: 0, FEE_MEDICAL: 0, FEE_DEPT: 0, FEE_MACHINE: 0, totalPayable: 0, schedule: [] };
 
         // 1. Fetch student row (try student_master_db, fallback to newstudents)
         let studentRow = null;
@@ -5989,7 +6177,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         // 3. Map fees by canonical name
         // BUG FIX 3: Admission Fee was excluded from totalPayable because it matched
         // none of the keyword checks (tuition/src/medical/dept). Sum ALL schedule fees.
-        TUITION = 0; FEE_SRC = 0; FEE_MEDICAL = 0; FEE_DEPT = 0;
+        TUITION = 0; FEE_SRC = 0; FEE_MEDICAL = 0; FEE_DEPT = 0; FEE_MACHINE = 0;
         let FEE_ADMISSION = 0, FEE_OTHER = 0;
         schedule.forEach(f => {
           const n = (f.fee_name || '').toLowerCase();
@@ -5997,26 +6185,34 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           else if (n.includes('src')) FEE_SRC += f.amount;
           else if (n.includes('medical')) FEE_MEDICAL += f.amount;
           else if (n.includes('departmental') || n.includes('department')) FEE_DEPT += f.amount;
+          else if (n.includes('machine') || n.includes('gas')) FEE_MACHINE += f.amount;
           else if (n.includes('admission')) FEE_ADMISSION += f.amount;
           else FEE_OTHER += f.amount;
         });
 
-        totalPayable = TUITION + FEE_SRC + FEE_MEDICAL + FEE_DEPT + FEE_ADMISSION + FEE_OTHER;
+        totalPayable = TUITION + FEE_SRC + FEE_MEDICAL + FEE_DEPT + FEE_MACHINE + FEE_ADMISSION + FEE_OTHER;
 
-        return { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, totalPayable, schedule };
-      } catch (e) { console.error('[loadCanonicalFeesForStudent]', e); return { TUITION: 0, FEE_SRC: 0, FEE_MEDICAL: 0, FEE_DEPT: 0, totalPayable: 0, schedule: [] }; }
+        return { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, FEE_MACHINE, totalPayable, schedule };
+      } catch (e) { console.error('[loadCanonicalFeesForStudent]', e); return { TUITION: 0, FEE_SRC: 0, FEE_MEDICAL: 0, FEE_DEPT: 0, FEE_MACHINE: 0, totalPayable: 0, schedule: [] }; }
     }
     window.loadCanonicalFeesForStudent = loadCanonicalFeesForStudent;
 
     /* ── PAYMENTS SUMMARY ───────────────────────────────── */
     /* ══════════════════════════════════════════════════════
-       COMBINED "OTHER FEES" BUNDLE — ONE fee_type_id for all 3
+       COMBINED "OTHER FEES" BUNDLE — ONE fee_type_id for all 4
        Instead of leaving fee_type_id null for a combined payment,
        we look up (or create) a single dedicated row in fee_types
-       representing "SRC + Medical + Departmental paid together".
-       The DB then sees ONE clean payment referencing ONE fee type.
-       fetchPaymentsSummary knows this specific ID means "split
-       across all 3 categories" (see the check added there).
+       representing "SRC + Medical + Departmental + Machine/Gas
+       paid together" (payAllOtherFees() includes Machine/Gas in
+       this total — see there). The DB then sees ONE clean payment
+       referencing ONE fee type. fetchPaymentsSummary knows this
+       specific ID means "split across all 4 categories" (see the
+       check added there).
+       NOTE: the DB-facing name/constant below is intentionally left
+       as-is (not renamed to mention Machine/Gas) because it's used
+       to look up the existing fee_types row by name — renaming it
+       would create a second row with a new id, and payments already
+       recorded against the original id would stop matching.
     ══════════════════════════════════════════════════════ */
     const OTHER_FEES_BUNDLE_NAME = 'Other Fees (SRC + Medical + Departmental)';
     window._otherFeesBundleTypeId = window._otherFeesBundleTypeId || null;
@@ -6044,7 +6240,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
     async function fetchPaymentsSummary(studentIdParam) {
       const sid = studentIdParam || studentId;
-      if (!sid) return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, rows: [] };
+      if (!sid) return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, machinePaid: 0, rows: [] };
       try {
         let payments = [];
 
@@ -6106,6 +6302,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           else if (n.includes('src')) idToCategory[f.fee_type_id] = 'src';
           else if (n.includes('medical')) idToCategory[f.fee_type_id] = 'medical';
           else if (n.includes('departmental') || n.includes('department')) idToCategory[f.fee_type_id] = 'dept';
+          else if (n.includes('machine') || n.includes('gas')) idToCategory[f.fee_type_id] = 'machine';
           else if (n.includes('admission')) idToCategory[f.fee_type_id] = 'admission';
           else idToCategory[f.fee_type_id] = 'other';
         });
@@ -6118,20 +6315,26 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           if (n.includes('src')) return 'src';
           if (n.includes('medical')) return 'medical';
           if (n.includes('departmental') || n.includes('department')) return 'dept';
+              if (n.includes('machine') || n.includes('gas')) return 'machine';
           return null;
         }
 
-        let tuitionPaid = 0, srcPaid = 0, medPaid = 0, deptPaid = 0, admissionPaid = 0, total = 0;
+        let tuitionPaid = 0, srcPaid = 0, medPaid = 0, deptPaid = 0, machinePaid = 0, admissionPaid = 0, total = 0;
         (payments || []).forEach(p => {
           const amt = Number(p.amount || 0);
           total += amt;
 
-          // ── Combined "Other Fees" bundle: ONE fee_type_id represents all 3 ──
+          // ── Combined "Other Fees" bundle: ONE fee_type_id represents all 4 ──
           // The DB row is a single clean payment (one id), but the dashboard reads
-          // it as SRC + Medical + Departmental all cleared together, splitting the
-          // amount proportionally by each fee's scheduled amount.
+          // it as SRC + Medical + Departmental + Machine/Gas all cleared together,
+          // splitting the amount proportionally by each fee's scheduled amount.
+          // NOTE: payAllOtherFees() folds Machine/Gas into this same bundle total,
+          // so the read-back split MUST include 'machine' too, or that share of
+          // the payment silently gets redistributed to the other 3 categories and
+          // machinePaid never increases (leaving Machine/Gas permanently "unpaid"
+          // even though it was charged for).
           if (p.fee_type_id && window._otherFeesBundleTypeId && p.fee_type_id === window._otherFeesBundleTypeId) {
-            const bundleFees = schedule.filter(f => ['src', 'medical', 'dept'].includes(catFromName(f.fee_name)));
+            const bundleFees = schedule.filter(f => ['src', 'medical', 'dept', 'machine'].includes(catFromName(f.fee_name)));
             if (bundleFees.length) {
               const bundleTotal = bundleFees.reduce((s, f) => s + Number(f.amount || 0), 0);
               bundleFees.forEach(f => {
@@ -6140,11 +6343,12 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
                 if (cat === 'src') srcPaid += share;
                 else if (cat === 'medical') medPaid += share;
                 else if (cat === 'dept') deptPaid += share;
+                else if (cat === 'machine') machinePaid += share;
               });
             } else {
-              // No schedule info to weight by — split evenly across the 3 as a last resort
-              const share = amt / 3;
-              srcPaid += share; medPaid += share; deptPaid += share;
+              // No schedule info to weight by — split evenly across the 4 as a last resort
+              const share = amt / 4;
+              srcPaid += share; medPaid += share; deptPaid += share; machinePaid += share;
             }
             return; // done for this payment
           }
@@ -6157,6 +6361,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             else if (cat === 'src') srcPaid += amt;
             else if (cat === 'medical') medPaid += amt;
             else if (cat === 'dept') deptPaid += amt;
+            else if (cat === 'machine') machinePaid += amt;
             else if (cat === 'admission') admissionPaid += amt;
             return; // done for this payment
           }
@@ -6174,6 +6379,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             else if (cat === 'src') srcPaid += amt;
             else if (cat === 'medical') medPaid += amt;
             else if (cat === 'dept') deptPaid += amt;
+            else if (cat === 'machine') machinePaid += amt;
             // else: unclassified but still counts in total
           } else {
             // FIX (Bug 4): Multi-fee combined payment — allocate proportionally using
@@ -6197,6 +6403,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
                 else if (cat === 'src') srcPaid += share;
                 else if (cat === 'medical') medPaid += share;
                 else if (cat === 'dept') deptPaid += share;
+                else if (cat === 'machine') machinePaid += share;
               });
             } else {
               // No schedule match — fall back to keyword on each part
@@ -6208,13 +6415,14 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
                 else if (cat === 'src') srcPaid += share;
                 else if (cat === 'medical') medPaid += share;
                 else if (cat === 'dept') deptPaid += share;
+                else if (cat === 'machine') machinePaid += share;
               });
             }
           }
         });
 
-        return { totalPaid: total, tuitionPaid, srcPaid, medPaid, deptPaid, admissionPaid, rows: payments };
-      } catch (e) { console.error('[fetchPaymentsSummary]', e); return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, rows: [] }; }
+        return { totalPaid: total, tuitionPaid, srcPaid, medPaid, deptPaid, machinePaid, admissionPaid, rows: payments };
+      } catch (e) { console.error('[fetchPaymentsSummary]', e); return { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, machinePaid: 0, rows: [] }; }
     }
     window.fetchPaymentsSummary = fetchPaymentsSummary;
 
@@ -6284,6 +6492,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       'src': { icon: 'fa-users', bg: '#FCE7F3', color: '#DB2777' },
       'medical': { icon: 'fa-heartbeat', bg: '#E6FBF5', color: '#00C48C' },
       'departmental': { icon: 'fa-building', bg: '#FFF8E6', color: '#FFB800' },
+      'machine': { icon: 'fa-industry', bg: '#EAF3FF', color: '#2563EB' },
       'default': { icon: 'fa-receipt', bg: '#F3F5FA', color: '#6B7280' },
     };
 
@@ -6293,6 +6502,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       if (n.includes('src')) return FEE_ICONS.src;
       if (n.includes('medical')) return FEE_ICONS.medical;
       if (n.includes('departmental') || n.includes('department')) return FEE_ICONS.departmental;
+      if (n.includes('machine') || n.includes('gas')) return FEE_ICONS.machine;
       return FEE_ICONS.default;
     }
 
@@ -6316,7 +6526,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       }
 
       // Separate fees
-      const otherKeys = ['src', 'medical', 'department', 'departmental'];
+      const otherKeys = ['src', 'medical', 'department', 'departmental', 'machine', 'gas'];
       const otherFees = schedule.filter(f => {
         const n = (f.fee_name || '').toLowerCase();
         return otherKeys.some(k => n.includes(k));
@@ -6336,6 +6546,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         if (n.includes('src')) return s + Number(summary.srcPaid || 0);
         if (n.includes('medical')) return s + Number(summary.medPaid || 0);
         if (n.includes('department') || n.includes('departmental')) return s + Number(summary.deptPaid || 0);
+        if (n.includes('machine') || n.includes('gas')) return s + Number(summary.machinePaid || 0);
         return s;
       }, 0);
       const otherBal = Math.max(0, otherTotal - otherPaid);
@@ -6364,6 +6575,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         else if (n.includes('src')) paid = summary.srcPaid || 0;
         else if (n.includes('medical')) paid = summary.medPaid || 0;
         else if (n.includes('departmental') || n.includes('department')) paid = summary.deptPaid || 0;
+        else if (n.includes('machine') || n.includes('gas')) paid = summary.machinePaid || 0;
 
         paid = Math.min(paid, fee.amount);
         const feeOut = Math.max(0, fee.amount - paid);
@@ -7133,7 +7345,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
     /* Helper — returns outstanding other fees from current schedule + summary */
     function getOtherFeesOutstanding(summary) {
       const fees = _currentFeeSchedule || [];
-      const otherKeys = ['src', 'medical', 'department', 'departmental'];
+      const otherKeys = ['src', 'medical', 'department', 'departmental', 'machine', 'gas'];
       const items = fees.filter(f => {
         const n = (f.fee_name || '').toLowerCase();
         return otherKeys.some(k => n.includes(k));
@@ -7143,6 +7355,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         if (n.includes('src')) paid = Number(summary.srcPaid || 0);
         else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
         else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
         paid = Math.min(paid, Number(f.amount || 0));
         return { name: f.fee_name, amount: Number(f.amount || 0), paid, outstanding: Math.max(0, Number(f.amount || 0) - paid) };
       });
@@ -7232,6 +7445,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         const paid = n.includes('src') ? (window._lastPaymentSummary?.srcPaid || 0)
           : n.includes('medical') ? (window._lastPaymentSummary?.medPaid || 0)
             : n.includes('departmental') || n.includes('department') ? (window._lastPaymentSummary?.deptPaid || 0)
+            : n.includes('machine') || n.includes('gas') ? (window._lastPaymentSummary?.machinePaid || 0)
               : 0;
         const bal = Math.max(0, f.amount - paid);
         const fullyPaid = bal <= 0.01;
@@ -7309,7 +7523,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
       const fees = (_currentFeeSchedule || []).filter(f => {
         const n = (f.fee_name || '').toLowerCase();
-        return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+        return ['src', 'medical', 'department', 'departmental', 'machine', 'gas'].some(k => n.includes(k));
       });
 
       // Compute stats
@@ -7320,6 +7534,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         if (n.includes('src')) paid = Number(summary.srcPaid || 0);
         else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
         else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
         paid = Math.min(paid, Number(f.amount || 0));
         totalReq += Number(f.amount || 0);
         totalPd += paid;
@@ -7362,6 +7577,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             if (n.includes('src')) paid = Number(summary.srcPaid || 0);
             else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
             else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
             paid = Math.min(paid, Number(f.amount || 0));
             const bal = Math.max(0, Number(f.amount || 0) - paid);
             const fullyPaid = bal <= 0.01;
@@ -7427,6 +7643,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       if (n.includes('src')) paid = Number(summary.srcPaid || 0);
       else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
       else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
       paid = Math.min(paid, required);
       return required - paid > 0.01;
     }
@@ -7472,7 +7689,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
         const fees = (_currentFeeSchedule || []).filter(f => {
           const n = (f.fee_name || '').toLowerCase();
-          return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+          return ['src', 'medical', 'department', 'departmental', 'machine', 'gas'].some(k => n.includes(k));
         });
 
         const items = fees.map(f => {
@@ -7481,6 +7698,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           if (n.includes('src')) paid = Number(summary.srcPaid || 0);
           else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
           else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
           paid = Math.min(paid, Number(f.amount || 0));
           return { name: f.fee_name, outstanding: Math.max(0, Number(f.amount || 0) - paid) };
         }).filter(f => f.outstanding > 0.01);
@@ -7582,7 +7800,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       // Categorise this payment
       const _bd = (feeBreakdown || feeType || '').toLowerCase();
       const _hasTuition = _bd.includes('tuition');
-      const _otherFeeKw = ['src', 'medical', 'departmental', 'department', 'admission'];
+      const _otherFeeKw = ['src', 'medical', 'departmental', 'department', 'admission', 'machine', 'gas'];
       const _bdParts = _bd.split(/[,+]/).map(s => s.trim()).filter(Boolean);
       const _hasOtherFees = _bdParts.some(p => _otherFeeKw.some(k => p.includes(k)));
 
@@ -7827,6 +8045,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           else if (n.includes('src')) paid = summary.srcPaid || 0;
           else if (n.includes('medical')) paid = summary.medPaid || 0;
           else if (n.includes('departmental') || n.includes('department')) paid = summary.deptPaid || 0;
+        else if (n.includes('machine') || n.includes('gas')) paid = summary.machinePaid || 0;
           else if (n.includes('admission')) paid = summary.admissionPaid || 0;
           paid = Math.min(Number(paid) || 0, Number(f.amount) || 0);
           const bal = Math.max(0, Number(f.amount || 0) - paid);
@@ -8000,7 +8219,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
         // Obtain latest summary and apply this receipt to it so the receipt modal
         // reflects the payment just made (even before server persistence).
-        let tmpSummary = window._lastPaymentSummary || { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0 };
+        let tmpSummary = window._lastPaymentSummary || { totalPaid: 0, tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, machinePaid: 0 };
         try { tmpSummary = Object.assign({}, tmpSummary, await fetchPaymentsSummary(studentId)); } catch (_) { /* ignore */ }
 
         // Allocate this receipt amount to fee categories using the current schedule
@@ -8009,7 +8228,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             let remaining = Number(rcpt.amount || 0);
             if (!Number.isFinite(remaining) || remaining <= 0) return;
 
-            const alloc = { tuition: 0, src: 0, medical: 0, dept: 0 };
+            const alloc = { tuition: 0, src: 0, medical: 0, dept: 0, machine: 0 };
             const breakdown = (rcpt.fee_breakdown || rcpt.fee_type || '').toLowerCase();
             const schedule = _currentFeeSchedule || [];
 
@@ -8021,6 +8240,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
               if (n.includes('src')) return 'src';
               if (n.includes('medical')) return 'medical';
               if (n.includes('departmental') || n.includes('department')) return 'dept';
+              if (n.includes('machine') || n.includes('gas')) return 'machine';
               return null;
             };
 
@@ -8039,6 +8259,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
                     if (c === 'src') return Number(summary.srcPaid || 0);
                     if (c === 'medical') return Number(summary.medPaid || 0);
                     if (c === 'dept') return Number(summary.deptPaid || 0);
+                    if (c === 'machine') return Number(summary.machinePaid || 0);
                     return 0;
                   })();
                   const outstanding = Math.max(0, Number(fee.amount || 0) - paidSoFar - (alloc[catFor(fname)] || 0));
@@ -8053,12 +8274,12 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
             // If still remaining, allocate by priority: OTHER FEES FIRST, then tuition
             if (remaining > 0) {
-              const priority = ['src', 'dept', 'medical', 'tuition'];
+              const priority = ['src', 'dept', 'machine', 'medical', 'tuition'];
               for (const p of priority) {
                 if (remaining <= 0) break;
                 // sum outstanding across schedule items of this category
                 let totalOutstanding = 0;
-                schedule.forEach(f => { if (catFor(f.fee_name) === p) { const paidSoFar = (p === 'tuition' ? Number(summary.tuitionPaid || 0) : (p === 'src' ? Number(summary.srcPaid || 0) : (p === 'medical' ? Number(summary.medPaid || 0) : Number(summary.deptPaid || 0)))); const out = Math.max(0, Number(f.amount || 0) - paidSoFar - (alloc[p] || 0)); totalOutstanding += out; } });
+                schedule.forEach(f => { if (catFor(f.fee_name) === p) { const paidSoFar = (p === 'tuition' ? Number(summary.tuitionPaid || 0) : (p === 'src' ? Number(summary.srcPaid || 0) : (p === 'medical' ? Number(summary.medPaid || 0) : (p === 'machine' ? Number(summary.machinePaid || 0) : Number(summary.deptPaid || 0))))); const out = Math.max(0, Number(f.amount || 0) - paidSoFar - (alloc[p] || 0)); totalOutstanding += out; } });
                 if (totalOutstanding <= 0) continue;
                 const take = Math.min(totalOutstanding, remaining);
                 alloc[p] += take;
@@ -8072,6 +8293,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             summary.srcPaid = Number(summary.srcPaid || 0) + (alloc.src || 0);
             summary.medPaid = Number(summary.medPaid || 0) + (alloc.medical || 0);
             summary.deptPaid = Number(summary.deptPaid || 0) + (alloc.dept || 0);
+            summary.machinePaid = Number(summary.machinePaid || 0) + (alloc.machine || 0);
           } catch (e) { console.warn('applyReceiptToSummary failed', e); }
         })(tmpSummary, receipt);
 
@@ -8143,7 +8365,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
       window._lastReceipt = receipt;
 
       // Build per-fee outstanding breakdown
-      const summary = window._lastPaymentSummary || { tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, totalPaid: 0 };
+      const summary = window._lastPaymentSummary || { tuitionPaid: 0, srcPaid: 0, medPaid: 0, deptPaid: 0, machinePaid: 0, totalPaid: 0 };
       const schedule = _currentFeeSchedule || [];
 
       // Determine which fees this payment covers
@@ -8163,6 +8385,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         } else if (n.includes('src')) prevPaid = Number(summary.srcPaid || 0);
         else if (n.includes('medical')) prevPaid = Number(summary.medPaid || 0);
         else if (n.includes('departmental') || n.includes('department')) prevPaid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) prevPaid = Number(summary.machinePaid || 0);
         prevPaid = Math.min(prevPaid, fee.amount);
         const outstanding = Math.max(0, fee.amount - prevPaid);
         const fullyPaid = outstanding <= 0.01;
@@ -8437,6 +8660,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
             else if (n.includes('src')) paid = Number(summary.srcPaid || 0);
             else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
             else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
             paid = Math.min(paid, fee.amount);
             const outstanding = Math.max(0, fee.amount - paid);
             grandTotal += fee.amount;
@@ -9067,7 +9291,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
         // If we couldn't load a fee schedule at all, allow registration
         // (admin hasn't set fees yet — don't lock out all students)
-        if (!TUITION && !FEE_SRC && !FEE_MEDICAL && !FEE_DEPT && !totalPayable) {
+        if (!TUITION && !FEE_SRC && !FEE_MEDICAL && !FEE_DEPT && !FEE_MACHINE && !totalPayable) {
           console.warn('[hasRegistrationAccess] no fee schedule found — allowing access');
           return { allowed: true, reasons: [] };
         }
@@ -9076,12 +9300,17 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         const srcPaid = Number(sum.srcPaid || 0);
         const medPaid = Number(sum.medPaid || 0);
         const deptPaid = Number(sum.deptPaid || 0);
+        const machinePaid = Number(sum.machinePaid || 0);
 
         const tuitionNeeded = Math.round(TUITION * 0.8 * 100) / 100;
         const tOK = TUITION <= 0.01 || tuitionPaid >= tuitionNeeded - 0.01;
         const sOK = FEE_SRC <= 0.01 || srcPaid >= FEE_SRC - 0.01;
         const mOK = FEE_MEDICAL <= 0.01 || medPaid >= FEE_MEDICAL - 0.01;
         const dOK = FEE_DEPT <= 0.01 || deptPaid >= FEE_DEPT - 0.01;
+        // Machine/Gas User Fee only applies to Fashion and Catering schools —
+        // FEE_MACHINE will naturally be 0 for other schools since their fee
+        // schedule won't include this fee type, so this check is a no-op for them.
+        const machOK = FEE_MACHINE <= 0.01 || machinePaid >= FEE_MACHINE - 0.01;
 
         const reasons = [];
         if (!tOK) {
@@ -9091,9 +9320,10 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         if (!sOK) reasons.push({ label: 'SRC Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_SRC - srcPaid))} outstanding` });
         if (!mOK) reasons.push({ label: 'Medical Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_MEDICAL - medPaid))} outstanding` });
         if (!dOK) reasons.push({ label: 'Departmental Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_DEPT - deptPaid))} outstanding` });
+        if (!machOK) reasons.push({ label: 'Machine/Gas User Fee', detail: `${currencyPrefix()}${gh(Math.max(0, FEE_MACHINE - machinePaid))} outstanding` });
 
-        console.log('[hasRegistrationAccess]', { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, tOK, sOK, mOK, dOK, tuitionPaid, srcPaid, medPaid, deptPaid });
-        return { allowed: tOK && sOK && mOK && dOK, reasons };
+        console.log('[hasRegistrationAccess]', { TUITION, FEE_SRC, FEE_MEDICAL, FEE_DEPT, FEE_MACHINE, tOK, sOK, mOK, dOK, machOK, tuitionPaid, srcPaid, medPaid, deptPaid, machinePaid });
+        return { allowed: tOK && sOK && mOK && dOK && machOK, reasons };
       } catch (e) {
         console.error('[hasRegistrationAccess]', e);
         return { allowed: false, reasons: [{ label: 'Error', detail: 'Could not verify your fee status. Please try again.' }] };
@@ -9618,13 +9848,14 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
 
         const otherFeeItems = fees.filter(f => {
           const n = (f.fee_name || '').toLowerCase();
-          return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+          return ['src', 'medical', 'department', 'departmental', 'machine', 'gas'].some(k => n.includes(k));
         }).map(f => {
           const n = (f.fee_name || '').toLowerCase();
           let paid = 0;
           if (n.includes('src')) paid = Number(summary.srcPaid || 0);
           else if (n.includes('medical')) paid = Number(summary.medPaid || 0);
           else if (n.includes('departmental') || n.includes('department')) paid = Number(summary.deptPaid || 0);
+        else if (n.includes('machine') || n.includes('gas')) paid = Number(summary.machinePaid || 0);
           paid = Math.min(paid, Number(f.amount || 0));
           const outstanding = Math.max(0, Number(f.amount || 0) - paid);
           const isPaid = outstanding <= 0.01;
@@ -9691,10 +9922,12 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           </div>`).join('');
 
         // Build the "already cleared" other fees panel shown below the payment breakdown
+        const paidOtherFeesTotal = paidOtherFees.reduce((s, f) => s + f.required, 0);
         const paidOtherFeesHTML = paidOtherFees.length ? `
-          <div class="co-card">
+          <div class="co-card co-paid-card">
+            <div class="co-paid-ribbon"><i class="fas fa-shield-halved"></i> SETTLED</div>
             <div class="co-card-header">
-              <div class="co-card-header-icon">
+              <div class="co-card-header-icon green">
                 <i class="fas fa-check-double"></i>
               </div>
               <div>
@@ -9702,21 +9935,32 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
                 <div class="co-card-subtitle">These fees are fully settled and will not be included in this payment.</div>
               </div>
             </div>
-            <div>
-              ${paidOtherFees.map(f => `
+            <div class="co-paid-summary">
+              <div>
+                <div class="co-paid-summary-label">Total Paid · ${paidOtherFees.length} fee${paidOtherFees.length !== 1 ? 's' : ''}</div>
+                <div class="co-paid-summary-amt">${currencyPrefix()}${gh(paidOtherFeesTotal)}</div>
+              </div>
+              <div class="co-paid-summary-icon"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="co-paid-fee-list">
+              ${paidOtherFees.map(f => {
+          const style = getFeeStyle(f.name);
+          return `
                 <div class="co-paid-fee-row">
                   <div class="co-paid-fee-left">
-                    <div class="co-paid-fee-check">
-                      <i class="fas fa-check"></i>
+                    <div class="co-paid-fee-icon" style="background:${style.bg};color:${style.color}">
+                      <i class="fas ${style.icon}"></i>
                     </div>
                     <div>
                       <div class="co-paid-fee-name">${escapeHtml(f.name)}</div>
                       <div class="co-paid-fee-sub">${currencyPrefix()}${gh(f.required)} fully paid</div>
                     </div>
                   </div>
-                  <span class="co-paid-fee-badge">CLEARED</span>
-                </div>`).join('')}
+                  <span class="co-paid-fee-badge"><i class="fas fa-check"></i> CLEARED</span>
+                </div>`;
+        }).join('')}
             </div>
+            <div class="co-paid-footnote"><i class="fas fa-circle-info"></i> These amounts are shown for your records only — they're already covered and won't affect the total below.</div>
           </div>` : '';
 
         // Store for payment
@@ -10003,13 +10247,14 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         // Check if all other fees are already paid
         const otherFeeItems = fees.filter(f => {
           const n = (f.fee_name || '').toLowerCase();
-          return ['src', 'medical', 'department', 'departmental'].some(k => n.includes(k));
+          return ['src', 'medical', 'department', 'departmental', 'machine', 'gas'].some(k => n.includes(k));
         }).map(f => {
           const n = (f.fee_name || '').toLowerCase();
           let paid = 0;
           if (n.includes('src')) paid = Number(freshSummary.srcPaid || 0);
           else if (n.includes('medical')) paid = Number(freshSummary.medPaid || 0);
           else if (n.includes('departmental') || n.includes('department')) paid = Number(freshSummary.deptPaid || 0);
+          else if (n.includes('machine') || n.includes('gas')) paid = Number(freshSummary.machinePaid || 0);
           paid = Math.min(paid, Number(f.amount || 0));
           return { name: f.fee_name, outstanding: Math.max(0, Number(f.amount || 0) - paid) };
         });
@@ -10110,6 +10355,18 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         const sLvl = normLvl(window.studentLevel || '') || '100';
         const sLvlNum = parseInt(sLvl, 10) || 100;
         const prog = (window.studentProgram || window.studentDept || '').toLowerCase().trim();
+        // PROGRAM GROUP — BUG FIX: previously derived ONLY from `prog` (whichever
+        // of studentProgram/studentDept resolved first). studentProgram is the
+        // specific program title and studentDept is the school name — they're
+        // different fields, and a specific title doesn't always spell out
+        // "fashion"/"cater" even when the school clearly does (e.g. school =
+        // "School of Fashion" but program = something that doesn't contain the
+        // word). Search BOTH fields for the keyword so school-scoped rows like
+        // the Fashion/Catering Machine/Gas User Fee are matched reliably.
+        const progGroupSearchStr = ((window.studentProgram || '') + ' ' + (window.studentDept || '')).toLowerCase();
+        let progGroup = null;
+        if (progGroupSearchStr.includes('fashion')) progGroup = 'fashion';
+        else if (progGroupSearchStr.includes('cater')) progGroup = 'catering';
         const progLabel = window.studentProgram || window.studentDept || '';
         const yr = (_intakeSemester && _academicYear) ? _intakeSemester + ' ' + _academicYear : (_academicYear || '');
 
@@ -10124,55 +10381,53 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
           .eq('level', sLvl).order('academic_year', { ascending: false });
         if (schRes.error) throw schRes.error;
         const raw = schRes.data || [];
-        let pf = raw.filter(f => f.program && (f.program || '').toLowerCase() === prog);
-        let curFees = pf.length ? pf : raw.filter(f => !f.program);
+        let pf = raw.filter(f => {
+          const fp = (f.program || '').toLowerCase();
+          if (!fp) return false;
+          if (fp === prog) return true;
+          if (progGroup === 'fashion') return fp.includes('fashion');
+          if (progGroup === 'catering') return fp.includes('cater');
+          return false;
+        });
+        let curFees = pf.length ? pf.concat(raw.filter(f => !f.program)) : raw.filter(f => !f.program);
         const seen = {};
         curFees = curFees.filter(f => {
           const nm = (f.fee_types && f.fee_types.name) ? f.fee_types.name : (f.fee_type || '');
           if (seen[nm]) return false; seen[nm] = true; return true;
         });
 
-        // Fetch payments — approved only, normalised student_id (FIX Bug 2 & 3)
-        let allPay = [];
-        try {
-          const sidNorm = String(studentId).toUpperCase().trim();
-          const pr = await supabase.from('payments').select('*')
-            .eq('student_id', sidNorm).in('status', ['approved']);
-          if (!pr.error && pr.data && pr.data.length) allPay = pr.data;
-          // Try original casing if normalised form returned nothing
-          if (!allPay.length) {
-            const pr2 = await supabase.from('payments').select('*')
-              .eq('student_id', studentId).in('status', ['approved']);
-            if (!pr2.error) allPay = pr2.data || [];
-          }
-        } catch (_) { }
+        // FIX: this page used to keep its own simplified sumPaid() that only did
+        // plain text/comma matching on p.fee_type. It didn't know about the
+        // combined "Other Fees" bundle payment (SRC + Medical + Departmental +
+        // Machine/Gas paid together as one row keyed by _otherFeesBundleTypeId,
+        // see getOrCreateOtherFeesBundleTypeId / fetchPaymentsSummary above) and
+        // didn't weight multi-fee payments by each fee's scheduled amount. Result:
+        // Machine/Gas ("gas user fee") and Medical paid totals came out short here
+        // even though fetchPaymentsSummary elsewhere had the correct amounts, and
+        // because "otherBal" below is derived from this page's numbers, tuition
+        // could stay permanently "Locked — Pay Other Fees" even after everything
+        // was actually paid in full. Reuse the already-correct, already-tested
+        // fetchPaymentsSummary() instead of reimplementing the matching logic.
+        const _pmovSummary = await fetchPaymentsSummary(studentId);
+        let curPaid = {
+          tuition: Number(_pmovSummary.tuitionPaid || 0),
+          src: Number(_pmovSummary.srcPaid || 0),
+          medical: Number(_pmovSummary.medPaid || 0),
+          dept: Number(_pmovSummary.deptPaid || 0),
+          machine: Number(_pmovSummary.machinePaid || 0),
+          admission: Number(_pmovSummary.admissionPaid || 0),
+          total: Number(_pmovSummary.totalPaid || 0),
+        };
 
-        function sumPaid(pays) {
-          let t = 0, s = 0, m = 0, d = 0, a = 0;
-          (pays || []).forEach(p => {
-            const amt = Number(p.amount || 0);
-            const type = (p.fee_type || p.fee_breakdown || '').toLowerCase();
-            const parts = type.split(',').map(x => x.trim()).filter(Boolean);
-            const add = (x, v) => { if (x.includes('tuition')) t += v; else if (x.includes('admission')) a += v; else if (x.includes('src')) s += v; else if (x.includes('medical')) m += v; else if (x.includes('departmental') || x.includes('department')) d += v; };
-            if (parts.length <= 1) add(type, amt);
-            else { const sh = amt / parts.length; parts.forEach(x => add(x, sh)); }
-          });
-          return { tuition: t, src: s, medical: m, dept: d, admission: a, total: t + s + m + d + a };
-        }
-
-        const byLvl = { '100': [], '200': [], '300': [], '400': [] };
-        allPay.forEach(p => { const lv = normLvl(p.level || p.student_level || ''); if (byLvl[lv]) byLvl[lv].push(p); else if (!lv && byLvl[sLvl]) byLvl[sLvl].push(p); });
-        let curPaid = sumPaid(byLvl[sLvl]);
-        if (curPaid.total === 0 && allPay.length) curPaid = sumPaid(allPay);
-
-        function getPaid(name, map, cap) { const n = (name || '').toLowerCase(); let p = 0; if (n.includes('tuition')) p = map.tuition; else if (n.includes('admission')) p = map.admission; else if (n.includes('src')) p = map.src; else if (n.includes('medical')) p = map.medical; else if (n.includes('departmental') || n.includes('department')) p = map.dept; return Math.min(p, Number(cap || 0)); }
-        function feeIco(n) { n = (n || '').toLowerCase(); if (n.includes('tuition')) return 'fa-graduation-cap'; if (n.includes('admission')) return 'fa-id-badge'; if (n.includes('src')) return 'fa-users'; if (n.includes('medical')) return 'fa-heart-pulse'; if (n.includes('department')) return 'fa-building'; return 'fa-receipt'; }
+        function getPaid(name, map, cap) { const n = (name || '').toLowerCase(); let p = 0; if (n.includes('tuition')) p = map.tuition; else if (n.includes('admission')) p = map.admission; else if (n.includes('src')) p = map.src; else if (n.includes('medical')) p = map.medical; else if (n.includes('departmental') || n.includes('department')) p = map.dept; else if (n.includes('machine') || n.includes('gas')) p = map.machine; return Math.min(p, Number(cap || 0)); }
+        function feeIco(n) { n = (n || '').toLowerCase(); if (n.includes('tuition')) return 'fa-graduation-cap'; if (n.includes('admission')) return 'fa-id-badge'; if (n.includes('src')) return 'fa-users'; if (n.includes('medical')) return 'fa-heart-pulse'; if (n.includes('department')) return 'fa-building'; if (n.includes('machine') || n.includes('gas')) return 'fa-industry'; return 'fa-receipt'; }
         function feeColors(n) {
           n = (n || '').toLowerCase();
           if (n.includes('tuition')) return { bg: '#F1EBFE', color: '#8B5CF6' };
           if (n.includes('src')) return { bg: '#FCE7F3', color: '#DB2777' };
           if (n.includes('medical')) return { bg: '#E6FBF5', color: '#00C48C' };
           if (n.includes('department')) return { bg: '#FFF8E6', color: '#FFB800' };
+          if (n.includes('machine') || n.includes('gas')) return { bg: '#EAF3FF', color: '#2563EB' };
           if (n.includes('admission')) return { bg: '#EEF2FF', color: '#6366F1' };
           return { bg: '#F3F5FA', color: '#6B7280' };
         }
@@ -10465,7 +10720,7 @@ body.dark-mode .cal-filter-chip { background: var(--white); border-color: var(--
         const tuitionFees = fees.filter(f => (f.fee_name || '').toLowerCase().includes('tuition'));
 
         // Other (non-tuition) fees
-        const otherKeys = ['src', 'medical', 'department', 'departmental'];
+        const otherKeys = ['src', 'medical', 'department', 'departmental', 'machine', 'gas'];
         const otherFeeItems = fees.filter(f => {
           const n = (f.fee_name || '').toLowerCase();
           return otherKeys.some(k => n.includes(k));

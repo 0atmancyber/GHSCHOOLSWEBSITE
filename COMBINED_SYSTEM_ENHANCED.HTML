@@ -15243,10 +15243,14 @@ function getFeeTypeIcon(name) {
 //     alter column bank_level_type_priority type text
 //     using bank_level_type_priority::text;
 // Run that in Supabase BEFORE recording a payment, or inserts will fail again.
-// Type 1 = SRC Dues, Type 2 = Medical Dues, Type 3 = Departmental Dues,
-// Type 4 = Tuition, Type 5 = everything else.
+// The values MUST mirror the canonical DB scheme in public.fee_types.priority
+// (which the allocate_ecobank_payment() trigger stores in this column):
+//   1 = SRC Dues, 2 = Medical Dues, 3 = Departmental Dues,
+//   99 = all other / admission / gas / machine, 100 = Tuition.
+// Keeping client + DB on the same scheme makes the column comparable no
+// matter which channel created the payment.
 function buildBankLevelTypePriority(method, level, feeType) {
-  let priority = 5;
+  let priority = 99;
   try {
     const cat = (typeof categorizeFeeType === 'function') ? categorizeFeeType(feeType) : null;
     if (cat === 'src') {
@@ -15256,7 +15260,7 @@ function buildBankLevelTypePriority(method, level, feeType) {
     } else if (cat === 'departmental') {
       priority = 3;
     } else if (typeof isTuitionFeeType === 'function' && isTuitionFeeType(feeType)) {
-      priority = 4;
+      priority = 100;
     }
   } catch (e) { /* fall back to default priority */ }
   // bank_level_type_priority is an INTEGER column in `payments` — must return

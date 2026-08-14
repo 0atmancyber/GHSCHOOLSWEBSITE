@@ -29,7 +29,7 @@ const StanbicWidget = {
 
     // Prefix mapping for Ghana Networks
     PREFIX_MAP: {
-        '24': 'MTN', '54': 'MTN', '55': 'MTN', '59': 'MTN',
+        '24': 'MTN', '54': 'MTN', '55': 'MTN', '59': 'MTN','53': 'MTN',
         '20': 'Telecel', '50': 'Telecel',
         '26': 'AirtelTigo', '56': 'AirtelTigo', '57': 'AirtelTigo',
     },
